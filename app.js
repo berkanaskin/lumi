@@ -506,6 +506,10 @@ function hideAllSections() {
     elements.favoritesSection.style.display = 'none';
     elements.profileSection.style.display = 'none';
     elements.noResults.classList.remove('visible');
+
+    // Also hide classics and suggested on non-home pages
+    if (elements.classicsSection) elements.classicsSection.style.display = 'none';
+    if (elements.suggestedSection) elements.suggestedSection.style.display = 'none';
 }
 
 async function loadHomePage() {
