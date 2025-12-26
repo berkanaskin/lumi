@@ -215,6 +215,68 @@ function updateThemeIcon() {
 }
 
 // ============================================
+// PREMIUM MODAL
+// ============================================
+
+function showPremiumModal() {
+    const modalHtml = `
+        <div class="premium-modal-overlay" id="premium-modal-overlay">
+            <div class="premium-modal">
+                <button class="premium-modal-close" onclick="closePremiumModal()">✕</button>
+                <div class="premium-modal-content">
+                    <div class="premium-icon">💎</div>
+                    <h2>Premium'a Geç</h2>
+                    <p class="premium-desc">Tüm özelliklere sınırsız erişim için Premium üye olun!</p>
+                    
+                    <div class="premium-features">
+                        <div class="feature">🔔 Bildirim Sistemi</div>
+                        <div class="feature">🤓 İlginç Bilgiler (Trivia)</div>
+                        <div class="feature">⭐ Puanlama Sistemi</div>
+                        <div class="feature">🚫 Reklamsız Deneyim</div>
+                    </div>
+                    
+                    <div class="premium-pricing">
+                        <div class="price-option">
+                            <span class="price">₺29.99</span>
+                            <span class="period">/ay</span>
+                        </div>
+                        <div class="price-option yearly">
+                            <span class="badge">%40 İndirim</span>
+                            <span class="price">₺199.99</span>
+                            <span class="period">/yıl</span>
+                        </div>
+                    </div>
+                    
+                    <button class="premium-buy-btn" onclick="simulatePurchase()">
+                        Premium'a Yükselt
+                    </button>
+                    <p class="premium-note">7 gün ücretsiz deneme - İstediğiniz zaman iptal edin</p>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+function closePremiumModal() {
+    const overlay = document.getElementById('premium-modal-overlay');
+    if (overlay) overlay.remove();
+}
+
+function simulatePurchase() {
+    state.userTier = 'premium';
+    localStorage.setItem('userTier', 'premium');
+    closePremiumModal();
+    alert('Tebrikler! Artık Premium üyesiniz! 🎉');
+
+    // Reload current page to reflect changes
+    if (state.currentPage === 'profile') {
+        loadProfilePage();
+    }
+}
+
+// ============================================
 // LANGUAGE & REGION MANAGEMENT
 // ============================================
 
@@ -591,13 +653,38 @@ function loadProfilePage() {
     elements.profileSection.style.display = 'block';
 
     const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    const userRatings = JSON.parse(localStorage.getItem('userRatings') || '{}');
+    const ratingsCount = Object.keys(userRatings).length;
     const theme = state.currentTheme === 'dark' ? 'Koyu' : 'Açık';
+    const tierLabel = state.userTier === 'premium' ? '👑 Premium' : state.userTier === 'free' ? '👤 Üye' : '👤 Misafir';
+
+    // Build ratings list HTML
+    let ratingsHtml = '';
+    if (ratingsCount > 0) {
+        const ratingItems = Object.entries(userRatings).map(([key, rating]) => {
+            const [type, id] = key.split('_');
+            return `
+                <div class="rating-item" data-id="${id}" data-type="${type}">
+                    <span class="rating-stars">${'★'.repeat(Math.floor(rating))}${rating % 1 >= 0.5 ? '½' : ''}</span>
+                    <span class="rating-value">${rating}/10</span>
+                </div>
+            `;
+        }).join('');
+
+        ratingsHtml = `
+            <div class="profile-section">
+                <h4>⭐ Puanlarım (${ratingsCount})</h4>
+                <div class="ratings-list">${ratingItems}</div>
+            </div>
+        `;
+    }
 
     elements.profileContent.innerHTML = `
         <div class="profile-card">
             <div class="profile-header">
                 <div class="avatar">👤</div>
                 <h3>Kullanıcı</h3>
+                <span class="tier-badge">${tierLabel}</span>
             </div>
             <div class="profile-stats">
                 <div class="stat">
@@ -605,18 +692,26 @@ function loadProfilePage() {
                     <span class="stat-label">Favori</span>
                 </div>
                 <div class="stat">
-                    <span class="stat-value">${theme}</span>
-                    <span class="stat-label">Tema</span>
+                    <span class="stat-value">${ratingsCount}</span>
+                    <span class="stat-label">Puan</span>
                 </div>
                 <div class="stat">
-                    <span class="stat-value">${state.currentCountry}</span>
-                    <span class="stat-label">Ülke</span>
+                    <span class="stat-value">${theme}</span>
+                    <span class="stat-label">Tema</span>
                 </div>
                 <div class="stat">
                     <span class="stat-value">v${APP_VERSION}</span>
                     <span class="stat-label">Versiyon</span>
                 </div>
             </div>
+            ${ratingsHtml}
+            ${state.userTier !== 'premium' ? `
+            <div class="premium-cta">
+                <h4>💎 Premium'a Geç</h4>
+                <p>Bildirimler, trivia ve daha fazlası için Premium üye olun!</p>
+                <button class="upgrade-btn" onclick="showPremiumModal()">Premium'a Yükselt</button>
+            </div>
+            ` : ''}
         </div>
     `;
 }
