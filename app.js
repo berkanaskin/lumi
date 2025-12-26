@@ -902,6 +902,8 @@ async function openDetail(id, type, title, year, originalTitle) {
         // IMDB ID ve Trivia çek (arka planda)
         let imdbData = null;
         let triviaData = [];
+        let rtData = null;
+
         const imdbId = await API.getIMDBId(id, type);
         if (imdbId) {
             try {
@@ -914,10 +916,18 @@ async function openDetail(id, type, title, year, originalTitle) {
             }
         }
 
+        // Rotten Tomatoes puanı çek (paralel olarak)
+        try {
+            rtData = await API.getRottenTomatoesRating(title, year);
+        } catch (rtErr) {
+            console.warn('RT fetch error:', rtErr);
+        }
+
         // State'e kaydet
         state.currentImdbData = imdbData;
         state.currentTrivia = triviaData;
         state.currentCredits = credits;
+        state.currentRTData = rtData;
 
         const trailers = tmdbVideos.filter(v => v.type === 'Trailer' || v.type === 'Teaser');
         const btsVideos = tmdbVideos.filter(v => v.type === 'Behind the Scenes' || v.type === 'Featurette');
@@ -991,6 +1001,7 @@ function renderDetail(details, providers, type, itemId) {
     // Ratings
     const imdbRating = state.currentImdbData?.ratingsSummary?.aggregateRating;
     const tmdbRating = details.vote_average;
+    const rtRating = state.currentRTData;
 
     // Check if in favorites
     const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
@@ -1090,6 +1101,12 @@ function renderDetail(details, providers, type, itemId) {
                         <span class="source">TMDB</span>
                         <span class="score">📈 ${tmdbRating ? tmdbRating.toFixed(1) : '-'}</span>
                     </a>
+                    ${rtRating ? `
+                    <a href="${rtRating.url || 'https://www.rottentomatoes.com'}" target="_blank" rel="noopener" class="rating-box rt" title="Rotten Tomatoes'da görüntüle">
+                        <span class="source">RT</span>
+                        <span class="score">🍅 ${rtRating.tomatometer || '-'}%</span>
+                    </a>
+                    ` : ''}
                 </div>
 
                 ${crewHtml}

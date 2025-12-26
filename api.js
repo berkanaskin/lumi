@@ -441,6 +441,48 @@ const API = {
             console.error('IMDB ID hatası:', error);
             return null;
         }
+    },
+
+    // Rotten Tomatoes puanı al (RapidAPI üzerinden)
+    async getRottenTomatoesRating(movieTitle, year) {
+        if (!movieTitle) return null;
+
+        try {
+            // Format title for search
+            const searchQuery = encodeURIComponent(`${movieTitle}${year ? ' ' + year : ''}`);
+
+            const response = await fetch(
+                `https://flixster.p.rapidapi.com/search?query=${searchQuery}`,
+                {
+                    headers: {
+                        'X-RapidAPI-Key': CONFIG.MOVIEDB_API_KEY,
+                        'X-RapidAPI-Host': 'flixster.p.rapidapi.com'
+                    }
+                }
+            );
+
+            if (!response.ok) return null;
+            const data = await response.json();
+
+            // Find matching movie in results
+            const movie = data.data?.search?.edges?.find(edge => {
+                const title = edge.node?.name?.toLowerCase();
+                return title && title.includes(movieTitle.toLowerCase().slice(0, 10));
+            });
+
+            if (movie?.node?.tomatoRating) {
+                return {
+                    tomatometer: movie.node.tomatoRating.tomatometer,
+                    audienceScore: movie.node.tomatoRating.audienceScore,
+                    url: movie.node.emsId ? `https://www.rottentomatoes.com/m/${movie.node.emsId}` : null
+                };
+            }
+
+            return null;
+        } catch (error) {
+            console.error('Rotten Tomatoes API hatası:', error);
+            return null;
+        }
     }
 };
 

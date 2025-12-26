@@ -932,6 +932,16 @@ a.rating-box.tmdb:hover {
     border: 1px solid #01b4e4;
 }
 
+/* Rotten Tomatoes */
+.rating-box.rt .source {
+    color: #fa320a;
+}
+
+a.rating-box.rt:hover {
+    background: rgba(250, 50, 10, 0.15);
+    border: 1px solid #fa320a;
+}
+
 /* ============================================
    COMPACT IMDB INLINE LINK
    ============================================ */
