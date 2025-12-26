@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Film ve dizi arama - Hangi platformda izleyebileceğinizi öğrenin">
+    <meta name="theme-color" content="#0a0a0f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Nerede İzlerim?</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <div class="app">
+        <!-- Header with title and settings -->
+        <header class="app-header">
+            <div class="logo-title">
+                <span class="logo-icon">🎬</span>
+                <h1 class="app-title">Nerede İzlerim?</h1>
+            </div>
+            <div class="header-actions">
+                <div class="language-select">
+                    <select id="language-select">
+                        <option value="tr">🇹🇷 TR</option>
+                        <option value="en">🇺🇸 EN</option>
+                        <option value="de">🇩🇪 DE</option>
+                        <option value="fr">🇫🇷 FR</option>
+                        <option value="es">🇪🇸 ES</option>
+                        <option value="ja">🇯🇵 JA</option>
+                        <option value="zh">🇨🇳 ZH</option>
+                    </select>
+                </div>
+                <button class="theme-btn" id="theme-toggle">
+                    <span id="theme-icon">☀️</span>
+                </button>
+                <!-- Auth Area -->
+                <div id="auth-area">
+                    <button class="login-btn" id="login-btn">👤 Giriş</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Search Section -->
+        <section class="search-section">
+            <div class="search-wrapper">
+                <div class="search-box">
+                    <div class="search-box-inner">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" class="search-input" id="search-input" placeholder="Film veya dizi ara..."
+                            autocomplete="off">
+                        <button class="search-clear" id="search-clear" style="display: none;">✕</button>
+                    </div>
+                </div>
+                <div class="autocomplete-dropdown" id="autocomplete-dropdown"></div>
+            </div>
+        </section>
+
+        <!-- Content -->
+        <main class="content" id="main-content">
+            <!-- Trending Section -->
+            <section class="content-section" id="trending-section">
+                <div class="section-header">
+                    <h2 class="section-title">🔥 Popüler</h2>
+                </div>
+                <div class="slider-container">
+                    <button class="slider-arrow slider-arrow-left" data-slider="trending-slider">‹</button>
+                    <div class="movie-slider" id="trending-slider"></div>
+                    <button class="slider-arrow slider-arrow-right" data-slider="trending-slider">›</button>
+                </div>
+            </section>
+
+            <!-- New Releases Section -->
+            <section class="content-section" id="new-releases-section">
+                <div class="section-header">
+                    <h2 class="section-title">✨ Yeni Çıkanlar</h2>
+                </div>
+                <div class="slider-container">
+                    <button class="slider-arrow slider-arrow-left" data-slider="new-releases-slider">‹</button>
+                    <div class="movie-slider" id="new-releases-slider"></div>
+                    <button class="slider-arrow slider-arrow-right" data-slider="new-releases-slider">›</button>
+                </div>
+            </section>
+
+            <!-- Classics Section -->
+            <section class="content-section" id="classics-section">
+                <div class="section-header">
+                    <h2 class="section-title">🎬 Klasikler</h2>
+                </div>
+                <div class="slider-container">
+                    <button class="slider-arrow slider-arrow-left" data-slider="classics-slider">‹</button>
+                    <div class="movie-slider" id="classics-slider"></div>
+                    <button class="slider-arrow slider-arrow-right" data-slider="classics-slider">›</button>
+                </div>
+            </section>
+
+            <!-- Suggested / Discover Section (Only for Members) -->
+            <section class="content-section" id="suggested-section" style="display: none;">
+                <div class="section-header">
+                    <h2 class="section-title">🌟 Sizin İçin Önerilenler</h2>
+                </div>
+                <div class="slider-container">
+                    <button class="slider-arrow slider-arrow-left" data-slider="suggested-slider">‹</button>
+                    <div class="movie-slider" id="suggested-slider"></div>
+                    <button class="slider-arrow slider-arrow-right" data-slider="suggested-slider">›</button>
+                </div>
+            </section>
+
+            <!-- Search Results (hidden by default) -->
+            <section class="content-section" id="search-results-section" style="display: none;">
+                <div class="section-header">
+                    <h2 class="section-title" id="results-title">Arama Sonuçları</h2>
+                    <span class="results-count" id="results-count"></span>
+                </div>
+                <div class="movie-grid" id="results-grid"></div>
+            </section>
+
+            <!-- Discover Section (hidden) -->
+            <section class="content-section" id="discover-section" style="display: none;">
+                <div class="section-header">
+                    <h2 class="section-title">🎯 Keşfet</h2>
+                    <span class="results-count">En yüksek puanlılar</span>
+                </div>
+                <div class="movie-grid" id="discover-grid"></div>
+            </section>
+
+            <!-- Favorites Section (hidden) -->
+            <section class="content-section" id="favorites-section" style="display: none;">
+                <div class="section-header">
+                    <h2 class="section-title">❤️ Favorilerim</h2>
+                    <span class="results-count" id="favorites-count"></span>
+                </div>
+                <div class="favorites-tabs">
+                    <button class="fav-tab active" data-type="all">Tümü</button>
+                    <button class="fav-tab" data-type="movie">Filmler</button>
+                    <button class="fav-tab" data-type="tv">Diziler</button>
+                </div>
+                <div class="movie-grid" id="favorites-grid"></div>
+            </section>
+
+            <!-- Profile Section (hidden) -->
+            <section class="content-section" id="profile-section" style="display: none;">
+                <div class="section-header">
+                    <h2 class="section-title">👤 Profil</h2>
+                </div>
+                <div id="profile-content"></div>
+            </section>
+
+            <div class="loading-state" id="loading">
+                <div class="spinner"></div>
+                <p>Yükleniyor...</p>
+            </div>
+
+            <div class="empty-state" id="no-results">
+                <span class="empty-icon">🎭</span>
+                <p>Sonuç bulunamadı</p>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <div class="nav-item active" data-page="home">
+                <span class="icon">🏠</span>
+            </div>
+            <div class="nav-item" data-page="discover">
+                <span class="icon">🔍</span>
+            </div>
+            <div class="nav-item" data-page="favorites">
+                <span class="icon">❤️</span>
+            </div>
+            <div class="nav-item" data-page="profile">
+                <span class="icon">👤</span>
+            </div>
+        </nav>
+
+        <!-- Modal -->
+        <div class="modal" id="detail-modal">
+            <div class="modal-content">
+                <button class="modal-close" id="modal-close">✕</button>
+                <div id="modal-body"></div>
+            </div>
+        </div>
+
+        <!-- Login Modal -->
+        <div class="login-modal" id="login-modal">
+            <div class="login-modal-content">
+                <h2 class="login-modal-title">Hoş Geldiniz</h2>
+                <p class="login-modal-subtitle">Devam etmek için giriş yapın</p>
+                <div class="social-login-btns">
+                    <button class="social-btn google" data-provider="google">
+                        <span>🔵</span> Google ile devam et
+                    </button>
+                    <button class="social-btn facebook" data-provider="facebook">
+                        <span>📘</span> Facebook ile devam et
+                    </button>
+                    <button class="social-btn apple" data-provider="apple">
+                        <span>🍎</span> Apple ile devam et
+                    </button>
+                </div>
+                <button class="login-modal-close" id="login-modal-close">Kapat</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="services/auth.js"></script>
+    <script src="api.js"></script>
+    <script src="app.js"></script>
+    <script>
+        // Use a single DOMContentLoaded listener for all inline logic
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // --- Slider Arrow Functionality ---
+            document.querySelectorAll('.slider-arrow').forEach(arrow => {
+                arrow.addEventListener('click', function () {
+                    const sliderId = this.dataset.slider;
+                    const slider = document.getElementById(sliderId);
+                    if (!slider) return;
+
+                    const scrollAmount = 300;
+                    const direction = this.classList.contains('slider-arrow-left') ? -1 : 1;
+                    slider.scrollBy({ left: scrollAmount * direction, behavior: 'smooth' });
+                });
+            });
+
+            // --- Search Clearing on Modal Close ---
+            const modal = document.getElementById('detail-modal');
+            const modalCloseBtn = document.getElementById('modal-close');
+            const searchClearBtn = document.getElementById('search-clear');
+
+            function triggerSearchClear() {
+                // If the clear button is visible, it means there is text. 
+                // Clicking it clears text AND calls loadHomePage() as per app.js logic.
+                if (searchClearBtn && getComputedStyle(searchClearBtn).display !== 'none') {
+                    searchClearBtn.click();
+                }
+            }
+
+            if (modalCloseBtn) {
+                modalCloseBtn.addEventListener('click', triggerSearchClear);
+            }
+
+            if (modal) {
+                modal.addEventListener('click', function (e) {
+                    if (e.target === modal) {
+                        triggerSearchClear();
+                    }
+                });
+            }
+
+            // Handle Escape key
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    if (modal && modal.classList.contains('visible')) {
+                        triggerSearchClear();
+                    }
+                }
+            });
+
+
+
+        });
+    </script>
+</body>
+
+</html>
