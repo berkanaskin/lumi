@@ -935,7 +935,7 @@ async function openDetail(id, type, title, year, originalTitle) {
         state.currentVideos = {
             trailer: mergeVideos(trailers, youtubeVideos.trailer),
             behindTheScenes: mergeVideos(btsVideos, youtubeVideos.behindTheScenes),
-            reviews: [...(youtubeVideos.interview || []), ...(youtubeVideos.makingOf || [])]
+            reviews: [...(youtubeVideos.reviews || []), ...(youtubeVideos.interview || [])]
         };
 
         state.currentVideoCategory = 'trailer';
@@ -1120,23 +1120,23 @@ function renderDetail(details, providers, type, itemId) {
                     </button>
                 </div>
                 
-                ${isMember ? `
+                ${isPremium ? `
                 <div class="user-star-rating" data-item-id="${itemId}" data-item-type="${type}">
                     <label>Puanın:</label>
                     <div class="stars-container" id="stars-container">
                         ${[...Array(10)].map((_, i) => `
-                            <span class="star" data-value="${i + 1}" data-half-left="${i + 0.5}">
+                            <span class="star empty" data-value="${i + 1}" data-half-left="${i + 0.5}">
                                 <span class="star-half left"></span>
                                 <span class="star-half right"></span>
                             </span>
                         `).join('')}
                     </div>
-                    <span class="star-value" id="star-value">-</span>
+                    <span class="star-value" id="star-value"></span>
                 </div>
                 ` : `
                 <div class="user-star-rating guest-prompt">
                     <span class="lock-icon">🔒</span>
-                    <span>Puanlamak için <a href="#" class="login-link">giriş yapın</a></span>
+                    <span>Puanlamak için ${isMember ? '<a href="#" class="upgrade-link" onclick="showPremiumModal()">Premium\'a geçin</a>' : '<a href="#" class="login-link">giriş yapın</a>'}</span>
                 </div>
                 `}
             </div>
@@ -1154,12 +1154,6 @@ function renderDetail(details, providers, type, itemId) {
             </div>
 
             ${castHtml}
-
-            ${state.currentImdbData ? `
-            <a href="https://www.imdb.com/title/${state.currentImdbData.id || ''}" target="_blank" rel="noopener" class="imdb-inline-link">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg" alt="IMDB" class="imdb-logo"> IMDB
-            </a>
-            ` : ''}
             
             ${triviaHtml}
             

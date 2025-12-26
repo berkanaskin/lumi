@@ -283,6 +283,16 @@ const API = {
                 ],
                 mustInclude: ['making', 'production', 'yapım', 'how', 'created', 'documentary'],
                 maxResults: 4
+            },
+            reviews: {
+                queries: [
+                    `${searchTitle}${yearStr} movie review`,
+                    `${searchTitle}${yearStr} film review analysis`,
+                    `${searchTitle}${yearStr} film eleştiri inceleme`,
+                    `${searchTitle}${yearStr} reaction review`
+                ],
+                mustInclude: ['review', 'inceleme', 'eleştiri', 'reaction', 'reaction', 'izledik', 'analiz'],
+                maxResults: 6
             }
         };
 
@@ -332,8 +342,18 @@ const API = {
 
             if (!hasMovieTitle) return false;
 
-            // Alakasız içerikleri filtrele
-            const excludeKeywords = [
+            // Alakasız içerikleri filtrele (review kategorisi için farklı davran)
+            const isReviewCategory = mustIncludeKeywords.some(kw =>
+                ['review', 'inceleme', 'eleştiri', 'reaction', 'izledik', 'analiz'].includes(kw)
+            );
+
+            const excludeKeywords = isReviewCategory ? [
+                'fan made', 'fanmade', 'parody', 'parodi',
+                'gameplay', 'game', 'oyun', 'walkthrough',
+                'music video', 'müzik video', 'soundtrack only',
+                'scene pack', 'edit', 'vine', 'tiktok',
+                'ranking', 'top 10', 'comparison'
+            ] : [
                 'reaction', 'reaksiyon', 'izledik', 'izliyor',
                 'review', 'inceleme', 'eleştiri', 'yorum',
                 'explained', 'analysis', 'analiz', 'açıklama',

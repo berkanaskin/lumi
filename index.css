@@ -560,10 +560,8 @@ body {
 }
 
 .nav-item.active {
-    background: linear-gradient(135deg, #6366F1, #8B5CF6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #8B5CF6;
+    filter: drop-shadow(0 0 6px rgba(139, 92, 246, 0.5));
 }
 
 .nav-item .icon {
