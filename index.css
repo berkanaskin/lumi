@@ -2663,34 +2663,47 @@ a.rating-box.rt:hover {
 }
 
 .neizlesem-wizard {
-    padding: 16px;
+    padding: 12px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
 }
 
 .wizard-step {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 14px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
+    transition: all 0.2s ease;
+}
+
+.wizard-step:hover {
+    border-color: rgba(139, 92, 246, 0.3);
 }
 
 .wizard-label {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 600;
-    color: var(--white-soft);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .wizard-label .optional {
     font-weight: 400;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: var(--white-muted);
+    opacity: 0.7;
 }
 
 .wizard-options {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 8px;
 }
 
 .wizard-btn {
