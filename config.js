@@ -15,7 +15,7 @@ const CONFIG = {
 
     // OMDB API Key (Free: 1000 calls/day) - omdbapi.com'dan alın
     // RT ve Metacritic ratings için
-    OMDB_API_KEY: '',  // 👈 omdbapi.com'dan ücretsiz key alın
+    OMDB_API_KEY: '97f317e5',
 
     // Varsayılan ülke kodu
     DEFAULT_COUNTRY: 'TR',
