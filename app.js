@@ -103,10 +103,11 @@ const PLATFORM_URLS = {
     'Exxen': 'https://www.exxen.com/tr/arama?q=',
     'BluTV': 'https://www.blutv.com/ara?q=',
     'TOD': 'https://www.tod.tv/arama?query=',
-    'Tabii': 'https://www.tabii.com/arama?q=',
+    'Tabii': 'https://www.tabii.com/tr/arama?q=',
     'beIN CONNECT': 'https://www.beinconnect.com.tr/arama?query=',
     'Puhu TV': 'https://puhutv.com/arama?q=',
     'puhutv': 'https://puhutv.com/arama?q=',
+    'TV+': 'https://www.tvplus.com.tr/',
 
     // Rent/Buy Platforms
     'Google Play Movies': 'https://play.google.com/store/search?q=',
@@ -611,83 +612,129 @@ async function loadHomePage() {
     }
 }
 
-async function loadDiscoverPage() {
+async function loadDiscoverPage(selectedGenre = 'all', selectedType = 'all') {
     hideAllSections();
     elements.discoverSection.style.display = 'block';
+
+    // Update active filter button
+    const filterBtns = document.querySelectorAll('.discover-filter-btn');
+    filterBtns.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.genre === selectedGenre && btn.dataset.type === selectedType) {
+            btn.classList.add('active');
+        }
+    });
+
+    // Setup filter button click handlers (only once)
+    if (!state.discoverFiltersSetup) {
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                loadDiscoverPage(btn.dataset.genre, btn.dataset.type);
+            });
+        });
+        state.discoverFiltersSetup = true;
+    }
+
     showLoading();
 
-    // Genre IDs: Action=28, Comedy=35, Drama=18, Horror=27, Romance=10749, SciFi=878, Animation=16
-    const genres = [
-        { id: 28, name: 'Aksiyon', emoji: '💥' },
-        { id: 35, name: 'Komedi', emoji: '😂' },
-        { id: 18, name: 'Drama', emoji: '🎭' },
-        { id: 27, name: 'Korku', emoji: '👻' },
-        { id: 10749, name: 'Romantik', emoji: '💕' },
-        { id: 878, name: 'Bilim Kurgu', emoji: '🚀' }
-    ];
-
     try {
-        // Fetch local content (Turkish movies for TR region)
-        const localPromise = state.currentRegion === 'TR'
-            ? API.fetchTMDB(`/discover/movie?language=${state.currentLanguage}&region=TR&with_original_language=tr&sort_by=popularity.desc`)
-            : API.fetchTMDB(`/discover/movie?language=${state.currentLanguage}&region=${state.currentRegion}&sort_by=popularity.desc`);
+        let results = [];
+        let endpoint = '';
 
-        // Fetch top rated by genre (just first 3 genres to reduce API calls)
-        const genrePromises = genres.slice(0, 3).map(g =>
-            API.fetchTMDB(`/discover/movie?language=${state.currentLanguage}&with_genres=${g.id}&sort_by=vote_average.desc&vote_count.gte=1000`)
-        );
+        if (selectedGenre === 'all' && selectedType === 'all') {
+            // Default: All-time top rated mixed content (movies + TV)
+            const [movies, tvShows] = await Promise.all([
+                API.fetchTMDB(`/movie/top_rated?language=${state.currentLanguage}&page=1`),
+                API.fetchTMDB(`/tv/top_rated?language=${state.currentLanguage}&page=1`)
+            ]);
 
-        const [localContent, ...genreResults] = await Promise.all([localPromise, ...genrePromises]);
+            results = [
+                ...(movies.results || []).slice(0, 12).map(m => ({ ...m, media_type: 'movie' })),
+                ...(tvShows.results || []).slice(0, 8).map(t => ({ ...t, media_type: 'tv' }))
+            ];
+            // Sort by vote_average descending
+            results.sort((a, b) => (b.vote_average || 0) - (a.vote_average || 0));
+
+        } else if (selectedType === 'tv') {
+            // TV Shows only - top rated
+            const data = await API.fetchTMDB(`/tv/top_rated?language=${state.currentLanguage}&page=1`);
+            results = (data.results || []).map(t => ({ ...t, media_type: 'tv' }));
+
+        } else if (selectedType === 'local') {
+            // Turkish content
+            const data = await API.fetchTMDB(
+                `/discover/movie?language=${state.currentLanguage}&region=TR&with_original_language=tr&sort_by=vote_average.desc&vote_count.gte=100`
+            );
+            results = (data.results || []).map(m => ({ ...m, media_type: 'movie' }));
+
+        } else {
+            // Genre-based filter
+            const data = await API.fetchTMDB(
+                `/discover/movie?language=${state.currentLanguage}&with_genres=${selectedGenre}&sort_by=vote_average.desc&vote_count.gte=500`
+            );
+            results = (data.results || []).map(m => ({ ...m, media_type: 'movie' }));
+        }
 
         hideLoading();
 
-        // Build discover content HTML
-        let html = '';
+        if (results.length === 0) {
+            elements.discoverGrid.innerHTML = `
+                <div class="empty-state visible" style="grid-column: 1/-1;">
+                    <span class="empty-icon">🎭</span>
+                    <p>Bu kategoride sonuç bulunamadı</p>
+                </div>
+            `;
+            return;
+        }
 
-        // Local content section
-        if (localContent.results?.length > 0) {
-            const localLabel = state.currentRegion === 'TR' ? '🇹🇷 Türk Yapımları' : `🎬 Yerel İçerikler`;
-            html += `
-                <div class="discover-category">
-                    <h3 class="category-title">${localLabel}</h3>
-                    <div class="category-grid">
-                        ${localContent.results.slice(0, 8).map(item =>
-                createMovieCardHTML({ ...item, media_type: 'movie' }, 'movie')
-            ).join('')}
+        // Render movie cards
+        elements.discoverGrid.innerHTML = results.slice(0, 20).map(item => {
+            const title = item.title || item.name;
+            const rating = item.vote_average?.toFixed(1) || '?';
+            const year = (item.release_date || item.first_air_date || '').substring(0, 4);
+            const poster = item.poster_path
+                ? `https://image.tmdb.org/t/p/w342${item.poster_path}`
+                : null;
+            const typeLabel = item.media_type === 'movie' ? 'Film' : 'Dizi';
+
+            return `
+                <div class="movie-card" data-id="${item.id}" data-type="${item.media_type}">
+                    <div class="movie-poster">
+                        ${poster
+                    ? `<img src="${poster}" alt="${title}" loading="lazy">`
+                    : '<div class="no-image">🎬</div>'
+                }
+                        <span class="card-badge">${typeLabel}</span>
+                        <span class="rating-badge">⭐ ${rating}</span>
+                    </div>
+                    <div class="movie-info">
+                        <h3 class="movie-title">${title}</h3>
+                        <span class="movie-year">${year}</span>
                     </div>
                 </div>
             `;
-        }
-
-        // Genre sections
-        genres.slice(0, 3).forEach((genre, i) => {
-            const results = genreResults[i]?.results || [];
-            if (results.length > 0) {
-                html += `
-                    <div class="discover-category">
-                        <h3 class="category-title">${genre.emoji} ${genre.name}</h3>
-                        <div class="category-grid">
-                            ${results.slice(0, 6).map(item =>
-                    createMovieCardHTML({ ...item, media_type: 'movie' }, 'movie')
-                ).join('')}
-                        </div>
-                    </div>
-                `;
-            }
-        });
-
-        elements.discoverGrid.innerHTML = html;
+        }).join('');
 
         // Add click handlers to cards
         elements.discoverGrid.querySelectorAll('.movie-card').forEach(card => {
             card.addEventListener('click', () => {
-                openDetail(card.dataset.id, card.dataset.type);
+                const id = card.dataset.id;
+                const type = card.dataset.type;
+                const title = card.querySelector('.movie-title')?.textContent;
+                const year = card.querySelector('.movie-year')?.textContent;
+                openDetail(id, type, title, year);
             });
         });
 
     } catch (e) {
         hideLoading();
         console.error('Failed to load discover page:', e);
+        elements.discoverGrid.innerHTML = `
+            <div class="empty-state visible" style="grid-column: 1/-1;">
+                <span class="empty-icon">⚠️</span>
+                <p>Bir hata oluştu. Lütfen tekrar deneyin.</p>
+            </div>
+        `;
     }
 }
 
@@ -937,12 +984,15 @@ async function handleSearch() {
     hideLoading();
 
     if (data.results?.length > 0) {
+        // Sort by popularity (descending)
+        const sortedResults = data.results.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+
         elements.resultsGrid.innerHTML = '';
-        data.results.forEach(item => {
+        sortedResults.forEach(item => {
             const card = createMovieCard(item, item.media_type || 'movie');
             elements.resultsGrid.appendChild(card);
         });
-        elements.resultsCount.textContent = `${data.results.length} sonuç`;
+        elements.resultsCount.textContent = `${sortedResults.length} sonuç`;
     } else {
         showNoResults();
     }
@@ -1115,9 +1165,17 @@ function renderDetail(details, providers, type, itemId) {
     const allRatings = state.currentAllRatings;
     const imdbRating = allRatings?.imdb?.rating || state.currentImdbData?.ratingsSummary?.aggregateRating;
     const tmdbRating = details.vote_average;
-    const rtRating = allRatings?.rottenTomatoes;
-    const letterboxdRating = allRatings?.letterboxd;
-    const metacriticRating = allRatings?.metacritic;
+
+    // Extract actual values from rating objects (API returns {rating: value, url: ...})
+    const rtData = allRatings?.rottenTomatoes;
+    const rtRating = rtData ? (typeof rtData === 'object' ? (rtData.tomatometer || rtData.score || rtData.rating) : rtData) : null;
+    const rtUrl = rtData?.url || 'https://www.rottentomatoes.com';
+
+    const lbData = allRatings?.letterboxd;
+    const letterboxdRating = lbData ? (typeof lbData === 'object' ? (lbData.rating || lbData.score || lbData.value) : lbData) : null;
+
+    const mcData = allRatings?.metacritic;
+    const metacriticRating = mcData ? (typeof mcData === 'object' ? (mcData.score || mcData.rating || mcData.value) : mcData) : null;
 
     // Check if in favorites
     const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
@@ -1183,7 +1241,7 @@ function renderDetail(details, providers, type, itemId) {
     const crewHtml = (directors || writers) ? `
         <div class="modal-meta-row">
             ${directors ? `<div><strong>Yönetmen:</strong> ${directors}</div>` : ''}
-            ${writers ? `<div><strong>Yazar:</strong> ${writers}</div>` : ''}
+            ${writers ? `<div><strong>Senaryo:</strong> ${writers}</div>` : ''}
         </div>
     ` : '';
 
@@ -1218,21 +1276,21 @@ function renderDetail(details, providers, type, itemId) {
                         <span class="score">📈 ${tmdbRating ? tmdbRating.toFixed(1) : '-'}</span>
                     </a>
                     ${rtRating ? `
-                    <a href="${rtRating.url || 'https://www.rottentomatoes.com'}" target="_blank" rel="noopener" class="rating-box rt" title="Rotten Tomatoes'da görüntüle">
+                    <a href="${rtUrl}" target="_blank" rel="noopener" class="rating-box rt" title="Rotten Tomatoes'da görüntüle">
                         <span class="source">RT</span>
-                        <span class="score">🍅 ${rtRating.tomatometer || rtRating.score || rtRating.rating || '-'}%</span>
+                        <span class="score">🍅 ${rtRating}%</span>
                     </a>
                     ` : ''}
                     ${letterboxdRating ? `
                     <a href="https://letterboxd.com" target="_blank" rel="noopener" class="rating-box letterboxd" title="Letterboxd'da görüntüle">
                         <span class="source">LB</span>
-                        <span class="score">🎬 ${letterboxdRating.rating || letterboxdRating.score || letterboxdRating || '-'}</span>
+                        <span class="score">🎬 ${letterboxdRating}</span>
                     </a>
                     ` : ''}
                     ${metacriticRating ? `
                     <a href="https://www.metacritic.com" target="_blank" rel="noopener" class="rating-box metacritic" title="Metacritic'te görüntüle">
                         <span class="source">MC</span>
-                        <span class="score">📊 ${metacriticRating.score || metacriticRating.rating || metacriticRating || '-'}</span>
+                        <span class="score">📊 ${metacriticRating}</span>
                     </a>
                     ` : ''}
                 </div>
@@ -1248,7 +1306,7 @@ function renderDetail(details, providers, type, itemId) {
                     </button>
                 </div>
                 
-                ${isPremium ? `
+                ${isMember ? `
                 <div class="user-star-rating" data-item-id="${itemId}" data-item-type="${type}">
                     <label>Puanın:</label>
                     <div class="stars-container" id="stars-container">
@@ -1264,7 +1322,7 @@ function renderDetail(details, providers, type, itemId) {
                 ` : `
                 <div class="user-star-rating guest-prompt">
                     <span class="lock-icon">🔒</span>
-                    <span>Puanlamak için ${isMember ? '<a href="#" class="upgrade-link" onclick="showPremiumModal()">Premium\'a geçin</a>' : '<a href="#" class="login-link">giriş yapın</a>'}</span>
+                    <span>Puanlamak için <a href="#" class="login-link" onclick="openLoginModal()">giriş yapın</a></span>
                 </div>
                 `}
             </div>
@@ -1337,7 +1395,9 @@ function renderDetail(details, providers, type, itemId) {
 
             // Load existing rating
             const userRatings = JSON.parse(localStorage.getItem('userRatings') || '{}');
-            const existingRating = userRatings[`${itemType}_${itemId}`];
+            const existingRatingData = userRatings[`${itemType}_${itemId}`];
+            // Support both old format (number) and new format ({value, title})
+            const existingRating = typeof existingRatingData === 'object' ? existingRatingData?.value : existingRatingData;
             if (existingRating) {
                 starValue.textContent = existingRating;
                 updateStarDisplay(starsContainer, existingRating);

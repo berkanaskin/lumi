@@ -2489,3 +2489,65 @@ a.rating-box.rt:hover {
         width: 200px;
     }
 }
+
+/* ============================================
+   DISCOVER FILTER BUTTONS
+   ============================================ */
+.discover-filters {
+    display: flex;
+    gap: 8px;
+    padding: 8px 16px 16px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+}
+
+.discover-filters::-webkit-scrollbar {
+    display: none;
+}
+
+.discover-filter-btn {
+    flex-shrink: 0;
+    padding: 10px 16px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-full);
+    color: var(--white-soft);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    scroll-snap-align: start;
+}
+
+.discover-filter-btn:hover {
+    background: rgba(139, 92, 246, 0.15);
+    border-color: var(--accent);
+    color: var(--white);
+}
+
+.discover-filter-btn.active {
+    background: linear-gradient(135deg, var(--accent), #06b6d4);
+    border-color: transparent;
+    color: var(--white);
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+}
+
+/* Responsive filter layout */
+@media (min-width: 768px) {
+    .discover-filters {
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 12px 24px 20px;
+        gap: 10px;
+    }
+
+    .discover-filter-btn {
+        padding: 12px 20px;
+        font-size: 0.85rem;
+    }
+}
