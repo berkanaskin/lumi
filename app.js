@@ -3,7 +3,7 @@
 // Clean Mockup Design - Full Features
 // ============================================
 
-const APP_VERSION = '1.7.3-beta';
+const APP_VERSION = '1.7.4-beta';
 
 // DOM Elements
 const elements = {
@@ -687,50 +687,50 @@ function setupNeIzlesemWizard() {
     const wizard = document.getElementById('neizlesem-wizard');
     if (!wizard) return;
 
-    // Single-select buttons (type, duration, origin)
-    wizard.querySelectorAll('.wizard-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const filter = btn.dataset.filter;
-            const value = btn.dataset.value;
+    // Type cards (single select)
+    wizard.querySelectorAll('.type-card').forEach(card => {
+        card.addEventListener('click', () => {
+            wizard.querySelectorAll('.type-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            neIzlesemFilters.type = card.dataset.value;
+        });
+    });
 
-            // Remove active from siblings
-            btn.closest('.wizard-options').querySelectorAll('.wizard-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+    // Mood pills (single select for style)
+    wizard.querySelectorAll('.mood-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+            wizard.querySelectorAll('.mood-pill').forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            neIzlesemFilters.style = pill.dataset.value;
+        });
+    });
 
-            neIzlesemFilters[filter] = value;
-
-            // Show/hide duration step based on type
-            const durationStep = document.getElementById('duration-step');
-            if (filter === 'type' && durationStep) {
-                durationStep.style.display = value === 'tv' ? 'none' : 'flex';
+    // Genre pills (multi-select)
+    wizard.querySelectorAll('.genre-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+            pill.classList.toggle('selected');
+            const value = pill.dataset.value;
+            if (pill.classList.contains('selected')) {
+                if (!neIzlesemFilters.genres.includes(value)) {
+                    neIzlesemFilters.genres.push(value);
+                }
+            } else {
+                neIzlesemFilters.genres = neIzlesemFilters.genres.filter(g => g !== value);
             }
         });
     });
 
-    // Multi-select chips (genres, platforms)
-    wizard.querySelectorAll('.wizard-chip').forEach(chip => {
+    // Platform chips (multi-select)
+    wizard.querySelectorAll('.platform-chip').forEach(chip => {
         chip.addEventListener('click', () => {
-            const filter = chip.dataset.filter;
-            const value = chip.dataset.value;
-
             chip.classList.toggle('selected');
-
-            if (filter === 'genre') {
-                if (chip.classList.contains('selected')) {
-                    if (!neIzlesemFilters.genres.includes(value)) {
-                        neIzlesemFilters.genres.push(value);
-                    }
-                } else {
-                    neIzlesemFilters.genres = neIzlesemFilters.genres.filter(g => g !== value);
+            const value = chip.dataset.value;
+            if (chip.classList.contains('selected')) {
+                if (!neIzlesemFilters.platforms.includes(value)) {
+                    neIzlesemFilters.platforms.push(value);
                 }
-            } else if (filter === 'platform') {
-                if (chip.classList.contains('selected')) {
-                    if (!neIzlesemFilters.platforms.includes(value)) {
-                        neIzlesemFilters.platforms.push(value);
-                    }
-                } else {
-                    neIzlesemFilters.platforms = neIzlesemFilters.platforms.filter(p => p !== value);
-                }
+            } else {
+                neIzlesemFilters.platforms = neIzlesemFilters.platforms.filter(p => p !== value);
             }
         });
     });
@@ -1452,7 +1452,7 @@ function renderDetail(details, providers, type, itemId) {
                     </a>
                     <a href="https://www.themoviedb.org/${type}/${itemId}" target="_blank" rel="noopener" class="rating-box tmdb" title="TMDB'de görüntüle">
                         <span class="source">TMDB</span>
-                        <span class="score">📈 ${tmdbRating ? tmdbRating.toFixed(1) : '-'}</span>
+                        <span class="score">📈 ${tmdbRating ? Math.round(tmdbRating * 10) + '%' : '-'}</span>
                     </a>
                     ${rtRating ? `
                     <a href="${rtUrl}" target="_blank" rel="noopener" class="rating-box rt" title="Rotten Tomatoes'da görüntüle">

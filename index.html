@@ -124,68 +124,91 @@
             <section class="content-section" id="discover-section" style="display: none;">
                 <div class="section-header">
                     <h2 class="section-title">🎯 Ne İzlesem?</h2>
-                    <p class="section-subtitle">Birkaç seçim yap, sana özel öneriler bulalım</p>
+                    <p class="section-subtitle">Ruh haline göre öneri al</p>
                 </div>
 
-                <!-- Filter Wizard - Mobile Optimized -->
+                <!-- Creative Filter Wizard -->
                 <div class="neizlesem-wizard" id="neizlesem-wizard">
-                    <!-- Step 1: Type -->
-                    <div class="wizard-step">
-                        <label class="wizard-label">📺 Ne arıyorsun?</label>
-                        <div class="wizard-options">
-                            <button class="wizard-btn active" data-filter="type" data-value="all">🎬 Her İkisi</button>
-                            <button class="wizard-btn" data-filter="type" data-value="movie">🎥 Film</button>
-                            <button class="wizard-btn" data-filter="type" data-value="tv">📺 Dizi</button>
+                    <!-- Big Question: What to watch? -->
+                    <div class="wizard-question">
+                        <span class="question-emoji">🍿</span>
+                        <span class="question-text">Bu akşam ne izlemek istersin?</span>
+                    </div>
+
+                    <!-- Type Selection - Large Cards -->
+                    <div class="wizard-cards">
+                        <button class="type-card active" data-filter="type" data-value="all">
+                            <span class="card-emoji">🎬</span>
+                            <span class="card-label">İkisi de olur</span>
+                        </button>
+                        <button class="type-card" data-filter="type" data-value="movie">
+                            <span class="card-emoji">🎥</span>
+                            <span class="card-label">Film</span>
+                        </button>
+                        <button class="type-card" data-filter="type" data-value="tv">
+                            <span class="card-emoji">📺</span>
+                            <span class="card-label">Dizi</span>
+                        </button>
+                    </div>
+
+                    <!-- Mood/Style Selection - Visual Pills -->
+                    <div class="wizard-mood">
+                        <span class="mood-label">🎭 Ruh halin nasıl?</span>
+                        <div class="mood-pills">
+                            <button class="mood-pill active" data-filter="style" data-value="popular">
+                                <span>🔥</span> Trend
+                            </button>
+                            <button class="mood-pill" data-filter="style" data-value="hollywood">
+                                <span>🎬</span> Blockbuster
+                            </button>
+                            <button class="mood-pill" data-filter="style" data-value="festival">
+                                <span>🌟</span> Sanat
+                            </button>
+                            <button class="mood-pill" data-filter="style" data-value="awarded">
+                                <span>🏆</span> Ödüllü
+                            </button>
+                            <button class="mood-pill" data-filter="style" data-value="classic">
+                                <span>📽️</span> Klasik
+                            </button>
+                            <button class="mood-pill" data-filter="style" data-value="local">
+                                <span>🇹🇷</span> Yerli
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Step 2: Style/Category -->
-                    <div class="wizard-step">
-                        <label class="wizard-label">🎬 Ne tarz?</label>
-                        <div class="wizard-options">
-                            <button class="wizard-btn active" data-filter="style" data-value="popular">🔥
-                                Popüler</button>
-                            <button class="wizard-btn" data-filter="style" data-value="hollywood">🇺🇸
-                                Hollywood</button>
-                            <button class="wizard-btn" data-filter="style" data-value="festival">🏆 Festival</button>
-                            <button class="wizard-btn" data-filter="style" data-value="awarded">⭐ Ödüllü</button>
-                            <button class="wizard-btn" data-filter="style" data-value="classic">📽️ Klasik</button>
-                            <button class="wizard-btn" data-filter="style" data-value="local">🇹🇷 Türk</button>
+                    <!-- Genre Pills -->
+                    <div class="wizard-genres">
+                        <span class="genre-label">🎪 Tür <span class="optional">(seçmezsen hepsinden
+                                gelir)</span></span>
+                        <div class="genre-pills">
+                            <button class="genre-pill" data-filter="genre" data-value="28">💥 Aksiyon</button>
+                            <button class="genre-pill" data-filter="genre" data-value="35">😂 Komedi</button>
+                            <button class="genre-pill" data-filter="genre" data-value="18">🎭 Drama</button>
+                            <button class="genre-pill" data-filter="genre" data-value="27">👻 Korku</button>
+                            <button class="genre-pill" data-filter="genre" data-value="878">🚀 Sci-Fi</button>
+                            <button class="genre-pill" data-filter="genre" data-value="10749">💕 Aşk</button>
+                            <button class="genre-pill" data-filter="genre" data-value="53">🔪 Gerilim</button>
+                            <button class="genre-pill" data-filter="genre" data-value="16">🎨 Animasyon</button>
                         </div>
                     </div>
 
-                    <!-- Step 3: Genre -->
-                    <div class="wizard-step">
-                        <label class="wizard-label">🎭 Tür seç <span class="optional">(opsiyonel)</span></label>
-                        <div class="wizard-options genre-options">
-                            <button class="wizard-chip" data-filter="genre" data-value="28">💥 Aksiyon</button>
-                            <button class="wizard-chip" data-filter="genre" data-value="35">😂 Komedi</button>
-                            <button class="wizard-chip" data-filter="genre" data-value="18">🎭 Drama</button>
-                            <button class="wizard-chip" data-filter="genre" data-value="27">👻 Korku</button>
-                            <button class="wizard-chip" data-filter="genre" data-value="878">🚀 Bilim Kurgu</button>
-                            <button class="wizard-chip" data-filter="genre" data-value="10749">💕 Romantik</button>
-                            <button class="wizard-chip" data-filter="genre" data-value="53">🔪 Gerilim</button>
-                            <button class="wizard-chip" data-filter="genre" data-value="16">🎨 Animasyon</button>
+                    <!-- Platform Selection -->
+                    <div class="wizard-platforms">
+                        <span class="platform-label">📱 Nerede izleyeceksin?</span>
+                        <div class="platform-chips">
+                            <button class="platform-chip" data-filter="platform" data-value="8">Netflix</button>
+                            <button class="platform-chip" data-filter="platform" data-value="337">Disney+</button>
+                            <button class="platform-chip" data-filter="platform" data-value="119">Prime</button>
+                            <button class="platform-chip" data-filter="platform" data-value="1899">Max</button>
+                            <button class="platform-chip" data-filter="platform" data-value="341">BluTV</button>
+                            <button class="platform-chip" data-filter="platform" data-value="2">Apple TV+</button>
                         </div>
                     </div>
 
-                    <!-- Step 4: Platform -->
-                    <div class="wizard-step">
-                        <label class="wizard-label">📱 Hangi platformda? <span
-                                class="optional">(opsiyonel)</span></label>
-                        <div class="wizard-options platform-options">
-                            <button class="wizard-chip" data-filter="platform" data-value="8">Netflix</button>
-                            <button class="wizard-chip" data-filter="platform" data-value="337">Disney+</button>
-                            <button class="wizard-chip" data-filter="platform" data-value="119">Prime</button>
-                            <button class="wizard-chip" data-filter="platform" data-value="341">BluTV</button>
-                            <button class="wizard-chip" data-filter="platform" data-value="2">Apple TV</button>
-                            <button class="wizard-chip" data-filter="platform" data-value="1899">Max</button>
-                        </div>
-                    </div>
-
-                    <!-- Generate Button -->
+                    <!-- Generate Button - Floating Style -->
                     <button class="neizlesem-generate-btn" id="neizlesem-generate">
-                        ✨ Bana Öner
+                        <span class="btn-icon">✨</span>
+                        <span class="btn-text">Sürpriz Yap!</span>
                     </button>
                 </div>
 

@@ -2653,57 +2653,252 @@ a.rating-box.rt:hover {
 }
 
 /* ============================================
-   NE İZLESEM? WIZARD
+   NE İZLESEM? WIZARD - CREATIVE DESIGN
    ============================================ */
 
 .section-subtitle {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: var(--white-muted);
     margin-top: 4px;
+    opacity: 0.8;
 }
 
 .neizlesem-wizard {
-    padding: 12px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 20px;
 }
 
-.wizard-step {
-    background: var(--glass);
-    border: 1px solid var(--glass-border);
+/* Big Question Header */
+.wizard-question {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(6, 182, 212, 0.1));
     border-radius: 16px;
-    padding: 14px;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.question-emoji {
+    font-size: 2.5rem;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+.question-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--white);
+}
+
+/* Type Cards - Large Visual Selection */
+.wizard-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.type-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 16px 8px;
+    background: var(--glass);
+    border: 2px solid var(--glass-border);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.type-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(139, 92, 246, 0.4);
+}
+
+.type-card.active {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(6, 182, 212, 0.2));
+    border-color: var(--accent);
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+.card-emoji {
+    font-size: 2rem;
+}
+
+.card-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--white);
+}
+
+/* Mood Section */
+.wizard-mood,
+.wizard-genres,
+.wizard-platforms {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    transition: all 0.2s ease;
 }
 
-.wizard-step:hover {
-    border-color: rgba(139, 92, 246, 0.3);
-}
-
-.wizard-label {
+.mood-label,
+.genre-label,
+.platform-label {
     font-size: 0.9rem;
     font-weight: 600;
     color: var(--white);
-    display: flex;
-    align-items: center;
-    gap: 6px;
 }
 
-.wizard-label .optional {
+.optional {
     font-weight: 400;
     font-size: 0.7rem;
     color: var(--white-muted);
     opacity: 0.7;
 }
 
-.wizard-options {
+/* Mood Pills */
+.mood-pills {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+}
+
+.mood-pill {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 14px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    color: var(--white-muted);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mood-pill:hover {
+    background: rgba(139, 92, 246, 0.15);
+    border-color: var(--accent);
+    color: var(--white);
+}
+
+.mood-pill.active {
+    background: linear-gradient(135deg, var(--accent), #06b6d4);
+    border-color: transparent;
+    color: white;
+    font-weight: 600;
+}
+
+/* Genre Pills */
+.genre-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.genre-pill {
+    padding: 8px 12px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-full);
+    color: var(--white-muted);
+    font-family: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.genre-pill:hover {
+    background: rgba(139, 92, 246, 0.1);
+    border-color: var(--accent);
+}
+
+.genre-pill.selected {
+    background: linear-gradient(135deg, var(--accent), #06b6d4);
+    border-color: transparent;
+    color: white;
+    font-weight: 600;
+}
+
+/* Platform Chips */
+.platform-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.platform-chip {
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: var(--white-muted);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.platform-chip:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--white);
+}
+
+.platform-chip.selected {
+    background: var(--white);
+    color: var(--bg);
+    font-weight: 600;
+}
+
+/* Generate Button - Premium Floating Style */
+.neizlesem-generate-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 16px 24px;
+    background: linear-gradient(135deg, var(--accent), #06b6d4);
+    border: none;
+    border-radius: 16px;
+    color: white;
+    font-family: inherit;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+    margin-top: 8px;
+}
+
+.neizlesem-generate-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(139, 92, 246, 0.5);
+}
+
+.btn-icon {
+    font-size: 1.3rem;
+}
+
+.btn-text {
+    letter-spacing: 0.5px;
 }
 
 .wizard-btn {
