@@ -507,6 +507,37 @@ const API = {
             console.error('Rotten Tomatoes API hatası:', error);
             return null;
         }
+    },
+
+    // Unified Ratings API - IMDB, RT, Letterboxd, Metacritic all in one
+    async getAllRatings(imdbId) {
+        if (!imdbId) return null;
+
+        try {
+            const response = await fetch(
+                `https://movies-ratings2.p.rapidapi.com/ratings?id=${imdbId}`,
+                {
+                    headers: {
+                        'X-RapidAPI-Key': CONFIG.MOVIEDB_API_KEY,
+                        'X-RapidAPI-Host': 'movies-ratings2.p.rapidapi.com'
+                    }
+                }
+            );
+
+            if (!response.ok) return null;
+            const data = await response.json();
+
+            return {
+                imdb: data.imdb || null,
+                rottenTomatoes: data.rottenTomatoes || data.rotten_tomatoes || null,
+                letterboxd: data.letterboxd || null,
+                metacritic: data.metacritic || null,
+                tmdb: data.tmdb || null
+            };
+        } catch (error) {
+            console.error('Ratings API hatası:', error);
+            return null;
+        }
     }
 };
 

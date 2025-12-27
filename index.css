@@ -2219,6 +2219,21 @@ a.rating-box.rt:hover {
     color: var(--white-muted);
 }
 
+.rating-delete-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    opacity: 0.5;
+    transition: opacity 0.2s, transform 0.2s;
+    padding: 4px;
+}
+
+.rating-delete-btn:hover {
+    opacity: 1;
+    transform: scale(1.2);
+}
+
 .premium-cta {
     margin-top: 20px;
     padding: 16px;

@@ -616,28 +616,105 @@ async function loadDiscoverPage() {
     elements.discoverSection.style.display = 'block';
     showLoading();
 
-    try {
-        const [movies, tvShows] = await Promise.all([
-            API.fetchTMDB(`/movie/top_rated?language=${state.currentLanguage}`),
-            API.fetchTMDB(`/tv/top_rated?language=${state.currentLanguage}`)
-        ]);
+    // Genre IDs: Action=28, Comedy=35, Drama=18, Horror=27, Romance=10749, SciFi=878, Animation=16
+    const genres = [
+        { id: 28, name: 'Aksiyon', emoji: '💥' },
+        { id: 35, name: 'Komedi', emoji: '😂' },
+        { id: 18, name: 'Drama', emoji: '🎭' },
+        { id: 27, name: 'Korku', emoji: '👻' },
+        { id: 10749, name: 'Romantik', emoji: '💕' },
+        { id: 878, name: 'Bilim Kurgu', emoji: '🚀' }
+    ];
 
-        const combined = [
-            ...movies.results.slice(0, 10).map(m => ({ ...m, media_type: 'movie' })),
-            ...tvShows.results.slice(0, 10).map(t => ({ ...t, media_type: 'tv' }))
-        ].sort((a, b) => b.vote_average - a.vote_average);
+    try {
+        // Fetch local content (Turkish movies for TR region)
+        const localPromise = state.currentRegion === 'TR'
+            ? API.fetchTMDB(`/discover/movie?language=${state.currentLanguage}&region=TR&with_original_language=tr&sort_by=popularity.desc`)
+            : API.fetchTMDB(`/discover/movie?language=${state.currentLanguage}&region=${state.currentRegion}&sort_by=popularity.desc`);
+
+        // Fetch top rated by genre (just first 3 genres to reduce API calls)
+        const genrePromises = genres.slice(0, 3).map(g =>
+            API.fetchTMDB(`/discover/movie?language=${state.currentLanguage}&with_genres=${g.id}&sort_by=vote_average.desc&vote_count.gte=1000`)
+        );
+
+        const [localContent, ...genreResults] = await Promise.all([localPromise, ...genrePromises]);
 
         hideLoading();
 
-        elements.discoverGrid.innerHTML = '';
-        combined.forEach(item => {
-            const card = createMovieCard(item, item.media_type);
-            elements.discoverGrid.appendChild(card);
+        // Build discover content HTML
+        let html = '';
+
+        // Local content section
+        if (localContent.results?.length > 0) {
+            const localLabel = state.currentRegion === 'TR' ? '🇹🇷 Türk Yapımları' : `🎬 Yerel İçerikler`;
+            html += `
+                <div class="discover-category">
+                    <h3 class="category-title">${localLabel}</h3>
+                    <div class="category-grid">
+                        ${localContent.results.slice(0, 8).map(item =>
+                createMovieCardHTML({ ...item, media_type: 'movie' }, 'movie')
+            ).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Genre sections
+        genres.slice(0, 3).forEach((genre, i) => {
+            const results = genreResults[i]?.results || [];
+            if (results.length > 0) {
+                html += `
+                    <div class="discover-category">
+                        <h3 class="category-title">${genre.emoji} ${genre.name}</h3>
+                        <div class="category-grid">
+                            ${results.slice(0, 6).map(item =>
+                    createMovieCardHTML({ ...item, media_type: 'movie' }, 'movie')
+                ).join('')}
+                        </div>
+                    </div>
+                `;
+            }
         });
+
+        elements.discoverGrid.innerHTML = html;
+
+        // Add click handlers to cards
+        elements.discoverGrid.querySelectorAll('.movie-card').forEach(card => {
+            card.addEventListener('click', () => {
+                openDetail(card.dataset.id, card.dataset.type);
+            });
+        });
+
     } catch (e) {
         hideLoading();
         console.error('Failed to load discover page:', e);
     }
+}
+
+// Helper function to create movie card HTML string
+function createMovieCardHTML(item, mediaType) {
+    const title = item.title || item.name;
+    const rating = item.vote_average?.toFixed(1) || '?';
+    const year = (item.release_date || item.first_air_date || '').substring(0, 4);
+    const poster = item.poster_path
+        ? `https://image.tmdb.org/t/p/w342${item.poster_path}`
+        : null;
+
+    return `
+        <div class="movie-card" data-id="${item.id}" data-type="${mediaType}">
+            <div class="movie-poster">
+                ${poster
+            ? `<img src="${poster}" alt="${title}" loading="lazy">`
+            : '<div class="no-poster">🎬</div>'
+        }
+                <div class="movie-rating"><span>⭐</span> ${rating}</div>
+            </div>
+            <div class="movie-info">
+                <h4 class="movie-title">${title}</h4>
+                <p class="movie-year">${year}</p>
+            </div>
+        </div>
+    `;
 }
 
 function loadFavoritesPage(filterType = 'all') {
@@ -711,10 +788,11 @@ function loadProfilePage() {
             const rating = typeof ratingData === 'object' ? ratingData.value : ratingData;
             const title = typeof ratingData === 'object' ? ratingData.title : 'Film/Dizi';
             return `
-                <div class="rating-item" data-id="${id}" data-type="${type}">
+                <div class="rating-item" data-key="${key}" data-id="${id}" data-type="${type}">
                     <span class="rating-title">${title}</span>
                     <span class="rating-stars">${'★'.repeat(Math.floor(rating))}${rating % 1 >= 0.5 ? '½' : ''}</span>
                     <span class="rating-value">${rating}/10</span>
+                    <button class="rating-delete-btn" data-key="${key}" title="Puanı sil">🗑️</button>
                 </div>
             `;
         }).join('');
@@ -762,6 +840,24 @@ function loadProfilePage() {
             ` : ''}
         </div>
     `;
+
+    // Add event listeners for rating delete buttons
+    document.querySelectorAll('.rating-delete-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const key = btn.dataset.key;
+            if (confirm('Bu puanı silmek istediğinize emin misiniz?')) {
+                deleteRating(key);
+            }
+        });
+    });
+}
+
+function deleteRating(key) {
+    const ratings = JSON.parse(localStorage.getItem('userRatings') || '{}');
+    delete ratings[key];
+    localStorage.setItem('userRatings', JSON.stringify(ratings));
+    loadProfilePage(); // Refresh profile
 }
 
 // ============================================
@@ -944,32 +1040,26 @@ async function openDetail(id, type, title, year, originalTitle) {
         // IMDB ID ve Trivia çek (arka planda)
         let imdbData = null;
         let triviaData = [];
-        let rtData = null;
+        let allRatings = null;
 
         const imdbId = await API.getIMDBId(id, type);
         if (imdbId) {
             try {
-                [imdbData, triviaData] = await Promise.all([
+                [imdbData, triviaData, allRatings] = await Promise.all([
                     API.getMovieFromIMDB(imdbId),
-                    API.getMovieTrivia(imdbId)
+                    API.getMovieTrivia(imdbId),
+                    API.getAllRatings(imdbId)
                 ]);
             } catch (innerErr) {
-                console.warn('IMDB/Trivia fetch error:', innerErr);
+                console.warn('IMDB/Trivia/Ratings fetch error:', innerErr);
             }
-        }
-
-        // Rotten Tomatoes puanı çek (paralel olarak)
-        try {
-            rtData = await API.getRottenTomatoesRating(title, year);
-        } catch (rtErr) {
-            console.warn('RT fetch error:', rtErr);
         }
 
         // State'e kaydet
         state.currentImdbData = imdbData;
         state.currentTrivia = triviaData;
         state.currentCredits = credits;
-        state.currentRTData = rtData;
+        state.currentAllRatings = allRatings;
 
         const trailers = tmdbVideos.filter(v => v.type === 'Trailer' || v.type === 'Teaser');
         const btsVideos = tmdbVideos.filter(v => v.type === 'Behind the Scenes' || v.type === 'Featurette');
@@ -1040,10 +1130,13 @@ function renderDetail(details, providers, type, itemId) {
     const year = dateDisplay;
     const runtime = details.runtime || (details.episode_run_time?.[0]);
 
-    // Ratings
-    const imdbRating = state.currentImdbData?.ratingsSummary?.aggregateRating;
+    // Ratings from unified API
+    const allRatings = state.currentAllRatings;
+    const imdbRating = allRatings?.imdb?.rating || state.currentImdbData?.ratingsSummary?.aggregateRating;
     const tmdbRating = details.vote_average;
-    const rtRating = state.currentRTData;
+    const rtRating = allRatings?.rottenTomatoes;
+    const letterboxdRating = allRatings?.letterboxd;
+    const metacriticRating = allRatings?.metacritic;
 
     // Check if in favorites
     const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
@@ -1137,7 +1230,7 @@ function renderDetail(details, providers, type, itemId) {
                 <div class="ratings-container">
                     <a href="https://www.imdb.com/title/${state.currentImdbData?.id || ''}" target="_blank" rel="noopener" class="rating-box imdb" title="IMDB'de görüntüle">
                         <span class="source">IMDB</span>
-                        <span class="score">⭐ ${imdbRating ? imdbRating.toFixed(1) : '-'}</span>
+                        <span class="score">⭐ ${imdbRating ? (typeof imdbRating === 'number' ? imdbRating.toFixed(1) : imdbRating) : '-'}</span>
                     </a>
                     <a href="https://www.themoviedb.org/${type}/${itemId}" target="_blank" rel="noopener" class="rating-box tmdb" title="TMDB'de görüntüle">
                         <span class="source">TMDB</span>
@@ -1146,7 +1239,19 @@ function renderDetail(details, providers, type, itemId) {
                     ${rtRating ? `
                     <a href="${rtRating.url || 'https://www.rottentomatoes.com'}" target="_blank" rel="noopener" class="rating-box rt" title="Rotten Tomatoes'da görüntüle">
                         <span class="source">RT</span>
-                        <span class="score">🍅 ${rtRating.tomatometer || '-'}%</span>
+                        <span class="score">🍅 ${rtRating.tomatometer || rtRating.score || rtRating.rating || '-'}%</span>
+                    </a>
+                    ` : ''}
+                    ${letterboxdRating ? `
+                    <a href="https://letterboxd.com" target="_blank" rel="noopener" class="rating-box letterboxd" title="Letterboxd'da görüntüle">
+                        <span class="source">LB</span>
+                        <span class="score">🎬 ${letterboxdRating.rating || letterboxdRating.score || letterboxdRating || '-'}</span>
+                    </a>
+                    ` : ''}
+                    ${metacriticRating ? `
+                    <a href="https://www.metacritic.com" target="_blank" rel="noopener" class="rating-box metacritic" title="Metacritic'te görüntüle">
+                        <span class="source">MC</span>
+                        <span class="score">📊 ${metacriticRating.score || metacriticRating.rating || metacriticRating || '-'}</span>
                     </a>
                     ` : ''}
                 </div>
