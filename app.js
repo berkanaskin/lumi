@@ -3,7 +3,7 @@
 // Clean Mockup Design - Full Features
 // ============================================
 
-const APP_VERSION = '1.8.1-beta';
+const APP_VERSION = '1.8.2-beta';
 
 // DOM Elements
 const elements = {
@@ -1183,8 +1183,11 @@ function createMovieCard(item, mediaType) {
     const title = item.title || item.name;
     const date = item.release_date || item.first_air_date;
     const year = date ? new Date(date).getFullYear() : '';
-    const rating = item.vote_average ? item.vote_average.toFixed(1) : null;
+    const tmdbRating = item.vote_average ? item.vote_average.toFixed(1) : null;
     const posterUrl = API.getPosterUrl(item.poster_path);
+
+    // Use unique ID for rating badge update
+    const ratingBadgeId = `rating-${item.id}-${mediaType}`;
 
     card.innerHTML = `
         <div class="movie-poster">
@@ -1193,7 +1196,7 @@ function createMovieCard(item, mediaType) {
             : `<div class="no-image">🎬</div>`
         }
             <span class="card-badge">${mediaType === 'movie' ? 'Film' : 'Dizi'}</span>
-            ${rating ? `<span class="rating-badge">⭐ ${rating}</span>` : ''}
+            ${tmdbRating ? `<span class="rating-badge" id="${ratingBadgeId}">⭐ ${tmdbRating}</span>` : ''}
         </div>
         <div class="movie-info">
             <h3 class="movie-title">${title}</h3>
@@ -1205,7 +1208,38 @@ function createMovieCard(item, mediaType) {
         openDetail(item.id, mediaType, title, year, item.original_title || item.original_name);
     });
 
+    // Fetch IMDB rating asynchronously (lazy load)
+    if (tmdbRating && CONFIG.OMDB_API_KEY) {
+        fetchIMDBRatingForCard(item.id, mediaType, ratingBadgeId);
+    }
+
     return card;
+}
+
+// Async function to fetch and update IMDB rating on card
+async function fetchIMDBRatingForCard(tmdbId, mediaType, badgeId) {
+    try {
+        // Get IMDB ID from TMDB
+        const imdbId = await API.getIMDBId(tmdbId, mediaType);
+        if (!imdbId) return;
+
+        // Get IMDB rating from OMDB
+        const response = await fetch(
+            `https://www.omdbapi.com/?i=${imdbId}&apikey=${CONFIG.OMDB_API_KEY}`
+        );
+        if (!response.ok) return;
+
+        const data = await response.json();
+        if (data.Response === 'True' && data.imdbRating && data.imdbRating !== 'N/A') {
+            const badge = document.getElementById(badgeId);
+            if (badge) {
+                badge.textContent = `⭐ ${data.imdbRating}`;
+                badge.classList.add('imdb-loaded');
+            }
+        }
+    } catch (error) {
+        // Silently fail - keep TMDB rating
+    }
 }
 
 // ============================================
