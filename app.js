@@ -68,6 +68,8 @@ const state = {
     currentTheme: 'dark',
     currentTitle: '',
     currentPage: 'home',
+    currentItemId: null,
+    currentItemType: null,
     autocompleteTimeout: null,
 
     // Auth State
@@ -291,9 +293,17 @@ function simulatePurchase() {
     closePremiumModal();
     alert('Tebrikler! Artık Premium üyesiniz! 🎉');
 
-    // Reload current page to reflect changes
+    // Reload current view to reflect changes
     if (state.currentPage === 'profile') {
         loadProfilePage();
+    }
+
+    // If in detail modal, close and re-open to update features
+    if (elements.modal.classList.contains('visible') && state.currentItemId) {
+        const id = state.currentItemId;
+        const type = state.currentItemType;
+        closeModal();
+        setTimeout(() => openDetail(id, type), 100);
     }
 }
 
@@ -356,7 +366,7 @@ function setupEventListeners() {
     const logoHome = document.getElementById('logo-home');
     if (logoHome) {
         logoHome.addEventListener('click', () => {
-            navigateTo('home');
+            loadHomePage();
         });
     }
 
@@ -902,6 +912,10 @@ function createMovieCard(item, mediaType) {
 // ============================================
 
 async function openDetail(id, type, title, year, originalTitle) {
+    // Store current item for premium re-render
+    state.currentItemId = id;
+    state.currentItemType = type;
+
     elements.modal.classList.add('visible');
     elements.modalBody.innerHTML = '<div class="loading-state visible"><div class="spinner"></div><p>Yükleniyor...</p></div>';
     document.body.style.overflow = 'hidden';
