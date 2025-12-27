@@ -206,7 +206,8 @@ body {
     border: none;
     color: var(--white);
     font-family: inherit;
-    font-size: 0.9rem;
+    font-size: 16px;
+    /* Prevents iOS zoom on focus */
     padding: 0;
     outline: none;
     min-width: 0;
@@ -329,7 +330,7 @@ body {
 }
 
 .section-header {
-    padding: 10px 16px 8px;
+    padding: 10px 16px 8px 20px;
 }
 
 .section-title {
@@ -355,7 +356,7 @@ body {
     display: flex;
     gap: 12px;
     overflow-x: auto;
-    padding: 0 16px 12px;
+    padding: 0 16px 12px 20px;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
@@ -2187,10 +2188,21 @@ a.rating-box.rt:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 10px;
     background: var(--glass);
     padding: 8px 12px;
     border-radius: 8px;
     cursor: pointer;
+}
+
+.rating-title {
+    flex: 1;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--white);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .rating-item:hover {

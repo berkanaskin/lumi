@@ -77,20 +77,26 @@ const state = {
 
 // Platform URLs for deep linking
 const PLATFORM_URLS = {
+    // Global Platforms
     'Netflix': 'https://www.netflix.com/search?q=',
-    'Amazon Prime Video': 'https://www.primevideo.com/search?phrase=',
-    'Amazon Video': 'https://www.primevideo.com/search?phrase=',
-    'Prime Video': 'https://www.primevideo.com/search?phrase=',
-    'Disney Plus': 'https://www.disneyplus.com/search/',
-    'Apple TV': 'https://tv.apple.com/search?term=',
-    'Apple TV Plus': 'https://tv.apple.com/search?term=',
-    'Apple TV+': 'https://tv.apple.com/search?term=',
-    'HBO Max': 'https://www.max.com/search?q=',
-    'Max': 'https://www.max.com/search?q=',
+    'Amazon Prime Video': 'https://www.primevideo.com/search/ref=atv_nb_sr?phrase=',
+    'Amazon Video': 'https://www.primevideo.com/search/ref=atv_nb_sr?phrase=',
+    'Prime Video': 'https://www.primevideo.com/search/ref=atv_nb_sr?phrase=',
+    'Disney Plus': 'https://www.disneyplus.com/tr-tr/search?q=',
+    'Disney+': 'https://www.disneyplus.com/tr-tr/search?q=',
+    'Apple TV': 'https://tv.apple.com/tr/search?term=',
+    'Apple TV Plus': 'https://tv.apple.com/tr/search?term=',
+    'Apple TV+': 'https://tv.apple.com/tr/search?term=',
+    'HBO Max': 'https://play.max.com/search?q=',
+    'Max': 'https://play.max.com/search?q=',
     'Hulu': 'https://www.hulu.com/search?q=',
-    'Paramount Plus': 'https://www.paramountplus.com/search?q=',
-    'Paramount+': 'https://www.paramountplus.com/search?q=',
-    'Mubi': 'https://mubi.com/search?query=',
+    'Paramount Plus': 'https://www.paramountplus.com/search/?q=',
+    'Paramount+': 'https://www.paramountplus.com/search/?q=',
+    'Mubi': 'https://mubi.com/tr/search?query=',
+    'YouTube': 'https://www.youtube.com/results?search_query=',
+    'YouTube Premium': 'https://www.youtube.com/results?search_query=',
+
+    // Turkey Platforms
     'Gain': 'https://www.gain.tv/arama?q=',
     'Exxen': 'https://www.exxen.com/tr/arama?q=',
     'BluTV': 'https://www.blutv.com/ara?q=',
@@ -98,9 +104,13 @@ const PLATFORM_URLS = {
     'Tabii': 'https://www.tabii.com/arama?q=',
     'beIN CONNECT': 'https://www.beinconnect.com.tr/arama?query=',
     'Puhu TV': 'https://puhutv.com/arama?q=',
+    'puhutv': 'https://puhutv.com/arama?q=',
+
+    // Rent/Buy Platforms
     'Google Play Movies': 'https://play.google.com/store/search?q=',
-    'YouTube': 'https://www.youtube.com/results?search_query=',
-    'Microsoft Store': 'https://www.microsoft.com/tr-tr/search/shop/movies-tv?q='
+    'Google Play Movies & TV': 'https://play.google.com/store/search?q=',
+    'Microsoft Store': 'https://www.microsoft.com/tr-tr/search/shop/movies-tv?q=',
+    'Apple iTunes': 'https://tv.apple.com/tr/search?term='
 };
 
 // ============================================
@@ -194,6 +204,7 @@ async function handleLogout() {
         await window.AuthService.logout();
         state.currentUser = null;
         state.userTier = 'guest';
+        localStorage.removeItem('userTier'); // Clear premium tier
         updateAuthUI();
         updateSuggestedVisibility();
         await loadHomePage();
@@ -341,6 +352,14 @@ function setupEventListeners() {
         });
     }
 
+    // Logo click - go home
+    const logoHome = document.getElementById('logo-home');
+    if (logoHome) {
+        logoHome.addEventListener('click', () => {
+            navigateTo('home');
+        });
+    }
+
     // Slider Scroll Logic (Arrows Visibility)
     document.querySelectorAll('.slider-container').forEach(container => {
         const slider = container.querySelector('.movie-slider');
@@ -370,6 +389,7 @@ function setupEventListeners() {
         if (e.key === 'Enter') {
             hideAutocomplete();
             handleSearch();
+            elements.searchInput.blur(); // Hide keyboard on mobile
         }
     });
 
@@ -675,10 +695,14 @@ function loadProfilePage() {
     // Build ratings list HTML
     let ratingsHtml = '';
     if (ratingsCount > 0) {
-        const ratingItems = Object.entries(userRatings).map(([key, rating]) => {
+        const ratingItems = Object.entries(userRatings).map(([key, ratingData]) => {
             const [type, id] = key.split('_');
+            // Support both old format (number) and new format ({value, title})
+            const rating = typeof ratingData === 'object' ? ratingData.value : ratingData;
+            const title = typeof ratingData === 'object' ? ratingData.title : 'Film/Dizi';
             return `
                 <div class="rating-item" data-id="${id}" data-type="${type}">
+                    <span class="rating-title">${title}</span>
                     <span class="rating-stars">${'★'.repeat(Math.floor(rating))}${rating % 1 >= 0.5 ? '½' : ''}</span>
                     <span class="rating-value">${rating}/10</span>
                 </div>
@@ -1252,7 +1276,10 @@ function renderDetail(details, providers, type, itemId) {
                 const value = parseFloat(starValue.textContent) || 0;
                 if (value > 0) {
                     const ratings = JSON.parse(localStorage.getItem('userRatings') || '{}');
-                    ratings[`${itemType}_${itemId}`] = value;
+                    ratings[`${itemType}_${itemId}`] = {
+                        value: value,
+                        title: state.currentTitle || 'Bilinmeyen'
+                    };
                     localStorage.setItem('userRatings', JSON.stringify(ratings));
                 }
             }
@@ -1544,5 +1571,12 @@ function updateSuggestedVisibility() {
         }
     }
 }
+
+// Expose functions to window for inline onclick handlers
+window.showPremiumModal = showPremiumModal;
+window.closePremiumModal = closePremiumModal;
+window.handleSocialLogin = handleSocialLogin;
+window.closeLoginModal = closeLoginModal;
+window.openLoginModal = openLoginModal;
 
 // End of app.js
