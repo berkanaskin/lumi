@@ -11,11 +11,11 @@ const i18n = {
             appTitle: 'Nerede İzlerim?',
             search: 'Film veya dizi ara...',
 
-            // Navigation
-            home: 'Ana Sayfa',
-            discover: 'Keşfet',
-            favorites: 'Favoriler',
-            profile: 'Profil',
+            // Section Headers (for dynamic header)
+            sectionHome: 'Nerede İzlerim?',
+            sectionDiscover: 'Ne İzlesem?',
+            sectionFavorites: 'Favorilerim',
+            sectionProfile: 'Profilim',
 
             // Sections
             trending: 'Popüler',
@@ -97,11 +97,11 @@ const i18n = {
             appTitle: 'Where to Watch?',
             search: 'Search movies or TV shows...',
 
-            // Navigation
-            home: 'Home',
-            discover: 'Discover',
-            favorites: 'Favorites',
-            profile: 'Profile',
+            // Section Headers (for dynamic header)
+            sectionHome: 'Where to Watch?',
+            sectionDiscover: 'What to Watch?',
+            sectionFavorites: 'My Favorites',
+            sectionProfile: 'My Profile',
 
             // Sections
             trending: 'Trending',

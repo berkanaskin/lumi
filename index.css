@@ -99,14 +99,23 @@ body {
     flex-shrink: 0;
 }
 
-.logo-icon {
-    font-size: 1.1rem;
-    filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.5));
+/* WtW Logo */
+.wtw-logo {
+    height: 28px;
+    width: auto;
+    object-fit: contain;
 }
 
-.app-title {
+.header-divider {
+    color: var(--white-muted);
+    font-weight: 300;
     font-size: 1rem;
-    font-weight: 700;
+    opacity: 0.5;
+}
+
+.header-section-title {
+    font-size: 0.9rem;
+    font-weight: 600;
     background: linear-gradient(135deg, #fff 0%, #8b5cf6 50%, #06b6d4 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -115,8 +124,12 @@ body {
 }
 
 @media (min-width: 480px) {
-    .app-title {
-        font-size: 1.25rem;
+    .wtw-logo {
+        height: 32px;
+    }
+
+    .header-section-title {
+        font-size: 1.1rem;
     }
 }
 
@@ -815,29 +828,29 @@ body {
     color: var(--white-soft);
 }
 
-/* Action Buttons - Centered Stack */
+/* Action Buttons - Single Row */
 .modal-actions {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 8px;
     width: 100%;
-    max-width: 280px;
-    margin-bottom: 12px;
 }
 
 .action-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    padding: 10px 16px;
+    gap: 4px;
+    flex: 1;
+    padding: 8px 12px;
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     cursor: pointer;
     font-family: inherit;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     font-weight: 600;
     transition: all 0.2s;
+    white-space: nowrap;
 }
 
 .action-btn.fav-btn {
@@ -976,6 +989,7 @@ body {
 }
 
 .rate-confirm-btn {
+    min-width: 60px;
     padding: 3px 8px;
     background: linear-gradient(135deg, var(--accent), #06b6d4);
     border: none;
@@ -986,6 +1000,7 @@ body {
     cursor: pointer;
     transition: all 0.2s ease;
     white-space: nowrap;
+    text-align: center;
 }
 
 .rate-confirm-btn:hover {
@@ -2605,8 +2620,153 @@ a.rating-box.rt:hover {
 }
 
 /* ============================================
-   DISCOVER FILTER BUTTONS
+   NE İZLESEM? WIZARD
    ============================================ */
+
+.section-subtitle {
+    font-size: 0.8rem;
+    color: var(--white-muted);
+    margin-top: 4px;
+}
+
+.neizlesem-wizard {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.wizard-step {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.wizard-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--white-soft);
+}
+
+.wizard-label .optional {
+    font-weight: 400;
+    font-size: 0.75rem;
+    color: var(--white-muted);
+}
+
+.wizard-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.wizard-btn {
+    padding: 8px 14px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-full);
+    color: var(--white-muted);
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.wizard-btn:hover {
+    background: rgba(139, 92, 246, 0.1);
+    border-color: var(--accent);
+    color: var(--white);
+}
+
+.wizard-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+    font-weight: 600;
+}
+
+.wizard-chip {
+    padding: 6px 12px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-full);
+    color: var(--white-muted);
+    font-family: inherit;
+    font-size: 0.7rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.wizard-chip:hover {
+    background: rgba(139, 92, 246, 0.1);
+    border-color: var(--accent);
+}
+
+.wizard-chip.selected {
+    background: linear-gradient(135deg, var(--accent), #06b6d4);
+    border-color: transparent;
+    color: white;
+    font-weight: 600;
+}
+
+.neizlesem-generate-btn {
+    width: 100%;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, var(--accent), #06b6d4);
+    border: none;
+    border-radius: var(--radius);
+    color: white;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 8px;
+}
+
+.neizlesem-generate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+}
+
+.neizlesem-results {
+    padding: 0 16px 16px;
+}
+
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.results-header h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--white);
+}
+
+.reset-filters-btn {
+    padding: 6px 12px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-full);
+    color: var(--white-muted);
+    font-family: inherit;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.reset-filters-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--white);
+}
+
+/* ============================================
+   DISCOVER FILTER BUTTONS (Legacy)
 
 /* Type Toggle (Film/Dizi/Tümü) */
 .discover-type-toggle {

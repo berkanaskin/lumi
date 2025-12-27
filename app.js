@@ -3,7 +3,7 @@
 // Clean Mockup Design - Full Features
 // ============================================
 
-const APP_VERSION = '1.5-beta';
+const APP_VERSION = '1.6-beta';
 
 // DOM Elements
 const elements = {
@@ -236,6 +236,33 @@ function updateThemeIcon() {
     if (elements.themeIcon) {
         elements.themeIcon.textContent = state.currentTheme === 'dark' ? '☀️' : '🌙';
     }
+    updateLogoForTheme();
+}
+
+// Update WtW logo based on theme
+function updateLogoForTheme() {
+    const logo = document.getElementById('wtw-logo');
+    if (logo) {
+        logo.src = state.currentTheme === 'dark'
+            ? 'assets/wtw-logo-dark.png'
+            : 'assets/wtw-logo-light.png';
+    }
+}
+
+// Update header section title based on current page
+function updateHeaderTitle(page) {
+    const titleEl = document.getElementById('header-section-title');
+    if (!titleEl) return;
+
+    const sectionMap = {
+        'home': 'sectionHome',
+        'discover': 'sectionDiscover',
+        'favorites': 'sectionFavorites',
+        'profile': 'sectionProfile'
+    };
+
+    const key = sectionMap[page] || 'sectionHome';
+    titleEl.textContent = i18n.t(key);
 }
 
 // ============================================
@@ -521,6 +548,9 @@ function setupBottomNav() {
             const page = item.dataset.page;
             state.currentPage = page;
 
+            // Update header section title
+            updateHeaderTitle(page);
+
             switch (page) {
                 case 'home':
                     loadHomePage();
@@ -626,156 +656,177 @@ async function loadHomePage() {
     }
 }
 
-async function loadDiscoverPage(selectedGenre = 'all', mediaType = 'all') {
+// Ne İzlesem Filter State
+const neIzlesemFilters = {
+    type: 'all',
+    genres: [],
+    duration: 'any',
+    origin: 'any',
+    moods: []
+};
+
+async function loadDiscoverPage() {
     hideAllSections();
     elements.discoverSection.style.display = 'block';
+    state.currentPage = 'discover';
 
-    // Store current filters in state
-    state.discoverGenre = selectedGenre;
-    state.discoverMediaType = mediaType;
+    // Show wizard, hide results initially
+    const wizard = document.getElementById('neizlesem-wizard');
+    const results = document.getElementById('neizlesem-results');
+    if (wizard) wizard.style.display = 'flex';
+    if (results) results.style.display = 'none';
 
-    // Update active genre button
-    const filterBtns = document.querySelectorAll('.discover-filter-btn');
-    filterBtns.forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.dataset.genre === selectedGenre) {
-            btn.classList.add('active');
-        }
-    });
-
-    // Update type toggle buttons
-    const typeBtns = document.querySelectorAll('.type-toggle-btn');
-    typeBtns.forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.dataset.media === mediaType) {
-            btn.classList.add('active');
-        }
-    });
-
-    // Setup handlers (only once)
-    if (!state.discoverFiltersSetup) {
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                loadDiscoverPage(btn.dataset.genre, state.discoverMediaType || 'all');
-            });
-        });
-        typeBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                loadDiscoverPage(state.discoverGenre || 'all', btn.dataset.media);
-            });
-        });
-        state.discoverFiltersSetup = true;
+    // Setup wizard event handlers (only once)
+    if (!state.neizlesemSetup) {
+        setupNeIzlesemWizard();
+        state.neizlesemSetup = true;
     }
+}
+
+function setupNeIzlesemWizard() {
+    const wizard = document.getElementById('neizlesem-wizard');
+    if (!wizard) return;
+
+    // Single-select buttons (type, duration, origin)
+    wizard.querySelectorAll('.wizard-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const filter = btn.dataset.filter;
+            const value = btn.dataset.value;
+
+            // Remove active from siblings
+            btn.closest('.wizard-options').querySelectorAll('.wizard-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            neIzlesemFilters[filter] = value;
+
+            // Show/hide duration step based on type
+            const durationStep = document.getElementById('duration-step');
+            if (filter === 'type' && durationStep) {
+                durationStep.style.display = value === 'tv' ? 'none' : 'flex';
+            }
+        });
+    });
+
+    // Multi-select chips (genres, moods)
+    wizard.querySelectorAll('.wizard-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            const filter = chip.dataset.filter;
+            const value = chip.dataset.value;
+
+            chip.classList.toggle('selected');
+
+            if (filter === 'genre') {
+                if (chip.classList.contains('selected')) {
+                    if (!neIzlesemFilters.genres.includes(value)) {
+                        neIzlesemFilters.genres.push(value);
+                    }
+                } else {
+                    neIzlesemFilters.genres = neIzlesemFilters.genres.filter(g => g !== value);
+                }
+            } else if (filter === 'mood') {
+                if (chip.classList.contains('selected')) {
+                    if (!neIzlesemFilters.moods.includes(value)) {
+                        neIzlesemFilters.moods.push(value);
+                    }
+                } else {
+                    neIzlesemFilters.moods = neIzlesemFilters.moods.filter(m => m !== value);
+                }
+            }
+        });
+    });
+
+    // Generate button
+    const generateBtn = document.getElementById('neizlesem-generate');
+    if (generateBtn) {
+        generateBtn.addEventListener('click', generateNeIzlesemResults);
+    }
+
+    // Reset button
+    const resetBtn = document.getElementById('reset-filters');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', resetNeIzlesemFilters);
+    }
+}
+
+async function generateNeIzlesemResults() {
+    const wizard = document.getElementById('neizlesem-wizard');
+    const results = document.getElementById('neizlesem-results');
 
     showLoading();
 
     try {
-        let results = [];
         const lang = state.currentLanguage;
+        let allResults = [];
 
-        // Genre ID mapping for TV (TMDB uses different IDs for some genres)
-        const tvGenreMap = {
-            '28': '10759',   // Action -> Action & Adventure (TV)
-            '878': '10765',  // Sci-Fi -> Sci-Fi & Fantasy (TV)
-            '27': '9648',    // Horror -> Mystery (closest for TV)
+        // Build TMDB query based on filters
+        const genreStr = neIzlesemFilters.genres.join(',') || '';
+        const originMap = {
+            'local': 'tr',
+            'hollywood': 'en',
+            'asian': 'ja,ko,zh'
         };
+        const originLang = originMap[neIzlesemFilters.origin] || '';
 
-        if (selectedGenre === 'anime') {
-            // Anime - Japanese animation (Film + TV)
-            if (mediaType === 'all' || mediaType === 'movie') {
-                const movieData = await API.fetchTMDB(
-                    `/discover/movie?language=${lang}&with_genres=16&with_original_language=ja&sort_by=vote_average.desc&vote_count.gte=100`
-                );
-                results.push(...(movieData.results || []).map(m => ({ ...m, media_type: 'movie' })));
-            }
-            if (mediaType === 'all' || mediaType === 'tv') {
-                const tvData = await API.fetchTMDB(
-                    `/discover/tv?language=${lang}&with_genres=16&with_original_language=ja&sort_by=vote_average.desc&vote_count.gte=50`
-                );
-                results.push(...(tvData.results || []).map(t => ({ ...t, media_type: 'tv' })));
-            }
+        // Fetch movies
+        if (neIzlesemFilters.type !== 'tv') {
+            let movieUrl = `/discover/movie?language=${lang}&sort_by=vote_average.desc&vote_count.gte=200`;
+            if (genreStr) movieUrl += `&with_genres=${genreStr}`;
+            if (originLang) movieUrl += `&with_original_language=${originLang}`;
 
-        } else if (selectedGenre === 'local') {
-            // Regional content
-            const regionMap = { 'tr': 'tr', 'en': 'en', 'de': 'de', 'fr': 'fr', 'es': 'es', 'ja': 'ja' };
-            const langCode = state.currentLanguageCode || 'tr';
-            const origLang = regionMap[langCode] || 'tr';
-
-            if (mediaType === 'all' || mediaType === 'movie') {
-                const movieData = await API.fetchTMDB(
-                    `/discover/movie?language=${lang}&with_original_language=${origLang}&sort_by=vote_average.desc&vote_count.gte=50`
-                );
-                results.push(...(movieData.results || []).map(m => ({ ...m, media_type: 'movie' })));
-            }
-            if (mediaType === 'all' || mediaType === 'tv') {
-                const tvData = await API.fetchTMDB(
-                    `/discover/tv?language=${lang}&with_original_language=${origLang}&sort_by=vote_average.desc&vote_count.gte=30`
-                );
-                results.push(...(tvData.results || []).map(t => ({ ...t, media_type: 'tv' })));
+            // Duration filter
+            if (neIzlesemFilters.duration === 'short') {
+                movieUrl += '&with_runtime.lte=90';
+            } else if (neIzlesemFilters.duration === 'medium') {
+                movieUrl += '&with_runtime.gte=90&with_runtime.lte=120';
+            } else if (neIzlesemFilters.duration === 'long') {
+                movieUrl += '&with_runtime.gte=120';
             }
 
-        } else if (selectedGenre === 'all') {
-            // Top rated mixed/filtered
-            if (mediaType === 'all' || mediaType === 'movie') {
-                const movieData = await API.fetchTMDB(`/movie/top_rated?language=${lang}&page=1`);
-                results.push(...(movieData.results || []).slice(0, 12).map(m => ({ ...m, media_type: 'movie' })));
-            }
-            if (mediaType === 'all' || mediaType === 'tv') {
-                const tvData = await API.fetchTMDB(`/tv/top_rated?language=${lang}&page=1`);
-                results.push(...(tvData.results || []).slice(0, 8).map(t => ({ ...t, media_type: 'tv' })));
-            }
-
-        } else {
-            // Genre-based filter (mixed Film + Dizi)
-            const movieGenre = selectedGenre;
-            const tvGenre = tvGenreMap[selectedGenre] || selectedGenre;
-
-            if (mediaType === 'all' || mediaType === 'movie') {
-                const movieData = await API.fetchTMDB(
-                    `/discover/movie?language=${lang}&with_genres=${movieGenre}&sort_by=vote_average.desc&vote_count.gte=300`
-                );
-                results.push(...(movieData.results || []).map(m => ({ ...m, media_type: 'movie' })));
-            }
-            if (mediaType === 'all' || mediaType === 'tv') {
-                const tvData = await API.fetchTMDB(
-                    `/discover/tv?language=${lang}&with_genres=${tvGenre}&sort_by=vote_average.desc&vote_count.gte=100`
-                );
-                results.push(...(tvData.results || []).map(t => ({ ...t, media_type: 'tv' })));
-            }
+            const movieData = await API.fetchTMDB(movieUrl);
+            allResults.push(...(movieData.results || []).map(m => ({ ...m, media_type: 'movie' })));
         }
 
-        // Sort by vote_average
-        results.sort((a, b) => (b.vote_average || 0) - (a.vote_average || 0));
+        // Fetch TV shows
+        if (neIzlesemFilters.type !== 'movie') {
+            let tvUrl = `/discover/tv?language=${lang}&sort_by=vote_average.desc&vote_count.gte=100`;
+            if (genreStr) tvUrl += `&with_genres=${genreStr}`;
+            if (originLang) tvUrl += `&with_original_language=${originLang}`;
+
+            const tvData = await API.fetchTMDB(tvUrl);
+            allResults.push(...(tvData.results || []).map(t => ({ ...t, media_type: 'tv' })));
+        }
+
+        // Sort by rating
+        allResults.sort((a, b) => (b.vote_average || 0) - (a.vote_average || 0));
 
         hideLoading();
 
-        if (results.length === 0) {
+        // Hide wizard, show results
+        if (wizard) wizard.style.display = 'none';
+        if (results) results.style.display = 'block';
+
+        if (allResults.length === 0) {
             elements.discoverGrid.innerHTML = `
                 <div class="empty-state visible" style="grid-column: 1/-1;">
                     <span class="empty-icon">🎭</span>
-                    <p>Bu kategoride sonuç bulunamadı</p>
+                    <p>Bu kriterlere uygun içerik bulunamadı</p>
                 </div>
             `;
             return;
         }
 
-        // Render movie cards
-        elements.discoverGrid.innerHTML = results.slice(0, 20).map(item => {
+        // Render results
+        elements.discoverGrid.innerHTML = allResults.slice(0, 20).map(item => {
             const title = item.title || item.name;
             const rating = item.vote_average?.toFixed(1) || '?';
             const year = (item.release_date || item.first_air_date || '').substring(0, 4);
-            const poster = item.poster_path
-                ? `https://image.tmdb.org/t/p/w342${item.poster_path}`
-                : null;
+            const poster = item.poster_path ? `https://image.tmdb.org/t/p/w342${item.poster_path}` : null;
             const typeLabel = item.media_type === 'movie' ? 'Film' : 'Dizi';
 
             return `
                 <div class="movie-card" data-id="${item.id}" data-type="${item.media_type}">
                     <div class="movie-poster">
-                        ${poster
-                    ? `<img src="${poster}" alt="${title}" loading="lazy">`
-                    : '<div class="no-image">🎬</div>'
-                }
+                        ${poster ? `<img src="${poster}" alt="${title}" loading="lazy">` : '<div class="no-image">🎬</div>'}
                         <span class="card-badge">${typeLabel}</span>
                         <span class="rating-badge">⭐ ${rating}</span>
                     </div>
@@ -787,27 +838,43 @@ async function loadDiscoverPage(selectedGenre = 'all', mediaType = 'all') {
             `;
         }).join('');
 
-        // Add click handlers to cards
+        // Add click handlers
         elements.discoverGrid.querySelectorAll('.movie-card').forEach(card => {
             card.addEventListener('click', () => {
-                const id = card.dataset.id;
-                const type = card.dataset.type;
-                const title = card.querySelector('.movie-title')?.textContent;
-                const year = card.querySelector('.movie-year')?.textContent;
-                openDetail(id, type, title, year);
+                openDetail(card.dataset.id, card.dataset.type);
             });
         });
 
     } catch (e) {
         hideLoading();
-        console.error('Failed to load discover page:', e);
-        elements.discoverGrid.innerHTML = `
-            <div class="empty-state visible" style="grid-column: 1/-1;">
-                <span class="empty-icon">⚠️</span>
-                <p>Bir hata oluştu. Lütfen tekrar deneyin.</p>
-            </div>
-        `;
+        console.error('Ne İzlesem error:', e);
     }
+}
+
+function resetNeIzlesemFilters() {
+    // Reset state
+    neIzlesemFilters.type = 'all';
+    neIzlesemFilters.genres = [];
+    neIzlesemFilters.duration = 'any';
+    neIzlesemFilters.origin = 'any';
+    neIzlesemFilters.moods = [];
+
+    // Reset UI
+    document.querySelectorAll('.wizard-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.value === 'all' || btn.dataset.value === 'any') {
+            btn.classList.add('active');
+        }
+    });
+    document.querySelectorAll('.wizard-chip').forEach(chip => {
+        chip.classList.remove('selected');
+    });
+
+    // Show wizard, hide results
+    const wizard = document.getElementById('neizlesem-wizard');
+    const results = document.getElementById('neizlesem-results');
+    if (wizard) wizard.style.display = 'flex';
+    if (results) results.style.display = 'none';
 }
 
 // Helper function to create movie card HTML string
