@@ -2295,3 +2295,53 @@ a.rating-box.rt:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(245, 197, 24, 0.3);
 }
+
+/* ============================================
+   DISCOVER CATEGORIES
+   ============================================ */
+.discover-category {
+    margin-bottom: 24px;
+}
+
+.category-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 12px;
+    padding-left: 4px;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+}
+
+@media (min-width: 768px) {
+    .category-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+}
+
+/* ============================================
+   ADDITIONAL RATING BOXES
+   ============================================ */
+.rating-box.letterboxd {
+    background: linear-gradient(135deg, rgba(255, 128, 0, 0.15), rgba(255, 128, 0, 0.05));
+    border-color: rgba(255, 128, 0, 0.4);
+}
+
+.rating-box.letterboxd:hover {
+    border-color: #ff8000;
+    box-shadow: 0 0 15px rgba(255, 128, 0, 0.3);
+}
+
+.rating-box.metacritic {
+    background: linear-gradient(135deg, rgba(102, 204, 51, 0.15), rgba(102, 204, 51, 0.05));
+    border-color: rgba(102, 204, 51, 0.4);
+}
+
+.rating-box.metacritic:hover {
+    border-color: #66cc33;
+    box-shadow: 0 0 15px rgba(102, 204, 51, 0.3);
+}

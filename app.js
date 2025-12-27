@@ -792,7 +792,6 @@ function loadProfilePage() {
                     <span class="rating-title">${title}</span>
                     <span class="rating-stars">${'★'.repeat(Math.floor(rating))}${rating % 1 >= 0.5 ? '½' : ''}</span>
                     <span class="rating-value">${rating}/10</span>
-                    <button class="rating-delete-btn" data-key="${key}" title="Puanı sil">🗑️</button>
                 </div>
             `;
         }).join('');
@@ -840,24 +839,6 @@ function loadProfilePage() {
             ` : ''}
         </div>
     `;
-
-    // Add event listeners for rating delete buttons
-    document.querySelectorAll('.rating-delete-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const key = btn.dataset.key;
-            if (confirm('Bu puanı silmek istediğinize emin misiniz?')) {
-                deleteRating(key);
-            }
-        });
-    });
-}
-
-function deleteRating(key) {
-    const ratings = JSON.parse(localStorage.getItem('userRatings') || '{}');
-    delete ratings[key];
-    localStorage.setItem('userRatings', JSON.stringify(ratings));
-    loadProfilePage(); // Refresh profile
 }
 
 // ============================================
@@ -1374,7 +1355,7 @@ function renderDetail(details, providers, type, itemId) {
                 const isLeftHalf = (relativeX % starWidth) < (starWidth / 2);
 
                 let value = starIndex + (isLeftHalf ? 0.5 : 1);
-                value = Math.max(0.5, Math.min(10, value));
+                value = Math.max(0, Math.min(10, value)); // Allow 0 to delete
                 return value;
             }
 
@@ -1387,19 +1368,27 @@ function renderDetail(details, providers, type, itemId) {
                 starValue.textContent = value;
             }
 
-            // Save rating on drag end
+            // Save rating on drag end (0 = delete rating)
             function handleDragEnd(e) {
                 if (!isDragging) return;
                 isDragging = false;
 
                 const value = parseFloat(starValue.textContent) || 0;
+                const ratings = JSON.parse(localStorage.getItem('userRatings') || '{}');
+                const key = `${itemType}_${itemId}`;
+
                 if (value > 0) {
-                    const ratings = JSON.parse(localStorage.getItem('userRatings') || '{}');
-                    ratings[`${itemType}_${itemId}`] = {
+                    ratings[key] = {
                         value: value,
                         title: state.currentTitle || 'Bilinmeyen'
                     };
                     localStorage.setItem('userRatings', JSON.stringify(ratings));
+                } else {
+                    // Delete rating when dragged to 0
+                    if (ratings[key]) {
+                        delete ratings[key];
+                        localStorage.setItem('userRatings', JSON.stringify(ratings));
+                    }
                 }
             }
 
