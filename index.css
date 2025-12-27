@@ -2378,7 +2378,6 @@ a.rating-box.rt:hover {
     /* Modal on tablet - centered card style */
     .modal {
         background: rgba(0, 0, 0, 0.8);
-        display: flex;
         align-items: center;
         justify-content: center;
     }
