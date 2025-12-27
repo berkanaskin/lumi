@@ -101,7 +101,7 @@ body {
 
 /* WtW Text Logo */
 .wtw-logo-text {
-    font-size: 1.5rem;
+    font-size: 2rem;
     font-weight: 800;
     background: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%);
     -webkit-background-clip: text;
@@ -113,25 +113,26 @@ body {
 .header-divider {
     color: var(--white-muted);
     font-weight: 300;
-    font-size: 1.2rem;
-    opacity: 0.4;
-    margin: 0 2px;
+    font-size: 1.4rem;
+    opacity: 0.3;
+    margin: 0 6px;
 }
 
 .header-section-title {
-    font-size: 0.7rem;
+    font-size: 0.85rem;
     font-weight: 500;
     color: var(--white-muted);
     white-space: nowrap;
+    opacity: 0.9;
 }
 
 @media (min-width: 480px) {
     .wtw-logo-text {
-        font-size: 1.8rem;
+        font-size: 2.4rem;
     }
 
     .header-section-title {
-        font-size: 0.8rem;
+        font-size: 1rem;
     }
 }
 

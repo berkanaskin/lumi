@@ -3,7 +3,7 @@
 // Clean Mockup Design - Full Features
 // ============================================
 
-const APP_VERSION = '1.7.0-beta';
+const APP_VERSION = '1.7.1-beta';
 
 // DOM Elements
 const elements = {
@@ -827,13 +827,14 @@ async function generateNeIzlesemResults(append = false) {
         // Render results
         const cardsHtml = allResults.map(item => {
             const title = item.title || item.name;
+            const originalTitle = item.original_title || item.original_name || '';
             const rating = item.vote_average?.toFixed(1) || '?';
             const year = (item.release_date || item.first_air_date || '').substring(0, 4);
             const poster = item.poster_path ? `https://image.tmdb.org/t/p/w342${item.poster_path}` : null;
             const typeLabel = item.media_type === 'movie' ? 'Film' : 'Dizi';
 
             return `
-                <div class="movie-card" data-id="${item.id}" data-type="${item.media_type}">
+                <div class="movie-card" data-id="${item.id}" data-type="${item.media_type}" data-title="${title}" data-year="${year}" data-original="${originalTitle}">
                     <div class="movie-poster">
                         ${poster ? `<img src="${poster}" alt="${title}" loading="lazy">` : '<div class="no-image">🎬</div>'}
                         <span class="card-badge">${typeLabel}</span>
@@ -863,7 +864,7 @@ async function generateNeIzlesemResults(append = false) {
             if (!card.hasAttribute('data-listener')) {
                 card.setAttribute('data-listener', 'true');
                 card.addEventListener('click', () => {
-                    openDetail(card.dataset.id, card.dataset.type);
+                    openDetail(card.dataset.id, card.dataset.type, card.dataset.title, card.dataset.year, card.dataset.original);
                 });
             }
         });
