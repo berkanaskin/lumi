@@ -2797,6 +2797,31 @@ a.rating-box.rt:hover {
     color: var(--white);
 }
 
+.load-more-container {
+    display: flex;
+    justify-content: center;
+    padding: 16px 0;
+}
+
+.load-more-btn {
+    padding: 12px 32px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-full);
+    color: var(--white);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.load-more-btn:hover {
+    background: linear-gradient(135deg, var(--accent), #06b6d4);
+    border-color: transparent;
+    transform: translateY(-2px);
+}
+
 /* ============================================
    DISCOVER FILTER BUTTONS (Legacy)
 

@@ -124,25 +124,39 @@
             <section class="content-section" id="discover-section" style="display: none;">
                 <div class="section-header">
                     <h2 class="section-title">🎯 Ne İzlesem?</h2>
-                    <p class="section-subtitle">Tercihlerinizi seçin, size özel öneriler bulalım</p>
+                    <p class="section-subtitle">Birkaç seçim yap, sana özel öneriler bulalım</p>
                 </div>
 
-                <!-- Filter Wizard -->
+                <!-- Filter Wizard - Mobile Optimized -->
                 <div class="neizlesem-wizard" id="neizlesem-wizard">
                     <!-- Step 1: Type -->
                     <div class="wizard-step">
                         <label class="wizard-label">📺 Ne arıyorsun?</label>
                         <div class="wizard-options">
-                            <button class="wizard-btn active" data-filter="type" data-value="all">🎬 Fark Etmez</button>
+                            <button class="wizard-btn active" data-filter="type" data-value="all">🎬 Her İkisi</button>
                             <button class="wizard-btn" data-filter="type" data-value="movie">🎥 Film</button>
                             <button class="wizard-btn" data-filter="type" data-value="tv">📺 Dizi</button>
                         </div>
                     </div>
 
-                    <!-- Step 2: Genres (Multi-select) -->
+                    <!-- Step 2: Style/Category -->
                     <div class="wizard-step">
-                        <label class="wizard-label">🎭 Türler <span class="optional">(birden fazla
-                                seçebilirsin)</span></label>
+                        <label class="wizard-label">🎬 Ne tarz?</label>
+                        <div class="wizard-options">
+                            <button class="wizard-btn active" data-filter="style" data-value="popular">🔥
+                                Popüler</button>
+                            <button class="wizard-btn" data-filter="style" data-value="hollywood">🇺🇸
+                                Hollywood</button>
+                            <button class="wizard-btn" data-filter="style" data-value="festival">🏆 Festival</button>
+                            <button class="wizard-btn" data-filter="style" data-value="awarded">⭐ Ödüllü</button>
+                            <button class="wizard-btn" data-filter="style" data-value="classic">📽️ Klasik</button>
+                            <button class="wizard-btn" data-filter="style" data-value="local">🇹🇷 Türk</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Genre -->
+                    <div class="wizard-step">
+                        <label class="wizard-label">🎭 Tür seç <span class="optional">(opsiyonel)</span></label>
                         <div class="wizard-options genre-options">
                             <button class="wizard-chip" data-filter="genre" data-value="28">💥 Aksiyon</button>
                             <button class="wizard-chip" data-filter="genre" data-value="35">😂 Komedi</button>
@@ -150,66 +164,41 @@
                             <button class="wizard-chip" data-filter="genre" data-value="27">👻 Korku</button>
                             <button class="wizard-chip" data-filter="genre" data-value="878">🚀 Bilim Kurgu</button>
                             <button class="wizard-chip" data-filter="genre" data-value="10749">💕 Romantik</button>
-                            <button class="wizard-chip" data-filter="genre" data-value="16">🎨 Animasyon</button>
                             <button class="wizard-chip" data-filter="genre" data-value="53">🔪 Gerilim</button>
-                            <button class="wizard-chip" data-filter="genre" data-value="99">📚 Belgesel</button>
-                            <button class="wizard-chip" data-filter="genre" data-value="10751">👨‍👩‍👧 Aile</button>
+                            <button class="wizard-chip" data-filter="genre" data-value="16">🎨 Animasyon</button>
                         </div>
                     </div>
 
-                    <!-- Step 3: Duration (for movies) -->
-                    <div class="wizard-step" id="duration-step">
-                        <label class="wizard-label">⏱️ Süre tercihin?</label>
-                        <div class="wizard-options">
-                            <button class="wizard-btn active" data-filter="duration" data-value="any">Fark
-                                Etmez</button>
-                            <button class="wizard-btn" data-filter="duration" data-value="short">🏃 Kısa
-                                (&lt;90dk)</button>
-                            <button class="wizard-btn" data-filter="duration" data-value="medium">⏰ Orta
-                                (90-120dk)</button>
-                            <button class="wizard-btn" data-filter="duration" data-value="long">🎬 Uzun (&gt;2
-                                saat)</button>
-                        </div>
-                    </div>
-
-                    <!-- Step 4: Origin -->
+                    <!-- Step 4: Platform -->
                     <div class="wizard-step">
-                        <label class="wizard-label">🌍 İçerik menşei</label>
-                        <div class="wizard-options">
-                            <button class="wizard-btn active" data-filter="origin" data-value="any">🌐 Global</button>
-                            <button class="wizard-btn" data-filter="origin" data-value="local">🇹🇷 Türk Yapımı</button>
-                            <button class="wizard-btn" data-filter="origin" data-value="hollywood">🇺🇸
-                                Hollywood</button>
-                            <button class="wizard-btn" data-filter="origin" data-value="asian">🌸 Asya</button>
-                        </div>
-                    </div>
-
-                    <!-- Step 5: Mood -->
-                    <div class="wizard-step">
-                        <label class="wizard-label">🎭 Bugün nasıl bir mod arıyorsun?</label>
-                        <div class="wizard-options">
-                            <button class="wizard-chip" data-filter="mood" data-value="relaxing">😌 Rahatlatıcı</button>
-                            <button class="wizard-chip" data-filter="mood" data-value="intense">🔥 Yoğun</button>
-                            <button class="wizard-chip" data-filter="mood" data-value="funny">😂 Eğlenceli</button>
-                            <button class="wizard-chip" data-filter="mood" data-value="thoughtful">🤔
-                                Düşündürücü</button>
-                            <button class="wizard-chip" data-filter="mood" data-value="emotional">😢 Duygusal</button>
+                        <label class="wizard-label">📱 Hangi platformda? <span
+                                class="optional">(opsiyonel)</span></label>
+                        <div class="wizard-options platform-options">
+                            <button class="wizard-chip" data-filter="platform" data-value="8">Netflix</button>
+                            <button class="wizard-chip" data-filter="platform" data-value="337">Disney+</button>
+                            <button class="wizard-chip" data-filter="platform" data-value="119">Prime</button>
+                            <button class="wizard-chip" data-filter="platform" data-value="341">BluTV</button>
+                            <button class="wizard-chip" data-filter="platform" data-value="2">Apple TV</button>
+                            <button class="wizard-chip" data-filter="platform" data-value="1899">Max</button>
                         </div>
                     </div>
 
                     <!-- Generate Button -->
                     <button class="neizlesem-generate-btn" id="neizlesem-generate">
-                        ✨ Önerileri Göster
+                        ✨ Bana Öner
                     </button>
                 </div>
 
-                <!-- Results -->
+                <!-- Results with infinite scroll -->
                 <div class="neizlesem-results" id="neizlesem-results" style="display: none;">
                     <div class="results-header">
                         <h3>🎯 Sizin İçin Seçtiklerimiz</h3>
-                        <button class="reset-filters-btn" id="reset-filters">🔄 Filtreleri Sıfırla</button>
+                        <button class="reset-filters-btn" id="reset-filters">🔄 Tekrar Seç</button>
                     </div>
                     <div class="movie-grid" id="discover-grid"></div>
+                    <div class="load-more-container" id="load-more-container" style="display: none;">
+                        <button class="load-more-btn" id="load-more-btn">Daha Fazla Göster</button>
+                    </div>
                 </div>
             </section>
 

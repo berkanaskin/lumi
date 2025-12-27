@@ -3,7 +3,7 @@
 // Clean Mockup Design - Full Features
 // ============================================
 
-const APP_VERSION = '1.6.1-beta';
+const APP_VERSION = '1.6.2-beta';
 
 // DOM Elements
 const elements = {
@@ -659,10 +659,10 @@ async function loadHomePage() {
 // Ne İzlesem Filter State
 const neIzlesemFilters = {
     type: 'all',
+    style: 'popular',
     genres: [],
-    duration: 'any',
-    origin: 'any',
-    moods: []
+    platforms: [],
+    page: 1
 };
 
 async function loadDiscoverPage() {
@@ -707,7 +707,7 @@ function setupNeIzlesemWizard() {
         });
     });
 
-    // Multi-select chips (genres, moods)
+    // Multi-select chips (genres, platforms)
     wizard.querySelectorAll('.wizard-chip').forEach(chip => {
         chip.addEventListener('click', () => {
             const filter = chip.dataset.filter;
@@ -723,13 +723,13 @@ function setupNeIzlesemWizard() {
                 } else {
                     neIzlesemFilters.genres = neIzlesemFilters.genres.filter(g => g !== value);
                 }
-            } else if (filter === 'mood') {
+            } else if (filter === 'platform') {
                 if (chip.classList.contains('selected')) {
-                    if (!neIzlesemFilters.moods.includes(value)) {
-                        neIzlesemFilters.moods.push(value);
+                    if (!neIzlesemFilters.platforms.includes(value)) {
+                        neIzlesemFilters.platforms.push(value);
                     }
                 } else {
-                    neIzlesemFilters.moods = neIzlesemFilters.moods.filter(m => m !== value);
+                    neIzlesemFilters.platforms = neIzlesemFilters.platforms.filter(p => p !== value);
                 }
             }
         });
@@ -738,7 +738,10 @@ function setupNeIzlesemWizard() {
     // Generate button
     const generateBtn = document.getElementById('neizlesem-generate');
     if (generateBtn) {
-        generateBtn.addEventListener('click', generateNeIzlesemResults);
+        generateBtn.addEventListener('click', () => {
+            neIzlesemFilters.page = 1;
+            generateNeIzlesemResults(false);
+        });
     }
 
     // Reset button
@@ -746,41 +749,48 @@ function setupNeIzlesemWizard() {
     if (resetBtn) {
         resetBtn.addEventListener('click', resetNeIzlesemFilters);
     }
+
+    // Load more button
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', () => {
+            neIzlesemFilters.page++;
+            generateNeIzlesemResults(true);
+        });
+    }
 }
 
-async function generateNeIzlesemResults() {
+async function generateNeIzlesemResults(append = false) {
     const wizard = document.getElementById('neizlesem-wizard');
     const results = document.getElementById('neizlesem-results');
+    const loadMoreContainer = document.getElementById('load-more-container');
 
-    showLoading();
+    if (!append) showLoading();
 
     try {
         const lang = state.currentLanguage;
+        const page = neIzlesemFilters.page;
         let allResults = [];
 
-        // Build TMDB query based on filters
-        const genreStr = neIzlesemFilters.genres.join(',') || '';
-        const originMap = {
-            'local': 'tr',
-            'hollywood': 'en',
-            'asian': 'ja,ko,zh'
+        // Build query based on style
+        const styleQueries = {
+            'popular': 'sort_by=popularity.desc&vote_count.gte=100',
+            'hollywood': 'with_original_language=en&sort_by=vote_average.desc&vote_count.gte=500',
+            'festival': 'with_keywords=10714|293509|16154&sort_by=vote_average.desc&vote_count.gte=50', // Cannes, Sundance, Berlin
+            'awarded': 'sort_by=vote_average.desc&vote_count.gte=1000&vote_average.gte=7.5',
+            'classic': `primary_release_date.lte=2000-12-31&sort_by=vote_average.desc&vote_count.gte=500`,
+            'local': 'with_original_language=tr&sort_by=vote_average.desc&vote_count.gte=30'
         };
-        const originLang = originMap[neIzlesemFilters.origin] || '';
+
+        const baseQuery = styleQueries[neIzlesemFilters.style] || styleQueries['popular'];
+        const genreStr = neIzlesemFilters.genres.join(',') || '';
+        const platformStr = neIzlesemFilters.platforms.join('|') || '';
 
         // Fetch movies
         if (neIzlesemFilters.type !== 'tv') {
-            let movieUrl = `/discover/movie?language=${lang}&sort_by=vote_average.desc&vote_count.gte=200`;
+            let movieUrl = `/discover/movie?language=${lang}&${baseQuery}&page=${page}`;
             if (genreStr) movieUrl += `&with_genres=${genreStr}`;
-            if (originLang) movieUrl += `&with_original_language=${originLang}`;
-
-            // Duration filter
-            if (neIzlesemFilters.duration === 'short') {
-                movieUrl += '&with_runtime.lte=90';
-            } else if (neIzlesemFilters.duration === 'medium') {
-                movieUrl += '&with_runtime.gte=90&with_runtime.lte=120';
-            } else if (neIzlesemFilters.duration === 'long') {
-                movieUrl += '&with_runtime.gte=120';
-            }
+            if (platformStr) movieUrl += `&with_watch_providers=${platformStr}&watch_region=TR`;
 
             const movieData = await API.fetchTMDB(movieUrl);
             allResults.push(...(movieData.results || []).map(m => ({ ...m, media_type: 'movie' })));
@@ -788,16 +798,14 @@ async function generateNeIzlesemResults() {
 
         // Fetch TV shows
         if (neIzlesemFilters.type !== 'movie') {
-            let tvUrl = `/discover/tv?language=${lang}&sort_by=vote_average.desc&vote_count.gte=100`;
+            let tvQuery = baseQuery.replace('primary_release_date', 'first_air_date');
+            let tvUrl = `/discover/tv?language=${lang}&${tvQuery}&page=${page}`;
             if (genreStr) tvUrl += `&with_genres=${genreStr}`;
-            if (originLang) tvUrl += `&with_original_language=${originLang}`;
+            if (platformStr) tvUrl += `&with_watch_providers=${platformStr}&watch_region=TR`;
 
             const tvData = await API.fetchTMDB(tvUrl);
             allResults.push(...(tvData.results || []).map(t => ({ ...t, media_type: 'tv' })));
         }
-
-        // Sort by rating
-        allResults.sort((a, b) => (b.vote_average || 0) - (a.vote_average || 0));
 
         hideLoading();
 
@@ -805,18 +813,19 @@ async function generateNeIzlesemResults() {
         if (wizard) wizard.style.display = 'none';
         if (results) results.style.display = 'block';
 
-        if (allResults.length === 0) {
+        if (allResults.length === 0 && !append) {
             elements.discoverGrid.innerHTML = `
                 <div class="empty-state visible" style="grid-column: 1/-1;">
                     <span class="empty-icon">🎭</span>
                     <p>Bu kriterlere uygun içerik bulunamadı</p>
                 </div>
             `;
+            if (loadMoreContainer) loadMoreContainer.style.display = 'none';
             return;
         }
 
         // Render results
-        elements.discoverGrid.innerHTML = allResults.slice(0, 20).map(item => {
+        const cardsHtml = allResults.map(item => {
             const title = item.title || item.name;
             const rating = item.vote_average?.toFixed(1) || '?';
             const year = (item.release_date || item.first_air_date || '').substring(0, 4);
@@ -838,11 +847,25 @@ async function generateNeIzlesemResults() {
             `;
         }).join('');
 
-        // Add click handlers
+        if (append) {
+            elements.discoverGrid.insertAdjacentHTML('beforeend', cardsHtml);
+        } else {
+            elements.discoverGrid.innerHTML = cardsHtml;
+        }
+
+        // Show load more if there are results
+        if (loadMoreContainer) {
+            loadMoreContainer.style.display = allResults.length >= 10 ? 'flex' : 'none';
+        }
+
+        // Add click handlers to new cards
         elements.discoverGrid.querySelectorAll('.movie-card').forEach(card => {
-            card.addEventListener('click', () => {
-                openDetail(card.dataset.id, card.dataset.type);
-            });
+            if (!card.hasAttribute('data-listener')) {
+                card.setAttribute('data-listener', 'true');
+                card.addEventListener('click', () => {
+                    openDetail(card.dataset.id, card.dataset.type);
+                });
+            }
         });
 
     } catch (e) {
@@ -854,15 +877,15 @@ async function generateNeIzlesemResults() {
 function resetNeIzlesemFilters() {
     // Reset state
     neIzlesemFilters.type = 'all';
+    neIzlesemFilters.style = 'popular';
     neIzlesemFilters.genres = [];
-    neIzlesemFilters.duration = 'any';
-    neIzlesemFilters.origin = 'any';
-    neIzlesemFilters.moods = [];
+    neIzlesemFilters.platforms = [];
+    neIzlesemFilters.page = 1;
 
     // Reset UI
     document.querySelectorAll('.wizard-btn').forEach(btn => {
         btn.classList.remove('active');
-        if (btn.dataset.value === 'all' || btn.dataset.value === 'any') {
+        if (btn.dataset.value === 'all' || btn.dataset.value === 'popular') {
             btn.classList.add('active');
         }
     });
