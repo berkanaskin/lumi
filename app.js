@@ -3,7 +3,7 @@
 // Clean Mockup Design - Full Features
 // ============================================
 
-const APP_VERSION = '1.8.4-beta';
+const APP_VERSION = '1.8.5-beta';
 
 // DOM Elements
 const elements = {
@@ -1310,6 +1310,12 @@ async function openDetail(id, type, title, year, originalTitle) {
         let imdbData = null;
         let triviaData = [];
         let allRatings = null;
+        let turkishReleaseDate = null;
+
+        // Fetch Turkish theatrical release date for movies
+        if (type === 'movie') {
+            turkishReleaseDate = await API.getReleaseDates(id, 'TR');
+        }
 
         const imdbId = await API.getIMDBId(id, type);
         console.log('IMDB ID:', imdbId);
@@ -1330,6 +1336,7 @@ async function openDetail(id, type, title, year, originalTitle) {
         state.currentTrivia = triviaData;
         state.currentCredits = credits;
         state.currentAllRatings = allRatings;
+        state.currentTurkishReleaseDate = turkishReleaseDate;
 
         // Debug: Log all ratings
         console.log('All Ratings API Response:', allRatings);
@@ -1399,6 +1406,16 @@ function renderDetail(details, providers, type, itemId) {
         ? dateObj.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
         : (dateObj ? dateObj.getFullYear() : '');
     const dateLabel = isUpcoming ? '<span class="tag upcoming">Yakında</span>' : '';
+
+    // Turkish theatrical premiere (if available and different from global)
+    let turkishPremiereHtml = '';
+    if (type === 'movie' && state.currentTurkishReleaseDate) {
+        const trDate = new Date(state.currentTurkishReleaseDate.date);
+        if (!isNaN(trDate.getTime())) {
+            const trDateStr = trDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+            turkishPremiereHtml = `<span class="tr-premiere">🎭 Türkiye Vizyonu: ${trDateStr}</span>`;
+        }
+    }
 
     const year = dateDisplay;
     const runtime = details.runtime || (details.episode_run_time?.[0]);
@@ -1513,6 +1530,7 @@ function renderDetail(details, providers, type, itemId) {
                     ${runtime ? `<span>⏱️ ${runtime} dk</span>` : ''}
                     <span>${type === 'movie' ? '🎬 Film' : '📺 Dizi'}</span>
                 </div>
+                ${turkishPremiereHtml}
                 
                 <div class="ratings-container">
                     <a href="https://www.imdb.com/title/${state.currentImdbData?.id || ''}" target="_blank" rel="noopener" class="rating-box imdb" title="IMDB'de görüntüle">

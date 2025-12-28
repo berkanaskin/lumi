@@ -199,6 +199,40 @@ const API = {
         }
     },
 
+    // Theatrical Release Dates (for specific country)
+    async getReleaseDates(movieId, country = 'TR') {
+        const url = `${API_URLS.TMDB_BASE}/movie/${movieId}/release_dates?api_key=${CONFIG.TMDB_API_KEY}`;
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+
+            // Find release for specified country
+            const countryRelease = data.results.find(r => r.iso_3166_1 === country);
+            if (!countryRelease) return null;
+
+            // Find theatrical release (type 3) or premiere (type 1)
+            const releases = countryRelease.release_dates || [];
+            const theatrical = releases.find(r => r.type === 3) || // Theatrical
+                releases.find(r => r.type === 1) || // Premiere
+                releases.find(r => r.type === 2);   // Theatrical (limited)
+
+            if (theatrical) {
+                return {
+                    date: theatrical.release_date,
+                    type: theatrical.type,
+                    certification: theatrical.certification,
+                    note: theatrical.note
+                };
+            }
+
+            return null;
+        } catch (error) {
+            console.error('Release dates hatası:', error);
+            return null;
+        }
+    },
+
     // Cast and Crew (Credits)
     async getCredits(id, type) {
         const url = `${API_URLS.TMDB_BASE}/${type}/${id}/credits?api_key=${CONFIG.TMDB_API_KEY}`;
