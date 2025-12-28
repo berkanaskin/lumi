@@ -165,51 +165,101 @@ body {
     }
 }
 
-.header-actions {
+/* Header Left/Right Layout */
+.header-left {
     display: flex;
     align-items: center;
-    gap: 4px;
-    flex-shrink: 0;
+    gap: 10px;
 }
 
-@media (min-width: 400px) {
-    .header-actions {
-        gap: 6px;
-    }
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
-/* Language Select */
-.language-select select {
-    background: var(--glass);
-    border: 1px solid var(--glass-border);
-    border-radius: 8px;
+/* Modern Language Selector */
+.language-select-wrapper {
+    position: relative;
+}
+
+.language-select-modern {
+    appearance: none;
+    -webkit-appearance: none;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(6, 182, 212, 0.15));
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 20px;
     color: var(--white);
     font-size: 0.75rem;
+    font-weight: 500;
     cursor: pointer;
-    padding: 6px 8px;
+    padding: 6px 24px 6px 10px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a78bfa' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    transition: all 0.2s ease;
 }
 
-.language-select select:focus {
+.language-select-modern:hover {
+    border-color: var(--accent);
+    background-color: rgba(139, 92, 246, 0.2);
+}
+
+.language-select-modern:focus {
     outline: none;
     border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
 }
 
-.language-select select option {
-    background: var(--bg-dark);
+.language-select-modern option {
+    background: #1a1a2e;
     color: var(--white);
+    padding: 8px;
 }
 
-.theme-btn {
-    width: 32px;
-    height: 32px;
+/* Unified Header Icon Button */
+.header-icon-btn {
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: var(--glass);
     border: 1px solid var(--glass-border);
-    border-radius: var(--radius-sm);
+    border-radius: 50%;
     cursor: pointer;
-    font-size: 0.9rem;
+    color: var(--white-soft);
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.header-icon-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.header-icon-btn:hover {
+    background: rgba(139, 92, 246, 0.2);
+    border-color: var(--accent);
+    color: var(--white);
+}
+
+/* Notification Badge */
+.notification-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: linear-gradient(135deg, #ef4444, #f97316);
+    color: white;
+    font-size: 0.6rem;
+    font-weight: 700;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
 }
 
 /* ============================================

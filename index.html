@@ -19,12 +19,12 @@
     <div class="app">
         <!-- Header with WtW branding -->
         <header class="app-header">
-            <div class="logo-title" id="logo-home" style="cursor: pointer;">
-                <span class="wtw-logo-text">WtW</span>
-            </div>
-            <div class="header-actions">
-                <div class="language-select">
-                    <select id="language-select">
+            <div class="header-left">
+                <div class="logo-title" id="logo-home" style="cursor: pointer;">
+                    <span class="wtw-logo-text">WtW</span>
+                </div>
+                <div class="language-select-wrapper">
+                    <select id="language-select" class="language-select-modern">
                         <option value="tr">🇹🇷 TR</option>
                         <option value="en">🇺🇸 EN</option>
                         <option value="de">🇩🇪 DE</option>
@@ -35,24 +35,25 @@
                         <option value="ko">🇰🇷 KO</option>
                     </select>
                 </div>
+            </div>
+            <div class="header-right">
                 <!-- Notification Bell -->
-                <button class="notification-btn" id="notification-btn" title="Bildirimler">
-                    <svg class="notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2">
+                <button class="header-icon-btn" id="notification-btn" title="Bildirimler">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
                         <path d="M13.73 21a2 2 0 0 1-3.46 0" />
                     </svg>
                     <span class="notification-badge" id="notification-badge" style="display: none;">0</span>
                 </button>
-                <button class="theme-btn" id="theme-toggle">
-                    <svg id="theme-icon-sun" class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2">
+                <!-- Theme Toggle -->
+                <button class="header-icon-btn" id="theme-toggle">
+                    <svg id="theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="5" />
                         <path
                             d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
                     </svg>
-                    <svg id="theme-icon-moon" class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" style="display:none">
+                    <svg id="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        style="display:none">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
                     </svg>
                 </button>
