@@ -9,7 +9,7 @@ const i18n = {
         tr: {
             // App
             appTitle: 'Nerede İzlerim?',
-            search: 'Nerede izlenir? Ara...',
+            search: 'Film ve Diziler Nereden İzlenir? Ara...',
 
             // Section Headers (for dynamic header)
             sectionHome: 'Nerede İzlerim?',
@@ -19,8 +19,8 @@ const i18n = {
 
             // Nav Labels
             navHome: 'Ana Sayfa',
-            navDiscover: 'Keşfet',
-            navFavorites: 'Favoriler',
+            navDiscover: 'Ne İzlesem',
+            navFavorites: 'Favorilerim',
             navProfile: 'Profil',
 
             // Sections
@@ -141,7 +141,7 @@ const i18n = {
         en: {
             // App
             appTitle: 'Where to Watch?',
-            search: 'Where to watch? Search...',
+            search: 'Where to Watch Movies & TV? Search...',
 
             // Section Headers (for dynamic header)
             sectionHome: 'Where to Watch?',
@@ -151,8 +151,8 @@ const i18n = {
 
             // Nav Labels
             navHome: 'Home',
-            navDiscover: 'Discover',
-            navFavorites: 'Favorites',
+            navDiscover: 'What to Watch',
+            navFavorites: 'My Favorites',
             navProfile: 'Profile',
 
             // Sections
@@ -273,7 +273,7 @@ const i18n = {
         de: {
             // App
             appTitle: 'Wo schauen?',
-            search: 'Filme oder Serien suchen...',
+            search: 'Wo kann man Filme & Serien sehen? Suchen...',
 
             // Section Headers
             sectionHome: 'Wo schauen?',
@@ -283,8 +283,8 @@ const i18n = {
 
             // Nav Labels
             navHome: 'Startseite',
-            navDiscover: 'Entdecken',
-            navFavorites: 'Favoriten',
+            navDiscover: 'Was schauen',
+            navFavorites: 'Meine Favoriten',
             navProfile: 'Profil',
 
             // Sections
@@ -399,7 +399,7 @@ const i18n = {
         fr: {
             // App
             appTitle: 'Où regarder?',
-            search: 'Rechercher films ou séries...',
+            search: 'Où regarder Films & Séries? Rechercher...',
 
             // Section Headers
             sectionHome: 'Où regarder?',
@@ -409,8 +409,8 @@ const i18n = {
 
             // Nav Labels
             navHome: 'Accueil',
-            navDiscover: 'Découvrir',
-            navFavorites: 'Favoris',
+            navDiscover: 'Quoi regarder',
+            navFavorites: 'Mes Favoris',
             navProfile: 'Profil',
 
             // Sections
@@ -525,7 +525,7 @@ const i18n = {
         es: {
             // App
             appTitle: '¿Dónde ver?',
-            search: 'Buscar películas o series...',
+            search: '¿Dónde ver Películas y Series? Buscar...',
 
             // Section Headers
             sectionHome: '¿Dónde ver?',
@@ -535,8 +535,8 @@ const i18n = {
 
             // Nav Labels
             navHome: 'Inicio',
-            navDiscover: 'Descubrir',
-            navFavorites: 'Favoritos',
+            navDiscover: '¿Qué ver?',
+            navFavorites: 'Mis Favoritos',
             navProfile: 'Perfil',
 
             // Sections
