@@ -35,6 +35,7 @@
                         <option value="es">🇪🇸 ES</option>
                         <option value="ja">🇯🇵 JA</option>
                         <option value="zh">🇨🇳 ZH</option>
+                        <option value="ko">🇰🇷 KO</option>
                     </select>
                 </div>
                 <!-- Notification Bell -->
@@ -154,8 +155,7 @@
             <!-- Ne İzlesem? Section (What to Watch Recommendation Engine) -->
             <section class="content-section" id="discover-section" style="display: none;">
                 <div class="section-header">
-                    <h2 class="section-title">🎯 Ne İzlesem?</h2>
-                    <p class="section-subtitle">Ruh haline göre öneri al</p>
+                    <h2 class="section-title"><span>🎯</span> <span data-i18n="sectionDiscover">Ne İzlesem?</span></h2>
                 </div>
 
                 <!-- Creative Filter Wizard -->
@@ -163,72 +163,82 @@
                     <!-- Big Question: What to watch? -->
                     <div class="wizard-question">
                         <span class="question-emoji">🍿</span>
-                        <span class="question-text">Bu akşam ne izlemek istersin?</span>
+                        <span class="question-text" data-i18n="wizardQuestion">Bu akşam ne izlemek istersin?</span>
                     </div>
 
                     <!-- Type Selection - Large Cards -->
                     <div class="wizard-cards">
                         <button class="type-card active" data-filter="type" data-value="all">
                             <span class="card-emoji">🎬</span>
-                            <span class="card-label">İkisi de olur</span>
+                            <span class="card-label" data-i18n="wizardTypeAll">İkisi de olur</span>
                         </button>
                         <button class="type-card" data-filter="type" data-value="movie">
                             <span class="card-emoji">🎥</span>
-                            <span class="card-label">Film</span>
+                            <span class="card-label" data-i18n="wizardTypeMovie">Film</span>
                         </button>
                         <button class="type-card" data-filter="type" data-value="tv">
                             <span class="card-emoji">📺</span>
-                            <span class="card-label">Dizi</span>
+                            <span class="card-label" data-i18n="wizardTypeTv">Dizi</span>
                         </button>
                     </div>
 
                     <!-- Mood/Style Selection - Visual Pills -->
                     <div class="wizard-mood">
-                        <span class="mood-label">🎭 Ruh halin nasıl?</span>
+                        <span class="mood-label">🎭 <span data-i18n="moodLabel">Ruh halin nasıl?</span></span>
                         <div class="mood-pills">
                             <button class="mood-pill active" data-filter="style" data-value="popular">
-                                <span>🔥</span> Trend
+                                <span>🔥</span> <span data-i18n="moodTrend">Trend</span>
                             </button>
                             <button class="mood-pill" data-filter="style" data-value="random">
-                                <span>🎲</span> Rastgele
+                                <span>🎲</span> <span data-i18n="moodRandom">Rastgele</span>
                             </button>
                             <button class="mood-pill" data-filter="style" data-value="hollywood">
-                                <span>🎬</span> Blockbuster
+                                <span>🎬</span> <span data-i18n="moodBlockbuster">Blockbuster</span>
                             </button>
                             <button class="mood-pill" data-filter="style" data-value="festival">
-                                <span>🌟</span> Sanat
+                                <span>🌟</span> <span data-i18n="moodArt">Sanat</span>
                             </button>
                             <button class="mood-pill" data-filter="style" data-value="awarded">
-                                <span>🏆</span> Ödüllü
+                                <span>🏆</span> <span data-i18n="moodAwarded">Ödüllü</span>
                             </button>
                             <button class="mood-pill" data-filter="style" data-value="classic">
-                                <span>📽️</span> Klasik
+                                <span>📽️</span> <span data-i18n="moodClassic">Klasik</span>
                             </button>
                             <button class="mood-pill" data-filter="style" data-value="local">
-                                <span>🇹🇷</span> Yerli
+                                <span>🇹🇷</span> <span data-i18n="moodLocal">Yerli</span>
                             </button>
                         </div>
                     </div>
 
                     <!-- Genre Pills -->
                     <div class="wizard-genres">
-                        <span class="genre-label">🎪 Tür <span class="optional">(seçmezsen hepsinden
-                                gelir)</span></span>
+                        <span class="genre-label">🎪 <span data-i18n="genreLabel">Tür</span> <span
+                                class="optional">(<span data-i18n="genreOptional">seçmezsen hepsinden
+                                    gelir</span>)</span></span>
                         <div class="genre-pills">
-                            <button class="genre-pill" data-filter="genre" data-value="28">💥 Aksiyon</button>
-                            <button class="genre-pill" data-filter="genre" data-value="35">😂 Komedi</button>
-                            <button class="genre-pill" data-filter="genre" data-value="18">🎭 Drama</button>
-                            <button class="genre-pill" data-filter="genre" data-value="27">👻 Korku</button>
-                            <button class="genre-pill" data-filter="genre" data-value="878">🚀 Sci-Fi</button>
-                            <button class="genre-pill" data-filter="genre" data-value="10749">💕 Aşk</button>
-                            <button class="genre-pill" data-filter="genre" data-value="53">🔪 Gerilim</button>
-                            <button class="genre-pill" data-filter="genre" data-value="16">🎨 Animasyon</button>
+                            <button class="genre-pill" data-filter="genre" data-value="28">💥 <span
+                                    data-i18n="action">Aksiyon</span></button>
+                            <button class="genre-pill" data-filter="genre" data-value="35">😂 <span
+                                    data-i18n="comedy">Komedi</span></button>
+                            <button class="genre-pill" data-filter="genre" data-value="18">🎭 <span
+                                    data-i18n="drama">Drama</span></button>
+                            <button class="genre-pill" data-filter="genre" data-value="27">👻 <span
+                                    data-i18n="horror">Korku</span></button>
+                            <button class="genre-pill" data-filter="genre" data-value="878">🚀 <span
+                                    data-i18n="scifi">Sci-Fi</span></button>
+                            <button class="genre-pill" data-filter="genre" data-value="10749">💕 <span
+                                    data-i18n="romance">Aşk</span></button>
+                            <button class="genre-pill" data-filter="genre" data-value="53">🔪 <span
+                                    data-i18n="thriller">Gerilim</span></button>
+                            <button class="genre-pill" data-filter="genre" data-value="16">🎨 <span
+                                    data-i18n="animation">Animasyon</span></button>
                         </div>
                     </div>
 
                     <!-- Platform Selection -->
                     <div class="wizard-platforms">
-                        <span class="platform-label">📱 Nerede izleyeceksin?</span>
+                        <span class="platform-label">📱 <span data-i18n="platformLabel">Nerede
+                                izleyeceksin?</span></span>
                         <div class="platform-chips">
                             <button class="platform-chip" data-filter="platform" data-value="8">Netflix</button>
                             <button class="platform-chip" data-filter="platform" data-value="337">Disney+</button>
@@ -242,19 +252,20 @@
                     <!-- Generate Button - Floating Style -->
                     <button class="neizlesem-generate-btn" id="neizlesem-generate">
                         <span class="btn-icon">✨</span>
-                        <span class="btn-text">Sürpriz Yap!</span>
+                        <span class="btn-text" data-i18n="generateBtn">Sürpriz Yap!</span>
                     </button>
                 </div>
 
                 <!-- Results with infinite scroll -->
                 <div class="neizlesem-results" id="neizlesem-results" style="display: none;">
                     <div class="results-header">
-                        <h3>🎯 Sizin İçin Seçtiklerimiz</h3>
-                        <button class="reset-filters-btn" id="reset-filters">🔄 Tekrar Seç</button>
+                        <h3>🎯 <span data-i18n="resultsTitle">Sizin İçin Seçtiklerimiz</span></h3>
+                        <button class="reset-filters-btn" id="reset-filters">🔄 <span data-i18n="resetFilters">Tekrar
+                                Seç</span></button>
                     </div>
                     <div class="movie-grid" id="discover-grid"></div>
                     <div class="load-more-container" id="load-more-container" style="display: none;">
-                        <button class="load-more-btn" id="load-more-btn">Daha Fazla Göster</button>
+                        <button class="load-more-btn" id="load-more-btn" data-i18n="loadMore">Daha Fazla Göster</button>
                     </div>
                 </div>
             </section>
@@ -262,13 +273,13 @@
             <!-- Favorites Section (hidden) -->
             <section class="content-section" id="favorites-section" style="display: none;">
                 <div class="section-header">
-                    <h2 class="section-title">❤️ Favorilerim</h2>
+                    <h2 class="section-title"><span>❤️</span> <span data-i18n="sectionFavorites">Favorilerim</span></h2>
                     <span class="results-count" id="favorites-count"></span>
                 </div>
                 <div class="favorites-tabs">
-                    <button class="fav-tab active" data-type="all">Tümü</button>
-                    <button class="fav-tab" data-type="movie">Filmler</button>
-                    <button class="fav-tab" data-type="tv">Diziler</button>
+                    <button class="fav-tab active" data-type="all" data-i18n="favAll">Tümü</button>
+                    <button class="fav-tab" data-type="movie" data-i18n="favMovies">Filmler</button>
+                    <button class="fav-tab" data-type="tv" data-i18n="favSeries">Diziler</button>
                 </div>
                 <div class="movie-grid" id="favorites-grid"></div>
             </section>
@@ -276,7 +287,7 @@
             <!-- Profile Section (hidden) -->
             <section class="content-section" id="profile-section" style="display: none;">
                 <div class="section-header">
-                    <h2 class="section-title">👤 Profil</h2>
+                    <h2 class="section-title"><span>👤</span> <span data-i18n="sectionProfile">Profil</span></h2>
                 </div>
                 <div id="profile-content"></div>
             </section>
@@ -344,8 +355,8 @@
         <!-- Login Modal -->
         <div class="login-modal" id="login-modal">
             <div class="login-modal-content">
-                <h2 class="login-modal-title">Hoş Geldiniz</h2>
-                <p class="login-modal-subtitle">Devam etmek için giriş yapın</p>
+                <h2 class="login-modal-title" data-i18n="loginTitle">Hoş Geldiniz</h2>
+                <p class="login-modal-subtitle" data-i18n="loginSubtitle">Devam etmek için giriş yapın</p>
                 <div class="social-login-btns">
                     <button class="social-btn google" data-provider="google">
                         <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
@@ -362,24 +373,24 @@
                                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                                 fill="#EA4335" />
                         </svg>
-                        Google ile devam et
+                        <span data-i18n="continueWithGoogle">Google ile devam et</span>
                     </button>
                     <button class="social-btn facebook" data-provider="facebook">
                         <svg class="social-icon" viewBox="0 0 24 24" fill="#1877F2">
                             <path
                                 d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                         </svg>
-                        Facebook ile devam et
+                        <span data-i18n="continueWithFacebook">Facebook ile devam et</span>
                     </button>
                     <button class="social-btn apple" data-provider="apple">
                         <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
                             <path
                                 d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
                         </svg>
-                        Apple ile devam et
+                        <span data-i18n="continueWithApple">Apple ile devam et</span>
                     </button>
                 </div>
-                <button class="login-modal-close" id="login-modal-close">Kapat</button>
+                <button class="login-modal-close" id="login-modal-close" data-i18n="close">Kapat</button>
             </div>
         </div>
     </div>

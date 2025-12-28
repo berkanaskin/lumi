@@ -3,7 +3,7 @@
 // Clean Mockup Design - Full Features
 // ============================================
 
-const APP_VERSION = '1.8.5-beta';
+const APP_VERSION = '1.9.0-beta';
 
 // DOM Elements
 const elements = {
@@ -54,7 +54,8 @@ const LANGUAGE_REGIONS = {
     'fr': { lang: 'fr-FR', region: 'FR' },
     'es': { lang: 'es-ES', region: 'ES' },
     'ja': { lang: 'ja-JP', region: 'JP' },
-    'zh': { lang: 'zh-CN', region: 'CN' }
+    'zh': { lang: 'zh-CN', region: 'CN' },
+    'ko': { lang: 'ko-KR', region: 'KR' }
 };
 
 // App State
@@ -582,12 +583,15 @@ function simulatePurchase() {
 // LANGUAGE & REGION MANAGEMENT
 // ============================================
 
+// Language = UI translation + TMDB data language
+// Region = Auto-detected location for platforms (stays constant unless manually changed)
+
 function loadLanguage() {
-    // Check if user has a saved preference
+    // Check if user has a saved language preference
     const saved = localStorage.getItem('language');
 
     if (saved) {
-        changeLanguageState(saved);
+        applyLanguage(saved);
         return;
     }
 
@@ -596,38 +600,45 @@ function loadLanguage() {
     const langCode = browserLang.split('-')[0].toLowerCase();
 
     // Map to supported languages
-    const supported = ['tr', 'en', 'de', 'fr', 'es', 'ja', 'zh'];
+    const supported = ['tr', 'en', 'de', 'fr', 'es', 'ja', 'zh', 'ko'];
     const detected = supported.includes(langCode) ? langCode : 'tr';
 
-    changeLanguageState(detected);
+    applyLanguage(detected);
 }
 
-function changeLanguageState(langCode) {
-    const config = LANGUAGE_REGIONS[langCode] || LANGUAGE_REGIONS['tr'];
+// Apply language for UI and TMDB data - does NOT change region
+function applyLanguage(langCode) {
+    const langConfig = LANGUAGE_REGIONS[langCode] || LANGUAGE_REGIONS['tr'];
 
     state.currentLanguageCode = langCode;
-    state.currentLanguage = config.lang;
-    state.currentRegion = config.region;
+    state.currentLanguage = langConfig.lang; // For TMDB API calls
+
+    // DO NOT change region here - region is auto-detected separately
+    // state.currentRegion stays as detected by detectUserRegion()
 
     localStorage.setItem('language', langCode);
 
     if (elements.languageSelect) {
         elements.languageSelect.value = langCode;
     }
+
+    // Update i18n and apply translations
+    if (window.i18n) {
+        i18n.setLanguage(langCode);
+        i18n.updateTranslations();
+    }
 }
 
 function handleLanguageChange(langCode) {
-    changeLanguageState(langCode);
+    applyLanguage(langCode);
 
-    // Reload current page with new language
+    // Reload current page with new language for TMDB data
     if (state.currentPage === 'home') {
         loadHomePage();
     } else if (state.currentPage === 'discover') {
         loadDiscoverPage();
-    } else if (state.currentPage === 'favorites') {
-        // Favorites are stored with specific data, might need re-fetching or just keeping as is
-        // For now, keep as is as they are static data in localstorage
     }
+    // Favorites and Profile don't need reload - translations applied via i18n.updateTranslations()
 }
 
 // ============================================
@@ -913,14 +924,14 @@ async function loadHomePage() {
 
         // Display trending (with Turkish content mixed in)
         elements.trendingSlider.innerHTML = '';
-        mixedTrending.slice(0, 30).forEach(item => {
+        mixedTrending.slice(0, 50).forEach(item => {
             const card = createMovieCard(item, item.media_type || 'movie');
             elements.trendingSlider.appendChild(card);
         });
 
         // Display new releases
         elements.newReleasesSlider.innerHTML = '';
-        newReleases.results.slice(0, 30).forEach(item => {
+        newReleases.results.slice(0, 50).forEach(item => {
             const card = createMovieCard({ ...item, media_type: 'movie' }, 'movie');
             elements.newReleasesSlider.appendChild(card);
         });
@@ -928,7 +939,7 @@ async function loadHomePage() {
         // Display classics
         if (elements.classicsSlider) {
             elements.classicsSlider.innerHTML = '';
-            classics.results.slice(0, 30).forEach(item => {
+            classics.results.slice(0, 50).forEach(item => {
                 const card = createMovieCard({ ...item, media_type: 'movie' }, 'movie');
                 elements.classicsSlider.appendChild(card);
             });
@@ -937,7 +948,7 @@ async function loadHomePage() {
         // Display suggested if available (members only)
         if (suggested && elements.suggestedSlider) {
             elements.suggestedSlider.innerHTML = '';
-            suggested.results.slice(0, 30).forEach(item => {
+            suggested.results.slice(0, 50).forEach(item => {
                 const card = createMovieCard({ ...item, media_type: 'movie' }, 'movie');
                 elements.suggestedSlider.appendChild(card);
             });

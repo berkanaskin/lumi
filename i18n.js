@@ -17,12 +17,40 @@ const i18n = {
             sectionFavorites: 'Favorilerim',
             sectionProfile: 'Profilim',
 
+            // Nav Labels
+            navHome: 'Ana Sayfa',
+            navDiscover: 'Keşfet',
+            navFavorites: 'Favoriler',
+            navProfile: 'Profil',
+
             // Sections
             trending: 'Popüler',
             newReleases: 'Yeni Çıkanlar',
             classics: 'Klasikler',
             suggested: 'Önerilen',
             turkishContent: '🇹🇷 Türk Yapımları',
+            localContent: 'Yerel İçerikler',
+
+            // Ne İzlesem Wizard
+            wizardQuestion: 'Bu akşam ne izlemek istersin?',
+            wizardTypeAll: 'İkisi de olur',
+            wizardTypeMovie: 'Film',
+            wizardTypeTv: 'Dizi',
+            moodLabel: 'Ruh halin nasıl?',
+            moodTrend: 'Trend',
+            moodRandom: 'Rastgele',
+            moodBlockbuster: 'Blockbuster',
+            moodArt: 'Sanat',
+            moodAwarded: 'Ödüllü',
+            moodClassic: 'Klasik',
+            moodLocal: 'Yerli',
+            genreLabel: 'Tür',
+            genreOptional: 'seçmezsen hepsinden gelir',
+            platformLabel: 'Nerede izleyeceksin?',
+            generateBtn: 'Sürpriz Yap!',
+            resultsTitle: 'Sizin İçin Seçtiklerimiz',
+            resetFilters: 'Tekrar Seç',
+            loadMore: 'Daha Fazla Göster',
 
             // Genres
             action: 'Aksiyon',
@@ -31,6 +59,8 @@ const i18n = {
             horror: 'Korku',
             romance: 'Romantik',
             scifi: 'Bilim Kurgu',
+            thriller: 'Gerilim',
+            animation: 'Animasyon',
 
             // Detail Modal
             watchOn: 'Nerede İzlenir',
@@ -42,6 +72,10 @@ const i18n = {
             trivia: 'İlginç Bilgiler',
             director: 'Yönetmen',
             writer: 'Yazar',
+            originalNetwork: 'Orijinal Yayıncı',
+            noPlatform: 'Platform bilgisi bulunamadı',
+            searchYouTube: 'YouTube\'da Ara',
+            nearestCinemas: 'Yakındaki Sinemalar',
 
             // Ratings
             yourRating: 'Puanın',
@@ -75,16 +109,28 @@ const i18n = {
             perYear: '/yıl',
             buyNow: 'Satın Al',
 
-            // Auth
-            login: 'Giriş Yap',
+            // Auth / Login Modal
+            login: 'Giriş',
             logout: 'Çıkış Yap',
             signUp: 'Kayıt Ol',
+            loginTitle: 'Hoş Geldiniz',
+            loginSubtitle: 'Devam etmek için giriş yapın',
+            continueWithGoogle: 'Google ile devam et',
+            continueWithFacebook: 'Facebook ile devam et',
+            continueWithApple: 'Apple ile devam et',
+            close: 'Kapat',
+
+            // Favorites
+            favAll: 'Tümü',
+            favMovies: 'Filmler',
+            favSeries: 'Diziler',
 
             // Status
             loading: 'Yükleniyor...',
             noResults: 'Sonuç bulunamadı',
             upcoming: 'Yakında',
             inCinemas: 'Sinemalarda',
+            searchResults: 'Arama Sonuçları',
 
             // Time
             minutes: 'dk',
@@ -103,12 +149,40 @@ const i18n = {
             sectionFavorites: 'My Favorites',
             sectionProfile: 'My Profile',
 
+            // Nav Labels
+            navHome: 'Home',
+            navDiscover: 'Discover',
+            navFavorites: 'Favorites',
+            navProfile: 'Profile',
+
             // Sections
             trending: 'Trending',
             newReleases: 'New Releases',
             classics: 'Classics',
             suggested: 'For You',
             turkishContent: '🎬 Local Content',
+            localContent: 'Local Content',
+
+            // Ne İzlesem Wizard
+            wizardQuestion: 'What do you want to watch tonight?',
+            wizardTypeAll: 'Both are fine',
+            wizardTypeMovie: 'Movie',
+            wizardTypeTv: 'TV Show',
+            moodLabel: 'What\'s your mood?',
+            moodTrend: 'Trending',
+            moodRandom: 'Random',
+            moodBlockbuster: 'Blockbuster',
+            moodArt: 'Art House',
+            moodAwarded: 'Award Winners',
+            moodClassic: 'Classic',
+            moodLocal: 'Local',
+            genreLabel: 'Genre',
+            genreOptional: 'skip to include all',
+            platformLabel: 'Where will you watch?',
+            generateBtn: 'Surprise Me!',
+            resultsTitle: 'Picked for You',
+            resetFilters: 'Try Again',
+            loadMore: 'Load More',
 
             // Genres
             action: 'Action',
@@ -117,6 +191,8 @@ const i18n = {
             horror: 'Horror',
             romance: 'Romance',
             scifi: 'Sci-Fi',
+            thriller: 'Thriller',
+            animation: 'Animation',
 
             // Detail Modal
             watchOn: 'Where to Watch',
@@ -128,6 +204,10 @@ const i18n = {
             trivia: 'Trivia',
             director: 'Director',
             writer: 'Writer',
+            originalNetwork: 'Original Network',
+            noPlatform: 'No streaming info available',
+            searchYouTube: 'Search on YouTube',
+            nearestCinemas: 'Nearby Theaters',
 
             // Ratings
             yourRating: 'Your Rating',
@@ -135,9 +215,10 @@ const i18n = {
             // Actions
             addFavorite: '🤍 Add',
             removeFavorite: '❤️ Remove',
-            notify: '🔔 Notify',
-
-            // Profile
+            notify: '🔔 Notify Me',
+            notifyLocked: '🔒 Notify (Premium)',
+            rateIt: 'Rate',
+            deleteRating: 'Delete',
             theme: 'Theme',
             dark: 'Dark',
             light: 'Light',
@@ -160,16 +241,28 @@ const i18n = {
             perYear: '/year',
             buyNow: 'Buy Now',
 
-            // Auth
+            // Auth / Login Modal
             login: 'Log In',
             logout: 'Log Out',
             signUp: 'Sign Up',
+            loginTitle: 'Welcome',
+            loginSubtitle: 'Sign in to continue',
+            continueWithGoogle: 'Continue with Google',
+            continueWithFacebook: 'Continue with Facebook',
+            continueWithApple: 'Continue with Apple',
+            close: 'Close',
+
+            // Favorites
+            favAll: 'All',
+            favMovies: 'Movies',
+            favSeries: 'TV Shows',
 
             // Status
             loading: 'Loading...',
             noResults: 'No results found',
             upcoming: 'Coming Soon',
             inCinemas: 'In Theaters',
+            searchResults: 'Search Results',
 
             // Time
             minutes: 'min',
