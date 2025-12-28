@@ -9,7 +9,7 @@ const i18n = {
         tr: {
             // App
             appTitle: 'Nerede İzlerim?',
-            search: 'Film veya dizi ara...',
+            search: 'Nerede izlenir? Ara...',
 
             // Section Headers (for dynamic header)
             sectionHome: 'Nerede İzlerim?',
@@ -141,7 +141,7 @@ const i18n = {
         en: {
             // App
             appTitle: 'Where to Watch?',
-            search: 'Search movies or TV shows...',
+            search: 'Where to watch? Search...',
 
             // Section Headers (for dynamic header)
             sectionHome: 'Where to Watch?',
