@@ -98,10 +98,8 @@ body {
 .logo-title {
     display: flex;
     align-items: center;
-    gap: 4px;
-    flex-shrink: 1;
-    min-width: 0;
-    overflow: hidden;
+    gap: 6px;
+    flex-shrink: 0;
 }
 
 /* WtW Text Logo */
@@ -126,21 +124,21 @@ body {
 }
 
 .header-section-title {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     font-weight: 500;
-    color: var(--white-muted);
+    color: var(--white-soft);
     white-space: nowrap;
-    opacity: 0.9;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100px;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(6, 182, 212, 0.15));
+    padding: 4px 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(139, 92, 246, 0.2);
 }
 
 @media (min-width: 400px) {
     .app-header {
         padding: 12px 16px 8px;
         padding-top: calc(12px + env(safe-area-inset-top));
-        gap: 6px;
+        gap: 8px;
     }
 
     .wtw-logo-text {
@@ -148,8 +146,7 @@ body {
     }
 
     .header-section-title {
-        font-size: 0.8rem;
-        max-width: 120px;
+        font-size: 0.85rem;
     }
 }
 
@@ -3681,16 +3678,16 @@ a.rating-box.rt:hover {
     top: calc(100% + 8px);
     right: 0;
     min-width: 180px;
-    background: var(--bg);
+    background: rgba(15, 15, 25, 0.98);
     border: 1px solid var(--glass-border);
     border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(20px);
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);
     transition: all 0.2s ease;
-    z-index: 1000;
+    z-index: 9999;
     overflow: hidden;
 }
 

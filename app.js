@@ -3,7 +3,7 @@
 // Clean Mockup Design - Full Features
 // ============================================
 
-const APP_VERSION = '1.9.0-beta';
+const APP_VERSION = '1.9.1-beta';
 
 // DOM Elements
 const elements = {
@@ -911,13 +911,16 @@ async function loadHomePage() {
 
         hideLoading();
 
-        // Mix local content into trending (add top 5 local items)
-        const localTrending = [...(localMovies.results || []).slice(0, 3), ...(localTv.results || []).slice(0, 2)];
+        // Mix MORE local content into trending (15 local items total)
+        const localMoviesList = (localMovies.results || []).slice(0, 8);
+        const localTvList = (localTv.results || []).slice(0, 7);
+        const allLocalContent = [...localMoviesList, ...localTvList];
+
         const mixedTrending = [...trending.results];
-        // Insert local content at positions 5, 10, 15, 20, 25
-        localTrending.forEach((item, i) => {
-            const insertPos = 5 + (i * 5);
-            if (insertPos < mixedTrending.length) {
+        // Insert local content at every 3rd position for better distribution
+        allLocalContent.forEach((item, i) => {
+            const insertPos = 3 + (i * 3); // positions 3, 6, 9, 12, 15...
+            if (insertPos < mixedTrending.length + allLocalContent.length) {
                 mixedTrending.splice(insertPos, 0, { ...item, media_type: item.first_air_date ? 'tv' : 'movie' });
             }
         });
@@ -929,9 +932,17 @@ async function loadHomePage() {
             elements.trendingSlider.appendChild(card);
         });
 
-        // Display new releases
+        // Display new releases (with local content mixed in)
         elements.newReleasesSlider.innerHTML = '';
-        newReleases.results.slice(0, 50).forEach(item => {
+        const mixedNewReleases = [...newReleases.results];
+        // Add local movies to new releases at various positions
+        localMoviesList.slice(0, 5).forEach((item, i) => {
+            const insertPos = 4 + (i * 4);
+            if (insertPos < mixedNewReleases.length + 5) {
+                mixedNewReleases.splice(insertPos, 0, { ...item, media_type: 'movie' });
+            }
+        });
+        mixedNewReleases.slice(0, 50).forEach(item => {
             const card = createMovieCard({ ...item, media_type: 'movie' }, 'movie');
             elements.newReleasesSlider.appendChild(card);
         });

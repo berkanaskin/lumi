@@ -281,12 +281,40 @@ const i18n = {
             sectionFavorites: 'Meine Favoriten',
             sectionProfile: 'Mein Profil',
 
+            // Nav Labels
+            navHome: 'Startseite',
+            navDiscover: 'Entdecken',
+            navFavorites: 'Favoriten',
+            navProfile: 'Profil',
+
             // Sections
             trending: 'Beliebt',
             newReleases: 'Neu erschienen',
             classics: 'Klassiker',
             suggested: 'Für dich',
             turkishContent: '🎬 Lokale Inhalte',
+            localContent: 'Lokale Inhalte',
+
+            // Wizard
+            wizardQuestion: 'Was möchtest du heute Abend schauen?',
+            wizardTypeAll: 'Beides ist ok',
+            wizardTypeMovie: 'Film',
+            wizardTypeTv: 'Serie',
+            moodLabel: 'Wie ist deine Stimmung?',
+            moodTrend: 'Trend',
+            moodRandom: 'Zufällig',
+            moodBlockbuster: 'Blockbuster',
+            moodArt: 'Kunstfilm',
+            moodAwarded: 'Preisgekrönt',
+            moodClassic: 'Klassiker',
+            moodLocal: 'Lokal',
+            genreLabel: 'Genre',
+            genreOptional: 'überspringen für alle',
+            platformLabel: 'Wo wirst du schauen?',
+            generateBtn: 'Überrasche mich!',
+            resultsTitle: 'Für dich ausgewählt',
+            resetFilters: 'Erneut versuchen',
+            loadMore: 'Mehr laden',
 
             // Genres
             action: 'Action',
@@ -295,6 +323,8 @@ const i18n = {
             horror: 'Horror',
             romance: 'Romantik',
             scifi: 'Sci-Fi',
+            thriller: 'Thriller',
+            animation: 'Animation',
 
             // Detail Modal
             watchOn: 'Wo zu sehen',
@@ -306,6 +336,10 @@ const i18n = {
             trivia: 'Wissenswertes',
             director: 'Regisseur',
             writer: 'Drehbuch',
+            originalNetwork: 'Originalsender',
+            noPlatform: 'Keine Streaming-Info verfügbar',
+            searchYouTube: 'Auf YouTube suchen',
+            nearestCinemas: 'Kinos in der Nähe',
 
             // Ratings
             yourRating: 'Deine Bewertung',
@@ -314,6 +348,9 @@ const i18n = {
             addFavorite: '🤍 Hinzufügen',
             removeFavorite: '❤️ Entfernen',
             notify: '🔔 Benachrichtigen',
+            notifyLocked: '🔒 Benachrichtigen (Premium)',
+            rateIt: 'Bewerten',
+            deleteRating: 'Löschen',
             theme: 'Thema',
             dark: 'Dunkel',
             light: 'Hell',
@@ -330,16 +367,28 @@ const i18n = {
             perYear: '/Jahr',
             buyNow: 'Jetzt kaufen',
 
-            // Auth
+            // Auth / Login Modal
             login: 'Anmelden',
             logout: 'Abmelden',
             signUp: 'Registrieren',
+            loginTitle: 'Willkommen',
+            loginSubtitle: 'Anmelden um fortzufahren',
+            continueWithGoogle: 'Mit Google fortfahren',
+            continueWithFacebook: 'Mit Facebook fortfahren',
+            continueWithApple: 'Mit Apple fortfahren',
+            close: 'Schließen',
+
+            // Favorites
+            favAll: 'Alle',
+            favMovies: 'Filme',
+            favSeries: 'Serien',
 
             // Status
             loading: 'Laden...',
             noResults: 'Keine Ergebnisse',
             upcoming: 'Demnächst',
             inCinemas: 'Im Kino',
+            searchResults: 'Suchergebnisse',
 
             // Time
             minutes: 'Min',
@@ -358,12 +407,40 @@ const i18n = {
             sectionFavorites: 'Mes Favoris',
             sectionProfile: 'Mon Profil',
 
+            // Nav Labels
+            navHome: 'Accueil',
+            navDiscover: 'Découvrir',
+            navFavorites: 'Favoris',
+            navProfile: 'Profil',
+
             // Sections
             trending: 'Tendances',
             newReleases: 'Nouveautés',
             classics: 'Classiques',
             suggested: 'Pour vous',
             turkishContent: '🎬 Contenu local',
+            localContent: 'Contenu local',
+
+            // Wizard
+            wizardQuestion: 'Que voulez-vous regarder ce soir?',
+            wizardTypeAll: 'Les deux me vont',
+            wizardTypeMovie: 'Film',
+            wizardTypeTv: 'Série',
+            moodLabel: 'Quelle est votre humeur?',
+            moodTrend: 'Tendance',
+            moodRandom: 'Aléatoire',
+            moodBlockbuster: 'Blockbuster',
+            moodArt: 'Film d\'art',
+            moodAwarded: 'Primé',
+            moodClassic: 'Classique',
+            moodLocal: 'Local',
+            genreLabel: 'Genre',
+            genreOptional: 'passer pour inclure tous',
+            platformLabel: 'Où allez-vous regarder?',
+            generateBtn: 'Surprise!',
+            resultsTitle: 'Choisis pour vous',
+            resetFilters: 'Réessayer',
+            loadMore: 'Charger plus',
 
             // Genres
             action: 'Action',
@@ -372,6 +449,8 @@ const i18n = {
             horror: 'Horreur',
             romance: 'Romance',
             scifi: 'Sci-Fi',
+            thriller: 'Thriller',
+            animation: 'Animation',
 
             // Detail Modal
             watchOn: 'Où regarder',
@@ -383,6 +462,10 @@ const i18n = {
             trivia: 'Anecdotes',
             director: 'Réalisateur',
             writer: 'Scénariste',
+            originalNetwork: 'Diffuseur original',
+            noPlatform: 'Aucune info de streaming',
+            searchYouTube: 'Rechercher sur YouTube',
+            nearestCinemas: 'Cinémas à proximité',
 
             // Ratings
             yourRating: 'Votre note',
@@ -391,6 +474,9 @@ const i18n = {
             addFavorite: '🤍 Ajouter',
             removeFavorite: '❤️ Retirer',
             notify: '🔔 Notifier',
+            notifyLocked: '🔒 Notifier (Premium)',
+            rateIt: 'Noter',
+            deleteRating: 'Supprimer',
             theme: 'Thème',
             dark: 'Sombre',
             light: 'Clair',
@@ -407,16 +493,28 @@ const i18n = {
             perYear: '/an',
             buyNow: 'Acheter',
 
-            // Auth
+            // Auth / Login Modal
             login: 'Connexion',
             logout: 'Déconnexion',
             signUp: 'S\'inscrire',
+            loginTitle: 'Bienvenue',
+            loginSubtitle: 'Connectez-vous pour continuer',
+            continueWithGoogle: 'Continuer avec Google',
+            continueWithFacebook: 'Continuer avec Facebook',
+            continueWithApple: 'Continuer avec Apple',
+            close: 'Fermer',
+
+            // Favorites
+            favAll: 'Tous',
+            favMovies: 'Films',
+            favSeries: 'Séries',
 
             // Status
             loading: 'Chargement...',
             noResults: 'Aucun résultat',
             upcoming: 'Bientôt',
             inCinemas: 'Au cinéma',
+            searchResults: 'Résultats de recherche',
 
             // Time
             minutes: 'min',
@@ -435,12 +533,40 @@ const i18n = {
             sectionFavorites: 'Mis Favoritos',
             sectionProfile: 'Mi Perfil',
 
+            // Nav Labels
+            navHome: 'Inicio',
+            navDiscover: 'Descubrir',
+            navFavorites: 'Favoritos',
+            navProfile: 'Perfil',
+
             // Sections
             trending: 'Tendencias',
             newReleases: 'Nuevos lanzamientos',
             classics: 'Clásicos',
             suggested: 'Para ti',
             turkishContent: '🎬 Contenido local',
+            localContent: 'Contenido local',
+
+            // Wizard
+            wizardQuestion: '¿Qué quieres ver esta noche?',
+            wizardTypeAll: 'Ambos están bien',
+            wizardTypeMovie: 'Película',
+            wizardTypeTv: 'Serie',
+            moodLabel: '¿Cuál es tu estado de ánimo?',
+            moodTrend: 'Tendencia',
+            moodRandom: 'Aleatorio',
+            moodBlockbuster: 'Blockbuster',
+            moodArt: 'Cine de autor',
+            moodAwarded: 'Premiado',
+            moodClassic: 'Clásico',
+            moodLocal: 'Local',
+            genreLabel: 'Género',
+            genreOptional: 'omitir para incluir todos',
+            platformLabel: '¿Dónde vas a ver?',
+            generateBtn: '¡Sorpréndeme!',
+            resultsTitle: 'Elegidos para ti',
+            resetFilters: 'Reintentar',
+            loadMore: 'Cargar más',
 
             // Genres
             action: 'Acción',
@@ -449,6 +575,8 @@ const i18n = {
             horror: 'Terror',
             romance: 'Romance',
             scifi: 'Ciencia ficción',
+            thriller: 'Suspenso',
+            animation: 'Animación',
 
             // Detail Modal
             watchOn: 'Dónde ver',
@@ -460,6 +588,10 @@ const i18n = {
             trivia: 'Curiosidades',
             director: 'Director',
             writer: 'Guionista',
+            originalNetwork: 'Emisora original',
+            noPlatform: 'Sin info de streaming',
+            searchYouTube: 'Buscar en YouTube',
+            nearestCinemas: 'Cines cercanos',
 
             // Ratings
             yourRating: 'Tu valoración',
@@ -468,6 +600,9 @@ const i18n = {
             addFavorite: '🤍 Añadir',
             removeFavorite: '❤️ Quitar',
             notify: '🔔 Notificar',
+            notifyLocked: '🔒 Notificar (Premium)',
+            rateIt: 'Valorar',
+            deleteRating: 'Eliminar',
             theme: 'Tema',
             dark: 'Oscuro',
             light: 'Claro',
@@ -484,16 +619,28 @@ const i18n = {
             perYear: '/año',
             buyNow: 'Comprar',
 
-            // Auth
+            // Auth / Login Modal
             login: 'Iniciar sesión',
             logout: 'Cerrar sesión',
             signUp: 'Registrarse',
+            loginTitle: 'Bienvenido',
+            loginSubtitle: 'Inicia sesión para continuar',
+            continueWithGoogle: 'Continuar con Google',
+            continueWithFacebook: 'Continuar con Facebook',
+            continueWithApple: 'Continuar con Apple',
+            close: 'Cerrar',
+
+            // Favorites
+            favAll: 'Todos',
+            favMovies: 'Películas',
+            favSeries: 'Series',
 
             // Status
             loading: 'Cargando...',
             noResults: 'Sin resultados',
             upcoming: 'Próximamente',
             inCinemas: 'En cines',
+            searchResults: 'Resultados de búsqueda',
 
             // Time
             minutes: 'min',
