@@ -182,7 +182,7 @@
             <section class="content-section" id="discover-section" style="display: none;">
                 <!-- ELEGANT DISCOVER WIZARD -->
                 <div class="wizard-container" id="neizlesem-wizard">
-                    
+
                     <!-- Header with Surprise -->
                     <div class="wizard-header">
                         <div class="wizard-title-group">
@@ -272,7 +272,8 @@
                             <span class="wizard-card-label">Nerede İzleyeceksin?</span>
                         </div>
                         <div class="platform-pills">
-                            <button class="platform-pill selected" data-filter="platform" data-value="all">Fark Etmez</button>
+                            <button class="platform-pill selected" data-filter="platform" data-value="all">Fark
+                                Etmez</button>
                             <button class="platform-pill" data-filter="platform" data-value="8">Netflix</button>
                             <button class="platform-pill" data-filter="platform" data-value="337">Disney+</button>
                             <button class="platform-pill" data-filter="platform" data-value="119">Prime</button>
@@ -451,39 +452,10 @@
                 });
             });
 
-            // --- Search Clearing on Modal Close ---
-            const modal = document.getElementById('detail-modal');
-            const modalCloseBtn = document.getElementById('modal-close');
-            const searchClearBtn = document.getElementById('search-clear');
 
-            function triggerSearchClear() {
-                // If the clear button is visible, it means there is text. 
-                // Clicking it clears text AND calls loadHomePage() as per app.js logic.
-                if (searchClearBtn && getComputedStyle(searchClearBtn).display !== 'none') {
-                    searchClearBtn.click();
-                }
-            }
-
-            if (modalCloseBtn) {
-                modalCloseBtn.addEventListener('click', triggerSearchClear);
-            }
-
-            if (modal) {
-                modal.addEventListener('click', function (e) {
-                    if (e.target === modal) {
-                        triggerSearchClear();
-                    }
-                });
-            }
-
-            // Handle Escape key
-            document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape') {
-                    if (modal && modal.classList.contains('visible')) {
-                        triggerSearchClear();
-                    }
-                }
-            });
+            // --- REMOVED: Search clearing on modal close ---
+            // This was conflicting with search restore functionality in app.js
+            // The closeModal function in app.js now handles search state restoration properly
 
 
 
