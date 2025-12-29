@@ -189,11 +189,13 @@ body {
 .lang-dropdown-btn {
     width: 36px;
     height: 36px;
+    min-width: 36px;
+    min-height: 36px;
     border-radius: 50%;
     background: var(--glass);
     border: 1px solid var(--glass-border);
     cursor: pointer;
-    padding: 3px;
+    padding: 0;
     overflow: hidden;
     transition: all 0.2s ease;
     display: flex;
@@ -207,10 +209,10 @@ body {
 }
 
 .lang-dropdown-btn .lang-flag {
-    width: 100%;
-    height: 100%;
+    width: 24px;
+    height: 24px;
     object-fit: cover;
-    object-position: center center;
+    object-position: center;
     border-radius: 50%;
 }
 
@@ -2088,16 +2090,19 @@ a.rating-box.rt:hover {
 .login-btn {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 4px;
-    padding: 6px 10px;
+    height: 36px;
+    padding: 0 12px;
     background: var(--accent);
     border: none;
-    border-radius: 16px;
+    border-radius: 18px;
     color: white;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
+    white-space: nowrap;
 }
 
 .login-btn:hover {
@@ -3258,173 +3263,160 @@ a.rating-box.rt:hover {
 }
 
 /* ============================================
-   DISCOVER WIZARD - COMPACT PROFESSIONAL DESIGN
+   ELEGANT WIZARD - MODERN GLASSMORPHISM DESIGN
    ============================================ */
 
-.discover-wizard {
-    padding: 20px 16px;
+.wizard-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
     gap: 16px;
-    background: linear-gradient(165deg, rgba(20, 20, 35, 0.92), rgba(10, 10, 20, 0.95));
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    margin: 12px 16px;
-    backdrop-filter: blur(20px);
+    padding: 16px;
+    margin: 8px 12px;
 }
 
-/* Title */
-.discover-title {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.95);
-    margin: 0;
-    letter-spacing: 1px;
-}
-
-/* Row: Type Toggle + Sürpriz */
-.discover-row {
+/* Wizard Header */
+.wizard-header {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 12px;
-    width: 100%;
-    justify-content: center;
+    padding: 0 4px;
 }
 
-/* Type Toggle Container */
-.type-toggle-container {
+.wizard-title-group {
     display: flex;
-    background: rgba(0, 0, 0, 0.35);
-    padding: 4px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    flex-direction: column;
+    gap: 2px;
 }
 
-.type-toggle-btn {
-    padding: 8px 20px;
-    background: transparent;
-    border: none;
-    border-radius: 16px;
-    color: rgba(255, 255, 255, 0.5);
-    font-family: inherit;
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.25s ease;
-}
-
-.type-toggle-btn:hover {
-    color: rgba(255, 255, 255, 0.8);
-}
-
-.type-toggle-btn.active {
-    background: rgba(139, 92, 246, 0.25);
+.wizard-title {
+    font-size: 1.5rem;
+    font-weight: 700;
     color: #fff;
+    margin: 0;
+    background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.8) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
-/* Sürpriz Button Small */
-.surprise-btn-sm {
+.wizard-subtitle {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0;
+}
+
+/* Surprise Button */
+.surprise-btn {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 8px 14px;
-    background: rgba(255, 193, 7, 0.12);
-    border: 1px solid rgba(255, 193, 7, 0.25);
-    border-radius: 20px;
-    color: #ffc107;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(245, 158, 11, 0.1));
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-radius: 12px;
+    color: #fbbf24;
     font-family: inherit;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.25s ease;
 }
 
-.surprise-btn-sm:hover {
-    background: rgba(255, 193, 7, 0.2);
+.surprise-btn:hover {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.25), rgba(245, 158, 11, 0.2));
     transform: scale(1.02);
+    box-shadow: 0 4px 20px rgba(251, 191, 36, 0.2);
 }
 
-.surprise-btn-sm:active {
-    transform: scale(0.98);
+.surprise-dice {
+    font-size: 1.1rem;
 }
 
-/* Category Scroll */
-.category-scroll {
+/* Wizard Cards */
+.wizard-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 16px;
+    backdrop-filter: blur(10px);
+}
+
+.wizard-card-header {
     display: flex;
+    align-items: center;
     gap: 8px;
-    overflow-x: auto;
-    width: 100%;
-    padding: 4px 0;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
+    margin-bottom: 12px;
 }
 
-.category-scroll::-webkit-scrollbar {
-    display: none;
+.wizard-card-icon {
+    font-size: 1rem;
 }
 
-/* Category Chip */
-.category-chip {
-    flex-shrink: 0;
-    padding: 8px 14px;
-    background: rgba(255, 255, 255, 0.05);
+.wizard-card-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.5px;
+}
+
+/* Type Buttons */
+.type-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.type-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 18px;
+    border-radius: 12px;
     color: rgba(255, 255, 255, 0.7);
     font-family: inherit;
-    font-size: 0.78rem;
-    font-weight: 500;
+    font-size: 0.9rem;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
-    white-space: nowrap;
 }
 
-.category-chip:hover {
-    background: rgba(255, 255, 255, 0.1);
+.type-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
     color: #fff;
 }
 
-.category-chip.selected {
-    background: rgba(139, 92, 246, 0.25);
+.type-btn.active {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(99, 102, 241, 0.15));
     border-color: rgba(139, 92, 246, 0.4);
     color: #fff;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
 }
 
-/* Filter Groups */
-.filter-groups {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
+.type-icon {
+    font-size: 1.2rem;
 }
 
-.filter-group {
-    display: flex;
-    flex-direction: column;
+/* Mood Grid */
+.mood-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 8px;
 }
 
-.filter-group-label {
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    color: rgba(255, 255, 255, 0.4);
-    padding-left: 4px;
-}
-
-.filter-chips {
+.mood-btn {
     display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-}
-
-.filter-chip {
-    padding: 7px 12px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    color: rgba(255, 255, 255, 0.6);
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.7);
     font-family: inherit;
     font-size: 0.75rem;
     font-weight: 500;
@@ -3432,44 +3424,115 @@ a.rating-box.rt:hover {
     transition: all 0.2s ease;
 }
 
-.filter-chip:hover {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.2);
-    color: rgba(255, 255, 255, 0.9);
+.mood-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
 }
 
-.filter-chip.selected {
-    background: rgba(139, 92, 246, 0.2);
-    border-color: rgba(139, 92, 246, 0.5);
+.mood-btn.selected {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(99, 102, 241, 0.15));
+    border-color: rgba(139, 92, 246, 0.4);
     color: #fff;
 }
 
-/* Recommend Button */
-.recommend-btn {
+.mood-emoji {
+    font-size: 1.4rem;
+}
+
+/* Genre Pills */
+.genre-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.genre-pill {
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.genre-pill:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+
+.genre-pill.selected {
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(59, 130, 246, 0.15));
+    border-color: rgba(6, 182, 212, 0.4);
+    color: #fff;
+}
+
+/* Platform Pills */
+.platform-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.platform-pill {
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.platform-pill:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+
+.platform-pill.selected {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.15));
+    border-color: rgba(16, 185, 129, 0.4);
+    color: #fff;
+}
+
+/* Generate Button */
+.generate-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     width: 100%;
-    max-width: 240px;
-    padding: 12px 24px;
-    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+    padding: 16px 24px;
+    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 50%, #4f46e5 100%);
     border: none;
-    border-radius: 22px;
+    border-radius: 14px;
     color: white;
     font-family: inherit;
-    font-size: 0.85rem;
+    font-size: 1rem;
     font-weight: 600;
-    letter-spacing: 1.5px;
     cursor: pointer;
     transition: all 0.25s ease;
-    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
-    margin-top: 4px;
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.35);
 }
 
-.recommend-btn:hover {
+.generate-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.45);
+    box-shadow: 0 12px 35px rgba(139, 92, 246, 0.45);
 }
 
-.recommend-btn:active {
+.generate-btn:active {
     transform: translateY(0);
+}
+
+.generate-icon {
+    font-size: 1.1rem;
 }
 
 

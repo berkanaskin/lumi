@@ -1080,10 +1080,10 @@ function setupNeIzlesemWizard() {
     const wizard = document.getElementById('neizlesem-wizard');
     if (!wizard) return;
 
-    // CINEMATIC Type toggle buttons (single select - Film/Dizi)
-    wizard.querySelectorAll('.type-toggle-btn').forEach(btn => {
+    // Type buttons (Film/Dizi)
+    wizard.querySelectorAll('.type-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            wizard.querySelectorAll('.type-toggle-btn').forEach(b => b.classList.remove('active'));
+            wizard.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             neIzlesemFilters.type = btn.dataset.value;
         });
@@ -1098,29 +1098,30 @@ function setupNeIzlesemWizard() {
             neIzlesemFilters.genres = [];
             neIzlesemFilters.platforms = [];
             // Deselect everything
-            wizard.querySelectorAll('.type-toggle-btn').forEach(b => b.classList.remove('active'));
-            wizard.querySelectorAll('.category-chip').forEach(b => b.classList.remove('selected'));
-            wizard.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('selected'));
+            wizard.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+            wizard.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+            wizard.querySelectorAll('.genre-pill').forEach(c => c.classList.remove('selected'));
+            wizard.querySelectorAll('.platform-pill').forEach(c => c.classList.remove('selected'));
             // Trigger generation immediately
-            generateRecommendations();
+            generateNeIzlesemResults(false);
         });
     }
 
-    // Category chips (single select for main category/style)
-    wizard.querySelectorAll('.category-chip').forEach(btn => {
+    // Mood buttons (single select for main category/style)
+    wizard.querySelectorAll('.mood-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            wizard.querySelectorAll('.category-chip').forEach(b => b.classList.remove('selected'));
+            wizard.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
             neIzlesemFilters.style = btn.dataset.value;
         });
     });
 
-    // Genre filter chips (multi-select)
-    wizard.querySelectorAll('.filter-chip[data-filter="genre"]').forEach(chip => {
-        chip.addEventListener('click', () => {
-            chip.classList.toggle('selected');
-            const value = chip.dataset.value;
-            if (chip.classList.contains('selected')) {
+    // Genre pills (multi-select)
+    wizard.querySelectorAll('.genre-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+            pill.classList.toggle('selected');
+            const value = pill.dataset.value;
+            if (pill.classList.contains('selected')) {
                 if (!neIzlesemFilters.genres.includes(value)) {
                     neIzlesemFilters.genres.push(value);
                 }
@@ -1130,27 +1131,27 @@ function setupNeIzlesemWizard() {
         });
     });
 
-    // Platform filter chips (multi-select for specific platforms, or 'all' for any)
-    wizard.querySelectorAll('.filter-chip[data-filter="platform"]').forEach(chip => {
-        chip.addEventListener('click', () => {
-            const value = chip.dataset.value;
+    // Platform pills (multi-select for specific platforms, or 'all' for any)
+    wizard.querySelectorAll('.platform-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+            const value = pill.dataset.value;
 
             // If "Fark Etmez" (all) is clicked, deselect others and clear platforms
             if (value === 'all') {
-                wizard.querySelectorAll('.filter-chip[data-filter="platform"]').forEach(c => {
+                wizard.querySelectorAll('.platform-pill').forEach(c => {
                     c.classList.remove('selected');
                 });
-                chip.classList.add('selected');
+                pill.classList.add('selected');
                 neIzlesemFilters.platforms = [];
                 return;
             }
 
             // Deselect "Fark Etmez" when selecting specific platform
-            const allChip = wizard.querySelector('.filter-chip[data-filter="platform"][data-value="all"]');
-            if (allChip) allChip.classList.remove('selected');
+            const allPill = wizard.querySelector('.platform-pill[data-value="all"]');
+            if (allPill) allPill.classList.remove('selected');
 
-            chip.classList.toggle('selected');
-            if (chip.classList.contains('selected')) {
+            pill.classList.toggle('selected');
+            if (pill.classList.contains('selected')) {
                 if (!neIzlesemFilters.platforms.includes(value)) {
                     neIzlesemFilters.platforms.push(value);
                 }
@@ -2694,21 +2695,22 @@ function closeModal() {
     if (state.cameFromSearch && state.searchQuery) {
         console.log('Restoring search state:', state.searchQuery, 'Results:', state.searchResults?.length, 'Scroll:', state.searchScrollPosition);
 
+        // Store scroll position before any DOM changes
+        const savedScrollPosition = state.searchScrollPosition;
+
         // Show search clear button
         if (elements.searchClear) {
             elements.searchClear.style.display = 'block';
         }
 
-        // Two scenarios:
-        // 1. Full search results (Enter was pressed) - show results grid
-        // 2. Autocomplete click - show autocomplete dropdown
+        // Restore search input value
+        if (elements.searchInput) {
+            elements.searchInput.value = state.searchQuery;
+        }
 
+        // Check if we have full search results
         if (state.searchResults && state.searchResults.length > 0) {
-            // Scenario 1: Full search results - show results section
-            // Restore search input value
-            if (elements.searchInput) {
-                elements.searchInput.value = state.searchQuery;
-            }
+            // Full search results - show results section
             hideAllSections();
             elements.searchResultsSection.style.display = 'block';
             elements.resultsTitle.textContent = `"${state.searchQuery}"`;
@@ -2719,23 +2721,24 @@ function closeModal() {
             });
             elements.resultsCount.textContent = `${state.searchResults.length} sonuç`;
 
-            // Restore scroll position after DOM update
-            if (state.searchScrollPosition) {
-                setTimeout(() => {
-                    window.scrollTo(0, state.searchScrollPosition);
-                }, 50);
+            // Restore scroll position after DOM is fully updated
+            if (savedScrollPosition) {
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        window.scrollTo(0, savedScrollPosition);
+                    });
+                });
             }
         } else {
-            // Scenario 2: Autocomplete click - restore query and trigger autocomplete
-            // MUST set input value BEFORE calling handleAutocomplete
-            if (elements.searchInput) {
-                elements.searchInput.value = state.searchQuery;
-            }
-            // Small delay to ensure input value is set, then trigger autocomplete
+            // Autocomplete click - trigger autocomplete dropdown
             setTimeout(() => {
                 handleAutocomplete();
-            }, 50);
+            }, 100);
         }
+
+        // Reset flag AFTER restoring
+        state.cameFromSearch = false;
+        return;
     }
 
     // Reset cameFromSearch flag

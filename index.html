@@ -180,76 +180,112 @@
 
             <!-- Ne İzlesem? Section (What to Watch Recommendation Engine) -->
             <section class="content-section" id="discover-section" style="display: none;">
-                <!-- DISCOVER WIZARD - Compact Professional Design -->
-                <div class="discover-wizard" id="neizlesem-wizard">
-
-                    <!-- Title -->
-                    <h2 class="discover-title" data-i18n="sectionDiscover">NE İZLESEM?</h2>
-
-                    <!-- Type Toggle + Sürpriz Row -->
-                    <div class="discover-row">
-                        <div class="type-toggle-container">
-                            <button class="type-toggle-btn active" data-filter="type" data-value="movie">
-                                <span data-i18n="wizardTypeMovie">Film</span>
-                            </button>
-                            <button class="type-toggle-btn" data-filter="type" data-value="tv">
-                                <span data-i18n="wizardTypeTv">Dizi</span>
-                            </button>
+                <!-- ELEGANT DISCOVER WIZARD -->
+                <div class="wizard-container" id="neizlesem-wizard">
+                    
+                    <!-- Header with Surprise -->
+                    <div class="wizard-header">
+                        <div class="wizard-title-group">
+                            <h2 class="wizard-title">Ne İzlesem?</h2>
+                            <p class="wizard-subtitle">Sana özel öneriler keşfet</p>
                         </div>
-                        <button class="surprise-btn-sm" id="surprise-btn">
-                            <span>🎲</span> Sürpriz
+                        <button class="surprise-btn" id="surprise-btn">
+                            <span class="surprise-dice">🎲</span>
+                            <span>Sürpriz</span>
                         </button>
                     </div>
 
-                    <!-- Category Scroll -->
-                    <div class="category-scroll">
-                        <button class="category-chip" data-filter="category" data-value="popular">🔥 Trend</button>
-                        <button class="category-chip" data-filter="category" data-value="hollywood">🎬
-                            Blockbuster</button>
-                        <button class="category-chip" data-filter="category" data-value="festival">🎨 Sanat</button>
-                        <button class="category-chip" data-filter="category" data-value="awarded">🏆 Ödüllü</button>
-                        <button class="category-chip" data-filter="category" data-value="classic">📽️ Klasik</button>
-                        <button class="category-chip" data-filter="category" data-value="local">🇹🇷 Yerli</button>
-                        <button class="category-chip" data-filter="category" data-value="nostalgia">📼 Nostalji</button>
-                    </div>
-
-                    <!-- Filter Groups -->
-                    <div class="filter-groups">
-                        <!-- Genre Section -->
-                        <div class="filter-group">
-                            <span class="filter-group-label" data-i18n="genreLabel">TÜR</span>
-                            <div class="filter-chips">
-                                <button class="filter-chip" data-filter="genre" data-value="28">Aksiyon</button>
-                                <button class="filter-chip" data-filter="genre" data-value="35">Komedi</button>
-                                <button class="filter-chip" data-filter="genre" data-value="18">Drama</button>
-                                <button class="filter-chip" data-filter="genre" data-value="27">Korku</button>
-                                <button class="filter-chip" data-filter="genre" data-value="878">Sci-Fi</button>
-                                <button class="filter-chip" data-filter="genre" data-value="10749">Romantik</button>
-                                <button class="filter-chip" data-filter="genre" data-value="53">Gerilim</button>
-                                <button class="filter-chip" data-filter="genre" data-value="16">Animasyon</button>
-                                <button class="filter-chip" data-filter="genre" data-value="anime">Anime</button>
-                            </div>
+                    <!-- Type Selection Card -->
+                    <div class="wizard-card">
+                        <div class="wizard-card-header">
+                            <span class="wizard-card-icon">🎬</span>
+                            <span class="wizard-card-label">Ne Arıyorsun?</span>
                         </div>
-
-                        <!-- Platform Section -->
-                        <div class="filter-group">
-                            <span class="filter-group-label" data-i18n="platformLabel">PLATFORM</span>
-                            <div class="filter-chips">
-                                <button class="filter-chip" data-filter="platform" data-value="all"
-                                    data-i18n="anyPlatform">Fark Etmez</button>
-                                <button class="filter-chip" data-filter="platform" data-value="8">Netflix</button>
-                                <button class="filter-chip" data-filter="platform" data-value="337">Disney+</button>
-                                <button class="filter-chip" data-filter="platform" data-value="119">Prime</button>
-                                <button class="filter-chip" data-filter="platform" data-value="1899">Max</button>
-                                <button class="filter-chip" data-filter="platform" data-value="2">Apple TV+</button>
-                                <button class="filter-chip" data-filter="platform" data-value="1870">Exxen</button>
-                            </div>
+                        <div class="type-buttons">
+                            <button class="type-btn active" data-filter="type" data-value="movie">
+                                <span class="type-icon">🎥</span>
+                                <span>Film</span>
+                            </button>
+                            <button class="type-btn" data-filter="type" data-value="tv">
+                                <span class="type-icon">📺</span>
+                                <span>Dizi</span>
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Recommend Button -->
-                    <button class="recommend-btn" id="neizlesem-generate">
-                        <span data-i18n="generateBtn">ÖNERİ AL</span>
+                    <!-- Category Selection Card -->
+                    <div class="wizard-card">
+                        <div class="wizard-card-header">
+                            <span class="wizard-card-icon">✨</span>
+                            <span class="wizard-card-label">Ruh Halin</span>
+                        </div>
+                        <div class="mood-grid">
+                            <button class="mood-btn" data-filter="category" data-value="popular">
+                                <span class="mood-emoji">🔥</span>
+                                <span>Trend</span>
+                            </button>
+                            <button class="mood-btn" data-filter="category" data-value="hollywood">
+                                <span class="mood-emoji">💥</span>
+                                <span>Aksiyon</span>
+                            </button>
+                            <button class="mood-btn" data-filter="category" data-value="festival">
+                                <span class="mood-emoji">🎭</span>
+                                <span>Sanat</span>
+                            </button>
+                            <button class="mood-btn" data-filter="category" data-value="awarded">
+                                <span class="mood-emoji">🏆</span>
+                                <span>Ödüllü</span>
+                            </button>
+                            <button class="mood-btn" data-filter="category" data-value="classic">
+                                <span class="mood-emoji">📽️</span>
+                                <span>Klasik</span>
+                            </button>
+                            <button class="mood-btn" data-filter="category" data-value="local">
+                                <span class="mood-emoji">🇹🇷</span>
+                                <span>Yerli</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Genre Selection Card -->
+                    <div class="wizard-card">
+                        <div class="wizard-card-header">
+                            <span class="wizard-card-icon">🎯</span>
+                            <span class="wizard-card-label">Tür</span>
+                        </div>
+                        <div class="genre-pills">
+                            <button class="genre-pill" data-filter="genre" data-value="28">Aksiyon</button>
+                            <button class="genre-pill" data-filter="genre" data-value="35">Komedi</button>
+                            <button class="genre-pill" data-filter="genre" data-value="18">Drama</button>
+                            <button class="genre-pill" data-filter="genre" data-value="27">Korku</button>
+                            <button class="genre-pill" data-filter="genre" data-value="878">Sci-Fi</button>
+                            <button class="genre-pill" data-filter="genre" data-value="10749">Romantik</button>
+                            <button class="genre-pill" data-filter="genre" data-value="53">Gerilim</button>
+                            <button class="genre-pill" data-filter="genre" data-value="16">Animasyon</button>
+                        </div>
+                    </div>
+
+                    <!-- Platform Selection Card -->
+                    <div class="wizard-card">
+                        <div class="wizard-card-header">
+                            <span class="wizard-card-icon">📺</span>
+                            <span class="wizard-card-label">Nerede İzleyeceksin?</span>
+                        </div>
+                        <div class="platform-pills">
+                            <button class="platform-pill selected" data-filter="platform" data-value="all">Fark Etmez</button>
+                            <button class="platform-pill" data-filter="platform" data-value="8">Netflix</button>
+                            <button class="platform-pill" data-filter="platform" data-value="337">Disney+</button>
+                            <button class="platform-pill" data-filter="platform" data-value="119">Prime</button>
+                            <button class="platform-pill" data-filter="platform" data-value="1899">Max</button>
+                            <button class="platform-pill" data-filter="platform" data-value="2">Apple TV+</button>
+                            <button class="platform-pill" data-filter="platform" data-value="1870">Exxen</button>
+                        </div>
+                    </div>
+
+                    <!-- Generate Button -->
+                    <button class="generate-btn" id="neizlesem-generate">
+                        <span class="generate-icon">✨</span>
+                        <span>Önerileri Göster</span>
                     </button>
                 </div>
 
