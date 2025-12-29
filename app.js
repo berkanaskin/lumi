@@ -79,6 +79,7 @@ const state = {
     searchResultsVisible: false,
     cameFromSearch: false,
     skipNextHomePage: false, // Flag to prevent loadHomePage from overriding search restore
+    searchRestoreTime: 0, // Timestamp when search was restored - prevents loadHomePage for 500ms
 
     // Auth State
     currentUser: null,
@@ -772,10 +773,16 @@ function setupEventListeners() {
         }
     });
 
-    // Modal
-    elements.modalClose.addEventListener('click', closeModal);
+    // Modal - stop propagation to prevent triggering other click handlers
+    elements.modalClose.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeModal();
+    });
     elements.modal.addEventListener('click', (e) => {
-        if (e.target === elements.modal) closeModal();
+        if (e.target === elements.modal) {
+            e.stopPropagation();
+            closeModal();
+        }
     });
 
     // Modal Dynamic Actions (Delegation)
@@ -899,8 +906,10 @@ function hideAllSections() {
 
 async function loadHomePage() {
     // Check if we should skip this call (after search restore)
-    if (state.skipNextHomePage) {
-        console.log('Skipping loadHomePage - search restore active');
+    // Use both flag and timestamp for robust protection
+    const timeSinceRestore = Date.now() - state.searchRestoreTime;
+    if (state.skipNextHomePage || timeSinceRestore < 500) {
+        console.log('Skipping loadHomePage - search restore active, time since restore:', timeSinceRestore);
         state.skipNextHomePage = false;
         return;
     }
@@ -2770,6 +2779,7 @@ function closeModal() {
 
         // Prevent any subsequent loadHomePage from overriding restore
         state.skipNextHomePage = true;
+        state.searchRestoreTime = Date.now();
 
         // Reset flag AFTER restoring
         state.cameFromSearch = false;
