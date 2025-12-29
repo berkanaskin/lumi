@@ -3,7 +3,7 @@
 // Clean Mockup Design - Full Features
 // ============================================
 
-const APP_VERSION = '1.9.3.2-beta';
+const APP_VERSION = '1.9.4.0-beta';
 
 // DOM Elements
 const elements = {
@@ -1820,7 +1820,9 @@ async function openDetail(id, type, title, year, originalTitle) {
         if (!state.searchQuery || state.searchQuery !== searchInputValue) {
             state.searchQuery = searchInputValue;
         }
-        console.log('Opening detail from search context:', state.searchQuery, 'Results:', state.searchResults?.length);
+        // Save scroll position for restoration
+        state.searchScrollPosition = window.scrollY;
+        console.log('Opening detail from search context:', state.searchQuery, 'Scroll:', state.searchScrollPosition);
     } else {
         state.cameFromSearch = false;
     }
@@ -1830,7 +1832,8 @@ async function openDetail(id, type, title, year, originalTitle) {
     state.currentItemType = type;
 
     elements.modal.classList.add('visible');
-    elements.modalBody.innerHTML = '<div class="loading-state visible"><div class="spinner"></div><p>Yükleniyor...</p></div>';
+    const loadingText = i18n.t('loading') || 'Yükleniyor...';
+    elements.modalBody.innerHTML = `<div class="loading-state visible"><div class="spinner"></div><p>${loadingText}</p></div>`;
     document.body.style.overflow = 'hidden';
 
     // Hide bottom nav when modal is open
@@ -2638,7 +2641,7 @@ function closeModal() {
 
     // Restore search state if user came from search
     if (state.cameFromSearch && state.searchQuery) {
-        console.log('Restoring search state:', state.searchQuery, 'Results:', state.searchResults?.length);
+        console.log('Restoring search state:', state.searchQuery, 'Results:', state.searchResults?.length, 'Scroll:', state.searchScrollPosition);
 
         // Show search clear button
         if (elements.searchClear) {
@@ -2664,6 +2667,13 @@ function closeModal() {
                 elements.resultsGrid.appendChild(card);
             });
             elements.resultsCount.textContent = `${state.searchResults.length} sonuç`;
+
+            // Restore scroll position after DOM update
+            if (state.searchScrollPosition) {
+                setTimeout(() => {
+                    window.scrollTo(0, state.searchScrollPosition);
+                }, 50);
+            }
         } else {
             // Scenario 2: Autocomplete click - restore query and trigger autocomplete
             // MUST set input value BEFORE calling handleAutocomplete
