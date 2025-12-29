@@ -3,7 +3,7 @@
 // Clean Mockup Design - Full Features
 // ============================================
 
-const APP_VERSION = '1.9.3.0-beta';
+const APP_VERSION = '1.9.3.1-beta';
 
 // DOM Elements
 const elements = {
@@ -1809,8 +1809,21 @@ function updateRatingBadge(badgeId, rating) {
 // ============================================
 
 async function openDetail(id, type, title, year, originalTitle) {
-    // Track if user came from search results (to restore on close)
-    state.cameFromSearch = state.searchResultsVisible;
+    // Track if user came from search (autocomplete or full search)
+    // Check both: 1) full search results visible, or 2) search input has value (autocomplete)
+    const searchInputValue = elements.searchInput?.value?.trim() || '';
+    const hasSearchContext = state.searchResultsVisible || searchInputValue.length > 0;
+
+    if (hasSearchContext) {
+        state.cameFromSearch = true;
+        // Save search query from input if not already saved (autocomplete case)
+        if (!state.searchQuery || state.searchQuery !== searchInputValue) {
+            state.searchQuery = searchInputValue;
+        }
+        console.log('Opening detail from search context:', state.searchQuery, 'Results:', state.searchResults?.length);
+    } else {
+        state.cameFromSearch = false;
+    }
 
     // Store current item for premium re-render
     state.currentItemId = id;
