@@ -7,6 +7,25 @@ Sürümleme: Major.Minor.Patch.Build (örn: 1.9.6.1)
 
 ---
 
+## [1.9.7.0] - 2025-12-29
+
+### Eklenen
+
+- **Ne İzlesem Yeniden Tasarım**: Tamamen yeni UI/UX tasarımı
+  - AI mood prompt kartı: "Nasıl Hissediyorsun?" gradient kartı
+  - Film/Dizi toggle: Modern toggle butonları
+  - 4 dropdown filtre: Tür, Dönem, Platform, Ruh Hali
+  - Sürpriz Yap butonu: Gradient tasarım ve animasyonlar
+  - Günün Önerisi featured card: Trending içerikten dinamik olarak doldurulur
+  - Mood Modal: Duygularını yazarak öneri alma (AI-ready)
+
+### Değişen
+
+- Ne İzlesem bölümü kart tabanlı wizard yerine compact dropdown filtrelere geçti
+- Featured card aspect-ratio responsive olarak ayarlandı
+
+---
+
 ## [1.9.6.1] - 2025-12-29
 
 ### Eklenen

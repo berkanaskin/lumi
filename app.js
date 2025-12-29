@@ -1087,16 +1087,242 @@ async function loadDiscoverPage() {
     elements.discoverSection.style.display = 'block';
     state.currentPage = 'discover';
 
-    // Show wizard, hide results initially
-    const wizard = document.getElementById('neizlesem-wizard');
+    // Hide results initially
     const results = document.getElementById('neizlesem-results');
-    if (wizard) wizard.style.display = 'flex';
     if (results) results.style.display = 'none';
 
     // Setup wizard event handlers (only once)
     if (!state.neizlesemSetup) {
         setupNeIzlesemWizard();
+        setupNeIzlesemNewUI();
         state.neizlesemSetup = true;
+    }
+
+    // Load featured recommendation card
+    loadFeaturedRecommendation();
+}
+
+// Setup new UI elements (mood prompt, dropdowns, etc.)
+function setupNeIzlesemNewUI() {
+    // Mood Prompt Card - opens modal
+    const moodPromptTrigger = document.getElementById('mood-prompt-trigger');
+    const moodModal = document.getElementById('mood-modal');
+    const moodModalClose = document.getElementById('mood-modal-close');
+    const moodSubmitBtn = document.getElementById('mood-submit-btn');
+
+    if (moodPromptTrigger && moodModal) {
+        moodPromptTrigger.addEventListener('click', () => {
+            moodModal.classList.add('visible');
+        });
+    }
+
+    if (moodModalClose && moodModal) {
+        moodModalClose.addEventListener('click', () => {
+            moodModal.classList.remove('visible');
+        });
+
+        // Close on backdrop click
+        moodModal.addEventListener('click', (e) => {
+            if (e.target === moodModal) {
+                moodModal.classList.remove('visible');
+            }
+        });
+    }
+
+    if (moodSubmitBtn) {
+        moodSubmitBtn.addEventListener('click', () => {
+            const moodText = document.getElementById('mood-textarea')?.value;
+            if (moodText && moodText.trim()) {
+                // TODO: AI-based recommendation based on mood text
+                console.log('Mood text:', moodText);
+            }
+            moodModal?.classList.remove('visible');
+            // Trigger generation with current filters
+            neIzlesemFilters.page = 1;
+            generateNeIzlesemResults(false);
+        });
+    }
+
+    // Type Toggle Buttons (new style)
+    document.querySelectorAll('.type-toggle-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.type-toggle-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            neIzlesemFilters.type = btn.dataset.value;
+        });
+    });
+
+    // Filter Dropdowns
+    setupFilterDropdowns();
+
+    // Show All Recommendations button
+    const showAllBtn = document.getElementById('show-all-recommendations');
+    if (showAllBtn) {
+        showAllBtn.addEventListener('click', () => {
+            neIzlesemFilters.page = 1;
+            generateNeIzlesemResults(false);
+        });
+    }
+}
+
+// Setup filter dropdown toggles and selection
+function setupFilterDropdowns() {
+    const dropdownWrappers = document.querySelectorAll('.filter-dropdown-wrapper');
+
+    dropdownWrappers.forEach(wrapper => {
+        const btn = wrapper.querySelector('.filter-dropdown');
+        const menu = wrapper.querySelector('.filter-dropdown-menu');
+
+        if (btn && menu) {
+            // Toggle dropdown on click
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+
+                // Close other dropdowns
+                document.querySelectorAll('.filter-dropdown-menu.visible').forEach(m => {
+                    if (m !== menu) m.classList.remove('visible');
+                });
+                document.querySelectorAll('.filter-dropdown.open').forEach(b => {
+                    if (b !== btn) b.classList.remove('open');
+                });
+
+                btn.classList.toggle('open');
+                menu.classList.toggle('visible');
+            });
+
+            // Option selection
+            menu.querySelectorAll('.filter-option').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const value = option.dataset.value;
+                    const filterType = btn.dataset.filter;
+
+                    // Update button label
+                    const label = btn.querySelector('.filter-label');
+                    if (label) {
+                        label.textContent = option.textContent;
+                    }
+
+                    // Mark as selected
+                    menu.querySelectorAll('.filter-option').forEach(o => o.classList.remove('selected'));
+                    option.classList.add('selected');
+
+                    // Update filters based on type
+                    if (filterType === 'genre' && value) {
+                        neIzlesemFilters.genres = [value];
+                    } else if (filterType === 'platform') {
+                        neIzlesemFilters.platforms = value === 'all' ? [] : [value];
+                    } else if (filterType === 'era') {
+                        neIzlesemFilters.era = value;
+                    } else if (filterType === 'mood') {
+                        neIzlesemFilters.style = value;
+                    }
+
+                    // Close dropdown
+                    btn.classList.remove('open');
+                    menu.classList.remove('visible');
+                });
+            });
+        }
+    });
+
+    // Close dropdowns on outside click
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.filter-dropdown-menu.visible').forEach(m => m.classList.remove('visible'));
+        document.querySelectorAll('.filter-dropdown.open').forEach(b => b.classList.remove('open'));
+    });
+}
+
+// Load featured recommendation card with trending content
+async function loadFeaturedRecommendation() {
+    const featuredCard = document.getElementById('featured-recommendation-card');
+    if (!featuredCard) return;
+
+    try {
+        const lang = state.currentLanguage;
+        const region = localStorage.getItem('detectedRegion') || 'TR';
+
+        // Get trending content
+        const response = await fetch(
+            `https://api.themoviedb.org/3/trending/all/day?api_key=${CONFIG.TMDB_API_KEY}&language=${lang}`
+        );
+
+        if (!response.ok) throw new Error('Failed to fetch trending');
+
+        const data = await response.json();
+        const items = data.results || [];
+
+        if (items.length === 0) {
+            featuredCard.innerHTML = '<div class="featured-loading"><p>İçerik bulunamadı</p></div>';
+            return;
+        }
+
+        // Pick a random item from top 5
+        const item = items[Math.floor(Math.random() * Math.min(5, items.length))];
+        const title = item.title || item.name || 'Bilinmeyen';
+        const overview = item.overview || '';
+        const rating = item.vote_average ? item.vote_average.toFixed(1) : 'N/A';
+        const backdropUrl = item.backdrop_path
+            ? `https://image.tmdb.org/t/p/w780${item.backdrop_path}`
+            : (item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : null);
+        const mediaType = item.media_type || 'movie';
+        const itemId = item.id;
+
+        featuredCard.innerHTML = `
+            <div class="featured-card-image" style="background-image: url('${backdropUrl || ''}')"></div>
+            <div class="featured-card-overlay"></div>
+            <div class="featured-card-content">
+                <div class="featured-badges">
+                    <span class="featured-badge-new">YENİ</span>
+                    <div class="featured-rating">
+                        <span class="featured-rating-star">⭐</span>
+                        <span>${rating}</span>
+                    </div>
+                </div>
+                <h3 class="featured-card-title">${title}</h3>
+                <p class="featured-card-desc">${overview}</p>
+                <div class="featured-card-actions">
+                    <button class="featured-watch-btn" data-id="${itemId}" data-type="${mediaType}">
+                        <span>▶</span>
+                        <span>Detayları Gör</span>
+                    </button>
+                    <button class="featured-add-btn" data-id="${itemId}" data-type="${mediaType}" data-title="${title}">
+                        <span>+</span>
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // Watch button clicks
+        const watchBtn = featuredCard.querySelector('.featured-watch-btn');
+        if (watchBtn) {
+            watchBtn.addEventListener('click', () => {
+                openDetail(watchBtn.dataset.id, watchBtn.dataset.type);
+            });
+        }
+
+        // Add to favorites button
+        const addBtn = featuredCard.querySelector('.featured-add-btn');
+        if (addBtn) {
+            addBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Toggle favorite
+                if (typeof toggleFavorite === 'function') {
+                    toggleFavorite(addBtn.dataset.id, addBtn.dataset.type, addBtn.dataset.title);
+                }
+            });
+        }
+
+        // Make whole card clickable
+        featuredCard.addEventListener('click', (e) => {
+            if (!e.target.closest('button')) {
+                openDetail(itemId, mediaType);
+            }
+        });
+
+    } catch (error) {
+        console.error('Failed to load featured recommendation:', error);
+        featuredCard.innerHTML = '<div class="featured-loading"><p>Yüklenirken hata oluştu</p></div>';
     }
 }
 
