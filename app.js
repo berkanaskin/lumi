@@ -905,6 +905,9 @@ function hideAllSections() {
 }
 
 async function loadHomePage() {
+    // Debug: trace where this function is called from
+    console.trace('loadHomePage called from:');
+
     // Check if we should skip this call (after search restore)
     // Use both flag and timestamp for robust protection
     const timeSinceRestore = Date.now() - state.searchRestoreTime;
