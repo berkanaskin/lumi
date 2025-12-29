@@ -27,7 +27,7 @@ const i18n = {
             trending: 'Popüler',
             newReleases: 'Yeni Çıkanlar',
             classics: 'Klasikler',
-            suggested: 'Önerilen',
+            suggested: 'Size Özel',
             turkishContent: '🇹🇷 Türk Yapımları',
             localContent: 'Yerel İçerikler',
 

@@ -23,17 +23,46 @@
                 <span class="wtw-logo-text">WtW</span>
             </div>
             <div class="header-right">
-                <!-- Language Selector -->
-                <select id="language-select" class="language-select-mini">
-                    <option value="tr">🇹🇷</option>
-                    <option value="en">🇺🇸</option>
-                    <option value="de">🇩🇪</option>
-                    <option value="fr">🇫🇷</option>
-                    <option value="es">🇪🇸</option>
-                    <option value="ja">🇯🇵</option>
-                    <option value="zh">🇨🇳</option>
-                    <option value="ko">🇰🇷</option>
-                </select>
+                <!-- Custom Language Dropdown -->
+                <div class="lang-dropdown-container" id="lang-dropdown-container">
+                    <button class="lang-dropdown-btn" id="lang-dropdown-btn">
+                        <img src="https://flagcdn.com/w40/tr.png" alt="TR" class="lang-flag" id="current-lang-flag">
+                    </button>
+                    <div class="lang-dropdown-menu" id="lang-dropdown-menu">
+                        <button class="lang-option" data-lang="tr">
+                            <img src="https://flagcdn.com/w40/tr.png" alt="TR" class="lang-flag">
+                            <span>Türkçe</span>
+                        </button>
+                        <button class="lang-option" data-lang="en">
+                            <img src="https://flagcdn.com/w40/us.png" alt="EN" class="lang-flag">
+                            <span>English</span>
+                        </button>
+                        <button class="lang-option" data-lang="de">
+                            <img src="https://flagcdn.com/w40/de.png" alt="DE" class="lang-flag">
+                            <span>Deutsch</span>
+                        </button>
+                        <button class="lang-option" data-lang="fr">
+                            <img src="https://flagcdn.com/w40/fr.png" alt="FR" class="lang-flag">
+                            <span>Français</span>
+                        </button>
+                        <button class="lang-option" data-lang="es">
+                            <img src="https://flagcdn.com/w40/es.png" alt="ES" class="lang-flag">
+                            <span>Español</span>
+                        </button>
+                        <button class="lang-option" data-lang="ja">
+                            <img src="https://flagcdn.com/w40/jp.png" alt="JA" class="lang-flag">
+                            <span>日本語</span>
+                        </button>
+                        <button class="lang-option" data-lang="zh">
+                            <img src="https://flagcdn.com/w40/cn.png" alt="ZH" class="lang-flag">
+                            <span>中文</span>
+                        </button>
+                        <button class="lang-option" data-lang="ko">
+                            <img src="https://flagcdn.com/w40/kr.png" alt="KO" class="lang-flag">
+                            <span>한국어</span>
+                        </button>
+                    </div>
+                </div>
                 <!-- Notification Bell -->
                 <button class="header-icon-btn" id="notification-btn" title="Bildirimler">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

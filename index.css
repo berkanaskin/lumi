@@ -173,43 +173,86 @@ body {
     gap: 6px;
 }
 
-/* Mini Language Selector - Compact Icon Style */
-.language-select-mini {
-    appearance: none;
-    -webkit-appearance: none;
-    background: var(--glass);
-    border: 1px solid var(--glass-border);
-    border-radius: 50%;
-    color: var(--white);
-    font-size: 1.4rem;
-    line-height: 1;
-    cursor: pointer;
+/* Custom Language Dropdown */
+.lang-dropdown-container {
+    position: relative;
+}
+
+.lang-dropdown-btn {
     width: 36px;
     height: 36px;
+    border-radius: 50%;
+    background: var(--glass);
+    border: 2px solid var(--glass-border);
+    cursor: pointer;
     padding: 0;
-    text-align: center;
+    overflow: hidden;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.lang-dropdown-btn:hover {
+    border-color: var(--accent);
+    transform: scale(1.05);
+}
+
+.lang-dropdown-btn .lang-flag {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.lang-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: rgba(15, 15, 25, 0.98);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(20px);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
     transition: all 0.2s ease;
+    z-index: 9999;
+    overflow: hidden;
+    min-width: 150px;
 }
 
-.language-select-mini:hover {
+.lang-dropdown-menu.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.lang-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 14px;
+    background: transparent;
+    border: none;
+    color: var(--white-soft);
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.lang-option:hover {
     background: rgba(139, 92, 246, 0.2);
-    border-color: var(--accent);
 }
 
-.language-select-mini:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
-}
-
-.language-select-mini option {
-    background: #1a1a2e;
-    color: var(--white);
-    font-size: 1.2rem;
-    padding: 8px;
+.lang-option .lang-flag {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 /* Unified Header Icon Button */

@@ -3,7 +3,7 @@
 // Clean Mockup Design - Full Features
 // ============================================
 
-const APP_VERSION = '1.9.1.9-beta';
+const APP_VERSION = '1.9.2.0-beta';
 
 // DOM Elements
 const elements = {
@@ -72,6 +72,12 @@ const state = {
     currentItemId: null,
     currentItemType: null,
     autocompleteTimeout: null,
+
+    // Search State Persistence
+    searchQuery: '',
+    searchResults: [],
+    searchResultsVisible: false,
+    cameFromSearch: false,
 
     // Auth State
     currentUser: null,
@@ -618,8 +624,14 @@ function applyLanguage(langCode) {
 
     localStorage.setItem('language', langCode);
 
-    if (elements.languageSelect) {
-        elements.languageSelect.value = langCode;
+    // Update custom flag dropdown
+    const langToFlag = {
+        'tr': 'tr', 'en': 'us', 'de': 'de', 'fr': 'fr',
+        'es': 'es', 'ja': 'jp', 'zh': 'cn', 'ko': 'kr'
+    };
+    const currentLangFlag = document.getElementById('current-lang-flag');
+    if (currentLangFlag) {
+        currentLangFlag.src = `https://flagcdn.com/w40/${langToFlag[langCode] || 'tr'}.png`;
     }
 
     // Update i18n and apply translations
@@ -654,10 +666,40 @@ function setupEventListeners() {
         elements.themeToggle.addEventListener('click', toggleTheme);
     }
 
-    // Language select
-    if (elements.languageSelect) {
-        elements.languageSelect.addEventListener('change', (e) => {
-            handleLanguageChange(e.target.value);
+    // Custom Language Dropdown
+    const langDropdownBtn = document.getElementById('lang-dropdown-btn');
+    const langDropdownMenu = document.getElementById('lang-dropdown-menu');
+    const currentLangFlag = document.getElementById('current-lang-flag');
+
+    if (langDropdownBtn && langDropdownMenu) {
+        // Toggle dropdown
+        langDropdownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            langDropdownMenu.classList.toggle('visible');
+        });
+
+        // Language option click
+        langDropdownMenu.querySelectorAll('.lang-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const langCode = option.dataset.lang;
+                const flagImg = option.querySelector('.lang-flag');
+
+                // Update current flag
+                if (currentLangFlag && flagImg) {
+                    currentLangFlag.src = flagImg.src;
+                }
+
+                // Close dropdown
+                langDropdownMenu.classList.remove('visible');
+
+                // Apply language change
+                handleLanguageChange(langCode);
+            });
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', () => {
+            langDropdownMenu.classList.remove('visible');
         });
     }
 
@@ -1515,6 +1557,13 @@ function showAutocomplete(results) {
             const year = item.dataset.year;
             const original = item.dataset.original;
 
+            // Save search query for restoration on modal close
+            const currentQuery = elements.searchInput.value.trim();
+            if (currentQuery) {
+                state.searchQuery = currentQuery;
+                state.searchResultsVisible = true;
+            }
+
             hideAutocomplete();
             elements.searchInput.value = title;
             openDetail(id, type, title, year, original);
@@ -1547,6 +1596,11 @@ async function handleSearch() {
         // Sort by popularity (descending)
         const sortedResults = data.results.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
 
+        // Save search state for persistence
+        state.searchQuery = query;
+        state.searchResults = sortedResults;
+        state.searchResultsVisible = true;
+
         elements.resultsGrid.innerHTML = '';
         sortedResults.forEach(item => {
             const card = createMovieCard(item, item.media_type || 'movie');
@@ -1554,6 +1608,7 @@ async function handleSearch() {
         });
         elements.resultsCount.textContent = `${sortedResults.length} sonuç`;
     } else {
+        state.searchResultsVisible = false;
         showNoResults();
     }
 }
@@ -1673,6 +1728,9 @@ function updateRatingBadge(badgeId, rating) {
 // ============================================
 
 async function openDetail(id, type, title, year, originalTitle) {
+    // Track if user came from search results (to restore on close)
+    state.cameFromSearch = state.searchResultsVisible;
+
     // Store current item for premium re-render
     state.currentItemId = id;
     state.currentItemType = type;
@@ -2483,6 +2541,35 @@ function closeModal() {
     // Show bottom nav when modal closes
     const bottomNav = document.querySelector('.bottom-nav');
     if (bottomNav) bottomNav.style.display = 'flex';
+
+    // Restore search state if user came from search
+    if (state.cameFromSearch && state.searchQuery) {
+        // Keep search input value
+        if (elements.searchInput) {
+            elements.searchInput.value = state.searchQuery;
+        }
+        // Show search results section
+        hideAllSections();
+        elements.searchResultsSection.style.display = 'block';
+
+        // Re-render results from saved state
+        if (state.searchResults && state.searchResults.length > 0) {
+            elements.resultsTitle.textContent = `"${state.searchQuery}"`;
+            elements.resultsGrid.innerHTML = '';
+            state.searchResults.forEach(item => {
+                const card = createMovieCard(item, item.media_type || 'movie');
+                elements.resultsGrid.appendChild(card);
+            });
+            elements.resultsCount.textContent = `${state.searchResults.length} sonuç`;
+        }
+        // Show search clear button
+        if (elements.searchClear) {
+            elements.searchClear.style.display = 'block';
+        }
+    }
+
+    // Reset cameFromSearch flag
+    state.cameFromSearch = false;
 }
 
 // ============================================
