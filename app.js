@@ -1690,18 +1690,18 @@ function showAutocomplete(results) {
             const year = item.dataset.year;
             const original = item.dataset.original;
 
-            // Save the ORIGINAL search query (before changing input value)
+            // Save the ORIGINAL search query before any changes
             const originalQuery = elements.searchInput.value.trim();
             if (originalQuery) {
                 state.searchQuery = originalQuery;
-                // Store autocomplete results as searchResults for restoration
+                // Store autocomplete results for restoration
                 state.searchResults = results;
                 state.searchResultsVisible = true;
+                state.cameFromSearch = true; // Mark that user came from search
                 state.searchScrollPosition = window.scrollY;
             }
 
             hideAutocomplete();
-            // Don't change input value - keep original query
             openDetail(id, type, title, year, original);
         });
     });
