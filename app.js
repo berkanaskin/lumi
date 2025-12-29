@@ -1079,6 +1079,7 @@ const neIzlesemFilters = {
     style: 'popular',
     genres: [],
     platforms: [],
+    era: '',
     page: 1
 };
 
@@ -1636,11 +1637,31 @@ async function generateNeIzlesemResults(append = false) {
         const genreStr = neIzlesemFilters.genres.join(',') || '';
         const platformStr = neIzlesemFilters.platforms.join('|') || '';
 
+        // Build era (date range) filter
+        let eraFilter = '';
+        if (neIzlesemFilters.era) {
+            const era = neIzlesemFilters.era;
+            if (era === '2020') {
+                eraFilter = 'primary_release_date.gte=2020-01-01';
+            } else if (era === '2010') {
+                eraFilter = 'primary_release_date.gte=2010-01-01&primary_release_date.lte=2019-12-31';
+            } else if (era === '2000') {
+                eraFilter = 'primary_release_date.gte=2000-01-01&primary_release_date.lte=2009-12-31';
+            } else if (era === '1990') {
+                eraFilter = 'primary_release_date.gte=1990-01-01&primary_release_date.lte=1999-12-31';
+            } else if (era === '1980') {
+                eraFilter = 'primary_release_date.gte=1980-01-01&primary_release_date.lte=1989-12-31';
+            } else if (era === 'classic') {
+                eraFilter = 'primary_release_date.lte=1979-12-31';
+            }
+        }
+
         // Fetch movies
         if (neIzlesemFilters.type !== 'tv') {
             let movieUrl = `/discover/movie?language=${lang}&${baseQuery}&page=${page}`;
             if (genreStr) movieUrl += `&with_genres=${genreStr}`;
             if (platformStr) movieUrl += `&with_watch_providers=${platformStr}&watch_region=TR`;
+            if (eraFilter) movieUrl += `&${eraFilter}`;
 
             const movieData = await API.fetchTMDB(movieUrl);
             allResults.push(...(movieData.results || []).map(m => ({ ...m, media_type: 'movie' })));
@@ -1649,9 +1670,11 @@ async function generateNeIzlesemResults(append = false) {
         // Fetch TV shows
         if (neIzlesemFilters.type !== 'movie') {
             let tvQuery = baseQuery.replace('primary_release_date', 'first_air_date');
+            let tvEraFilter = eraFilter.replace(/primary_release_date/g, 'first_air_date');
             let tvUrl = `/discover/tv?language=${lang}&${tvQuery}&page=${page}`;
             if (genreStr) tvUrl += `&with_genres=${genreStr}`;
             if (platformStr) tvUrl += `&with_watch_providers=${platformStr}&watch_region=TR`;
+            if (tvEraFilter) tvUrl += `&${tvEraFilter}`;
 
             const tvData = await API.fetchTMDB(tvUrl);
             allResults.push(...(tvData.results || []).map(t => ({ ...t, media_type: 'tv' })));
@@ -1741,9 +1764,10 @@ function resetNeIzlesemFilters() {
     neIzlesemFilters.style = 'popular';
     neIzlesemFilters.genres = [];
     neIzlesemFilters.platforms = [];
+    neIzlesemFilters.era = '';
     neIzlesemFilters.page = 1;
 
-    // Reset UI
+    // Reset UI - wizard buttons
     document.querySelectorAll('.wizard-btn').forEach(btn => {
         btn.classList.remove('active');
         if (btn.dataset.value === 'all' || btn.dataset.value === 'popular') {
@@ -1753,6 +1777,19 @@ function resetNeIzlesemFilters() {
     document.querySelectorAll('.wizard-chip').forEach(chip => {
         chip.classList.remove('selected');
     });
+
+    // Reset filter dropdown labels
+    document.querySelectorAll('.filter-dropdown').forEach(dropdown => {
+        const label = dropdown.querySelector('.filter-label');
+        const filter = dropdown.dataset.filter;
+        if (label) {
+            if (filter === 'genre') label.textContent = 'Tür';
+            else if (filter === 'era') label.textContent = 'Dönem';
+            else if (filter === 'platform') label.textContent = 'Platform';
+            else if (filter === 'mood') label.textContent = 'Ruh Hali';
+        }
+    });
+    document.querySelectorAll('.filter-option.selected').forEach(opt => opt.classList.remove('selected'));
 
     // Show wizard, hide results
     const wizard = document.getElementById('neizlesem-wizard');
