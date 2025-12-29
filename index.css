@@ -2133,6 +2133,90 @@ a.rating-box.rt:hover {
     font-size: 0.8rem;
 }
 
+/* User Menu Container */
+.user-menu-container {
+    position: relative;
+}
+
+.user-name-text {
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dropdown-arrow {
+    font-size: 0.6rem;
+    opacity: 0.6;
+}
+
+/* User Dropdown Menu */
+.user-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: rgba(15, 15, 25, 0.98);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(20px);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+    z-index: 9999;
+    min-width: 180px;
+    padding: 8px 0;
+}
+
+.user-dropdown.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    color: var(--white-soft);
+    text-decoration: none;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    transition: background 0.15s ease;
+}
+
+.dropdown-item:hover {
+    background: rgba(139, 92, 246, 0.15);
+}
+
+.dropdown-item.locked {
+    opacity: 0.7;
+}
+
+.dropdown-item.locked small {
+    font-size: 0.7rem;
+    opacity: 0.8;
+    margin-left: 4px;
+}
+
+.dropdown-item.logout {
+    color: #ef4444;
+}
+
+.dropdown-icon {
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: var(--glass-border);
+    margin: 6px 0;
+}
+
 /* Login Modal */
 .login-modal {
     display: none;
