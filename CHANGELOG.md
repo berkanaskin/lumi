@@ -9,20 +9,23 @@ Sürümleme: Major.Minor.Patch.Build (örn: 1.9.6.1)
 
 ## [1.9.8.0] - 2025-12-30
 
-### Eklenen
+### FAZ 1 Revizyonları
 
-- **Tüm ikonlar SVG**: Emoji ikonlar modern SVG ikonlara dönüştürüldü
-- **Ne İzlesem → Arama Sonuçları**: Öneriler artık ana arama sonuçları gibi grid görünümünde
+**Eklenen:**
 
-### Düzeltilen
+- **Size Özel Akıllı Algoritma**: Favoriler ve watchlist'ten genre analizi, veri yoksa popüler + yerel karışık öneri
+- **Tümünü Gör Butonları**: 4 section için infinite scroll destekli tam sayfa görünüm
+- **closeAllDropdowns()**: Tüm dropdown'lar için global kapatma fonksiyonu
 
-- **Premium Satın Alma**: Premium sonrası "Haber Ver" butonu anında güncelleniyor
-- **Bayrak Ortalama**: Dil dropdown'ındaki bayraklar düzgün ortalanıyor
-- **Header İkon Boyutu**: 36px'den 32px'e küçültüldü
-- **Dönem Filtresi**: 2010'lar = 2010-2019 olarak düzeltildi
-- **Haber Ver Çift İkon**: SVG ikonu ile tek ikon gösterilmesi sağlandı
+**Düzeltilen:**
 
-### Silinen
+- **Header Buton Boyutları**: Login/dil/bildirim butonları 32px ile uniform
+- **Bayrak Ortalama**: Dil dropdown'ında bayraklar ortalandı, border eklendi
+- **Dropdown Çakışması**: Bir dropdown açıldığında diğerleri kapanıyor
+- **Autocomplete Navigasyon**: Detay modal'dan dönüşte ana sayfaya akıllı yönlendirme
+- **Slider Item Sayısı**: 50'den 20'ye düşürüldü (performans)
+
+**Silinen:**
 
 - `assets/code.html` - Eski Tailwind mockup
 - `assets/stitch_ke_fet_ana_sayfas.zip` - Gereksiz zip dosyası
