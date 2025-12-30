@@ -7,6 +7,28 @@ Sürümleme: Major.Minor.Patch.Build (örn: 1.9.6.1)
 
 ---
 
+## [1.9.8.0] - 2025-12-30
+
+### Eklenen
+
+- **Tüm ikonlar SVG**: Emoji ikonlar modern SVG ikonlara dönüştürüldü
+- **Ne İzlesem → Arama Sonuçları**: Öneriler artık ana arama sonuçları gibi grid görünümünde
+
+### Düzeltilen
+
+- **Premium Satın Alma**: Premium sonrası "Haber Ver" butonu anında güncelleniyor
+- **Bayrak Ortalama**: Dil dropdown'ındaki bayraklar düzgün ortalanıyor
+- **Header İkon Boyutu**: 36px'den 32px'e küçültüldü
+- **Dönem Filtresi**: 2010'lar = 2010-2019 olarak düzeltildi
+- **Haber Ver Çift İkon**: SVG ikonu ile tek ikon gösterilmesi sağlandı
+
+### Silinen
+
+- `assets/code.html` - Eski Tailwind mockup
+- `assets/stitch_ke_fet_ana_sayfas.zip` - Gereksiz zip dosyası
+
+---
+
 ## [1.9.7.0] - 2025-12-29
 
 ### Eklenen
