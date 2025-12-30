@@ -2534,7 +2534,7 @@ function renderDetail(details, providers, type, itemId) {
                             ${favBtnText}
                         </button>
                         <button class="action-btn notify-btn ${!isPremium ? 'locked' : ''}" id="notify-btn" ${!isMember ? 'disabled' : ''}>
-                            ${isPremium ? '🔔 Haber Ver' : '🔒 Haber Ver (Premium)'}
+                            ${isPremium ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> Haber Ver' : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Haber Ver (Premium)'}
                         </button>
                     </div>
                     ${isMember ? `
@@ -2785,7 +2785,7 @@ function renderDetail(details, providers, type, itemId) {
             if (isWatching) {
                 // Remove from watchlist
                 window.NotificationService.removeFromWatchlist(itemId, type);
-                notifyBtn.innerHTML = '🔔 Haber Ver';
+                notifyBtn.innerHTML = '<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9\"/><path d=\"M13.73 21a2 2 0 0 1-3.46 0\"/></svg> Haber Ver';
                 notifyBtn.classList.remove('watching');
             } else {
                 // Add to watchlist
@@ -2797,7 +2797,7 @@ function renderDetail(details, providers, type, itemId) {
                 });
 
                 if (added) {
-                    notifyBtn.innerHTML = '✓ Takipte';
+                    notifyBtn.innerHTML = '<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><polyline points=\"20 6 9 17 4 12\"/></svg> Takipte';
                     notifyBtn.classList.add('watching');
                 }
             }

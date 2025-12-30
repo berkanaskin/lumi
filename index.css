@@ -209,12 +209,14 @@ body {
 }
 
 .lang-dropdown-btn .lang-flag {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
     object-fit: cover;
-    object-position: center;
+    object-position: center center;
     border-radius: 50%;
-    transform: scale(1.1);
+    clip-path: circle(50% at center);
 }
 
 .lang-dropdown-menu {
