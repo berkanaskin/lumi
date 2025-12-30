@@ -921,6 +921,100 @@ function hideAllSections() {
     if (elements.suggestedSection) elements.suggestedSection.style.display = 'none';
 }
 
+// ============================================
+// SMART SUGGESTIONS FOR "SIZE ÖZEL"
+// ============================================
+async function generateSmartSuggestions() {
+    try {
+        // Get user's favorites and watchlist
+        const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+        const watchlist = window.NotificationService?.getWatchlist() || [];
+
+        // Analyze genres from favorites and watchlist
+        const genreCounts = {};
+        const allUserItems = [...favorites, ...watchlist];
+
+        // If user has data, analyze it
+        if (allUserItems.length > 0) {
+            // Fetch details for a sample of items to get genres
+            const sampleSize = Math.min(10, allUserItems.length);
+            const sampleItems = allUserItems.slice(0, sampleSize);
+
+            for (const item of sampleItems) {
+                try {
+                    const details = await API.getDetails(item.id, item.type, state.currentLanguage);
+                    if (details.genres) {
+                        details.genres.forEach(g => {
+                            genreCounts[g.id] = (genreCounts[g.id] || 0) + 1;
+                        });
+                    }
+                } catch (err) {
+                    console.log('Failed to fetch genre for item:', item.id);
+                }
+            }
+        }
+
+        // Get top 3 genres
+        const topGenres = Object.entries(genreCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 3)
+            .map(([id]) => id);
+
+        let results = [];
+
+        // If we have genre preferences, use them
+        if (topGenres.length > 0) {
+            const genreQuery = topGenres.join(',');
+
+            // Get mixed movie + TV recommendations based on user's favorite genres
+            const [movieRecs, tvRecs] = await Promise.all([
+                API.fetchTMDB(`/discover/movie?language=${state.currentLanguage}&with_genres=${genreQuery}&sort_by=vote_average.desc&vote_count.gte=100`),
+                API.fetchTMDB(`/discover/tv?language=${state.currentLanguage}&with_genres=${genreQuery}&sort_by=vote_average.desc&vote_count.gte=50`)
+            ]);
+
+            // Mix movies and TV shows
+            const movieResults = (movieRecs.results || []).map(m => ({ ...m, media_type: 'movie' }));
+            const tvResults = (tvRecs.results || []).map(t => ({ ...t, media_type: 'tv' }));
+            results = [...movieResults.slice(0, 15), ...tvResults.slice(0, 15)];
+
+            // Shuffle for variety
+            results = results.sort(() => Math.random() - 0.5);
+        }
+        // If no data, use popular + local content strategy
+        else {
+            const localLang = state.currentRegion === 'TR' ? 'tr' : (state.currentRegion === 'US' ? 'en' : state.currentLanguageCode);
+
+            const [popular, localContent] = await Promise.all([
+                // Popular mixed (movies + tv)
+                API.fetchTMDB(`/trending/all/week?language=${state.currentLanguage}`),
+                // Local content with high ratings
+                API.fetchTMDB(`/discover/movie?language=${state.currentLanguage}&with_original_language=${localLang}&sort_by=vote_average.desc&vote_count.gte=50`)
+            ]);
+
+            const popularResults = (popular.results || []).slice(0, 25);
+            const localResults = (localContent.results || []).slice(0, 10).map(m => ({ ...m, media_type: 'movie' }));
+
+            // Mix: 70% popular, 30% local
+            results = [];
+            for (let i = 0; i < 30; i++) {
+                if (i % 3 === 2 && localResults.length > 0) {
+                    results.push(localResults.shift());
+                } else if (popularResults.length > 0) {
+                    results.push(popularResults.shift());
+                }
+            }
+        }
+
+        return results.slice(0, 50);
+
+    } catch (error) {
+        console.error('Smart suggestions error:', error);
+        // Fallback: return top rated
+        const fallback = await API.fetchTMDB(`/movie/top_rated?language=${state.currentLanguage}`);
+        return (fallback.results || []).map(m => ({ ...m, media_type: 'movie' }));
+    }
+}
+
 async function loadHomePage() {
     // Check if we should skip this call (after search restore)
     // Use both flag and timestamp for robust protection
@@ -981,11 +1075,10 @@ async function loadHomePage() {
             API.fetchTMDB(`/discover/tv?language=${state.currentLanguage}&with_original_language=${localLang}&sort_by=popularity.desc`)
         ];
 
-        // Fetch suggested content if user is logged in (3 pages)
+        // Fetch smart suggestions if user is logged in
+        let suggestedResults = [];
         if (state.userTier !== 'guest') {
-            promises.push(API.fetchTMDB(`/movie/top_rated?language=${state.currentLanguage}&page=1`));
-            promises.push(API.fetchTMDB(`/movie/top_rated?language=${state.currentLanguage}&page=2`));
-            promises.push(API.fetchTMDB(`/movie/top_rated?language=${state.currentLanguage}&page=3`));
+            suggestedResults = await generateSmartSuggestions();
         }
 
         const results = await Promise.all(promises);
@@ -1008,16 +1101,6 @@ async function loadHomePage() {
         const localMovies = results[7];
         const localTv = results[8];
 
-        // Combine suggested pages if available
-        let suggestedResults = [];
-        if (state.userTier !== 'guest' && results.length > 9) {
-            suggestedResults = [
-                ...(results[9].results || []),
-                ...(results[10].results || []),
-                ...(results[11].results || [])
-            ];
-        }
-
         hideLoading();
 
         // Mix MORE local content into trending (15 local items total)
@@ -1034,42 +1117,42 @@ async function loadHomePage() {
             }
         });
 
-        // Display trending (with local content mixed in) - 50 items
+        // Display trending (with local content mixed in) - 20 items
         elements.trendingSlider.innerHTML = '';
-        mixedTrending.slice(0, 50).forEach(item => {
+        mixedTrending.slice(0, 20).forEach(item => {
             const card = createMovieCard(item, item.media_type || 'movie');
             elements.trendingSlider.appendChild(card);
         });
 
-        // Display new releases (with local content mixed in) - 50 items
+        // Display new releases (with local content mixed in) - 20 items
         elements.newReleasesSlider.innerHTML = '';
         const mixedNewReleases = [...newReleasesResults];
         // Add local movies to new releases at various positions
-        localMoviesList.slice(0, 5).forEach((item, i) => {
+        localMoviesList.slice(0, 3).forEach((item, i) => {
             const insertPos = 4 + (i * 4);
-            if (insertPos < mixedNewReleases.length + 5) {
+            if (insertPos < mixedNewReleases.length + 3) {
                 mixedNewReleases.splice(insertPos, 0, { ...item, media_type: 'movie' });
             }
         });
-        mixedNewReleases.slice(0, 50).forEach(item => {
+        mixedNewReleases.slice(0, 20).forEach(item => {
             const card = createMovieCard({ ...item, media_type: 'movie' }, 'movie');
             elements.newReleasesSlider.appendChild(card);
         });
 
-        // Display classics - 50 items
+        // Display classics - 20 items
         if (elements.classicsSlider) {
             elements.classicsSlider.innerHTML = '';
-            (classics.results || []).slice(0, 50).forEach(item => {
+            (classics.results || []).slice(0, 20).forEach(item => {
                 const card = createMovieCard({ ...item, media_type: 'movie' }, 'movie');
                 elements.classicsSlider.appendChild(card);
             });
         }
 
-        // Display suggested if available (members only) - 50 items
+        // Display suggested if available (members only) - 20 items
         if (suggestedResults.length > 0 && elements.suggestedSlider) {
             elements.suggestedSlider.innerHTML = '';
-            suggestedResults.slice(0, 50).forEach(item => {
-                const card = createMovieCard({ ...item, media_type: 'movie' }, 'movie');
+            suggestedResults.slice(0, 20).forEach(item => {
+                const card = createMovieCard(item, item.media_type || 'movie');
                 elements.suggestedSlider.appendChild(card);
             });
         }

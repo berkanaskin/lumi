@@ -209,14 +209,15 @@ body {
 }
 
 .lang-dropdown-btn .lang-flag {
-    width: 28px;
-    height: 28px;
-    min-width: 28px;
-    min-height: 28px;
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    min-height: 26px;
     object-fit: cover;
     object-position: center center;
     border-radius: 50%;
-    clip-path: circle(50% at center);
+    clip-path: circle(48% at center);
+    border: 1.5px solid rgba(255, 255, 255, 0.15);
 }
 
 .lang-dropdown-menu {
@@ -268,7 +269,8 @@ body {
     border-radius: 50%;
     object-fit: cover;
     object-position: center center;
-    clip-path: circle(50% at center);
+    clip-path: circle(48% at center);
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 /* Unified Header Icon Button */
@@ -674,6 +676,25 @@ body {
     background: var(--glass);
     padding: 2px 8px;
     border-radius: 10px;
+}
+
+.view-all-btn {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--accent);
+    background: rgba(139, 92, 246, 0.1);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    padding: 4px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.view-all-btn:hover {
+    background: rgba(139, 92, 246, 0.2);
+    border-color: var(--accent);
+    transform: translateX(2px);
 }
 
 /* ============================================
@@ -2248,11 +2269,11 @@ a.rating-box.rt:hover {
     align-items: center;
     justify-content: center;
     gap: 4px;
-    height: 36px;
+    height: 32px;
     padding: 0 12px;
     background: var(--accent);
     border: none;
-    border-radius: 18px;
+    border-radius: 16px;
     color: white;
     font-size: 0.75rem;
     font-weight: 600;
