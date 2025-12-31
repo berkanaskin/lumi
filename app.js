@@ -2073,54 +2073,61 @@ function createMovieCardHTML(item, mediaType) {
     `;
 }
 
-function loadFavoritesPage(filterType = 'all') {
+function loadFavoritesPage(listType = 'liked') {
     hideAllSections();
     elements.favoritesSection.style.display = 'block';
 
-    let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    // Get items from correct localStorage based on tab
+    const likedItems = JSON.parse(localStorage.getItem('liked_items') || '[]');
+    const watchlistItems = JSON.parse(localStorage.getItem('watchlist_items') || '[]');
 
-    // Sort by rating (highest first)
-    favorites.sort((a, b) => (b.vote_average || 0) - (a.vote_average || 0));
+    let items = listType === 'liked' ? likedItems : watchlistItems;
 
-    // Filter by type
-    if (filterType === 'movie') {
-        favorites = favorites.filter(f => f.media_type === 'movie');
-    } else if (filterType === 'tv') {
-        favorites = favorites.filter(f => f.media_type === 'tv');
-    }
+    // Sort by addedAt (most recent first)
+    items.sort((a, b) => (b.addedAt || 0) - (a.addedAt || 0));
 
-    const allFavorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-    elements.favoritesCount.textContent = `${allFavorites.length} kayıtlı`;
+    // Update count
+    const totalCount = likedItems.length + watchlistItems.length;
+    elements.favoritesCount.textContent = `${totalCount} kayıtlı`;
 
     // Setup tabs
     const tabs = document.querySelectorAll('.fav-tab');
     tabs.forEach(tab => {
         tab.classList.remove('active');
-        if (tab.dataset.type === filterType) {
+        if (tab.dataset.list === listType) {
             tab.classList.add('active');
         }
-        tab.onclick = () => loadFavoritesPage(tab.dataset.type);
+        tab.onclick = () => loadFavoritesPage(tab.dataset.list);
     });
 
-    if (favorites.length === 0) {
-        const message = filterType === 'all'
-            ? 'Henüz favori eklemediniz'
-            : filterType === 'movie'
-                ? 'Favori filminiz yok'
-                : 'Favori diziniz yok';
-        elements.favoritesGrid.innerHTML = `
-            <div class="empty-favorites" style="grid-column: 1/-1;">
-                <div class="icon">❤️</div>
-                <p>${message}</p>
-                <p class="hint">Film veya dizi detayında ❤️ butonuna tıklayarak favorilere ekleyebilirsiniz</p>
-            </div>
-        `;
+    // Show empty message
+    const emptyListMessage = document.getElementById('empty-list-message');
+
+    if (items.length === 0) {
+        const message = listType === 'liked'
+            ? 'Henüz beğendiğiniz içerik yok'
+            : 'Henüz izleyeceğiniz içerik yok';
+        const hint = listType === 'liked'
+            ? 'Film veya dizi detayında ❤️ butonuna tıklayarak beğenebilirsiniz'
+            : 'Film veya dizi detayında + butonuna tıklayarak listeye ekleyebilirsiniz';
+
+        elements.favoritesGrid.innerHTML = '';
+        if (emptyListMessage) {
+            emptyListMessage.style.display = 'flex';
+            emptyListMessage.querySelector('p').textContent = message;
+            emptyListMessage.querySelector('small').textContent = hint;
+        }
         return;
     }
 
+    // Hide empty message
+    if (emptyListMessage) {
+        emptyListMessage.style.display = 'none';
+    }
+
     elements.favoritesGrid.innerHTML = '';
-    favorites.forEach(item => {
-        const card = createMovieCard(item, item.media_type || 'movie');
+    items.forEach(item => {
+        const card = createMovieCard(item, item.type || 'movie');
         elements.favoritesGrid.appendChild(card);
     });
 }
