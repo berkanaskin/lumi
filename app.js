@@ -299,8 +299,11 @@ function updateAuthUI() {
 
         menuBtn?.addEventListener('click', (e) => {
             e.stopPropagation();
-            closeAllDropdowns(); // Close other dropdowns first
-            dropdown.classList.toggle('visible');
+            const isOpen = dropdown.classList.contains('visible');
+            closeAllDropdowns(); // Close all dropdowns first
+            if (!isOpen) {
+                dropdown.classList.add('visible');
+            }
         });
 
         // Handle dropdown item clicks
