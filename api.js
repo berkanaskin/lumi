@@ -398,9 +398,11 @@ const API = {
 
     // Video filtreleme ve temizleme
     filterAndCleanVideos(videos, mustIncludeKeywords, movieTitle, originalTitle) {
+        if (!movieTitle && !originalTitle) return videos;
+
         const seen = new Set();
-        const movieTitleLower = movieTitle.toLowerCase();
-        const originalTitleLower = originalTitle?.toLowerCase() || movieTitleLower;
+        const movieTitleLower = (movieTitle || '').toLowerCase();
+        const originalTitleLower = (originalTitle || movieTitleLower).toLowerCase();
 
         return videos.filter(video => {
             const title = video.snippet.title.toLowerCase();
