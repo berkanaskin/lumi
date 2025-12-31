@@ -2651,7 +2651,13 @@ function renderDetail(details, providers, type, itemId) {
     const metacriticRating = allRatings?.metacritic || null;
     const metacriticUrl = `https://www.metacritic.com/search/${type === 'movie' ? 'movie' : 'tv'}/${encodeURIComponent(title)}/`;
 
-    // Check if in favorites
+    // Check if liked or in watchlist
+    const likedItems = JSON.parse(localStorage.getItem('liked_items') || '[]');
+    const watchlistItems = JSON.parse(localStorage.getItem('watchlist_items') || '[]');
+    const isLiked = likedItems.some(f => f.id === parseInt(itemId));
+    const isInWatchlist = watchlistItems.some(f => f.id === parseInt(itemId));
+
+    // Legacy favorites check (for backward compatibility)
     const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
     const isFavorite = favorites.some(f => f.id === parseInt(itemId));
     const favBtnText = isFavorite ? '❤️ Çıkar' : '🤍 Ekle';
@@ -2774,11 +2780,21 @@ function renderDetail(details, providers, type, itemId) {
 
                 <div class="modal-actions-container">
                     <div class="modal-actions">
-                        <button class="action-btn fav-btn" id="fav-btn" data-id="${itemId}" data-type="${type}">
-                            ${favBtnText}
+                        <button class="action-btn like-btn ${isLiked ? 'active' : ''}" id="like-btn" data-id="${itemId}" data-type="${type}" data-title="${title}" title="Beğen">
+                            <svg viewBox="0 0 24 24" fill="${isLiked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" width="18" height="18">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                            </svg>
+                            <span>${isLiked ? 'Beğendin' : 'Beğen'}</span>
                         </button>
-                        <button class="action-btn notify-btn ${!isPremium ? 'locked' : ''}" id="notify-btn" ${!isMember ? 'disabled' : ''}>
-                            ${isPremium ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> Haber Ver' : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Haber Ver (Premium)'}
+                        <button class="action-btn watchlist-btn ${isInWatchlist ? 'active' : ''}" id="watchlist-btn" data-id="${itemId}" data-type="${type}" data-title="${title}" title="İzleyeceğim">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                                ${isInWatchlist ? '<polyline points="20 6 9 17 4 12"/>' : '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>'}
+                            </svg>
+                            <span>${isInWatchlist ? 'Listede' : 'İzleyeceğim'}</span>
+                        </button>
+                        <button class="action-btn notify-btn ${!isPremium ? 'locked' : ''}" id="notify-btn" ${!isMember ? 'disabled' : ''} title="Haber Ver">
+                            ${isPremium ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>' : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'}
+                            <span>${isPremium ? 'Haber Ver' : 'Premium'}</span>
                         </button>
                     </div>
                     ${isMember ? `
@@ -2840,11 +2856,52 @@ function renderDetail(details, providers, type, itemId) {
         </div>
     `;
 
-    // Event Listeners
-    document.getElementById('fav-btn').addEventListener('click', (e) => {
-        toggleFavorite(details, type);
-        const isFav = JSON.parse(localStorage.getItem('favorites') || '[]').some(f => f.id === details.id);
-        e.target.textContent = isFav ? '❤️ Çıkar' : '🤍 Ekle';
+    // Event Listeners - Like Button
+    document.getElementById('like-btn')?.addEventListener('click', function () {
+        const id = parseInt(this.dataset.id);
+        const type = this.dataset.type;
+        const title = this.dataset.title;
+
+        let likedItems = JSON.parse(localStorage.getItem('liked_items') || '[]');
+        const existingIndex = likedItems.findIndex(item => item.id === id);
+
+        if (existingIndex >= 0) {
+            likedItems.splice(existingIndex, 1);
+            this.classList.remove('active');
+            this.querySelector('svg').setAttribute('fill', 'none');
+            this.querySelector('span').textContent = 'Beğen';
+        } else {
+            likedItems.push({ id, type, title, poster_path: details.poster_path, addedAt: Date.now() });
+            this.classList.add('active');
+            this.querySelector('svg').setAttribute('fill', 'currentColor');
+            this.querySelector('span').textContent = 'Beğendin';
+        }
+
+        localStorage.setItem('liked_items', JSON.stringify(likedItems));
+    });
+
+    // Event Listeners - Watchlist Button
+    document.getElementById('watchlist-btn')?.addEventListener('click', function () {
+        const id = parseInt(this.dataset.id);
+        const type = this.dataset.type;
+        const title = this.dataset.title;
+
+        let watchlistItems = JSON.parse(localStorage.getItem('watchlist_items') || '[]');
+        const existingIndex = watchlistItems.findIndex(item => item.id === id);
+
+        if (existingIndex >= 0) {
+            watchlistItems.splice(existingIndex, 1);
+            this.classList.remove('active');
+            this.querySelector('svg').innerHTML = '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>';
+            this.querySelector('span').textContent = 'İzleyeceğim';
+        } else {
+            watchlistItems.push({ id, type, title, poster_path: details.poster_path, addedAt: Date.now() });
+            this.classList.add('active');
+            this.querySelector('svg').innerHTML = '<polyline points="20 6 9 17 4 12"/>';
+            this.querySelector('span').textContent = 'Listede';
+        }
+
+        localStorage.setItem('watchlist_items', JSON.stringify(watchlistItems));
     });
 
     if (isMember) {
