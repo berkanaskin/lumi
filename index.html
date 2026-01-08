@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
@@ -10,10 +11,13 @@
     <title>Lumi</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="index_lumi.css">
 </head>
+
 <body>
     <!-- Ambient Glows (The Soul) -->
     <div class="ambient-glow ambient-glow-violet"></div>
@@ -25,6 +29,7 @@
              ============================================ -->
         <div class="sticky-search-header">
             <div class="status-bar-gradient"></div>
+            <span class="brand-logo">LUMI</span>
             <div class="search-pill-container">
                 <div class="search-pill" id="search-trigger">
                     <span class="material-symbols-outlined search-icon">search</span>
@@ -52,10 +57,11 @@
         <section id="view-favorites" class="view">
             <div class="favorites-header">
                 <h1 style="font-size: 1.75rem; font-weight: 700; margin-bottom: var(--space-lg);">
-                    <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px;">bookmark</span>
+                    <span class="material-symbols-outlined"
+                        style="vertical-align: middle; margin-right: 8px;">bookmark</span>
                     Listem
                 </h1>
-                
+
                 <div class="favorites-tabs">
                     <button class="fav-tab active" data-list="liked">
                         <span class="material-symbols-outlined" style="font-size: 18px;">favorite</span>
@@ -71,7 +77,8 @@
             <div class="favorites-grid" id="favorites-grid"></div>
 
             <div class="empty-state" id="empty-list-message" style="display: none;">
-                <span class="material-symbols-outlined" style="font-size: 64px; opacity: 0.3; margin-bottom: var(--space-md);">bookmark</span>
+                <span class="material-symbols-outlined"
+                    style="font-size: 64px; opacity: 0.3; margin-bottom: var(--space-md);">bookmark</span>
                 <p>Henüz içerik eklemediniz</p>
                 <small style="color: var(--text-muted);">Film ve dizileri beğenin veya izleyeceklerinize ekleyin</small>
             </div>
@@ -139,8 +146,11 @@
             <div class="search-input-wrapper">
                 <div class="search-box">
                     <div class="search-box-inner">
-                        <span class="material-symbols-outlined" style="color: var(--text-muted); margin-right: 8px;">search</span>
-                        <input type="text" id="search-input-overlay" placeholder="Film veya dizi ara..." autocomplete="off" style="flex: 1; background: none; border: none; color: white; font-size: 16px; outline: none;">
+                        <span class="material-symbols-outlined"
+                            style="color: var(--text-muted); margin-right: 8px;">search</span>
+                        <input type="text" id="search-input-overlay" placeholder="Film veya dizi ara..."
+                            autocomplete="off"
+                            style="flex: 1; background: none; border: none; color: white; font-size: 16px; outline: none;">
                         <button class="search-clear" id="search-clear" style="display: none;">
                             <span class="material-symbols-outlined" style="font-size: 20px;">cancel</span>
                         </button>
@@ -158,8 +168,11 @@
             </div>
         </div>
 
-        <div id="search-results-container" style="flex: 1; overflow-y: auto; padding: var(--space-md);" class="no-scrollbar scroll-touch">
-            <h3 style="font-size: 0.875rem; font-weight: 600; color: var(--text-muted); margin-bottom: var(--space-md); padding: 0 4px;">Top Results</h3>
+        <div id="search-results-container" style="flex: 1; overflow-y: auto; padding: var(--space-md);"
+            class="no-scrollbar scroll-touch">
+            <h3
+                style="font-size: 0.875rem; font-weight: 600; color: var(--text-muted); margin-bottom: var(--space-md); padding: 0 4px;">
+                Top Results</h3>
             <div class="search-results-grid" id="search-grid"></div>
         </div>
     </div>
@@ -188,21 +201,32 @@
             <div class="social-login-btns">
                 <button class="social-btn google" data-provider="google">
                     <svg width="20" height="20" viewBox="0 0 24 24">
-                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                        <path
+                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                            fill="#4285F4" />
+                        <path
+                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                            fill="#34A853" />
+                        <path
+                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                            fill="#FBBC05" />
+                        <path
+                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                            fill="#EA4335" />
                     </svg>
                     <span>Google ile devam et</span>
                 </button>
                 <button class="social-btn apple" data-provider="apple">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                        <path
+                            d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
                     </svg>
                     <span>Apple ile devam et</span>
                 </button>
             </div>
-            <button style="margin-top: var(--space-lg); width: 100%; padding: var(--space-md); background: transparent; border: 1px solid var(--glass-border); border-radius: var(--radius-lg); color: var(--text-secondary); cursor: pointer;" id="login-modal-close">Kapat</button>
+            <button
+                style="margin-top: var(--space-lg); width: 100%; padding: var(--space-md); background: transparent; border: 1px solid var(--glass-border); border-radius: var(--radius-lg); color: var(--text-secondary); cursor: pointer;"
+                id="login-modal-close">Kapat</button>
         </div>
     </div>
 
@@ -238,7 +262,7 @@
         // ============================================
         // LUMI SPA NAVIGATION
         // ============================================
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const feedGrid = document.getElementById('feed-grid');
             const searchTrigger = document.getElementById('search-trigger');
             const searchOverlay = document.getElementById('search-overlay');
@@ -248,10 +272,10 @@
 
             // Bottom Nav Click Handlers
             document.querySelectorAll('.nav-item').forEach(item => {
-                item.addEventListener('click', function() {
+                item.addEventListener('click', function () {
                     const page = this.dataset.page;
                     switchView('view-' + page);
-                    
+
                     // Update nav state
                     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
                     this.classList.add('active');
@@ -259,20 +283,20 @@
             });
 
             // Search Trigger - Open Overlay
-            searchTrigger?.addEventListener('click', function() {
+            searchTrigger?.addEventListener('click', function () {
                 searchOverlay.classList.add('active');
                 searchInputOverlay.focus();
             });
 
             // Search Cancel - Close Overlay
-            searchCancel?.addEventListener('click', function() {
+            searchCancel?.addEventListener('click', function () {
                 searchOverlay.classList.remove('active');
                 searchInputOverlay.value = '';
                 searchClear.style.display = 'none';
             });
 
             // Search Input - Show/Hide Clear Button
-            searchInputOverlay?.addEventListener('input', function() {
+            searchInputOverlay?.addEventListener('input', function () {
                 searchClear.style.display = this.value ? 'block' : 'none';
                 // Trigger search
                 if (this.value.length >= 2) {
@@ -281,7 +305,7 @@
             });
 
             // Search Clear
-            searchClear?.addEventListener('click', function() {
+            searchClear?.addEventListener('click', function () {
                 searchInputOverlay.value = '';
                 this.style.display = 'none';
                 document.getElementById('search-grid').innerHTML = '';
@@ -289,7 +313,7 @@
 
             // Filter Chips
             document.querySelectorAll('.filter-chip').forEach(chip => {
-                chip.addEventListener('click', function() {
+                chip.addEventListener('click', function () {
                     const group = this.parentElement;
                     group.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
                     this.classList.add('active');
@@ -302,7 +326,7 @@
 
             // Favorites Tab Toggle
             document.querySelectorAll('.fav-tab').forEach(tab => {
-                tab.addEventListener('click', function() {
+                tab.addEventListener('click', function () {
                     document.querySelectorAll('.fav-tab').forEach(t => t.classList.remove('active'));
                     this.classList.add('active');
                     // Load corresponding list
@@ -312,20 +336,20 @@
 
             // Modal Backdrop Close
             document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
-                backdrop.addEventListener('click', function() {
+                backdrop.addEventListener('click', function () {
                     this.closest('.modal').classList.remove('active');
                 });
             });
 
             // Modal Close Buttons
             document.querySelectorAll('.modal-close').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     this.closest('.modal').classList.remove('active');
                 });
             });
 
             // Login Modal Close
-            document.getElementById('login-modal-close')?.addEventListener('click', function() {
+            document.getElementById('login-modal-close')?.addEventListener('click', function () {
                 document.getElementById('login-modal').classList.remove('active');
             });
 
@@ -340,7 +364,7 @@
             document.querySelectorAll('.view').forEach(el => {
                 el.classList.remove('active');
             });
-            
+
             const target = document.getElementById(viewId);
             if (target) {
                 target.classList.add('active');
@@ -363,7 +387,7 @@
         async function loadInfinityFeed() {
             const feedGrid = document.getElementById('feed-grid');
             const loadingEl = document.getElementById('feed-loading');
-            
+
             try {
                 // Fetch from multiple endpoints
                 const [trending, nowPlaying, topRated] = await Promise.all([
@@ -410,7 +434,7 @@
 
                 // Add click handlers to open detail modal
                 feedGrid.querySelectorAll('.masonry-item').forEach(item => {
-                    item.addEventListener('click', function() {
+                    item.addEventListener('click', function () {
                         const id = this.dataset.id;
                         const type = this.dataset.type;
                         openDetailModal(id, type);
@@ -437,7 +461,7 @@
             searchTimeout = setTimeout(async () => {
                 const searchGrid = document.getElementById('search-grid');
                 const activeFilter = document.querySelector('.filter-chip.active')?.dataset.filter || 'all';
-                
+
                 try {
                     let endpoint = 'multi';
                     if (activeFilter === 'movie') endpoint = 'movie';
@@ -476,7 +500,7 @@
 
                         // Add click handlers
                         searchGrid.querySelectorAll('.result-card').forEach(card => {
-                            card.addEventListener('click', function() {
+                            card.addEventListener('click', function () {
                                 const id = this.dataset.id;
                                 const type = this.dataset.type;
                                 document.getElementById('search-overlay').classList.remove('active');
@@ -503,17 +527,11 @@
         async function openDetailModal(id, type) {
             const modal = document.getElementById('detail-modal');
             const modalBody = document.getElementById('modal-body');
-            
+
             modal.classList.add('active');
-            modalBody.innerHTML = '<div class="loading-state" style="display: flex;"><div class="spinner"></div></div>';
+            modalBody.innerHTML = '<div class="loading-state" style="display: flex; height: 300px;"><div class="spinner"></div></div>';
 
             try {
-                // Use existing openDetail function if available
-                if (typeof openDetail === 'function') {
-                    openDetail(id, type);
-                    return;
-                }
-
                 // Fallback to direct API call
                 const response = await fetch(
                     `https://api.themoviedb.org/3/${type}/${id}?api_key=${CONFIG.TMDB_API_KEY}&language=tr-TR&append_to_response=credits,videos,watch/providers`
@@ -524,23 +542,110 @@
                 const year = (data.release_date || data.first_air_date || '').split('-')[0];
                 const rating = data.vote_average?.toFixed(1) || 'N/A';
                 const overview = data.overview || 'Açıklama bulunamadı.';
-                const backdrop = data.backdrop_path ? `https://image.tmdb.org/t/p/w780${data.backdrop_path}` : '';
+                const backdrop = data.backdrop_path
+                    ? `https://image.tmdb.org/t/p/w780${data.backdrop_path}`
+                    : (data.poster_path ? `https://image.tmdb.org/t/p/w500${data.poster_path}` : '');
+                const runtime = data.runtime ? `${Math.floor(data.runtime / 60)}s ${data.runtime % 60}dk` : '';
+                const genres = data.genres || [];
+
+                // Get watch providers for Turkey
+                const providers = data['watch/providers']?.results?.TR?.flatrate || [];
+
+                // Get cast (first 6)
+                const cast = data.credits?.cast?.slice(0, 6) || [];
+
+                // Check if in favorites
+                const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+                const isFavorite = favorites.some(f => f.id == id);
 
                 modalBody.innerHTML = `
-                    <div style="margin: -24px -24px 24px; height: 200px; background: linear-gradient(to bottom, transparent, var(--bg-surface)), url('${backdrop}') center/cover;"></div>
-                    <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 8px;">${title}</h2>
-                    <div style="display: flex; align-items: center; gap: 12px; color: var(--text-secondary); margin-bottom: 16px;">
-                        <span>${year}</span>
-                        <span style="display: flex; align-items: center; gap: 4px; color: #facc15;">
-                            <span class="material-symbols-outlined" style="font-size: 16px; font-variation-settings: 'FILL' 1;">star</span>
-                            ${rating}
-                        </span>
+                    <div class="detail-backdrop" style="background-image: url('${backdrop}');"></div>
+                    
+                    <div class="detail-header">
+                        <h2 class="detail-title">${title}</h2>
+                        <div class="detail-meta">
+                            <span>${year}</span>
+                            ${runtime ? `<span>${runtime}</span>` : ''}
+                            <span class="detail-rating">
+                                <span class="material-symbols-outlined">star</span>
+                                ${rating}
+                            </span>
+                        </div>
                     </div>
-                    <p style="color: var(--text-secondary); line-height: 1.7;">${overview}</p>
+
+                    ${genres.length ? `
+                        <div class="detail-genres">
+                            ${genres.map(g => `<span class="genre-pill">${g.name}</span>`).join('')}
+                        </div>
+                    ` : ''}
+
+                    <p class="detail-overview">${overview}</p>
+
+                    ${providers.length ? `
+                        <div class="detail-providers">
+                            <div class="detail-providers-title">Nerede İzlenir</div>
+                            <div class="provider-logos">
+                                ${providers.map(p => `
+                                    <div class="provider-logo" style="background-image: url('https://image.tmdb.org/t/p/w92${p.logo_path}');" title="${p.provider_name}"></div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div class="detail-actions">
+                        <button class="detail-btn detail-btn-secondary ${isFavorite ? 'active' : ''}" id="detail-fav-btn" data-id="${id}" data-type="${type}" data-title="${title}" data-poster="${data.poster_path || ''}">
+                            <span class="material-symbols-outlined">${isFavorite ? 'favorite' : 'favorite_border'}</span>
+                            ${isFavorite ? 'Favorilerde' : 'Favorile'}
+                        </button>
+                        <button class="detail-btn detail-btn-primary" onclick="window.open('https://www.google.com/search?q=${encodeURIComponent(title + ' izle')}', '_blank')">
+                            <span class="material-symbols-outlined">play_arrow</span>
+                            İzle
+                        </button>
+                    </div>
+
+                    ${cast.length ? `
+                        <div class="cast-section">
+                            <h3 class="cast-title">Oyuncular</h3>
+                            <div class="cast-list no-scrollbar">
+                                ${cast.map(c => `
+                                    <div class="cast-item">
+                                        <div class="cast-avatar" style="background-image: url('${c.profile_path ? 'https://image.tmdb.org/t/p/w185' + c.profile_path : 'https://via.placeholder.com/72?text=' + c.name.charAt(0)}');"></div>
+                                        <div class="cast-name">${c.name}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
                 `;
+
+                // Add favorite button handler
+                document.getElementById('detail-fav-btn')?.addEventListener('click', function () {
+                    const favId = this.dataset.id;
+                    const favType = this.dataset.type;
+                    const favTitle = this.dataset.title;
+                    const favPoster = this.dataset.poster;
+
+                    let favs = JSON.parse(localStorage.getItem('favorites') || '[]');
+                    const existingIndex = favs.findIndex(f => f.id == favId);
+
+                    if (existingIndex > -1) {
+                        // Remove from favorites
+                        favs.splice(existingIndex, 1);
+                        this.classList.remove('active');
+                        this.innerHTML = '<span class="material-symbols-outlined">favorite_border</span> Favorile';
+                    } else {
+                        // Add to favorites
+                        favs.push({ id: favId, type: favType, title: favTitle, poster: favPoster });
+                        this.classList.add('active');
+                        this.innerHTML = '<span class="material-symbols-outlined">favorite</span> Favorilerde';
+                    }
+
+                    localStorage.setItem('favorites', JSON.stringify(favs));
+                });
+
             } catch (error) {
                 console.error('Failed to load detail:', error);
-                modalBody.innerHTML = '<p style="text-align: center; color: var(--text-muted);">Detaylar yüklenemedi.</p>';
+                modalBody.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 48px;">Detaylar yüklenemedi.</p>';
             }
         }
 
@@ -550,7 +655,7 @@
         function loadFavoritesList(listType) {
             const grid = document.getElementById('favorites-grid');
             const emptyMessage = document.getElementById('empty-list-message');
-            
+
             // Get from localStorage
             const key = listType === 'liked' ? 'favorites' : 'watchlist';
             const items = JSON.parse(localStorage.getItem(key) || '[]');
@@ -573,7 +678,7 @@
 
             // Add click handlers
             grid.querySelectorAll('.result-card').forEach(card => {
-                card.addEventListener('click', function() {
+                card.addEventListener('click', function () {
                     openDetailModal(this.dataset.id, this.dataset.type);
                 });
             });
@@ -604,13 +709,14 @@
         }
 
         // Override modal functions for compatibility
-        window.openModal = function(type, id) {
+        window.openModal = function (type, id) {
             openDetailModal(id, type);
         };
 
-        window.closeModal = function() {
+        window.closeModal = function () {
             document.getElementById('detail-modal').classList.remove('active');
         };
     </script>
 </body>
+
 </html>
