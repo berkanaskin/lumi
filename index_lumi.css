@@ -713,7 +713,185 @@ body {
 }
 
 /* ============================================
-   FLOATING BOTTOM NAVIGATION (3 Icons)
+   NE İZLESEM WIZARD SECTION
+   ============================================ */
+.wizard-container {
+    padding: var(--space-lg);
+    padding-bottom: 120px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.wizard-header {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+}
+
+.wizard-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+}
+
+.wizard-title .material-symbols-outlined {
+    font-size: 2rem;
+    color: var(--primary);
+}
+
+.wizard-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.wizard-mood-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.wizard-mood-card label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: var(--space-md);
+    color: var(--text-primary);
+}
+
+.mood-input-wrapper {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.mood-input-wrapper input {
+    flex: 1;
+    padding: var(--space-md);
+    background: var(--bg-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.mood-input-wrapper input::placeholder {
+    color: var(--text-muted);
+}
+
+.mood-submit-btn {
+    width: 48px;
+    height: 48px;
+    background: var(--primary);
+    border: none;
+    border-radius: var(--radius-md);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wizard-categories {
+    margin-bottom: var(--space-xl);
+}
+
+.wizard-categories h3 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: var(--space-md);
+}
+
+.category-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+}
+
+.category-chip {
+    padding: var(--space-sm) var(--space-md);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-full);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.category-chip:hover {
+    background: var(--glass-bg-hover);
+    border-color: var(--primary);
+}
+
+.category-chip.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.wizard-surprise {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+}
+
+.surprise-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    padding: var(--space-lg) var(--space-2xl);
+    background: linear-gradient(135deg, var(--primary), #8b5cf6);
+    border: none;
+    border-radius: var(--radius-full);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(88, 88, 243, 0.3);
+    transition: all var(--transition-normal);
+}
+
+.surprise-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 40px rgba(88, 88, 243, 0.4);
+}
+
+.surprise-btn .material-symbols-outlined {
+    font-size: 1.5rem;
+}
+
+.surprise-hint {
+    margin-top: var(--space-sm);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.wizard-result {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+}
+
+.wizard-result h3 {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-md);
+}
+
+.wizard-result-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+/* ============================================
+   FLOATING BOTTOM NAVIGATION (4 Icons)
    ============================================ */
 .bottom-nav {
     position: fixed;

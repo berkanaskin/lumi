@@ -139,6 +139,65 @@
         </section>
 
         <!-- ============================================
+             VIEW: NE İZLESEM (Wizard)
+             ============================================ -->
+        <section id="view-wizard" class="view">
+            <div class="wizard-container">
+                <div class="wizard-header">
+                    <h1 class="wizard-title">
+                        <span class="material-symbols-outlined">auto_awesome</span>
+                        Ne İzlesem?
+                    </h1>
+                    <p class="wizard-subtitle">Bugün ne izleyeceğine karar veremiyorsan bize bırak!</p>
+                </div>
+
+                <!-- Mood Input -->
+                <div class="wizard-mood-card">
+                    <label for="mood-input">Bugün modun nasıl?</label>
+                    <div class="mood-input-wrapper">
+                        <input type="text" id="mood-input" placeholder="Örn: Heyecanlı, romantik, karamsar..."
+                            autocomplete="off">
+                        <button class="mood-submit-btn" id="mood-submit-btn">
+                            <span class="material-symbols-outlined">send</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Category Chips -->
+                <div class="wizard-categories">
+                    <h3>Veya bir kategori seç:</h3>
+                    <div class="category-chips">
+                        <button class="category-chip" data-genre="28">🎬 Aksiyon</button>
+                        <button class="category-chip" data-genre="35">😂 Komedi</button>
+                        <button class="category-chip" data-genre="18">🎭 Drama</button>
+                        <button class="category-chip" data-genre="27">👻 Korku</button>
+                        <button class="category-chip" data-genre="10749">💕 Romantik</button>
+                        <button class="category-chip" data-genre="878">🚀 Bilim Kurgu</button>
+                        <button class="category-chip" data-genre="53">🔍 Gerilim</button>
+                        <button class="category-chip" data-genre="16">🎨 Animasyon</button>
+                        <button class="category-chip" data-genre="99">📹 Belgesel</button>
+                        <button class="category-chip" data-genre="14">🧙 Fantastik</button>
+                    </div>
+                </div>
+
+                <!-- Surprise Button -->
+                <div class="wizard-surprise">
+                    <button class="surprise-btn" id="surprise-btn">
+                        <span class="material-symbols-outlined">casino</span>
+                        <span>Sürpriz Yap!</span>
+                    </button>
+                    <p class="surprise-hint">Rastgele bir film veya dizi öner</p>
+                </div>
+
+                <!-- Result Area -->
+                <div class="wizard-result" id="wizard-result" style="display: none;">
+                    <h3>Sana Önerimiz:</h3>
+                    <div class="wizard-result-content" id="wizard-result-content"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================
              VIEW: FAVORITES (Listem)
              ============================================ -->
         <section id="view-favorites" class="view">
@@ -215,6 +274,9 @@
         <nav class="bottom-nav" id="bottom-nav">
             <button class="nav-item active" data-page="home">
                 <span class="material-symbols-outlined">home</span>
+            </button>
+            <button class="nav-item" data-page="wizard">
+                <span class="material-symbols-outlined">auto_awesome</span>
             </button>
             <button class="nav-item" data-page="favorites">
                 <span class="material-symbols-outlined">favorite</span>
