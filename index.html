@@ -415,14 +415,21 @@
                 autocompleteDropdown?.classList.remove('active');
             });
 
-            // Input: Show autocomplete
+            // Input: Show autocomplete (with debounce)
+            let autocompleteDebounce;
             searchInput?.addEventListener('input', function () {
                 const query = this.value.trim();
                 searchClearMain.style.display = query ? 'block' : 'none';
 
+                // Clear previous debounce
+                clearTimeout(autocompleteDebounce);
+
                 if (query.length >= 2) {
                     trendChipsContainer?.classList.remove('active');
-                    showAutocomplete(query);
+                    // Debounce: wait 300ms after last keystroke
+                    autocompleteDebounce = setTimeout(() => {
+                        showAutocomplete(query);
+                    }, 300);
                 } else {
                     autocompleteDropdown?.classList.remove('active');
                     if (!query) trendChipsContainer?.classList.add('active');
