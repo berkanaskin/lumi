@@ -1343,23 +1343,7 @@ body {
     background: var(--glass-bg-hover);
 }
 
-/* ============================================
-   BRAND LOGO (Sticky Header)
-   ============================================ */
-.brand-logo {
-    position: absolute;
-    top: calc(var(--safe-top) + 12px);
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 3px;
-    color: var(--text-primary);
-    text-transform: uppercase;
-    opacity: 0.9;
-    z-index: 51;
-    pointer-events: none;
-}
+/* Brand logo styles moved to main header section (line ~180) */
 
 /* ============================================
    AUTOCOMPLETE DROPDOWN
