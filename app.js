@@ -2268,10 +2268,11 @@ function loadProfilePage() {
 }
 
 // ============================================
-// SEARCH & AUTOCOMPLETE
+// SEARCH & AUTOCOMPLETE (app.js version - backup, index.html has primary)
+// NOTE: These functions are prefixed with _ to avoid conflict with index.html's showAutocomplete
 // ============================================
 
-async function handleAutocomplete() {
+async function _appHandleAutocomplete() {
     const query = elements.searchInput.value.trim();
 
     if (state.autocompleteTimeout) {
@@ -2279,7 +2280,7 @@ async function handleAutocomplete() {
     }
 
     if (query.length < 2) {
-        hideAutocomplete();
+        _appHideAutocomplete();
         return;
     }
 
@@ -2287,14 +2288,14 @@ async function handleAutocomplete() {
         const data = await API.search(query, state.currentType, state.currentLanguage);
 
         if (data.results?.length > 0) {
-            showAutocomplete(data.results.slice(0, 6));
+            _appShowAutocomplete(data.results.slice(0, 6));
         } else {
-            hideAutocomplete();
+            _appHideAutocomplete();
         }
     }, 300);
 }
 
-function showAutocomplete(results) {
+function _appShowAutocomplete(results) {
     const dropdown = elements.autocompleteDropdown;
 
     dropdown.innerHTML = results.map(item => {
@@ -2340,7 +2341,7 @@ function showAutocomplete(results) {
             state.searchQuery = '';
             state.searchResults = [];
 
-            hideAutocomplete();
+            _appHideAutocomplete();
             openDetail(id, type, title, year, original);
         });
     });
@@ -2348,7 +2349,7 @@ function showAutocomplete(results) {
     dropdown.classList.add('visible');
 }
 
-function hideAutocomplete() {
+function _appHideAutocomplete() {
     elements.autocompleteDropdown.classList.remove('visible');
 }
 
