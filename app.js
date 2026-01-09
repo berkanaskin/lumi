@@ -1,9 +1,9 @@
 // ============================================
-// LUMI v0.9.5-rc - Release Candidate 1
+// LUMI v0.9.6-beta - Feature Finalization
 // Mobile-First Film Discovery App
 // ============================================
 
-const APP_VERSION = '0.9.5-rc';
+const APP_VERSION = '0.9.6-beta';
 
 // DOM Elements
 const elements = {

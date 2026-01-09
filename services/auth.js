@@ -100,6 +100,12 @@ class AuthService {
     // ============================================
 
     async loginWithGoogle() {
+        // If Firebase is not available, use mock login
+        if (!this.auth) {
+            console.warn('Firebase not available, using mock login');
+            return this.mockLogin('google');
+        }
+
         const provider = new firebase.auth.GoogleAuthProvider();
         provider.addScope('profile');
         provider.addScope('email');
@@ -109,6 +115,10 @@ class AuthService {
             return result.user;
         } catch (error) {
             console.error('Google login error:', error);
+            // Fallback to mock if popup blocked or error
+            if (error.code === 'auth/popup-blocked' || error.code === 'auth/cancelled-popup-request') {
+                return this.mockLogin('google');
+            }
             throw error;
         }
     }
@@ -165,13 +175,31 @@ class AuthService {
     // TESTER & DEMO ACCOUNTS
     // ============================================
 
+    // Mock login for local development (when Firebase is not configured)
+    async mockLogin(provider = 'mock') {
+        const mockUser = {
+            id: 'mock_user_' + Date.now(),
+            name: 'Demo Kullanıcı',
+            email: 'demo@lumi.app',
+            avatar: 'https://i.pravatar.cc/150?img=' + Math.floor(Math.random() * 70),
+            tier: 'free',
+            provider: provider,
+            joinedAt: new Date().toISOString(),
+            isMock: true
+        };
+
+        this.saveLocalUser(mockUser);
+        window.dispatchEvent(new CustomEvent('authStateChanged', { detail: { user: mockUser } }));
+        return mockUser;
+    }
+
     async loginAsTester() {
         // Demo account for testing premium features
         const testerUser = {
             id: 'tester_001',
             name: 'Tester Premium',
             email: 'tester@lumi.app',
-            avatar: null,
+            avatar: 'https://i.pravatar.cc/150?img=68',
             tier: 'premium',
             provider: 'tester',
             joinedAt: new Date().toISOString(),

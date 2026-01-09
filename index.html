@@ -835,14 +835,13 @@
                     const modal = this.closest('.modal');
                     modal.classList.remove('active');
                     document.body.style.overflow = ''; // Unlock scroll
-                    // Clear search input when detail modal closes
+                    // Restore search state when detail modal closes
                     if (modal.id === 'detail-modal') {
-                        const searchInput = document.getElementById('search-input');
-                        if (searchInput) {
-                            searchInput.value = '';
-                            document.getElementById('search-clear-main').style.display = 'none';
-                        }
+                        restoreSearchStateOnModalClose();
                     }
+                    // Show bottom nav again
+                    const bottomNav = document.querySelector('.bottom-nav');
+                    if (bottomNav) bottomNav.style.display = '';
                 });
             });
 
@@ -851,14 +850,13 @@
                     const modal = this.closest('.modal');
                     modal.classList.remove('active');
                     document.body.style.overflow = ''; // Unlock scroll
-                    // Clear search input when detail modal closes
+                    // Restore search state when detail modal closes
                     if (modal.id === 'detail-modal') {
-                        const searchInput = document.getElementById('search-input');
-                        if (searchInput) {
-                            searchInput.value = '';
-                            document.getElementById('search-clear-main').style.display = 'none';
-                        }
+                        restoreSearchStateOnModalClose();
                     }
+                    // Show bottom nav again
+                    const bottomNav = document.querySelector('.bottom-nav');
+                    if (bottomNav) bottomNav.style.display = '';
                 });
             });
 
@@ -872,6 +870,57 @@
             // ============================================
             loadInfinityFeed();
         });
+
+        // ============================================
+        // SEARCH STATE RESTORATION
+        // ============================================
+        function restoreSearchStateOnModalClose() {
+            // Check if user came from search (via app.js state)
+            if (typeof state !== 'undefined' && state.cameFromSearch) {
+                const searchInput = document.getElementById('search-input');
+                const searchClearMain = document.getElementById('search-clear-main');
+                const searchOverlay = document.getElementById('search-overlay');
+                const searchInputOverlay = document.getElementById('search-input-overlay');
+
+                // If we have a saved search query
+                if (state.searchQuery) {
+                    // Restore search input value
+                    if (searchInput) {
+                        searchInput.value = state.searchQuery;
+                        if (searchClearMain) searchClearMain.style.display = 'block';
+                    }
+
+                    // If search overlay was being used, reopen it with results
+                    if (state.searchResultsVisible && searchOverlay) {
+                        searchOverlay.classList.add('active');
+                        if (searchInputOverlay) {
+                            searchInputOverlay.value = state.searchQuery;
+                            // Re-run search to repopulate results
+                            handleOverlaySearch(state.searchQuery);
+                        }
+                    }
+
+                    // Restore scroll position
+                    if (state.searchScrollPosition) {
+                        setTimeout(() => {
+                            window.scrollTo({ top: state.searchScrollPosition, behavior: 'instant' });
+                        }, 100);
+                    }
+                }
+
+                // Reset the flag
+                state.cameFromSearch = false;
+                console.log('Search state restored:', state.searchQuery, 'Scroll:', state.searchScrollPosition);
+            } else {
+                // Not from search, clear the input as before
+                const searchInput = document.getElementById('search-input');
+                const searchClearMain = document.getElementById('search-clear-main');
+                if (searchInput) {
+                    searchInput.value = '';
+                    if (searchClearMain) searchClearMain.style.display = 'none';
+                }
+            }
+        }
 
         // ============================================
         // SPA VIEW ROUTER WITH HISTORY
@@ -889,10 +938,11 @@
             // Close search overlay if open
             document.getElementById('search-overlay')?.classList.remove('active');
 
-            // Hide header search on wizard page (has its own AI search)
+            // Hide header search on wizard, profile, and favorites pages
             const searchContainer = document.querySelector('.search-container');
             if (searchContainer) {
-                searchContainer.style.display = viewId === 'view-wizard' ? 'none' : 'block';
+                const hideSearchPages = ['view-wizard', 'view-profile', 'view-favorites'];
+                searchContainer.style.display = hideSearchPages.includes(viewId) ? 'none' : 'block';
             }
 
             // Push to browser history for back button support

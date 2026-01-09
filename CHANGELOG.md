@@ -69,7 +69,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Cast ve Trailer bilgisi
 - Scroll lock iyileştirmesi
 
-### Technical
+### 🔧 Technical Changes
 
 - Firebase + RevenueCat config eklendi
 - APP_VERSION: 0.9.5-rc
