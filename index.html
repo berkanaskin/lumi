@@ -552,6 +552,14 @@
                     const modal = this.closest('.modal');
                     modal.classList.remove('active');
                     document.body.style.overflow = ''; // Unlock scroll
+                    // Clear search input when detail modal closes
+                    if (modal.id === 'detail-modal') {
+                        const searchInput = document.getElementById('search-input');
+                        if (searchInput) {
+                            searchInput.value = '';
+                            document.getElementById('search-clear-main').style.display = 'none';
+                        }
+                    }
                 });
             });
 
@@ -733,14 +741,22 @@
         // ============================================
         // AUTOCOMPLETE (Header Search)
         // ============================================
+        let autocompleteRequestId = 0; // Track latest request
+
         async function showAutocomplete(query) {
             const dropdown = document.getElementById('autocomplete-dropdown');
+            const currentRequestId = ++autocompleteRequestId; // Increment request ID
 
             try {
                 const response = await fetch(
                     `https://api.themoviedb.org/3/search/multi?api_key=${CONFIG.TMDB_API_KEY}&language=tr-TR&query=${encodeURIComponent(query)}`
                 );
                 const data = await response.json();
+
+                // Race condition guard: Only process if this is still the latest request
+                if (currentRequestId !== autocompleteRequestId) {
+                    return; // Stale request, ignore
+                }
 
                 if (data.results && data.results.length > 0) {
                     dropdown.innerHTML = data.results
