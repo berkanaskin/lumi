@@ -7,6 +7,27 @@ Sürümleme: Major.Minor.Patch.Build (örn: 2.2.0.0)
 
 ---
 
+## [2.2.1.0] - 2026-01-09
+
+### Bug Fixes & Polish
+
+**Header & Layout:**
+
+- Gradient header height extended to 160px for smoother fade
+- App padding-top increased to 160px
+
+**Search Fixes:**
+
+- Input blur on Enter (closes mobile keyboard)
+- Search input cleared when modal closes
+
+**Modal Scroll Lock (Complete):**
+
+- Added `touch-action: none` to modal.active
+- Added `overscroll-behavior: contain`
+
+---
+
 ## [2.2.0.0] - 2026-01-09
 
 ### Grand Unification - UI/UX & Features Complete

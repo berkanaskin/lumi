@@ -433,6 +433,7 @@
             searchInput?.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter' && this.value.trim()) {
                     closeAllDropdowns();
+                    this.blur(); // Close mobile keyboard
                     searchOverlay?.classList.add('active');
                     if (searchInputOverlay) {
                         searchInputOverlay.value = this.value;
@@ -535,6 +536,14 @@
                     const modal = this.closest('.modal');
                     modal.classList.remove('active');
                     document.body.style.overflow = ''; // Unlock scroll
+                    // Clear search input when detail modal closes
+                    if (modal.id === 'detail-modal') {
+                        const searchInput = document.getElementById('search-input');
+                        if (searchInput) {
+                            searchInput.value = '';
+                            document.getElementById('search-clear-main').style.display = 'none';
+                        }
+                    }
                 });
             });
 

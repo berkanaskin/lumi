@@ -141,8 +141,8 @@ body {
     z-index: 1;
     min-height: 100vh;
     min-height: 100dvh;
-    padding-top: 140px;
-    /* Space for fixed header */
+    padding-top: 160px;
+    /* Space for fixed header + gradient fade */
 }
 
 /* ============================================
@@ -157,9 +157,10 @@ body {
     padding: calc(var(--safe-top) + 12px) var(--space-lg) 0;
     background: linear-gradient(to bottom,
             rgba(5, 5, 5, 1) 0%,
-            rgba(5, 5, 5, 0.95) 40%,
+            rgba(5, 5, 5, 0.98) 50%,
             rgba(5, 5, 5, 0) 100%);
     pointer-events: none;
+    min-height: 160px;
 }
 
 .header-row {
@@ -883,6 +884,9 @@ body {
 .modal.active {
     visibility: visible;
     pointer-events: auto;
+    touch-action: none;
+    /* Prevent background scroll on touch */
+    overscroll-behavior: contain;
 }
 
 .modal-backdrop {
