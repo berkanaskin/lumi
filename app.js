@@ -946,6 +946,9 @@ function setupBottomNav() {
                 case 'discover':
                     loadDiscoverPage();
                     break;
+                case 'wizard':
+                    loadWizardPage();
+                    break;
                 case 'favorites':
                     loadFavoritesPage();
                     break;
@@ -2095,6 +2098,141 @@ function createMovieCardHTML(item, mediaType) {
             </div>
         </div>
     `;
+}
+
+// ============================================
+// NE İZLESEM WIZARD
+// ============================================
+function loadWizardPage() {
+    hideAllSections();
+
+    // Show wizard section
+    const wizardSection = document.getElementById('view-wizard');
+    if (wizardSection) {
+        wizardSection.classList.add('active');
+        wizardSection.style.display = 'block';
+    }
+
+    // Hide home feed
+    document.getElementById('view-home')?.classList.remove('active');
+
+    // Setup event handlers
+    setupWizardHandlers();
+}
+
+function setupWizardHandlers() {
+    // Surprise button - random movie
+    const surpriseBtn = document.getElementById('surprise-btn');
+    if (surpriseBtn && !surpriseBtn._hasHandler) {
+        surpriseBtn._hasHandler = true;
+        surpriseBtn.addEventListener('click', async () => {
+            surpriseBtn.disabled = true;
+            surpriseBtn.innerHTML = '<span class="spinner"></span> Seçiliyor...';
+
+            try {
+                // Random page from popular movies
+                const randomPage = Math.floor(Math.random() * 20) + 1;
+                const response = await fetch(
+                    `${API_URLS.TMDB_BASE}/movie/popular?api_key=${CONFIG.TMDB_API_KEY}&language=tr-TR&page=${randomPage}`
+                );
+                const data = await response.json();
+
+                if (data.results && data.results.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * data.results.length);
+                    const movie = data.results[randomIndex];
+
+                    // Open detail modal
+                    openDetail(movie.id, 'movie', movie.title, movie.release_date?.split('-')[0], movie.original_title);
+                }
+            } catch (error) {
+                console.error('Surprise error:', error);
+                alert('Bir hata oluştu, tekrar deneyin.');
+            }
+
+            surpriseBtn.disabled = false;
+            surpriseBtn.innerHTML = '<span class="material-symbols-outlined">casino</span><span>Sürpriz Yap!</span>';
+        });
+    }
+
+    // Category chips
+    const categoryChips = document.querySelectorAll('.category-chip');
+    categoryChips.forEach(chip => {
+        if (!chip._hasHandler) {
+            chip._hasHandler = true;
+            chip.addEventListener('click', async () => {
+                const genreId = chip.dataset.genre;
+
+                // Mark active
+                categoryChips.forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+
+                // Fetch random movie from genre
+                try {
+                    const randomPage = Math.floor(Math.random() * 5) + 1;
+                    const response = await fetch(
+                        `${API_URLS.TMDB_BASE}/discover/movie?api_key=${CONFIG.TMDB_API_KEY}&language=tr-TR&with_genres=${genreId}&page=${randomPage}`
+                    );
+                    const data = await response.json();
+
+                    if (data.results && data.results.length > 0) {
+                        const randomIndex = Math.floor(Math.random() * data.results.length);
+                        const movie = data.results[randomIndex];
+                        openDetail(movie.id, 'movie', movie.title, movie.release_date?.split('-')[0], movie.original_title);
+                    }
+                } catch (error) {
+                    console.error('Genre fetch error:', error);
+                }
+            });
+        }
+    });
+
+    // Mood submit
+    const moodSubmitBtn = document.getElementById('mood-submit-btn');
+    const moodInput = document.getElementById('mood-input');
+    if (moodSubmitBtn && moodInput && !moodSubmitBtn._hasHandler) {
+        moodSubmitBtn._hasHandler = true;
+        moodSubmitBtn.addEventListener('click', async () => {
+            const mood = moodInput.value.trim();
+            if (!mood) return;
+
+            // Map mood to genre
+            const moodGenreMap = {
+                'heyecanlı': 28, 'aksiyon': 28, 'adrenalin': 28,
+                'komik': 35, 'eğlenceli': 35, 'neşeli': 35,
+                'romantik': 10749, 'aşk': 10749,
+                'korku': 27, 'korkunç': 27, 'gerilim': 53,
+                'üzgün': 18, 'duygusal': 18, 'hüzünlü': 18,
+                'bilimkurgu': 878, 'uzay': 878, 'gelecek': 878
+            };
+
+            const moodLower = mood.toLowerCase();
+            let genreId = 28; // Default action
+
+            for (const [keyword, genre] of Object.entries(moodGenreMap)) {
+                if (moodLower.includes(keyword)) {
+                    genreId = genre;
+                    break;
+                }
+            }
+
+            // Fetch movie from mapped genre
+            try {
+                const randomPage = Math.floor(Math.random() * 5) + 1;
+                const response = await fetch(
+                    `${API_URLS.TMDB_BASE}/discover/movie?api_key=${CONFIG.TMDB_API_KEY}&language=tr-TR&with_genres=${genreId}&page=${randomPage}`
+                );
+                const data = await response.json();
+
+                if (data.results && data.results.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * data.results.length);
+                    const movie = data.results[randomIndex];
+                    openDetail(movie.id, 'movie', movie.title, movie.release_date?.split('-')[0], movie.original_title);
+                }
+            } catch (error) {
+                console.error('Mood fetch error:', error);
+            }
+        });
+    }
 }
 
 function loadFavoritesPage(listType = 'liked') {
