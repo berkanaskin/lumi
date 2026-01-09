@@ -39,7 +39,32 @@
                 </div>
                 <div class="header-actions">
                     <!-- Language Toggle -->
-                    <button class="header-btn lang-toggle" id="lang-toggle" title="Dil">TR</button>
+                    <div style="position: relative;">
+                        <button class="header-btn lang-toggle" id="lang-toggle" title="Dil">TR</button>
+                        <div class="header-dropdown language-dropdown" id="language-dropdown">
+                            <div class="dropdown-header">
+                                <span class="dropdown-title">Dil Seçin</span>
+                            </div>
+                            <div class="dropdown-list">
+                                <button class="dropdown-item lang-option active" data-lang="tr-TR">
+                                    <span>🇹🇷</span>
+                                    <span>Türkçe</span>
+                                </button>
+                                <button class="dropdown-item lang-option" data-lang="en-US">
+                                    <span>🇺🇸</span>
+                                    <span>English</span>
+                                </button>
+                                <button class="dropdown-item lang-option" data-lang="de-DE">
+                                    <span>🇩🇪</span>
+                                    <span>Deutsch</span>
+                                </button>
+                                <button class="dropdown-item lang-option" data-lang="fr-FR">
+                                    <span>🇫🇷</span>
+                                    <span>Français</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Theme Toggle -->
                     <button class="header-btn theme-toggle" id="theme-toggle" title="Tema">
@@ -102,7 +127,7 @@
             <div class="search-container">
                 <div class="search-pill" id="search-trigger">
                     <span class="material-symbols-outlined search-icon">search</span>
-                    <input type="text" id="search-input" placeholder="Ne İzlesem? Nereden İzlesem?" autocomplete="off">
+                    <input type="text" id="search-input" placeholder="Film ve Dizi ara..." autocomplete="off">
                     <button class="search-clear" id="search-clear-main">
                         <span class="material-symbols-outlined" style="font-size: 20px;">cancel</span>
                     </button>
@@ -490,6 +515,48 @@
                 const isOpen = profileDropdown.classList.contains('active');
                 closeAllDropdowns();
                 if (!isOpen) profileDropdown.classList.add('active');
+            });
+
+            // Language Toggle
+            const langToggle = document.getElementById('lang-toggle');
+            const langDropdown = document.getElementById('language-dropdown');
+
+            langToggle?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = langDropdown?.classList.contains('active');
+                closeAllDropdowns();
+                if (!isOpen) langDropdown?.classList.add('active');
+            });
+
+            // Language Selection
+            document.querySelectorAll('.lang-option').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const lang = option.dataset.lang;
+                    const langCode = lang.split('-')[0].toUpperCase();
+
+                    // Update button text
+                    langToggle.textContent = langCode;
+
+                    // Update active state
+                    document.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
+                    option.classList.add('active');
+
+                    // Save preference
+                    localStorage.setItem('language', lang);
+
+                    // Update app language (if i18n available)
+                    if (typeof state !== 'undefined') {
+                        state.currentLanguage = lang;
+                    }
+
+                    closeAllDropdowns();
+
+                    // Reload content with new language
+                    if (typeof loadHomePage === 'function') {
+                        loadHomePage();
+                    }
+                });
             });
 
             // Close dropdowns on outside click

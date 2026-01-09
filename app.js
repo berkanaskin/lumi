@@ -3659,5 +3659,12 @@ window.closePremiumModal = closePremiumModal;
 window.handleSocialLogin = handleSocialLogin;
 window.closeLoginModal = closeLoginModal;
 window.openLoginModal = openLoginModal;
+window.loadHomePage = loadHomePage;
+window.loadWizardPage = loadWizardPage;
+window.loadFavoritesPage = loadFavoritesPage;
+window.loadProfilePage = loadProfilePage;
+window.toggleTheme = toggleTheme;
+window.openDetail = openDetail;
+window.closeModal = closeModal;
 
 // End of app.js
