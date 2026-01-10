@@ -332,7 +332,22 @@
                         </label>
                     </div>
                 </div>
-                <p class="profile-version">Lumi Version 0.9.5-rc</p>
+
+                <!-- Action Buttons -->
+                <div class="profile-actions" style="margin-top: var(--space-lg);">
+                    <button class="profile-action-btn premium-btn" id="profile-premium-btn" onclick="showPremiumModal()"
+                        style="width: 100%; padding: var(--space-md); background: linear-gradient(135deg, var(--primary), #8b7cf7); border: none; border-radius: var(--radius-lg); color: white; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: var(--space-sm); margin-bottom: var(--space-sm);">
+                        <span class="material-symbols-outlined">workspace_premium</span>
+                        <span>Premium'a Yükselt</span>
+                    </button>
+                    <button class="profile-action-btn logout-btn" id="profile-logout-btn" onclick="handleLogout()"
+                        style="width: 100%; padding: var(--space-md); background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius-lg); color: #ef4444; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: var(--space-sm);">
+                        <span class="material-symbols-outlined">logout</span>
+                        <span>Çıkış Yap</span>
+                    </button>
+                </div>
+
+                <p class="profile-version">Lumi Version 0.9.6-beta</p>
             </div>
 
             <div id="profile-content" style="padding: 0 var(--space-lg);"></div>
