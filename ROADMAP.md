@@ -6,19 +6,19 @@
 
 ### Tasarım
 
-- [ ] Günün Önerisi: Banner daha uzun, gradient daha opak
-- [ ] "Bugün hangi moddasın?" Stitch tarzı yazı (büyük, şık)
-- [ ] Tür/Mod chips: İkonlarla birlikte (sentiment_satisfied, bolt, water_drop, vb.)
-- [ ] Öner Bana + Sürpriz: Yan yana, küçük butonlar
-- [ ] Placeholder: Random poetik cümleler, 3 satırlık textarea
-- [ ] Üst boşluk: Daha yukarı (padding-top: 0 veya negatif margin)
+- [x] Günün Önerisi: Banner 170px, gradient opak ✅
+- [x] "Bugün hangi moddasın?" Stitch tarzı yazı (28px) ✅
+- [x] Tür/Mod chips: İkonlarla birlikte ✅
+- [x] Öner Bana + Sürpriz Yap: Yan yana, 36px butonlar ✅
+- [x] Placeholder: 10 poetik cümle, 3 satırlık textarea ✅
+- [x] Üst boşluk: margin-top: -12px ✅
 
 ### Fonksiyonellik
 
-- [ ] Öner Bana butonu çalışır
-- [ ] Filtrele butonu çalışır
-- [ ] Sürpriz butonu çalışır
-- [ ] Günün Önerisi tıklanabilir
+- [/] Öner Bana butonu çalışır (toast ✅, sonuç test edilecek)
+- [/] Filtrele butonu çalışır (toast ✅, sonuç test edilecek)
+- [/] Sürpriz butonu çalışır (toast ✅, sonuç test edilecek)
+- [x] Günün Önerisi tıklanabilir ✅
 
 ---
 
@@ -54,10 +54,10 @@
 - [ ] Profil butonu ayarlar sekmesi çalışır
 - [ ] Favorile yerine: Beğen + İzlenecekler butonları
 - [ ] İzle butonu açıklama bölümüne yerleştirilmiş
-- [ ] Fragmanlar/kamera arkası/röportajlar geri eklendi (kaydırılabilir)
-- [ ] Premium Trivia: API belirleme + doğru bilgi çekme
+- [ ] Fragmanlar/kamera arkası/röportajlar (kaydırılabilir)
+- [ ] Premium Trivia: API belirleme + doğru bilgi
 - [ ] Platform yoksa YouTube arama butonu
-- [ ] Nerede İzlenir: TOD, HBO Max, puhuTV, GAIN, Exxen eklendi
+- [ ] Nerede İzlenir: TOD, HBO Max, puhuTV, GAIN, Exxen
 
 ---
 
@@ -76,9 +76,20 @@
 
 ---
 
-## ✅ Tamamlanan
-<!-- Tamamlanan maddeler buraya taşınır -->
+## 📊 Özet
+
+| Bölüm | Tamamlanan | Toplam | % |
+|-------|-----------|--------|---|
+| Ne İzlesem Tasarım | 6 | 6 | 100% |
+| Ne İzlesem Fonksiyon | 1 | 4 | 25% |
+| Üyelik | 0 | 3 | 0% |
+| Dil | 0 | 3 | 0% |
+| Bildirimler | 0 | 2 | 0% |
+| Detay Sayfası | 0 | 11 | 0% |
+| Listem | 0 | 2 | 0% |
+| Profil | 0 | 3 | 0% |
+| **TOPLAM** | **7** | **34** | **21%** |
 
 ---
 
-*Son güncelleme: 2026-01-11*
+*Son güncelleme: 2026-01-11 16:43*
