@@ -188,169 +188,100 @@
         </section>
 
         <!-- ============================================
-             VIEW: NE İZLESEM (Wizard) - v3 Redesign
+             VIEW: NE İZLESEM (Wizard) - v4 Immersive Design
              ============================================ -->
-        <section id="view-wizard" class="view">
-            <div class="wizard-container"
-                style="padding: 16px; padding-top: 0; padding-bottom: 100px; margin-top: -12px;">
+        <section id="view-wizard" class="view discover-immersive">
+            <!-- Full-Viewport Hero Background -->
+            <div class="discover-hero-bg" id="discover-bg"></div>
+            <div class="discover-gradient-overlay"></div>
 
-                <!-- ======== GÜNÜN ÖNERİSİ BANNER ======== -->
-                <section class="daily-recommendation" id="daily-recommendation" style="margin-bottom: 16px;">
-                    <div class="daily-card" id="daily-card"
-                        style="position: relative; border-radius: 16px; overflow: hidden; height: 200px; background: linear-gradient(135deg, rgba(120,90,242,0.5), rgba(20,20,40,0.95)); cursor: pointer;">
-                        <div id="daily-poster"
-                            style="position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.5;">
-                        </div>
-                        <div
-                            style="position: absolute; inset: 0; background: linear-gradient(90deg, rgba(5,5,10,0.98) 0%, rgba(5,5,10,0.8) 40%, rgba(5,5,10,0.4) 100%);">
-                        </div>
-                        <div
-                            style="position: relative; height: 100%; display: flex; align-items: center; padding: 20px;">
-                            <div style="flex: 1;">
-                                <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
-                                    <span class="material-symbols-outlined"
-                                        style="color: #785af2; font-size: 18px;">star</span>
-                                    <span
-                                        style="font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 1px;">Günün
-                                        Önerisi</span>
-                                    <span class="daily-timer" id="daily-timer"
-                                        style="font-size: 10px; color: rgba(255,255,255,0.3); margin-left: auto;"></span>
-                                </div>
-                                <h3 id="daily-title"
-                                    style="font-size: 22px; font-weight: 700; color: white; margin-bottom: 6px; line-height: 1.2;">
-                                    Yükleniyor...</h3>
-                                <p id="daily-meta" style="font-size: 13px; color: rgba(255,255,255,0.5);"></p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+            <!-- Top Info Area - Daily Pick -->
+            <div class="discover-top-info" id="discover-top-info">
+                <div class="daily-pick-badge" onclick="openDailyRecommendation()">
+                    <span class="material-symbols-outlined">auto_awesome</span>
+                    GÜNÜN ÖNERİSİ
+                </div>
+                <h1 class="discover-hero-title" id="discover-hero-title">Yükleniyor...</h1>
+                <p class="discover-hero-meta" id="discover-hero-meta"></p>
+                <div class="discover-hero-chips" id="discover-hero-chips">
+                    <span class="hero-chip" id="hero-imdb-chip" style="display: none;">IMDb --</span>
+                    <span class="hero-chip" id="hero-timer-chip"></span>
+                </div>
+            </div>
 
-                <!-- ======== BAŞLIK - Stitch Style ======== -->
-                <h2
-                    style="font-size: 28px; font-weight: 700; color: white; margin-bottom: 16px; line-height: 1.1; letter-spacing: -0.5px;">
-                    Bugün hangi<br><span style="color: #785af2;">moddasın?</span>
-                </h2>
-
-                <!-- ======== AI SEARCH with Buttons ======== -->
-                <div style="margin-bottom: 16px;">
-                    <div class="glass" style="border-radius: 12px; padding: 12px; margin-bottom: 8px;">
-                        <textarea id="ai-movie-input" rows="3" placeholder="Bana ruhumu okşayacak bir film öner..."
-                            style="width: 100%; background: transparent; border: none; color: white; font-size: 14px; resize: none; line-height: 1.5; font-family: inherit; outline: none;"></textarea>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                        <button id="ai-search-btn" class="glass-active" onclick="handleAISearch()"
-                            style="height: 36px; border-radius: 8px; border: none; color: white; font-weight: 600; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                            <span class="material-symbols-outlined" style="font-size: 16px;">auto_awesome</span>
-                            Öner Bana
-                        </button>
-                        <button id="surprise-btn" onclick="handleSurpriseMe()"
-                            style="height: 36px; background: #785af2; border: none; border-radius: 8px; color: white; font-weight: 600; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                            <span class="material-symbols-outlined" style="font-size: 16px;">shuffle</span>
-                            Sürpriz Yap
-                        </button>
-                    </div>
+            <!-- Bottom Glass Console Panel -->
+            <div class="discover-console glass-panel">
+                <label class="console-label">Bugün nasıl hissediyorsun?</label>
+                
+                <!-- AI Input with Button -->
+                <div class="console-input-wrapper">
+                    <input type="text" id="ai-movie-input" class="console-input" placeholder="Bana bir film öner...">
+                    <button class="console-ai-btn" onclick="handleAISearch()">
+                        <span class="material-symbols-outlined">auto_awesome</span>
+                    </button>
                 </div>
 
-                <!-- ======== DIVIDER ======== -->
-                <div style="display: flex; align-items: center; gap: 8px; margin: 12px 0;">
-                    <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.08);"></div>
-                    <span
-                        style="font-size: 9px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1px;">veya
-                        filtrele</span>
-                    <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.08);"></div>
+                <!-- Mood/Genre Chips -->
+                <div class="console-chips hide-scrollbar" id="mood-chips">
+                    <button class="console-chip active" data-mood="chill">
+                        <span class="material-symbols-outlined">mood</span>Rahat
+                    </button>
+                    <button class="console-chip" data-mood="adrenaline">
+                        <span class="material-symbols-outlined">bolt</span>Heyecan
+                    </button>
+                    <button class="console-chip" data-mood="tearjerker">
+                        <span class="material-symbols-outlined">water_drop</span>Duygusal
+                    </button>
+                    <button class="console-chip" data-mood="mindbending">
+                        <span class="material-symbols-outlined">psychology</span>Beyin Yakan
+                    </button>
+                    <button class="console-chip" data-genre="28">
+                        <span class="material-symbols-outlined">local_fire_department</span>Aksiyon
+                    </button>
+                    <button class="console-chip" data-genre="27">
+                        <span class="material-symbols-outlined">skull</span>Korku
+                    </button>
+                    <button class="console-chip" data-genre="878">
+                        <span class="material-symbols-outlined">rocket_launch</span>Bilim Kurgu
+                    </button>
+                    <button class="console-chip" data-genre="10749">
+                        <span class="material-symbols-outlined">favorite</span>Romantik
+                    </button>
                 </div>
 
-                <!-- ======== TÜR/MOD CHIPS with Icons ======== -->
-                <div style="margin-bottom: 12px;">
-                    <div class="mood-chips hide-scrollbar" id="mood-chips"
-                        style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px;">
-                        <button class="mood-chip glass-active active" data-mood="chill"
-                            style="height: 36px; padding: 0 16px; border-radius: 9999px; border: none; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; color: white; display: flex; align-items: center; gap: 6px;">
-                            <span class="material-symbols-outlined"
-                                style="font-size: 16px;">sentiment_satisfied</span>Rahat
-                        </button>
-                        <button class="mood-chip glass" data-mood="adrenaline"
-                            style="height: 36px; padding: 0 16px; border-radius: 9999px; border: none; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 6px;">
-                            <span class="material-symbols-outlined" style="font-size: 16px;">bolt</span>Heyecan
-                        </button>
-                        <button class="mood-chip glass" data-mood="tearjerker"
-                            style="height: 36px; padding: 0 16px; border-radius: 9999px; border: none; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 6px;">
-                            <span class="material-symbols-outlined" style="font-size: 16px;">water_drop</span>Duygusal
-                        </button>
-                        <button class="mood-chip glass" data-mood="mindbending"
-                            style="height: 36px; padding: 0 16px; border-radius: 9999px; border: none; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 6px;">
-                            <span class="material-symbols-outlined" style="font-size: 16px;">psychology</span>Beyin
-                            Yakan
-                        </button>
-                        <button class="mood-chip glass" data-genre="28"
-                            style="height: 36px; padding: 0 16px; border-radius: 9999px; border: none; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 6px;">
-                            <span class="material-symbols-outlined"
-                                style="font-size: 16px;">local_fire_department</span>Aksiyon
-                        </button>
-                        <button class="mood-chip glass" data-genre="27"
-                            style="height: 36px; padding: 0 16px; border-radius: 9999px; border: none; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 6px;">
-                            <span class="material-symbols-outlined" style="font-size: 16px;">skull</span>Korku
-                        </button>
-                        <button class="mood-chip glass" data-genre="878"
-                            style="height: 36px; padding: 0 16px; border-radius: 9999px; border: none; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 6px;">
-                            <span class="material-symbols-outlined" style="font-size: 16px;">rocket_launch</span>Bilim
-                            Kurgu
-                        </button>
-                        <button class="mood-chip glass" data-genre="10749"
-                            style="height: 36px; padding: 0 16px; border-radius: 9999px; border: none; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 6px;">
-                            <span class="material-symbols-outlined" style="font-size: 16px;">favorite</span>Romantik
-                        </button>
-                        <button class="mood-chip glass" data-genre="16"
-                            style="height: 36px; padding: 0 16px; border-radius: 9999px; border: none; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 6px;">
-                            <span class="material-symbols-outlined" style="font-size: 16px;">animation</span>Animasyon
-                        </button>
-                    </div>
+                <!-- Era Chips -->
+                <div class="console-chips-secondary hide-scrollbar" id="era-chips">
+                    <button class="era-chip active" data-era="">Tüm Dönemler</button>
+                    <button class="era-chip" data-era="classic">Klasik</button>
+                    <button class="era-chip" data-era="80s">80'ler</button>
+                    <button class="era-chip" data-era="90s">90'lar</button>
+                    <button class="era-chip" data-era="2000s">2000'ler</button>
+                    <button class="era-chip" data-era="2010s">2010'lar</button>
+                    <button class="era-chip" data-era="2020s">2020'ler</button>
                 </div>
 
-                <!-- ======== DÖNEM CHIPS ======== -->
-                <div style="margin-bottom: 12px;">
-                    <div class="era-chips hide-scrollbar" id="era-chips"
-                        style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px;">
-                        <button class="era-chip glass active" data-era=""
-                            style="height: 28px; padding: 0 12px; border-radius: 9999px; border: none; font-size: 11px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7);">Tüm
-                            Dönemler</button>
-                        <button class="era-chip glass" data-era="classic"
-                            style="height: 28px; padding: 0 12px; border-radius: 9999px; border: none; font-size: 11px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7);">Klasik</button>
-                        <button class="era-chip glass" data-era="80s"
-                            style="height: 28px; padding: 0 12px; border-radius: 9999px; border: none; font-size: 11px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7);">80'ler</button>
-                        <button class="era-chip glass" data-era="90s"
-                            style="height: 28px; padding: 0 12px; border-radius: 9999px; border: none; font-size: 11px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7);">90'lar</button>
-                        <button class="era-chip glass" data-era="2000s"
-                            style="height: 28px; padding: 0 12px; border-radius: 9999px; border: none; font-size: 11px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7);">2000'ler</button>
-                        <button class="era-chip glass" data-era="2010s"
-                            style="height: 28px; padding: 0 12px; border-radius: 9999px; border: none; font-size: 11px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7);">2010'lar</button>
-                        <button class="era-chip glass" data-era="2020s"
-                            style="height: 28px; padding: 0 12px; border-radius: 9999px; border: none; font-size: 11px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7);">2020'ler</button>
-                    </div>
+                <!-- Action Buttons -->
+                <div class="console-actions">
+                    <button class="console-btn primary" onclick="handleAISearch()">
+                        <span class="material-symbols-outlined">auto_awesome</span>
+                        Öner Bana
+                    </button>
+                    <button class="console-btn secondary" onclick="handleSurpriseMe()">
+                        <span class="material-symbols-outlined">shuffle</span>
+                        Sürpriz Yap
+                    </button>
                 </div>
+            </div>
 
-                <!-- ======== FİLTRELE BUTTON ======== -->
-                <button id="wizard-search-btn" class="glass" onclick="handleWizardSearch()"
-                    style="width: 100%; height: 36px; border-radius: 8px; color: white; font-weight: 600; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; border: 1px solid rgba(255,255,255,0.1);">
-                    <span class="material-symbols-outlined" style="font-size: 14px;">search</span>
-                    Filtrele
-                </button>
-
-                <!-- ======== SONUÇLAR BÖLÜMÜ ======== -->
-                <div id="wizard-results" style="display: none; margin-top: 16px;">
-                    <div
-                        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                        <h3 id="wizard-results-title" style="font-size: 1rem; font-weight: 600; color: #fff;"></h3>
-                        <button id="wizard-results-close" onclick="closeWizardResults()"
-                            style="padding: 6px 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: rgba(255,255,255,0.7); font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
-                            <span class="material-symbols-outlined" style="font-size: 14px;">close</span>
-                            Kapat
-                        </button>
-                    </div>
-                    <div id="wizard-results-grid"
-                        style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;"></div>
+            <!-- Results Overlay (shows after search) -->
+            <div id="wizard-results" class="discover-results">
+                <div class="discover-results-header">
+                    <h3 id="wizard-results-title"></h3>
+                    <button class="discover-results-close" onclick="closeWizardResults()">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
                 </div>
-
+                <div id="wizard-results-grid" class="discover-results-grid"></div>
             </div>
         </section>
 

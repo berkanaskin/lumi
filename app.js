@@ -238,19 +238,13 @@ function initDiscoverModule() {
     // Set random poetic placeholder
     setRandomPlaceholder();
 
-    // Mood chips toggle
-    document.querySelectorAll('.mood-chip').forEach(chip => {
+    // Mood chips toggle - support both legacy and new class names
+    document.querySelectorAll('.mood-chip, .console-chip').forEach(chip => {
         chip.addEventListener('click', function () {
-            document.querySelectorAll('.mood-chip').forEach(c => {
+            document.querySelectorAll('.mood-chip, .console-chip').forEach(c => {
                 c.classList.remove('active');
-                c.style.background = 'var(--glass-bg)';
-                c.style.border = '1px solid var(--glass-border)';
-                c.style.color = 'var(--text-secondary)';
             });
             this.classList.add('active');
-            this.style.background = 'rgba(88,88,243,0.2)';
-            this.style.border = '1px solid rgba(88,88,243,0.5)';
-            this.style.color = 'white';
         });
     });
 
@@ -259,16 +253,11 @@ function initDiscoverModule() {
         chip.addEventListener('click', function () {
             document.querySelectorAll('.era-chip').forEach(c => {
                 c.classList.remove('active');
-                c.style.background = 'var(--glass-bg)';
-                c.style.border = '1px solid var(--glass-border)';
-                c.style.color = 'var(--text-secondary)';
             });
             this.classList.add('active');
-            this.style.background = 'rgba(88,88,243,0.2)';
-            this.style.border = '1px solid rgba(88,88,243,0.5)';
-            this.style.color = 'white';
         });
     });
+
 
     // Platform button toggle
     document.querySelectorAll('.platform-btn').forEach(btn => {
@@ -484,9 +473,9 @@ function displayDiscoverResultsView(movies, source) {
         return;
     }
 
-    // Set title and show container
+    // Set title and show container using active class for overlay style
     resultsTitle.textContent = label;
-    resultsContainer.style.display = 'block';
+    resultsContainer.classList.add('active');
     resultsGrid.innerHTML = '';
 
     // Add movie cards
@@ -496,6 +485,7 @@ function displayDiscoverResultsView(movies, source) {
             : 'https://via.placeholder.com/342x513?text=No+Poster';
 
         const card = document.createElement('div');
+        card.className = 'discover-result-card';
         card.style.cssText = 'cursor: pointer; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,0.05); aspect-ratio: 2/3;';
         card.innerHTML = `
             <div style="position: relative; width: 100%; height: 100%;">
@@ -510,19 +500,21 @@ function displayDiscoverResultsView(movies, source) {
                 </div>
             </div>
         `;
-        card.onclick = () => openDetailModal(movie.id, 'movie');
+        card.onclick = () => {
+            openDetailModal(movie.id, 'movie');
+        };
         resultsGrid.appendChild(card);
     });
 
-    // Scroll to results
-    resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Scroll to top of results
+    resultsContainer.scrollTop = 0;
 }
 
-// Close wizard results
+// Close wizard results - updated for overlay style
 function closeWizardResults() {
     const resultsContainer = document.getElementById('wizard-results');
     if (resultsContainer) {
-        resultsContainer.style.display = 'none';
+        resultsContainer.classList.remove('active');
     }
 }
 
@@ -577,12 +569,33 @@ async function loadDailyRecommendation() {
 }
 
 function renderDailyCard(movie, categoryLabel) {
+    // Legacy elements
     const dailyCard = document.getElementById('daily-card');
     const dailyPoster = document.getElementById('daily-poster');
     const dailyTitle = document.getElementById('daily-title');
     const dailyMeta = document.getElementById('daily-meta');
 
+    // New immersive discover elements
+    const discoverBg = document.getElementById('discover-bg');
+    const discoverHeroTitle = document.getElementById('discover-hero-title');
+    const discoverHeroMeta = document.getElementById('discover-hero-meta');
+    const heroImdbChip = document.getElementById('hero-imdb-chip');
+    const heroTimerChip = document.getElementById('hero-timer-chip');
+    const discoverTopInfo = document.getElementById('discover-top-info');
+
     if (!movie) return;
+
+    // Save the movie ID for clicking on top info area
+    if (discoverTopInfo) {
+        discoverTopInfo.dataset.movieId = movie.id;
+        discoverTopInfo.style.cursor = 'pointer';
+    }
+
+    const backdropUrl = movie.backdrop_path
+        ? `https://image.tmdb.org/t/p/w1280${movie.backdrop_path}`
+        : movie.poster_path
+            ? `https://image.tmdb.org/t/p/w780${movie.poster_path}`
+            : '';
 
     const posterUrl = movie.backdrop_path
         ? `https://image.tmdb.org/t/p/w780${movie.backdrop_path}`
@@ -590,7 +603,7 @@ function renderDailyCard(movie, categoryLabel) {
             ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
             : '';
 
-    // Update banner elements
+    // Update legacy banner elements (if they exist)
     if (dailyPoster) {
         dailyPoster.style.backgroundImage = posterUrl ? `url('${posterUrl}')` : '';
     }
@@ -602,13 +615,76 @@ function renderDailyCard(movie, categoryLabel) {
         const rating = movie.vote_average?.toFixed(1) || '';
         dailyMeta.textContent = [year, rating ? `⭐ ${rating}` : '', categoryLabel].filter(Boolean).join(' • ');
     }
-
-    // Make banner clickable
     if (dailyCard) {
         dailyCard.style.cursor = 'pointer';
         dailyCard.onclick = () => openDetailModal(movie.id, 'movie');
     }
+
+    // Update NEW immersive discover elements
+    if (discoverBg) {
+        discoverBg.style.backgroundImage = backdropUrl ? `url('${backdropUrl}')` : '';
+    }
+    if (discoverHeroTitle) {
+        discoverHeroTitle.textContent = movie.title || movie.name || 'Günün Filmi';
+    }
+    if (discoverHeroMeta) {
+        const year = movie.release_date?.substring(0, 4) || '';
+        const genres = movie.genre_ids?.slice(0, 2).map(id => getGenreName(id)).join(' • ') || categoryLabel;
+        discoverHeroMeta.textContent = [genres, year].filter(Boolean).join(' • ');
+    }
+    if (heroImdbChip && movie.vote_average) {
+        heroImdbChip.textContent = `IMDb ${movie.vote_average.toFixed(1)}`;
+        heroImdbChip.style.display = 'inline-flex';
+    }
+
+    // Update timer in new layout
+    updateDiscoverHeroTimer();
 }
+
+// Update timer for immersive discover hero
+function updateDiscoverHeroTimer() {
+    const timerEl = document.getElementById('daily-timer');
+    const heroTimerChip = document.getElementById('hero-timer-chip');
+
+    const now = new Date();
+    const midnight = new Date(now);
+    midnight.setHours(24, 0, 0, 0);
+    const diff = midnight - now;
+
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const timerText = `${hours}s ${minutes}dk`;
+
+    if (timerEl) {
+        timerEl.textContent = `Yeni öneri: ${timerText}`;
+    }
+    if (heroTimerChip) {
+        heroTimerChip.textContent = `⏱ ${timerText}`;
+    }
+}
+
+// Helper function to get genre name from ID
+function getGenreName(genreId) {
+    const genres = {
+        28: 'Aksiyon', 12: 'Macera', 16: 'Animasyon', 35: 'Komedi',
+        80: 'Suç', 99: 'Belgesel', 18: 'Drama', 10751: 'Aile',
+        14: 'Fantastik', 36: 'Tarih', 27: 'Korku', 10402: 'Müzik',
+        9648: 'Gizem', 10749: 'Romantik', 878: 'Bilim Kurgu',
+        10770: 'TV Film', 53: 'Gerilim', 10752: 'Savaş', 37: 'Western'
+    };
+    return genres[genreId] || '';
+}
+
+// Open daily recommendation detail (for clicking badge)
+function openDailyRecommendation() {
+    const discoverTopInfo = document.getElementById('discover-top-info');
+    const movieId = discoverTopInfo?.dataset?.movieId;
+    if (movieId) {
+        openDetailModal(parseInt(movieId), 'movie');
+    }
+}
+window.openDailyRecommendation = openDailyRecommendation;
+
 
 function updateDailyTimer() {
     const timerEl = document.getElementById('daily-timer');
@@ -3261,6 +3337,8 @@ async function openDetail(id, type, title, year, originalTitle) {
     const loadingText = i18n.t('loading') || 'Yükleniyor...';
     elements.modalBody.innerHTML = `<div class="loading-state visible"><div class="spinner"></div><p>${loadingText}</p></div>`;
     document.body.style.overflow = 'hidden';
+    document.body.classList.add('modal-open');
+
 
     // Hide bottom nav when modal is open
     const bottomNav = document.querySelector('.bottom-nav');
@@ -4101,6 +4179,7 @@ function playVideo(videoId) {
 function closeModal() {
     elements.modal.classList.remove('visible');
     document.body.style.overflow = '';
+    document.body.classList.remove('modal-open');
     elements.modalBody.innerHTML = '';
 
     const player = document.getElementById('youtube-player');

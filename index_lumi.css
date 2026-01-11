@@ -1037,14 +1037,398 @@ body {
 }
 
 /* ============================================
-   NE İZLESEM WIZARD SECTION
+   NE İZLESEM - IMMERSIVE DISCOVER (v4)
    ============================================ */
+
+/* Full-screen immersive container */
+.discover-immersive {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Full-viewport background image */
+.discover-hero-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center top;
+    z-index: 0;
+    transition: background-image 0.5s ease;
+}
+
+/* Gradient overlay for readability */
+.discover-gradient-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(to top,
+            rgba(5, 5, 10, 1) 0%,
+            rgba(5, 5, 10, 0.95) 20%,
+            rgba(5, 5, 10, 0.7) 40%,
+            rgba(5, 5, 10, 0.3) 70%,
+            rgba(5, 5, 10, 0.1) 100%);
+    pointer-events: none;
+}
+
+/* Top info area - Daily Pick */
+.discover-top-info {
+    position: relative;
+    z-index: 2;
+    padding: calc(120px + var(--safe-top)) var(--space-lg) var(--space-xl);
+    text-align: center;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-height: 45vh;
+}
+
+/* Daily Pick Badge - Neon glow */
+.daily-pick-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, rgba(255, 140, 50, 0.2), rgba(255, 100, 50, 0.1));
+    border: 1px solid rgba(255, 140, 50, 0.4);
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #ff8c32;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(255, 140, 50, 0.2);
+    margin-bottom: var(--space-md);
+}
+
+.daily-pick-badge:hover {
+    box-shadow: 0 0 30px rgba(255, 140, 50, 0.4);
+    transform: scale(1.02);
+}
+
+.daily-pick-badge .material-symbols-outlined {
+    font-size: 16px;
+    color: #ff8c32;
+}
+
+/* Hero Title - Cinematic */
+.discover-hero-title {
+    font-size: clamp(1.75rem, 6vw, 2.5rem);
+    font-weight: 700;
+    color: white;
+    line-height: 1.1;
+    margin-bottom: var(--space-sm);
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.8);
+    max-width: 90%;
+}
+
+.discover-hero-meta {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: var(--space-md);
+}
+
+/* Hero info chips */
+.discover-hero-chips {
+    display: flex;
+    gap: var(--space-sm);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.hero-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* ============================================
+   GLASS CONSOLE PANEL (Bottom)
+   ============================================ */
+.discover-console {
+    position: relative;
+    z-index: 10;
+    margin: var(--space-lg);
+    margin-bottom: calc(80px + var(--safe-bottom));
+    padding: var(--space-lg);
+    background: rgba(10, 10, 15, 0.7);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Console label */
+.console-label {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: var(--space-md);
+}
+
+/* Input wrapper with AI button */
+.console-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    padding: 4px 4px 4px 16px;
+    margin-bottom: var(--space-md);
+    transition: all 0.2s ease;
+}
+
+.console-input-wrapper:focus-within {
+    border-color: rgba(88, 88, 243, 0.5);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.console-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    padding: 12px 0;
+}
+
+.console-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.console-ai-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary), #8b5cf6);
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.console-ai-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 20px rgba(88, 88, 243, 0.4);
+}
+
+.console-ai-btn .material-symbols-outlined {
+    font-size: 20px;
+}
+
+/* Mood/Genre chips - horizontal scroll */
+.console-chips {
+    display: flex;
+    gap: var(--space-sm);
+    overflow-x: auto;
+    padding-bottom: var(--space-sm);
+    margin-bottom: var(--space-sm);
+    -webkit-overflow-scrolling: touch;
+}
+
+.console-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-full);
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.console-chip:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.console-chip.active {
+    background: rgba(88, 88, 243, 0.2);
+    border-color: rgba(88, 88, 243, 0.4);
+    color: white;
+}
+
+.console-chip .material-symbols-outlined {
+    font-size: 16px;
+}
+
+/* Era chips - secondary row */
+.console-chips-secondary {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: var(--space-sm);
+    margin-bottom: var(--space-md);
+}
+
+.era-chip {
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.era-chip:hover {
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.era-chip.active {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+/* Action buttons - side by side */
+.console-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-sm);
+}
+
+.console-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 20px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.console-btn.primary {
+    background: linear-gradient(135deg, var(--primary), #8b5cf6);
+    color: white;
+    box-shadow: 0 4px 20px rgba(88, 88, 243, 0.3);
+}
+
+.console-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(88, 88, 243, 0.4);
+}
+
+.console-btn.secondary {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.console-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.console-btn .material-symbols-outlined {
+    font-size: 18px;
+}
+
+/* ============================================
+   DISCOVER RESULTS OVERLAY
+   ============================================ */
+.discover-results {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(5, 5, 10, 0.98);
+    backdrop-filter: blur(20px);
+    padding: calc(var(--safe-top) + var(--space-lg)) var(--space-md) calc(100px + var(--safe-bottom));
+    overflow-y: auto;
+}
+
+.discover-results.active {
+    display: block;
+}
+
+.discover-results-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.discover-results-header h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: white;
+}
+
+.discover-results-close {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.discover-results-close:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.discover-results-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-md);
+}
+
+/* Legacy wizard container - kept for compatibility */
 .wizard-container {
     padding: var(--space-lg);
     padding-bottom: 120px;
     max-width: 600px;
     margin: 0 auto;
 }
+
 
 .wizard-header {
     text-align: center;
@@ -1544,27 +1928,32 @@ body {
     margin: var(--space-sm) auto var(--space-md);
 }
 
+/* CRITICAL: High z-index for close button to stay above backdrop */
 .modal-close {
     position: absolute;
     top: var(--space-md);
     right: var(--space-md);
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     border-radius: var(--radius-full);
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    color: var(--text-secondary);
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: white;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10;
+    z-index: 100;
+    /* HIGH z-index per user request */
     transition: all var(--transition-fast);
 }
 
 .modal-close:hover {
-    background: var(--glass-bg-hover);
+    background: rgba(255, 255, 255, 0.15);
     color: var(--text-primary);
+    transform: scale(1.05);
 }
 
 .modal-body {
@@ -1572,6 +1961,15 @@ body {
     overflow-y: auto;
     max-height: calc(90vh - 60px);
 }
+
+/* Body scroll-lock when modal is open */
+body.modal-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
+
 
 /* Login Modal */
 .login-modal {

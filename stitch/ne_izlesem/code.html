@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lumi Discover V1: Classic Cinematic</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec7f13",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#221910",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem", 
+                        "lg": "2rem", 
+                        "xl": "3rem", 
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom styles for specific glassmorphism effects not covered by standard Tailwind utilities */
+        .glass-panel {
+            background: rgba(34, 25, 16, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+        }
+        
+        .glass-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(4px);
+        }
+        
+        .cinematic-text-shadow {
+            text-shadow: 0 4px 20px rgba(0,0,0,0.8);
+        }
+
+        .neon-badge {
+            box-shadow: 0 0 15px rgba(236, 127, 19, 0.4);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display bg-background-dark text-white overflow-hidden h-screen w-full relative select-none">
+<!-- Immersive Background Image -->
+<div class="absolute inset-0 z-0 bg-cover bg-center h-full w-full" data-alt="Cinematic desert landscape with warm orange sand dunes and a dramatic sky" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCfp6DFldnNY8kaX2WX5H_JTz-Qyq2zGjpnRPiU6zRnUkSKqyzudX5FC4G0y-2_2V_f20Rit5xmuwUl-poyU9Wuzr90tFoo1Ah3B33JDpM6xb0iCynb1iG_9AhmmJK40AFtIuh-v91l84ke_NZKyq1u0M6tuVEqHePxyIVOFDRewKaN1YpdOmLBrHA2O7FIo0YRp8Q7ycdFFqHvQ26Ve3XZwED1rWOF6aZJun1hpoAd86I-LlsVMhqsSpMz6KiXPIwsvlx4L2TNU8Qr");'>
+<!-- Gradient Overlay for Readability -->
+<div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-background-dark/90"></div>
+</div>
+<!-- Main Content Container -->
+<div class="relative z-10 flex flex-col h-full justify-between pt-14 pb-8">
+<!-- Top Section: Daily Pick -->
+<div class="flex flex-col items-center px-6 animate-fade-in-down">
+<!-- Glowing Neon Badge -->
+<div class="neon-badge bg-primary/20 border border-primary/50 backdrop-blur-md px-4 py-1.5 rounded-full mb-6">
+<span class="text-primary text-xs font-bold tracking-widest uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">colors_spark</span>
+                    Daily Pick
+                </span>
+</div>
+<!-- Cinematic Title -->
+<h1 class="text-5xl font-extrabold text-center tracking-tighter leading-[0.9] text-white cinematic-text-shadow mb-2">
+                DUNE
+                <span class="block text-2xl font-bold tracking-[0.2em] mt-1 text-white/90">PART TWO</span>
+</h1>
+<!-- Metadata -->
+<div class="flex items-center gap-3 text-sm font-medium text-white/70 mt-4 cinematic-text-shadow">
+<span>Sci-Fi</span>
+<span class="w-1 h-1 rounded-full bg-primary"></span>
+<span>2024</span>
+<span class="w-1 h-1 rounded-full bg-primary"></span>
+<span>2h 46m</span>
+</div>
+<!-- Rating / quick info chips (Optional Detail) -->
+<div class="mt-6 flex gap-2">
+<span class="bg-black/40 border border-white/10 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm text-white/80">IMDb 8.9</span>
+<span class="bg-black/40 border border-white/10 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm text-white/80">4K HDR</span>
+</div>
+</div>
+<!-- Spacer to push content -->
+<div class="flex-grow"></div>
+<!-- Bottom Section: Glass Control Panel -->
+<div class="glass-panel mx-4 mb-2 p-6 rounded-[2.5rem] flex flex-col gap-6 transform transition-all">
+<!-- Headline & Input -->
+<div class="flex flex-col gap-3">
+<label class="text-white text-lg font-bold flex items-center gap-2" for="ai-prompt">
+                    Not your vibe? Ask AI...
+                </label>
+<div class="relative group">
+<input class="w-full glass-input rounded-full py-4 pl-5 pr-12 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:bg-white/10 transition-all text-base" id="ai-prompt" placeholder="Find me a movie with robots..." type="text"/>
+<button class="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-primary text-white hover:bg-primary/90 transition-colors flex items-center justify-center shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-[20px]">auto_awesome</span>
+</button>
+</div>
+</div>
+<!-- Filter Chips -->
+<div class="flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-1 px-1 mask-linear-fade">
+<button class="flex-shrink-0 bg-white/5 hover:bg-white/15 border border-white/10 px-4 py-2.5 rounded-full text-sm font-medium transition-colors text-white/90 flex items-center gap-2">
+<span class="material-symbols-outlined text-lg text-primary">mood</span>
+                    Mood
+                </button>
+<button class="flex-shrink-0 bg-white/5 hover:bg-white/15 border border-white/10 px-4 py-2.5 rounded-full text-sm font-medium transition-colors text-white/90 flex items-center gap-2">
+<span class="material-symbols-outlined text-lg text-primary">movie_filter</span>
+                    Genre
+                </button>
+<button class="flex-shrink-0 bg-white/5 hover:bg-white/15 border border-white/10 px-4 py-2.5 rounded-full text-sm font-medium transition-colors text-white/90 flex items-center gap-2">
+<span class="material-symbols-outlined text-lg text-primary">calendar_month</span>
+                    Era
+                </button>
+<button class="flex-shrink-0 bg-white/5 hover:bg-white/15 border border-white/10 px-4 py-2.5 rounded-full text-sm font-medium transition-colors text-white/90 flex items-center gap-2">
+<span class="material-symbols-outlined text-lg text-primary">group</span>
+                    Cast
+                </button>
+</div>
+<!-- Primary Action -->
+<button class="w-full bg-primary hover:bg-[#d66f0d] text-white font-bold text-lg py-4 rounded-full shadow-lg shadow-primary/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2 mt-1">
+<span class="material-symbols-outlined">shuffle</span>
+                Surprise Me
+            </button>
+</div>
+<!-- Bottom Tab Bar Placeholder (Floating) -->
+<div class="absolute bottom-6 left-0 right-0 flex justify-center pointer-events-none z-20">
+<div class="h-1 w-32 bg-white/30 rounded-full backdrop-blur-md"></div>
+</div>
+</div>
+</body></html>
