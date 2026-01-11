@@ -1,9 +1,9 @@
 // ============================================
-// LUMI v0.9.6-beta - Feature Finalization
+// LUMI v0.9.8 - Audit Cleanup & Documentation
 // Mobile-First Film Discovery App
 // ============================================
 
-const APP_VERSION = '0.9.7-beta';
+const APP_VERSION = '0.9.8';
 
 // Toast notification function
 function showToast(message, duration = 3000) {

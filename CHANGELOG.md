@@ -5,6 +5,31 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ---
 
+## [0.9.8] - 2026-01-12 - Audit Cleanup & Documentation
+
+### 🧹 Kod Temizliği
+
+- **Deprecated Dosyalar Silindi:**
+  - `index_old.css` (112KB gereksiz stylesheet)
+  - `test-report.html` (yanlış versiyon v0.9.13, 0 test)
+- **Legacy HTML Bloğu Silindi:** `index.html:593-613` (21 satır hidden elements)
+- **Versiyon Senkronizasyonu:** Tüm dosyalar v0.9.8
+
+### 📄 Dokümantasyon
+
+- **README.md:** Proje tanımı, özellikler, kurulum talimatları
+- **.env.example:** Environment variable template
+- **ROADMAP.md:** %29 → %63 tamamlanma (AI/Store/Temizlik eklendi)
+
+### 🔧 Technical
+
+- `config.js:3`: v0.9.8
+- `app.js:2,6`: v0.9.8
+- `index.html:434`: v0.9.8
+- APP_VERSION: 0.9.8
+
+---
+
 ## [0.9.7] - 2026-01-12 - Gemini AI Integration
 
 ### 🤖 AI Service (YENİ)

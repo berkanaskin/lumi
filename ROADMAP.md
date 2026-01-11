@@ -2,28 +2,57 @@
 
 > ⚠️ **Bu dosya silinmemeli!** Her revizyon tamamlandığında tikle.
 
+## 🤖 AI & Servisler (v0.9.7-0.9.8)
+
+### AI Entegrasyonu ✅
+
+- [x] Gemini 2.0 Flash AI servisi (`services/ai.js`)
+- [x] AI tabanlı film önerisi sistemi
+- [x] TMDB ile poster enrichment
+- [x] Fallback mekanizması (keyword search)
+
+### Store Entegrasyonu
+
+- [x] RevenueCat SDK yapısı (`services/store.js`)
+- [x] Mock fallback desteği
+- [ ] Gerçek ödeme akışı (API key doğrulaması gerekli)
+
+---
+
 ## 🎯 Ne İzlesem Bölümü
 
-### Tasarım
+### Tasarım ✅
 
-- [x] Günün Önerisi: Banner 200px, gradient opak ✅ (v0.9.14)
-- [x] "Bugün hangi moddasın?" Stitch tarzı yazı (28px) ✅
-- [x] Tür/Mod chips: İkonlarla birlikte ✅
-- [x] Öner Bana + Sürpriz Yap: Yan yana, 36px butonlar ✅
-- [x] Placeholder: 10 poetik cümle, 3 satırlık textarea ✅
-- [x] Üst boşluk: margin-top: -12px ✅
+- [x] Günün Önerisi: Banner 200px, gradient opak
+- [x] "Bugün hangi moddasın?" Stitch tarzı yazı (28px)
+- [x] Tür/Mod chips: İkonlarla birlikte
+- [x] Öner Bana + Sürpriz Yap: Yan yana, 36px butonlar
+- [x] Placeholder: 10 poetik cümle, 3 satırlık textarea
+- [x] Full-Bleed Hero Background
+- [x] Theme-Aware Gradient (Dark/Light)
 
-### Fonksiyonellik
+### Fonksiyonellik ✅
 
-- [x] Öner Bana butonu çalışır ✅ (v0.9.14 - wizard-results)
-- [x] Filtrele butonu çalışır ✅ (v0.9.14 - wizard-results)
-- [x] Sürpriz butonu çalışır ✅ (v0.9.14 - wizard-results)
-- [x] Günün Önerisi tıklanabilir ✅
+- [x] Öner Bana butonu çalışır
+- [x] Filtrele butonu çalışır
+- [x] Sürpriz butonu çalışır
+- [x] Günün Önerisi tıklanabilir
+- [x] AI arama Gemini ile entegre
+
+---
+
+## 📄 Dokümantasyon (v0.9.8) ✅
+
+- [x] README.md oluşturuldu
+- [x] .env.example template oluşturuldu
+- [x] CHANGELOG.md güncel tutuldu
+- [x] ROADMAP.md güncellendi
 
 ---
 
 ## 🔐 Üyelik Sistemi
 
+- [x] Firebase Auth yapısı (`services/auth.js`)
 - [ ] Kusursuz çalışır giriş/kayıt
 - [ ] Kusursuz çalışır çıkış
 - [ ] Premium ödeme mekanizması (RevenueCat)
@@ -32,6 +61,8 @@
 
 ## 🌍 Dil Desteği
 
+- [x] i18n altyapısı (`i18n.js`)
+- [x] TR/EN çevirileri
 - [ ] Tüm UI elementleri çevrilmiş
 - [ ] API sonuçları seçilen dilde
 - [ ] Dil değişimi anında uygulanır
@@ -40,39 +71,48 @@
 
 ## 🔔 Bildirimler
 
-- [ ] Bildirimler modülü çalışır
+- [x] Bildirimler servisi (`services/notifications.js`)
 - [ ] Premium: Haber ver özelliği
 
 ---
 
 ## 🎬 Film/Dizi Detay Sayfası
 
+- [x] Modal açılıyor, poster ve bilgi gösteriyor
+- [x] Puanlar (IMDb, RT, Metacritic)
 - [ ] Yönetmen ve senarist bilgisi
 - [ ] Gösterime giriş tarihi
-- [ ] Puanlar inline görünüm
-- [ ] Çalışır puan gösterimi
-- [ ] Profil butonu ayarlar sekmesi çalışır
-- [ ] Favorile yerine: Beğen + İzlenecekler butonları
-- [ ] İzle butonu açıklama bölümüne yerleştirilmiş
-- [ ] Fragmanlar/kamera arkası/röportajlar (kaydırılabilir)
-- [ ] Premium Trivia: API belirleme + doğru bilgi
-- [ ] Platform yoksa YouTube arama butonu
-- [ ] Nerede İzlenir: TOD, HBO Max, puhuTV, GAIN, Exxen
+- [ ] Beğen + İzlenecekler butonları
+- [ ] Fragman scroll'u
+- [ ] Premium Trivia
+- [ ] Platform yoksa YouTube arama
+- [ ] Türk platformları (TOD, HBO Max, puhuTV, GAIN, Exxen)
 
 ---
 
 ## 📋 Listem Bölümü
 
-- [ ] Ayarlar ikonu çalışır veya kaldırıldı
+- [x] Favori ekleme/çıkarma çalışır
+- [ ] Ayarlar ikonu çalışır
 - [ ] Bölüm daha yukarı kaldırıldı
 
 ---
 
 ## 👤 Profil Bölümü
 
+- [x] Temel profil UI
 - [ ] Avatar katalog seçimi
 - [ ] Kendi avatar yükleme opsiyonu
 - [ ] Default avatar (kırık link yerine)
+
+---
+
+## 🧹 Kod Temizliği (v0.9.8) ✅
+
+- [x] `index_old.css` silindi
+- [x] `test-report.html` silindi
+- [x] Legacy hidden HTML bloğu silindi
+- [x] Versiyon numaraları senkronize edildi
 
 ---
 
@@ -80,16 +120,19 @@
 
 | Bölüm                  | Tamamlanan | Toplam | %    |
 | ---------------------- | ---------- | ------ | ---- |
-| Ne İzlesem Tasarım     | 6          | 6      | 100% |
-| Ne İzlesem Fonksiyon   | 4          | 4      | 100% |
-| Üyelik                 | 0          | 3      | 0%   |
-| Dil                    | 0          | 3      | 0%   |
-| Bildirimler            | 0          | 2      | 0%   |
-| Detay Sayfası          | 0          | 11     | 0%   |
-| Listem                 | 0          | 2      | 0%   |
-| Profil                 | 0          | 3      | 0%   |
-| **TOPLAM**             | **10**     | **34** | **29%** |
+| AI & Servisler         | 6          | 7      | 86%  |
+| Ne İzlesem Tasarım     | 7          | 7      | 100% |
+| Ne İzlesem Fonksiyon   | 5          | 5      | 100% |
+| Dokümantasyon          | 4          | 4      | 100% |
+| Üyelik                 | 1          | 4      | 25%  |
+| Dil                    | 2          | 5      | 40%  |
+| Bildirimler            | 1          | 2      | 50%  |
+| Detay Sayfası          | 2          | 9      | 22%  |
+| Listem                 | 1          | 3      | 33%  |
+| Profil                 | 1          | 4      | 25%  |
+| Kod Temizliği          | 4          | 4      | 100% |
+| **TOPLAM**             | **34**     | **54** | **63%** |
 
 ---
 
-*Son güncelleme: 2026-01-11 17:05*
+*Son güncelleme: 2026-01-12 02:30*
