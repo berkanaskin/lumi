@@ -2824,3 +2824,27 @@ body {
         grid-template-columns: repeat(3, 1fr);
     }
 }
+
+/* ============================================
+   NE İZLESEM ANIMATIONS
+   ============================================ */
+
+@keyframes gradient-shift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Genre dropdown styling */
+#genre-select option {
+    background: #1a1a2e;
+    color: white;
+}

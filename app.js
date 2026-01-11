@@ -206,6 +206,22 @@ function initDiscoverModule() {
         });
     });
 
+    // Era chips toggle
+    document.querySelectorAll('.era-chip').forEach(chip => {
+        chip.addEventListener('click', function () {
+            document.querySelectorAll('.era-chip').forEach(c => {
+                c.classList.remove('active');
+                c.style.background = 'var(--glass-bg)';
+                c.style.border = '1px solid var(--glass-border)';
+                c.style.color = 'var(--text-secondary)';
+            });
+            this.classList.add('active');
+            this.style.background = 'rgba(88,88,243,0.2)';
+            this.style.border = '1px solid rgba(88,88,243,0.5)';
+            this.style.color = 'white';
+        });
+    });
+
     // Platform button toggle
     document.querySelectorAll('.platform-btn').forEach(btn => {
         btn.addEventListener('click', function () {
@@ -233,12 +249,192 @@ function initDiscoverModule() {
             btn.style.opacity = '1';
         });
     });
+}
 
-    // Shuffle FAB
-    document.getElementById('shuffle-fab')?.addEventListener('click', async function () {
-        this.style.transform = 'rotate(360deg)';
-        setTimeout(() => this.style.transform = 'rotate(0deg)', 500);
-        await loadRandomRecommendation();
+// AI Search Handler - Uses text input to find recommendations
+async function handleAISearch() {
+    const input = document.getElementById('ai-movie-input');
+    const query = input?.value?.trim();
+
+    if (!query) {
+        showToast('Lütfen ne tür bir film izlemek istediğini yaz.');
+        return;
+    }
+
+    // Show loading in results area
+    showToast('Senin için öneriler aranıyor...');
+
+    // Extract keywords for TMDB search
+    const keywords = extractMovieKeywords(query);
+
+    // Navigate to discover results view with the search
+    await showDiscoverResults({
+        source: 'ai',
+        query: query,
+        keywords: keywords
+    });
+}
+
+// Wizard Search Handler - Uses mood, platform, genre, era selections
+async function handleWizardSearch() {
+    const mood = document.querySelector('.mood-chip.active')?.dataset.mood || 'chill';
+    const genre = document.getElementById('genre-select')?.value || '';
+    const era = document.querySelector('.era-chip.active')?.dataset.era || '';
+
+    showToast('Öneriler yükleniyor...');
+
+    await showDiscoverResults({
+        source: 'wizard',
+        mood: mood,
+        genre: genre,
+        era: era
+    });
+}
+
+// Surprise Me Handler - Random quality films
+async function handleSurpriseMe() {
+    showToast('Sürpriz hazırlanıyor! 🎲');
+
+    await showDiscoverResults({
+        source: 'surprise',
+        random: true
+    });
+}
+
+// Extract keywords from natural language query for TMDB
+function extractMovieKeywords(query) {
+    const lowerQuery = query.toLowerCase();
+    const keywords = [];
+
+    // Mood keywords
+    if (lowerQuery.includes('komik') || lowerQuery.includes('güle') || lowerQuery.includes('eğlen')) keywords.push('comedy');
+    if (lowerQuery.includes('korku') || lowerQuery.includes('geril') || lowerQuery.includes('korkun')) keywords.push('horror', 'thriller');
+    if (lowerQuery.includes('aksiyon') || lowerQuery.includes('heyecan')) keywords.push('action');
+    if (lowerQuery.includes('romantik') || lowerQuery.includes('aşk') || lowerQuery.includes('sevgi')) keywords.push('romance');
+    if (lowerQuery.includes('dram') || lowerQuery.includes('ağla') || lowerQuery.includes('duygu')) keywords.push('drama');
+    if (lowerQuery.includes('bilim') || lowerQuery.includes('uzay') || lowerQuery.includes('gelecek')) keywords.push('science fiction');
+    if (lowerQuery.includes('animasyon') || lowerQuery.includes('çizgi')) keywords.push('animation');
+
+    return keywords;
+}
+
+// Show Discover Results in a new view
+async function showDiscoverResults(params) {
+    // Build TMDB query based on params
+    let url = `${API_URLS.TMDB_BASE}/discover/movie?api_key=${CONFIG.TMDB_API_KEY}&language=${state.language}&sort_by=popularity.desc&vote_count.gte=100`;
+
+    // Add genre filter
+    if (params.genre) {
+        url += `&with_genres=${params.genre}`;
+    } else if (params.mood) {
+        const moodGenres = {
+            chill: '35,10751',
+            adrenaline: '28,53',
+            tearjerker: '18,10749',
+            mindbending: '878,9648',
+            funny: '35,16'
+        };
+        if (moodGenres[params.mood]) {
+            url += `&with_genres=${moodGenres[params.mood]}`;
+        }
+    }
+
+    // Add era filter
+    if (params.era) {
+        const eraRanges = {
+            'classic': { gte: '1920-01-01', lte: '1969-12-31' },
+            '80s': { gte: '1980-01-01', lte: '1989-12-31' },
+            '90s': { gte: '1990-01-01', lte: '1999-12-31' },
+            '2000s': { gte: '2000-01-01', lte: '2009-12-31' },
+            '2010s': { gte: '2010-01-01', lte: '2019-12-31' },
+            '2020s': { gte: '2020-01-01', lte: '2029-12-31' }
+        };
+        if (eraRanges[params.era]) {
+            url += `&primary_release_date.gte=${eraRanges[params.era].gte}&primary_release_date.lte=${eraRanges[params.era].lte}`;
+        }
+    }
+
+    // For surprise, add randomness
+    if (params.random) {
+        url += `&page=${Math.floor(Math.random() * 5) + 1}&vote_average.gte=7`;
+    }
+
+    try {
+        const resp = await fetch(url);
+        const data = await resp.json();
+
+        if (data.results && data.results.length > 0) {
+            // Shuffle for variety if surprise
+            let movies = data.results;
+            if (params.random) {
+                movies = movies.sort(() => Math.random() - 0.5);
+            }
+
+            // Display in home grid as results
+            displayDiscoverResultsView(movies, params.source);
+        } else {
+            showToast('Bu kriterlere uygun film bulunamadı.');
+        }
+    } catch (error) {
+        console.error('Discover results error:', error);
+        showToast('Öneriler yüklenirken hata oluştu.');
+    }
+}
+
+// Display discover results in home view grid
+function displayDiscoverResultsView(movies, source) {
+    const sourceLabels = {
+        'ai': '🤖 Senin İçin Öneriler',
+        'wizard': '✨ Seçimlerine Göre',
+        'surprise': '🎲 Sürpriz Seçimler'
+    };
+
+    const label = sourceLabels[source] || 'Öneriler';
+
+    // Switch to home view
+    switchView('home');
+
+    // Get the feed grid
+    const feedGrid = document.getElementById('feed-grid');
+    if (!feedGrid) return;
+
+    // Clear and show results with header
+    feedGrid.innerHTML = `
+        <div style="grid-column: 1 / -1; padding: var(--space-md);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-lg);">
+                <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">${label}</h2>
+                <button onclick="loadHomePage()" style="padding: 8px 16px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-secondary); font-size: 0.8rem; cursor: pointer;">
+                    <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">close</span>
+                    Kapat
+                </button>
+            </div>
+        </div>
+    `;
+
+    // Add movie cards
+    movies.forEach(movie => {
+        const posterUrl = movie.poster_path
+            ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+            : 'https://via.placeholder.com/500x750?text=No+Poster';
+
+        const card = document.createElement('div');
+        card.className = 'feed-card';
+        card.style.cssText = 'cursor: pointer; border-radius: var(--radius-lg); overflow: hidden; background: var(--glass-bg); aspect-ratio: 2/3;';
+        card.innerHTML = `
+            <div style="position: relative; width: 100%; height: 100%;">
+                <img src="${posterUrl}" alt="${movie.title}" style="width: 100%; height: 100%; object-fit: cover;">
+                <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%);"></div>
+                <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: var(--space-sm);">
+                    <div style="font-size: 0.75rem; font-weight: 600; color: white; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${movie.title}</div>
+                    <div style="display: flex; align-items: center; gap: 4px; margin-top: 4px;">
+                        <span style="color: #fbbf24; font-size: 0.7rem;">⭐ ${movie.vote_average?.toFixed(1) || 'N/A'}</span>
+                        <span style="color: var(--text-muted); font-size: 0.65rem;">${movie.release_date?.substring(0, 4) || ''}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        card.onclick = () => openDetailModal(movie.id, 'movie');
+        feedGrid.appendChild(card);
     });
 }
 

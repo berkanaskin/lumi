@@ -188,13 +188,160 @@
         </section>
 
         <!-- ============================================
-             VIEW: NE İZLESEM (Wizard) - Stitch Design
+             VIEW: NE İZLESEM (Wizard) - Complete Redesign
              ============================================ -->
         <section id="view-wizard" class="view" style="margin-top: -80px;">
             <div class="wizard-container" style="padding: var(--space-md); padding-bottom: 120px;">
 
-                <!-- Günün Önerisi (Daily Recommendation) -->
-                <div class="daily-recommendation" id="daily-recommendation" style="margin-bottom: var(--space-xl);">
+                <!-- ======== AI SEARCH SECTION ======== -->
+                <div class="ai-search-section" style="margin-bottom: var(--space-xl);">
+                    <h2
+                        style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-md);">
+                        Bugün <span style="color: var(--primary);">hangi moddasın?</span>
+                    </h2>
+                    <div class="ai-input-wrapper"
+                        style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--space-md); margin-bottom: var(--space-sm);">
+                        <textarea id="ai-movie-input" rows="3"
+                            placeholder="Nasıl bir film izlemek istersin? Hislerini ve beklentilerini yaz..."
+                            style="width: 100%; background: transparent; border: none; color: var(--text-primary); font-size: 0.9rem; resize: none; line-height: 1.5; font-family: inherit;"></textarea>
+                    </div>
+                    <button id="ai-search-btn" onclick="handleAISearch()"
+                        style="width: 100%; padding: var(--space-md); background: linear-gradient(135deg, var(--primary), #8b7cf7); border: none; border-radius: var(--radius-lg); color: white; font-weight: 600; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: var(--space-sm);">
+                        <span class="material-symbols-outlined">auto_awesome</span>
+                        <span>Öner Bana</span>
+                    </button>
+                </div>
+
+                <!-- ======== FALLBACK WIZARD SECTION ======== -->
+                <div class="fallback-wizard"
+                    style="background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-xl); padding: var(--space-lg); margin-bottom: var(--space-xl);">
+                    <h3
+                        style="font-size: 1rem; font-weight: 600; color: var(--text-muted); margin-bottom: var(--space-lg); text-align: center;">
+                        Bilemediysen <span style="color: var(--primary);">yardımcı olalım</span>
+                    </h3>
+
+                    <!-- Mood Selection -->
+                    <div class="wizard-row" style="margin-bottom: var(--space-lg);">
+                        <label
+                            style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: var(--space-sm);">Mod</label>
+                        <div class="mood-chips" id="mood-chips"
+                            style="display: flex; gap: var(--space-xs); flex-wrap: wrap;">
+                            <button class="mood-chip active" data-mood="chill"
+                                style="padding: 8px 14px; border-radius: 9999px; background: rgba(88,88,243,0.2); border: 1px solid rgba(88,88,243,0.5); color: white; font-size: 0.8rem; font-weight: 500; cursor: pointer;">😌
+                                Rahat</button>
+                            <button class="mood-chip" data-mood="adrenaline"
+                                style="padding: 8px 14px; border-radius: 9999px; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-secondary); font-size: 0.8rem; font-weight: 500; cursor: pointer;">⚡
+                                Heyecan</button>
+                            <button class="mood-chip" data-mood="tearjerker"
+                                style="padding: 8px 14px; border-radius: 9999px; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-secondary); font-size: 0.8rem; font-weight: 500; cursor: pointer;">💧
+                                Duygusal</button>
+                            <button class="mood-chip" data-mood="mindbending"
+                                style="padding: 8px 14px; border-radius: 9999px; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-secondary); font-size: 0.8rem; font-weight: 500; cursor: pointer;">🧠
+                                Beyin Yakan</button>
+                            <button class="mood-chip" data-mood="funny"
+                                style="padding: 8px 14px; border-radius: 9999px; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-secondary); font-size: 0.8rem; font-weight: 500; cursor: pointer;">😂
+                                Komedi</button>
+                        </div>
+                    </div>
+
+                    <!-- Platform Selection -->
+                    <div class="wizard-row" style="margin-bottom: var(--space-lg);">
+                        <div
+                            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-sm);">
+                            <label
+                                style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Platformlar</label>
+                            <button id="select-all-platforms"
+                                style="font-size: 0.7rem; font-weight: 600; color: var(--primary); background: none; border: none; cursor: pointer;">Tümünü
+                                Seç</button>
+                        </div>
+                        <div class="platform-grid" id="platform-grid"
+                            style="display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--space-xs);">
+                            <button class="platform-btn active" data-platform="netflix"
+                                style="aspect-ratio: 1; border-radius: var(--radius-md); background: rgba(88,88,243,0.2); border: 1px solid rgba(88,88,243,0.5); display: flex; align-items: center; justify-content: center; cursor: pointer;"><span
+                                    style="color: #E50914; font-weight: 700; font-size: 1.1rem;">N</span></button>
+                            <button class="platform-btn" data-platform="prime"
+                                style="aspect-ratio: 1; border-radius: var(--radius-md); background: var(--glass-bg); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.6;"><span
+                                    style="color: #00A8E1; font-weight: 700; font-size: 0.6rem;">prime</span></button>
+                            <button class="platform-btn" data-platform="disney"
+                                style="aspect-ratio: 1; border-radius: var(--radius-md); background: var(--glass-bg); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.6;"><span
+                                    style="color: #113CCF; font-weight: 700; font-size: 0.9rem;">D+</span></button>
+                            <button class="platform-btn" data-platform="apple"
+                                style="aspect-ratio: 1; border-radius: var(--radius-md); background: var(--glass-bg); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.6;"><span
+                                    style="color: white; font-size: 1.1rem;"></span></button>
+                            <button class="platform-btn" data-platform="mubi"
+                                style="aspect-ratio: 1; border-radius: var(--radius-md); background: var(--glass-bg); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.6;"><span
+                                    style="color: #E9423A; font-weight: 700; font-size: 0.5rem;">MUBI</span></button>
+                        </div>
+                    </div>
+
+                    <!-- Genre Dropdown -->
+                    <div class="wizard-row" style="margin-bottom: var(--space-lg);">
+                        <label
+                            style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: var(--space-sm);">Tür</label>
+                        <select id="genre-select"
+                            style="width: 100%; padding: var(--space-sm) var(--space-md); background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-primary); font-size: 0.9rem; cursor: pointer; appearance: none; background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 fill=%22%23888%22 viewBox=%220 0 24 24%22><path d=%22M7 10l5 5 5-5z%22/></svg>'); background-repeat: no-repeat; background-position: right 12px center; background-size: 18px;">
+                            <option value="">Fark Etmez</option>
+                            <option value="28">Aksiyon</option>
+                            <option value="12">Macera</option>
+                            <option value="16">Animasyon</option>
+                            <option value="35">Komedi</option>
+                            <option value="80">Suç</option>
+                            <option value="99">Belgesel</option>
+                            <option value="18">Drama</option>
+                            <option value="14">Fantastik</option>
+                            <option value="27">Korku</option>
+                            <option value="9648">Gizem</option>
+                            <option value="10749">Romantik</option>
+                            <option value="878">Bilim Kurgu</option>
+                            <option value="53">Gerilim</option>
+                            <option value="10752">Savaş</option>
+                            <option value="37">Western</option>
+                        </select>
+                    </div>
+
+                    <!-- Era Selection -->
+                    <div class="wizard-row" style="margin-bottom: var(--space-lg);">
+                        <label
+                            style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: var(--space-sm);">Dönem</label>
+                        <div class="era-chips" id="era-chips"
+                            style="display: flex; gap: var(--space-xs); flex-wrap: wrap;">
+                            <button class="era-chip active" data-era=""
+                                style="padding: 8px 12px; border-radius: 9999px; background: rgba(88,88,243,0.2); border: 1px solid rgba(88,88,243,0.5); color: white; font-size: 0.75rem; font-weight: 500; cursor: pointer;">Fark
+                                Etmez</button>
+                            <button class="era-chip" data-era="classic"
+                                style="padding: 8px 12px; border-radius: 9999px; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-secondary); font-size: 0.75rem; font-weight: 500; cursor: pointer;">Klasik</button>
+                            <button class="era-chip" data-era="80s"
+                                style="padding: 8px 12px; border-radius: 9999px; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-secondary); font-size: 0.75rem; font-weight: 500; cursor: pointer;">80'ler</button>
+                            <button class="era-chip" data-era="90s"
+                                style="padding: 8px 12px; border-radius: 9999px; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-secondary); font-size: 0.75rem; font-weight: 500; cursor: pointer;">90'lar</button>
+                            <button class="era-chip" data-era="2000s"
+                                style="padding: 8px 12px; border-radius: 9999px; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-secondary); font-size: 0.75rem; font-weight: 500; cursor: pointer;">2000'ler</button>
+                            <button class="era-chip" data-era="2010s"
+                                style="padding: 8px 12px; border-radius: 9999px; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-secondary); font-size: 0.75rem; font-weight: 500; cursor: pointer;">2010'lar</button>
+                            <button class="era-chip" data-era="2020s"
+                                style="padding: 8px 12px; border-radius: 9999px; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-secondary); font-size: 0.75rem; font-weight: 500; cursor: pointer;">2020'ler</button>
+                        </div>
+                    </div>
+
+                    <!-- Find Button -->
+                    <button id="wizard-search-btn" onclick="handleWizardSearch()"
+                        style="width: 100%; padding: var(--space-md); background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); color: var(--text-primary); font-weight: 600; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: var(--space-sm);">
+                        <span class="material-symbols-outlined">search</span>
+                        <span>Bul</span>
+                    </button>
+                </div>
+
+                <!-- ======== SURPRISE BUTTON ======== -->
+                <div class="surprise-section" style="margin-bottom: var(--space-xl);">
+                    <button id="surprise-btn" onclick="handleSurpriseMe()"
+                        style="width: 100%; padding: var(--space-lg); background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3); background-size: 300% 300%; animation: gradient-shift 3s ease infinite; border: none; border-radius: var(--radius-xl); color: white; font-weight: 700; font-size: 1.125rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: var(--space-sm); text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                        <span class="material-symbols-outlined" style="font-size: 28px;">casino</span>
+                        <span>Sürpriz Yap!</span>
+                    </button>
+                </div>
+
+                <!-- ======== GÜNÜN ÖNERİSİ (Daily Recommendation) - AT BOTTOM ======== -->
+                <div class="daily-recommendation" id="daily-recommendation">
                     <div class="daily-header"
                         style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-md);">
                         <div style="display: flex; align-items: center; gap: var(--space-sm);">
@@ -208,104 +355,12 @@
                     </div>
                     <div class="daily-card" id="daily-card"
                         style="position: relative; border-radius: var(--radius-xl); overflow: hidden; aspect-ratio: 2/3; max-height: 400px; background: var(--glass-bg); border: 1px solid var(--glass-border);">
-                        <!-- Will be populated by JS -->
                         <div class="loading-state" style="display: flex; height: 100%;">
                             <div class="spinner"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Mood Selection -->
-                <div class="mood-section" style="margin-bottom: var(--space-lg);">
-                    <h2
-                        style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: var(--space-md);">
-                        Bugün
-                        <span style="color: var(--primary);">ne moddasın?</span>
-                    </h2>
-                    <div class="mood-chips" id="mood-chips"
-                        style="display: flex; gap: var(--space-sm); overflow-x: auto; padding-bottom: var(--space-sm);">
-                        <button class="mood-chip active" data-mood="chill"
-                            style="display: flex; align-items: center; gap: var(--space-xs); padding: var(--space-sm) var(--space-md); border-radius: 9999px; background: rgba(88,88,243,0.2); border: 1px solid rgba(88,88,243,0.5); color: white; font-size: 0.875rem; font-weight: 600; white-space: nowrap; cursor: pointer;">
-                            <span class="material-symbols-outlined" style="font-size: 18px;">sentiment_satisfied</span>
-                            Rahat
-                        </button>
-                        <button class="mood-chip" data-mood="adrenaline"
-                            style="display: flex; align-items: center; gap: var(--space-xs); padding: var(--space-sm) var(--space-md); border-radius: 9999px; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-secondary); font-size: 0.875rem; font-weight: 500; white-space: nowrap; cursor: pointer;">
-                            <span class="material-symbols-outlined" style="font-size: 18px;">bolt</span>
-                            Heyecan
-                        </button>
-                        <button class="mood-chip" data-mood="tearjerker"
-                            style="display: flex; align-items: center; gap: var(--space-xs); padding: var(--space-sm) var(--space-md); border-radius: 9999px; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-secondary); font-size: 0.875rem; font-weight: 500; white-space: nowrap; cursor: pointer;">
-                            <span class="material-symbols-outlined" style="font-size: 18px;">water_drop</span>
-                            Duygusal
-                        </button>
-                        <button class="mood-chip" data-mood="mindbending"
-                            style="display: flex; align-items: center; gap: var(--space-xs); padding: var(--space-sm) var(--space-md); border-radius: 9999px; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-secondary); font-size: 0.875rem; font-weight: 500; white-space: nowrap; cursor: pointer;">
-                            <span class="material-symbols-outlined" style="font-size: 18px;">psychology</span>
-                            Beyin Yakan
-                        </button>
-                        <button class="mood-chip" data-mood="funny"
-                            style="display: flex; align-items: center; gap: var(--space-xs); padding: var(--space-sm) var(--space-md); border-radius: 9999px; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-secondary); font-size: 0.875rem; font-weight: 500; white-space: nowrap; cursor: pointer;">
-                            <span class="material-symbols-outlined"
-                                style="font-size: 18px;">sentiment_very_satisfied</span>
-                            Komedi
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Platform Selection -->
-                <div class="platform-section" style="margin-bottom: var(--space-lg);">
-                    <div
-                        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-sm);">
-                        <h3
-                            style="font-size: 0.875rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">
-                            Platformlar</h3>
-                        <button id="select-all-platforms"
-                            style="font-size: 0.75rem; font-weight: 600; color: var(--primary); background: none; border: none; cursor: pointer;">Tümünü
-                            Seç</button>
-                    </div>
-                    <div class="platform-grid" id="platform-grid"
-                        style="display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--space-sm);">
-                        <button class="platform-btn active" data-platform="netflix"
-                            style="aspect-ratio: 1; border-radius: var(--radius-lg); background: rgba(88,88,243,0.2); border: 1px solid rgba(88,88,243,0.5); display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                            <span style="color: #E50914; font-weight: 700; font-size: 1.25rem;">N</span>
-                        </button>
-                        <button class="platform-btn" data-platform="prime"
-                            style="aspect-ratio: 1; border-radius: var(--radius-lg); background: var(--glass-bg); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.6;">
-                            <span style="color: #00A8E1; font-weight: 700; font-size: 0.75rem;">prime</span>
-                        </button>
-                        <button class="platform-btn" data-platform="disney"
-                            style="aspect-ratio: 1; border-radius: var(--radius-lg); background: var(--glass-bg); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.6;">
-                            <span style="color: #113CCF; font-weight: 700; font-size: 1rem;">D+</span>
-                        </button>
-                        <button class="platform-btn" data-platform="apple"
-                            style="aspect-ratio: 1; border-radius: var(--radius-lg); background: var(--glass-bg); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.6;">
-                            <span style="color: white; font-size: 1.25rem;"></span>
-                        </button>
-                        <button class="platform-btn" data-platform="mubi"
-                            style="aspect-ratio: 1; border-radius: var(--radius-lg); background: var(--glass-bg); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.6;">
-                            <span style="color: #E9423A; font-weight: 700; font-size: 0.625rem;">MUBI</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Recommendation Card -->
-                <div class="recommendation-card" id="recommendation-card"
-                    style="position: relative; border-radius: var(--radius-xl); overflow: hidden; aspect-ratio: 2/3; max-height: 500px; background: var(--glass-bg); border: 1px solid var(--glass-border);">
-                    <div class="card-placeholder"
-                        style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding: var(--space-lg);">
-                        <span class="material-symbols-outlined"
-                            style="font-size: 64px; color: var(--primary); opacity: 0.5; margin-bottom: var(--space-md);">movie</span>
-                        <p style="color: var(--text-muted); font-size: 0.875rem;">Mod ve platform seçtikten sonra<br>bir
-                            öneri alabilirsin</p>
-                    </div>
-                </div>
-
-                <!-- Shuffle FAB -->
-                <button class="shuffle-fab" id="shuffle-fab"
-                    style="position: fixed; bottom: 100px; right: 20px; width: 64px; height: 64px; border-radius: 50%; background: var(--primary); border: none; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 20px rgba(88,88,243,0.5); z-index: 100;">
-                    <span class="material-symbols-outlined" style="font-size: 28px;">shuffle</span>
-                </button>
             </div>
         </section>
 
