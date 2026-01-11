@@ -61,6 +61,62 @@
     --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
+/* ============================================
+   STITCH GLASS CLASSES
+   ============================================ */
+
+.glass {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-active {
+    background: rgba(88, 88, 243, 0.2);
+    border: 1px solid rgba(88, 88, 243, 0.5);
+    box-shadow: 0 0 15px rgba(88, 88, 243, 0.4);
+}
+
+/* Mood/Era chip styling */
+.mood-chip,
+.era-chip {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+    transition: all 0.2s ease;
+}
+
+.mood-chip.active,
+.era-chip.active {
+    background: rgba(88, 88, 243, 0.2);
+    border: 1px solid rgba(88, 88, 243, 0.5);
+    color: white;
+}
+
+.mood-chip:hover,
+.era-chip:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* Platform button styling */
+.platform-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    opacity: 0.6;
+    transition: all 0.2s ease;
+}
+
+.platform-btn.active {
+    background: rgba(88, 88, 243, 0.2);
+    border: 1px solid rgba(88, 88, 243, 0.5);
+    opacity: 1;
+}
+
+.platform-btn:hover {
+    opacity: 1;
+}
+
 /* Light Theme Override - Complete Overhaul */
 [data-theme="light"] {
     /* Backgrounds */

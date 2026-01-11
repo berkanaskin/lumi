@@ -249,6 +249,11 @@ function initDiscoverModule() {
             btn.style.opacity = '1';
         });
     });
+
+    // Button Click Handlers
+    document.getElementById('ai-search-btn')?.addEventListener('click', handleAISearch);
+    document.getElementById('wizard-search-btn')?.addEventListener('click', handleWizardSearch);
+    document.getElementById('surprise-btn')?.addEventListener('click', handleSurpriseMe);
 }
 
 // AI Search Handler - Uses text input to find recommendations
@@ -279,7 +284,7 @@ async function handleAISearch() {
 async function handleWizardSearch() {
     const mood = document.querySelector('.mood-chip.active')?.dataset.mood || 'chill';
     const genre = document.getElementById('genre-select')?.value || '';
-    const era = document.querySelector('.era-chip.active')?.dataset.era || '';
+    const era = document.getElementById('era-select')?.value || '';
 
     showToast('Öneriler yükleniyor...');
 
