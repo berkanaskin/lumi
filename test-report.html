@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lumi v0.9.7 - Stitch Styling Test</title>
+    <title>Lumi v0.9.8 - Test Report</title>
     <style>
         * {
             box-sizing: border-box;
@@ -13,19 +13,17 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             background: #0a0a0f;
             color: #fff;
             padding: 24px;
             max-width: 900px;
             margin: 0 auto;
-            line-height: 1.6;
         }
 
         h1 {
             color: #5858f3;
             margin-bottom: 8px;
-            font-size: 1.75rem;
         }
 
         .subtitle {
@@ -45,52 +43,26 @@
         .section h2 {
             font-size: 1.1rem;
             margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .test-item {
             display: grid;
             grid-template-columns: auto 1fr auto;
             gap: 12px;
-            align-items: start;
+            align-items: center;
             padding: 12px;
             border-radius: 12px;
             margin-bottom: 8px;
             background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .test-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .test-item input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            accent-color: #5858f3;
-            cursor: pointer;
-            margin-top: 2px;
-        }
-
-        .test-info {
-            flex: 1;
         }
 
         .test-name {
             font-weight: 600;
-            margin-bottom: 4px;
         }
 
-        .test-how {
+        .test-desc {
             font-size: 0.85rem;
             color: rgba(255, 255, 255, 0.5);
-        }
-
-        .test-status {
-            display: flex;
-            gap: 8px;
         }
 
         .status-btn {
@@ -101,48 +73,33 @@
             color: rgba(255, 255, 255, 0.6);
             cursor: pointer;
             font-size: 0.8rem;
-            transition: all 0.2s;
-        }
-
-        .status-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .status-btn.pass {
-            border-color: #22c55e;
-            color: #22c55e;
+            margin-left: 4px;
         }
 
         .status-btn.pass.active {
             background: #22c55e;
             color: #000;
-        }
-
-        .status-btn.fail {
-            border-color: #ef4444;
-            color: #ef4444;
+            border-color: #22c55e;
         }
 
         .status-btn.fail.active {
             background: #ef4444;
             color: #fff;
+            border-color: #ef4444;
         }
 
-        .comment-input {
-            width: 100%;
-            margin-top: 8px;
-            padding: 10px 12px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.03);
-            color: #fff;
-            font-size: 0.9rem;
-            resize: none;
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 8px;
         }
 
-        .comment-input:focus {
-            outline: none;
-            border-color: #5858f3;
+        .badge.fix {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
         }
 
         .summary {
@@ -157,10 +114,6 @@
             display: flex;
             justify-content: center;
             gap: 32px;
-        }
-
-        .stat {
-            text-align: center;
         }
 
         .stat-value {
@@ -181,6 +134,18 @@
             color: #ef4444;
         }
 
+        textarea {
+            width: 100%;
+            margin-top: 16px;
+            min-height: 100px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+            color: #fff;
+            font-family: inherit;
+        }
+
         .export-btn {
             display: block;
             width: 100%;
@@ -191,251 +156,109 @@
             border-radius: 12px;
             color: #fff;
             font-weight: 600;
-            font-size: 1rem;
             cursor: pointer;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            margin-left: 8px;
-        }
-
-        .badge.new {
-            background: rgba(59, 130, 246, 0.2);
-            color: #3b82f6;
-        }
-
-        .badge.fix {
-            background: rgba(34, 197, 94, 0.2);
-            color: #22c55e;
-        }
-
-        .general-comment {
-            margin-top: 24px;
-        }
-
-        .general-comment h3 {
-            margin-bottom: 12px;
-        }
-
-        .general-comment textarea {
-            width: 100%;
-            min-height: 120px;
-            padding: 16px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.03);
-            color: #fff;
-            font-size: 0.95rem;
-            font-family: inherit;
-            resize: vertical;
         }
     </style>
 </head>
 
 <body>
-    <h1>🎯 Lumi v0.9.7 - Stitch Styling Test</h1>
-    <p class="subtitle">Hard refresh (Ctrl+Shift+R) yaparak test et. Stitch compact styling uygulandı!</p>
+    <h1>🎯 Lumi v0.9.8 - Test Report</h1>
+    <p class="subtitle">Ctrl+Shift+R ile hard refresh yap. Yeni düzeltmeler: temiz tasarım, onclick handler'lar.</p>
 
     <div class="section">
-        <h2><span>✨</span> Ne İzlesem - Stitch Compact Styling</h2>
+        <h2>✨ Tasarım Düzeltmeleri</h2>
         <div class="test-item">
-            <input type="checkbox" onchange="toggleComplete(this)">
-            <div class="test-info">
-                <div class="test-name">Top Spacing Düzgün <span class="badge fix">FIX</span></div>
-                <div class="test-how">Ne İzlesem sayfası çok yukarıdan başlamıyor mu? padding-top:60px</div>
-                <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
-            </div>
-            <div class="test-status">
-                <button class="status-btn pass" onclick="setStatus(this)">✓</button>
-                <button class="status-btn fail" onclick="setStatus(this)">✗</button>
-            </div>
+            <span class="test-name">Üst Boşluk <span class="badge fix">FIX</span></span>
+            <span class="test-desc">16px top padding - çok yukarı/aşağı değil mi?</span>
+            <div><button class="status-btn pass" onclick="this.classList.toggle('active')">✓</button><button
+                    class="status-btn fail" onclick="this.classList.toggle('active')">✗</button></div>
         </div>
         <div class="test-item">
-            <input type="checkbox" onchange="toggleComplete(this)">
-            <div class="test-info">
-                <div class="test-name">Kompakt Butonlar <span class="badge fix">FIX</span></div>
-                <div class="test-how">Butonlar h-36/40px, küçük fontlar (12-14px), pill şekli mi?</div>
-                <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
-            </div>
-            <div class="test-status">
-                <button class="status-btn pass" onclick="setStatus(this)">✓</button>
-                <button class="status-btn fail" onclick="setStatus(this)">✗</button>
-            </div>
+            <span class="test-name">Buton Boyutları <span class="badge fix">FIX</span></span>
+            <span class="test-desc">36px yükseklik, 8px radius - kompakt görünüyor mu?</span>
+            <div><button class="status-btn pass" onclick="this.classList.toggle('active')">✓</button><button
+                    class="status-btn fail" onclick="this.classList.toggle('active')">✗</button></div>
         </div>
         <div class="test-item">
-            <input type="checkbox" onchange="toggleComplete(this)">
-            <div class="test-info">
-                <div class="test-name">Glass Styling <span class="badge fix">FIX</span></div>
-                <div class="test-how">Kutular blur + border ile şeffaf glassmorphism mi?</div>
-                <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
-            </div>
-            <div class="test-status">
-                <button class="status-btn pass" onclick="setStatus(this)">✓</button>
-                <button class="status-btn fail" onclick="setStatus(this)">✗</button>
-            </div>
+            <span class="test-name">Emoji Kaldırıldı <span class="badge fix">FIX</span></span>
+            <span class="test-desc">Mood chip'lerinde sadece metin var mı?</span>
+            <div><button class="status-btn pass" onclick="this.classList.toggle('active')">✓</button><button
+                    class="status-btn fail" onclick="this.classList.toggle('active')">✗</button></div>
         </div>
         <div class="test-item">
-            <input type="checkbox" onchange="toggleComplete(this)">
-            <div class="test-info">
-                <div class="test-name">Tür & Dönem Dropdown <span class="badge fix">FIX</span></div>
-                <div class="test-how">Tür ve Dönem yan yana iki dropdown olarak görünüyor mu?</div>
-                <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
-            </div>
-            <div class="test-status">
-                <button class="status-btn pass" onclick="setStatus(this)">✓</button>
-                <button class="status-btn fail" onclick="setStatus(this)">✗</button>
-            </div>
-        </div>
-        <div class="test-item">
-            <input type="checkbox" onchange="toggleComplete(this)">
-            <div class="test-info">
-                <div class="test-name">Mood Chips Yatay Scroll <span class="badge new">NEW</span></div>
-                <div class="test-how">Mod chipsleri yatay scroll yapabiliyor mu?</div>
-                <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
-            </div>
-            <div class="test-status">
-                <button class="status-btn pass" onclick="setStatus(this)">✓</button>
-                <button class="status-btn fail" onclick="setStatus(this)">✗</button>
-            </div>
+            <span class="test-name">Başlık</span>
+            <span class="test-desc">"Ne izlesem?" yazıyor mu?</span>
+            <div><button class="status-btn pass" onclick="this.classList.toggle('active')">✓</button><button
+                    class="status-btn fail" onclick="this.classList.toggle('active')">✗</button></div>
         </div>
     </div>
 
     <div class="section">
-        <h2><span>🔘</span> Buton Fonksiyonları</h2>
+        <h2>🔘 Buton Fonksiyonları</h2>
         <div class="test-item">
-            <input type="checkbox" onchange="toggleComplete(this)">
-            <div class="test-info">
-                <div class="test-name">Öner Bana Butonu <span class="badge fix">FIX</span></div>
-                <div class="test-how">AI textarea'ya yaz → "Öner Bana" → Toast + sonuç gösteriyor mu?</div>
-                <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
-            </div>
-            <div class="test-status">
-                <button class="status-btn pass" onclick="setStatus(this)">✓</button>
-                <button class="status-btn fail" onclick="setStatus(this)">✗</button>
-            </div>
+            <span class="test-name">Öner Bana <span class="badge fix">FIX</span></span>
+            <span class="test-desc">Yazı yaz → "Öner Bana" → Toast + film sonuçları?</span>
+            <div><button class="status-btn pass" onclick="this.classList.toggle('active')">✓</button><button
+                    class="status-btn fail" onclick="this.classList.toggle('active')">✗</button></div>
         </div>
         <div class="test-item">
-            <input type="checkbox" onchange="toggleComplete(this)">
-            <div class="test-info">
-                <div class="test-name">Bul Butonu <span class="badge fix">FIX</span></div>
-                <div class="test-how">Mod seç, tür seç → "Bul" → Sonuç gösteriyor mu?</div>
-                <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
-            </div>
-            <div class="test-status">
-                <button class="status-btn pass" onclick="setStatus(this)">✓</button>
-                <button class="status-btn fail" onclick="setStatus(this)">✗</button>
-            </div>
+            <span class="test-name">Filtrele <span class="badge fix">FIX</span></span>
+            <span class="test-desc">Mod/Tür seç → "Filtrele" → Sonuçlar görünüyor mu?</span>
+            <div><button class="status-btn pass" onclick="this.classList.toggle('active')">✓</button><button
+                    class="status-btn fail" onclick="this.classList.toggle('active')">✗</button></div>
         </div>
         <div class="test-item">
-            <input type="checkbox" onchange="toggleComplete(this)">
-            <div class="test-info">
-                <div class="test-name">Sürpriz Yap! Butonu <span class="badge fix">FIX</span></div>
-                <div class="test-how">Renkli "Sürpriz Yap!" → Random film sonuçları mı?</div>
-                <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
-            </div>
-            <div class="test-status">
-                <button class="status-btn pass" onclick="setStatus(this)">✓</button>
-                <button class="status-btn fail" onclick="setStatus(this)">✗</button>
-            </div>
-        </div>
-        <div class="test-item">
-            <input type="checkbox" onchange="toggleComplete(this)">
-            <div class="test-info">
-                <div class="test-name">Günün Önerisi <span class="badge fix">FIX</span></div>
-                <div class="test-how">Günün Önerisi en altta ve film kartı yükleniyor mu?</div>
-                <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
-            </div>
-            <div class="test-status">
-                <button class="status-btn pass" onclick="setStatus(this)">✓</button>
-                <button class="status-btn fail" onclick="setStatus(this)">✗</button>
-            </div>
+            <span class="test-name">Sürpriz Yap! <span class="badge fix">FIX</span></span>
+            <span class="test-desc">Mor buton → Random filmler?</span>
+            <div><button class="status-btn pass" onclick="this.classList.toggle('active')">✓</button><button
+                    class="status-btn fail" onclick="this.classList.toggle('active')">✗</button></div>
         </div>
     </div>
 
     <div class="section">
-        <h2><span>🌍</span> Diğer Özellikler</h2>
+        <h2>🌍 Diğer</h2>
         <div class="test-item">
-            <input type="checkbox" onchange="toggleComplete(this)">
-            <div class="test-info">
-                <div class="test-name">Dil Değişimi</div>
-                <div class="test-how">Dil seç → Film başlıkları o dilde mi?</div>
-                <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
-            </div>
-            <div class="test-status">
-                <button class="status-btn pass" onclick="setStatus(this)">✓</button>
-                <button class="status-btn fail" onclick="setStatus(this)">✗</button>
-            </div>
+            <span class="test-name">Günün Önerisi</span>
+            <span class="test-desc">Film kartı görünüyor mu?</span>
+            <div><button class="status-btn pass" onclick="this.classList.toggle('active')">✓</button><button
+                    class="status-btn fail" onclick="this.classList.toggle('active')">✗</button></div>
         </div>
         <div class="test-item">
-            <input type="checkbox" onchange="toggleComplete(this)">
-            <div class="test-info">
-                <div class="test-name">Auth Flow</div>
-                <div class="test-how">Test giriş → Premium upgrade + Çıkış görünüyor mu?</div>
-                <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
-            </div>
-            <div class="test-status">
-                <button class="status-btn pass" onclick="setStatus(this)">✓</button>
-                <button class="status-btn fail" onclick="setStatus(this)">✗</button>
-            </div>
+            <span class="test-name">Dil Değişimi</span>
+            <span class="test-desc">İngilizce seçince tüm başlıklar İngilizce mi? (PRİORİTE DÜŞÜK)</span>
+            <div><button class="status-btn pass" onclick="this.classList.toggle('active')">✓</button><button
+                    class="status-btn fail" onclick="this.classList.toggle('active')">✗</button></div>
         </div>
     </div>
 
     <div class="summary">
-        <h3>📊 Test Özeti</h3>
+        <h3>📊 Özet</h3>
         <div class="stats">
-            <div class="stat">
-                <div class="stat-value pass" id="pass-count">0</div>
+            <div>
+                <div class="stat-value pass" id="p">0</div>
                 <div class="stat-label">Geçti</div>
             </div>
-            <div class="stat">
-                <div class="stat-value fail" id="fail-count">0</div>
+            <div>
+                <div class="stat-value fail" id="f">0</div>
                 <div class="stat-label">Hata</div>
-            </div>
-            <div class="stat">
-                <div class="stat-value" id="pending-count">11</div>
-                <div class="stat-label">Bekliyor</div>
             </div>
         </div>
     </div>
 
-    <div class="section general-comment">
-        <h3>📝 Genel Yorum</h3>
-        <textarea id="general-notes" placeholder="Eksik özellikler, hatalar, öneriler..."></textarea>
-    </div>
-
+    <textarea id="notes" placeholder="Genel yorum ve feedback..."></textarea>
     <button class="export-btn" onclick="exportResults()">📋 Sonuçları Kopyala</button>
 
     <script>
-        function setStatus(btn) {
-            btn.closest('.test-status').querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            updateSummary();
-        }
-        function toggleComplete(cb) { cb.closest('.test-item').classList.toggle('completed', cb.checked); }
-        function updateSummary() {
-            const p = document.querySelectorAll('.status-btn.pass.active').length;
-            const f = document.querySelectorAll('.status-btn.fail.active').length;
-            document.getElementById('pass-count').textContent = p;
-            document.getElementById('fail-count').textContent = f;
-            document.getElementById('pending-count').textContent = 11 - p - f;
-        }
         function exportResults() {
-            let r = '# Lumi v0.9.7 Stitch Styling Test\n\n';
+            let r = '# Lumi v0.9.8 Test Sonuçları\n\n';
             document.querySelectorAll('.test-item').forEach(i => {
-                const n = i.querySelector('.test-name').textContent.replace(/NEW|FIX/g, '').trim();
+                const n = i.querySelector('.test-name').textContent.replace(/FIX/g, '').trim();
                 const p = i.querySelector('.status-btn.pass.active');
                 const f = i.querySelector('.status-btn.fail.active');
-                const c = i.querySelector('.comment-input')?.value || '';
                 r += `- ${n}: ${p ? '✅' : f ? '❌' : '⏳'}\n`;
-                if (c) r += `  > ${c}\n`;
             });
-            const g = document.getElementById('general-notes').value;
-            if (g) r += '\n## Genel Yorum\n' + g + '\n';
+            const g = document.getElementById('notes').value;
+            if (g) r += '\n## Yorum\n' + g + '\n';
             navigator.clipboard.writeText(r).then(() => alert('Kopyalandı!'));
         }
     </script>
