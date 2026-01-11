@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lumi v0.9.6 - Major Revisions Test</title>
+    <title>Lumi v0.9.6 - UX Overhaul Test #2</title>
     <style>
         * {
             box-sizing: border-box;
@@ -209,6 +209,11 @@
             color: #3b82f6;
         }
 
+        .badge.fix {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
         .general-comment {
             margin-top: 24px;
         }
@@ -233,16 +238,17 @@
 </head>
 
 <body>
-    <h1>🎯 Lumi v0.9.6 Major Revisions Test</h1>
-    <p class="subtitle">Büyük güncellemeler tamamlandı! Hard refresh (Ctrl+Shift+R) yap ve test et.</p>
+    <h1>🎯 Lumi v0.9.6 - UX Overhaul Test #2</h1>
+    <p class="subtitle">Hard refresh (Ctrl+Shift+R) yaparak test et. Önceki hataların tamamı düzeltildi!</p>
 
     <div class="section">
-        <h2><span>👤</span> Auth System (YENİ)</h2>
+        <h2><span>👤</span> Auth System (Düzeltildi)</h2>
         <div class="test-item">
             <input type="checkbox" onchange="toggleComplete(this)">
             <div class="test-info">
-                <div class="test-name">Test Kullanıcı Girişi <span class="badge new">NEW</span></div>
-                <div class="test-how">Profile → "Test Kullanıcı Girişi" → Giriş yapıyor, butonlar değişiyor mu?</div>
+                <div class="test-name">Test Kullanıcı Girişi <span class="badge fix">FIX</span></div>
+                <div class="test-how">Profile → Sadece "Test Kullanıcı Girişi" butonu var mı? (Premium butonu
+                    başlangıçta YOK)</div>
                 <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
             </div>
             <div class="test-status">
@@ -253,9 +259,8 @@
         <div class="test-item">
             <input type="checkbox" onchange="toggleComplete(this)">
             <div class="test-info">
-                <div class="test-name">Test Premium Girişi <span class="badge new">NEW</span></div>
-                <div class="test-how">Profile → "Test Premium Girişi" → Premium olarak giriş, Premium butonu kayboluyor
-                    mu?</div>
+                <div class="test-name">Free → Premium Akışı <span class="badge fix">FIX</span></div>
+                <div class="test-how">Test giriş → "Premium'a Yükselt" butonu + "Çıkış Yap" göründü mü? </div>
                 <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
             </div>
             <div class="test-status">
@@ -266,9 +271,8 @@
         <div class="test-item">
             <input type="checkbox" onchange="toggleComplete(this)">
             <div class="test-info">
-                <div class="test-name">Çıkış Yap</div>
-                <div class="test-how">Giriş yaptıktan sonra → Çıkış Yap → Sayfa yenileniyor, misafir butonları geri
-                    geliyor mu?</div>
+                <div class="test-name">Çıkış (Sayfa Yenilemeden) <span class="badge fix">FIX</span></div>
+                <div class="test-how">Çıkış Yap → Sayfa YENILENMEDEN butonlar geri geliyor mu?</div>
                 <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
             </div>
             <div class="test-status">
@@ -279,12 +283,12 @@
     </div>
 
     <div class="section">
-        <h2><span>🌍</span> Dil Dropdown (YENİ)</h2>
+        <h2><span>🌍</span> Dil Dropdown (Düzeltildi)</h2>
         <div class="test-item">
             <input type="checkbox" onchange="toggleComplete(this)">
             <div class="test-info">
-                <div class="test-name">Compact Glassmorphism Tasarım <span class="badge new">NEW</span></div>
-                <div class="test-how">TR butonuna tıkla → Şık, dar, koyu dropdown açılıyor mu? (Beyaz değil)</div>
+                <div class="test-name">10 Dil Seçeneği <span class="badge new">NEW</span></div>
+                <div class="test-how">TR butonu → 10 dil görünüyor mu? (TR, EN, DE, FR, ES, IT, PT, RU, JA, KO)</div>
                 <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
             </div>
             <div class="test-status">
@@ -295,63 +299,8 @@
         <div class="test-item">
             <input type="checkbox" onchange="toggleComplete(this)">
             <div class="test-info">
-                <div class="test-name">Dil Değişimi</div>
-                <div class="test-how">Başka dil seç → UI dili değişiyor mu?</div>
-                <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
-            </div>
-            <div class="test-status">
-                <button class="status-btn pass" onclick="setStatus(this)">✓</button>
-                <button class="status-btn fail" onclick="setStatus(this)">✗</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="section">
-        <h2><span>✨</span> Ne İzlesem - Stitch Design (YENİ)</h2>
-        <div class="test-item">
-            <input type="checkbox" onchange="toggleComplete(this)">
-            <div class="test-info">
-                <div class="test-name">Günün Önerisi <span class="badge new">NEW</span></div>
-                <div class="test-how">Ne İzlesem → En üstte film kartı var mı? "Yeni öneri: Xs Ydk" timer gösteriyor mu?
-                </div>
-                <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
-            </div>
-            <div class="test-status">
-                <button class="status-btn pass" onclick="setStatus(this)">✓</button>
-                <button class="status-btn fail" onclick="setStatus(this)">✗</button>
-            </div>
-        </div>
-        <div class="test-item">
-            <input type="checkbox" onchange="toggleComplete(this)">
-            <div class="test-info">
-                <div class="test-name">Mood Chips <span class="badge new">NEW</span></div>
-                <div class="test-how">"Bugün ne moddasın?" → Rahat, Heyecan, Duygusal, Beyin Yakan, Komedi chipleri var
-                    mı? Toggle çalışıyor mu?</div>
-                <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
-            </div>
-            <div class="test-status">
-                <button class="status-btn pass" onclick="setStatus(this)">✓</button>
-                <button class="status-btn fail" onclick="setStatus(this)">✗</button>
-            </div>
-        </div>
-        <div class="test-item">
-            <input type="checkbox" onchange="toggleComplete(this)">
-            <div class="test-info">
-                <div class="test-name">Platform Grid <span class="badge new">NEW</span></div>
-                <div class="test-how">Netflix, Prime, D+, Apple, MUBI ikonları var mı? Toggle ve "Tümünü Seç" çalışıyor
-                    mu?</div>
-                <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
-            </div>
-            <div class="test-status">
-                <button class="status-btn pass" onclick="setStatus(this)">✓</button>
-                <button class="status-btn fail" onclick="setStatus(this)">✗</button>
-            </div>
-        </div>
-        <div class="test-item">
-            <input type="checkbox" onchange="toggleComplete(this)">
-            <div class="test-info">
-                <div class="test-name">Shuffle FAB <span class="badge new">NEW</span></div>
-                <div class="test-how">Sağ altta mor yuvarlak buton var mı? Tıklayınca film önerisi yükleniyor mu?</div>
+                <div class="test-name">Dil Değişimi Çalışıyor <span class="badge fix">FIX</span></div>
+                <div class="test-how">English seç → Film başlıkları İngilizce oluyor mu?</div>
                 <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
             </div>
             <div class="test-status">
@@ -362,13 +311,13 @@
     </div>
 
     <div class="section">
-        <h2><span>📐</span> Layout Fixes</h2>
+        <h2><span>✨</span> Ne İzlesem - Complete Redesign (YENİ)</h2>
         <div class="test-item">
             <input type="checkbox" onchange="toggleComplete(this)">
             <div class="test-info">
-                <div class="test-name">Sayfa Üst Boşluk</div>
-                <div class="test-how">Profile/Listem/Ne İzlesem → İçerik logodan hemen sonra mı başlıyor? (Büyük boşluk
-                    yok)</div>
+                <div class="test-name">AI Metin Input <span class="badge new">NEW</span></div>
+                <div class="test-how">"Bugün hangi moddasın?" + "Nasıl bir film..." textarea + "Öner Bana" butonu var
+                    mı?</div>
                 <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
             </div>
             <div class="test-status">
@@ -379,8 +328,69 @@
         <div class="test-item">
             <input type="checkbox" onchange="toggleComplete(this)">
             <div class="test-info">
-                <div class="test-name">Logo Tıklama</div>
-                <div class="test-how">LUMI logosuna tıkla → Ana sayfaya dönüyor mu?</div>
+                <div class="test-name">Bilemediysen Box <span class="badge new">NEW</span></div>
+                <div class="test-how">"Bilemediysen yardımcı olalım" glassmorphism kutusu var mı?</div>
+                <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
+            </div>
+            <div class="test-status">
+                <button class="status-btn pass" onclick="setStatus(this)">✓</button>
+                <button class="status-btn fail" onclick="setStatus(this)">✗</button>
+            </div>
+        </div>
+        <div class="test-item">
+            <input type="checkbox" onchange="toggleComplete(this)">
+            <div class="test-info">
+                <div class="test-name">Tür Dropdown <span class="badge new">NEW</span></div>
+                <div class="test-how">Tür dropdown var mı? (Aksiyon, Drama, Komedi, vb.)</div>
+                <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
+            </div>
+            <div class="test-status">
+                <button class="status-btn pass" onclick="setStatus(this)">✓</button>
+                <button class="status-btn fail" onclick="setStatus(this)">✗</button>
+            </div>
+        </div>
+        <div class="test-item">
+            <input type="checkbox" onchange="toggleComplete(this)">
+            <div class="test-info">
+                <div class="test-name">Dönem Seçici <span class="badge new">NEW</span></div>
+                <div class="test-how">Dönem chips var mı? (Fark Etmez, Klasik, 80'ler, 90'lar, 2000'ler, 2010'lar,
+                    2020'ler)</div>
+                <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
+            </div>
+            <div class="test-status">
+                <button class="status-btn pass" onclick="setStatus(this)">✓</button>
+                <button class="status-btn fail" onclick="setStatus(this)">✗</button>
+            </div>
+        </div>
+        <div class="test-item">
+            <input type="checkbox" onchange="toggleComplete(this)">
+            <div class="test-info">
+                <div class="test-name">Bul Butonu <span class="badge new">NEW</span></div>
+                <div class="test-how">"Bul" butonu → Seçimlere göre ana sayfada sonuç gösteriyor mu?</div>
+                <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
+            </div>
+            <div class="test-status">
+                <button class="status-btn pass" onclick="setStatus(this)">✓</button>
+                <button class="status-btn fail" onclick="setStatus(this)">✗</button>
+            </div>
+        </div>
+        <div class="test-item">
+            <input type="checkbox" onchange="toggleComplete(this)">
+            <div class="test-info">
+                <div class="test-name">Sürpriz Yap! <span class="badge new">NEW</span></div>
+                <div class="test-how">Renkli "Sürpriz Yap!" butonu → Random iyi filmler gösteriyor mu?</div>
+                <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
+            </div>
+            <div class="test-status">
+                <button class="status-btn pass" onclick="setStatus(this)">✓</button>
+                <button class="status-btn fail" onclick="setStatus(this)">✗</button>
+            </div>
+        </div>
+        <div class="test-item">
+            <input type="checkbox" onchange="toggleComplete(this)">
+            <div class="test-info">
+                <div class="test-name">Günün Önerisi (En Altta) <span class="badge fix">FIX</span></div>
+                <div class="test-how">Günün Önerisi en altta mı? Film kartı yükleniyor mu? (Loading YOK)</div>
                 <textarea class="comment-input" placeholder="Yorum..." rows="1"></textarea>
             </div>
             <div class="test-status">
@@ -402,7 +412,7 @@
                 <div class="stat-label">Hata</div>
             </div>
             <div class="stat">
-                <div class="stat-value" id="pending-count">13</div>
+                <div class="stat-value" id="pending-count">14</div>
                 <div class="stat-label">Bekliyor</div>
             </div>
         </div>
@@ -427,12 +437,12 @@
             const f = document.querySelectorAll('.status-btn.fail.active').length;
             document.getElementById('pass-count').textContent = p;
             document.getElementById('fail-count').textContent = f;
-            document.getElementById('pending-count').textContent = 13 - p - f;
+            document.getElementById('pending-count').textContent = 14 - p - f;
         }
         function exportResults() {
-            let r = '# Lumi v0.9.6 Major Revisions Test\n\n';
+            let r = '# Lumi v0.9.6 UX Overhaul Test #2\n\n';
             document.querySelectorAll('.test-item').forEach(i => {
-                const n = i.querySelector('.test-name').textContent.replace(/NEW/g, '').trim();
+                const n = i.querySelector('.test-name').textContent.replace(/NEW|FIX/g, '').trim();
                 const p = i.querySelector('.status-btn.pass.active');
                 const f = i.querySelector('.status-btn.fail.active');
                 const c = i.querySelector('.comment-input')?.value || '';
