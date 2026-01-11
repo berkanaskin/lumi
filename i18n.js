@@ -134,6 +134,21 @@ const i18n = {
             inCinemas: 'Sinemalarda',
             searchResults: 'Arama Sonuçları',
 
+            // AI Input
+            aiInputLabel: 'Bugün nasıl hissediyorsun?',
+            aiInputPlaceholder: 'Beni çocukluğuma götürecek sıcak bir aile filmi...',
+            aiSearching: '🤖 Gemini düşünüyor...',
+            aiRecommendations: 'AI Önerileri',
+
+            // Detail Tabs
+            detailTabOverview: 'Özet',
+            detailTabCast: 'Kadro',
+            detailTabTrailer: 'Fragman',
+
+            // Avatar
+            changeAvatar: 'Avatar Değiştir',
+            selectAvatar: 'Avatar Seç',
+
             // Time
             minutes: 'dk',
             movie: 'Film',
@@ -265,6 +280,21 @@ const i18n = {
             upcoming: 'Coming Soon',
             inCinemas: 'In Theaters',
             searchResults: 'Search Results',
+
+            // AI Input
+            aiInputLabel: 'How are you feeling today?',
+            aiInputPlaceholder: 'A warm family movie that takes me back to my childhood...',
+            aiSearching: '🤖 Gemini is thinking...',
+            aiRecommendations: 'AI Recommendations',
+
+            // Detail Tabs
+            detailTabOverview: 'Overview',
+            detailTabCast: 'Cast',
+            detailTabTrailer: 'Trailers',
+
+            // Avatar
+            changeAvatar: 'Change Avatar',
+            selectAvatar: 'Select Avatar',
 
             // Time
             minutes: 'min',

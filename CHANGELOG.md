@@ -5,6 +5,50 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ---
 
+## [0.9.7] - 2026-01-12 - Gemini AI Integration
+
+### 🤖 AI Service (YENİ)
+
+- **`services/ai.js`** oluşturuldu
+- **Gemini 2.0 Flash** API entegrasyonu (gerçek API, mock değil)
+- `getRecommendations(prompt)` fonksiyonu:
+  - Kullanıcı promptunu poetik film küratörü olarak yorumlama
+  - JSON formatında 3-5 film önerisi döndürme
+  - TMDB ile otomatik poster enrichment
+  - Fallback mekanizması (API başarısız olursa keyword-based arama)
+- `handleAISearch()` → AIService entegrasyonu
+
+### 💳 Store Service (YENİ)
+
+- **`services/store.js`** oluşturuldu
+- RevenueCat SDK yapısı hazırlandı
+- Mock fallback destekli (SDK yapılandırılmadan test)
+- Aylık/Yıllık paketler, entitlement kontrolü
+
+### 🎨 Discover Sayfası Tasarım
+
+- **Full-Bleed Hero:** Arka plan `top: 0`'dan başlıyor
+- Header şeffaf (Discover sayfasında)
+- **Theme-Aware Gradient:**
+  - Dark mode: `#050505` (void black)
+  - Light mode: `#f5f7fa`
+- **3-Satır Textarea:** AI promptları için geniş alan
+- Placeholder poetik örneklerle
+
+### 🌐 i18n Güncellemeleri
+
+- TR/EN: `aiInputLabel`, `aiInputPlaceholder`, `aiSearching`, `aiRecommendations`
+- TR/EN: `detailTabOverview`, `detailTabCast`, `detailTabTrailer`
+- TR/EN: `changeAvatar`, `selectAvatar`
+
+### 🔧 Technical
+
+- `index.html`: Textarea ve script imports (`ai.js`, `store.js`)
+- `index_lumi.css`: `.console-textarea`, `.discover-hero-bg`, `.discover-gradient-overlay`
+- APP_VERSION: 0.9.7-beta
+
+---
+
 ## [0.9.6] - 2026-01-09 - Feature Completion
 
 ### 🎨 UI Polishing

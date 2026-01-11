@@ -1037,7 +1037,7 @@ body {
 }
 
 /* ============================================
-   NE İZLESEM - IMMERSIVE DISCOVER (v4)
+   NE İZLESEM - IMMERSIVE DISCOVER (v4.1 - Full Bleed)
    ============================================ */
 
 /* Full-screen immersive container */
@@ -1050,30 +1050,56 @@ body {
     flex-direction: column;
     padding: 0 !important;
     margin: 0 !important;
+    margin-top: -120px !important;
+    /* Pull up behind header */
 }
 
-/* Full-viewport background image */
+/* Full-viewport background image - FULL BLEED (starts from top:0) */
 .discover-hero-bg {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background-size: cover;
     background-position: center top;
     z-index: 0;
     transition: background-image 0.5s ease;
 }
 
-/* Gradient overlay for readability */
+/* Theme-Aware Gradient Overlay */
 .discover-gradient-overlay {
     position: absolute;
     inset: 0;
     z-index: 1;
+    /* Dark mode: Deep void black gradient */
     background: linear-gradient(to top,
-            rgba(5, 5, 10, 1) 0%,
-            rgba(5, 5, 10, 0.95) 20%,
-            rgba(5, 5, 10, 0.7) 40%,
-            rgba(5, 5, 10, 0.3) 70%,
-            rgba(5, 5, 10, 0.1) 100%);
+            #050505 0%,
+            rgba(5, 5, 5, 0.98) 15%,
+            rgba(5, 5, 5, 0.85) 35%,
+            rgba(5, 5, 5, 0.5) 55%,
+            rgba(5, 5, 5, 0.2) 75%,
+            transparent 100%);
     pointer-events: none;
+}
+
+/* Light mode gradient */
+[data-theme="light"] .discover-gradient-overlay,
+.light .discover-gradient-overlay {
+    background: linear-gradient(to top,
+            #f5f7fa 0%,
+            rgba(245, 247, 250, 0.98) 15%,
+            rgba(245, 247, 250, 0.85) 35%,
+            rgba(245, 247, 250, 0.5) 55%,
+            rgba(245, 247, 250, 0.2) 75%,
+            transparent 100%);
+}
+
+/* Make header transparent on Discover page */
+.discover-immersive~.gradient-header,
+body.discover-active .gradient-header {
+    background: transparent !important;
+    backdrop-filter: none;
 }
 
 /* Top info area - Daily Pick */
@@ -1216,6 +1242,36 @@ body {
 
 .console-input::placeholder {
     color: rgba(255, 255, 255, 0.4);
+}
+
+/* 3-line Textarea for AI prompts */
+.console-textarea {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    padding: 12px 0;
+    resize: none;
+    min-height: 72px;
+    /* 3 lines */
+    line-height: 1.5;
+}
+
+.console-textarea::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* Adjust wrapper for textarea */
+.console-input-wrapper:has(.console-textarea) {
+    align-items: flex-start;
+    padding: 8px 8px 8px 16px;
+}
+
+.console-input-wrapper:has(.console-textarea) .console-ai-btn {
+    margin-top: 8px;
 }
 
 .console-ai-btn {

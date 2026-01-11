@@ -3,7 +3,7 @@
 // Mobile-First Film Discovery App
 // ============================================
 
-const APP_VERSION = '0.9.12-beta';
+const APP_VERSION = '0.9.7-beta';
 
 // Toast notification function
 function showToast(message, duration = 3000) {
@@ -291,28 +291,53 @@ function initDiscoverModule() {
     // No need for addEventListener here to avoid double execution
 }
 
-// AI Search Handler - Uses text input to find recommendations
+// AI Search Handler - Uses AIService with Gemini
 async function handleAISearch() {
     const input = document.getElementById('ai-movie-input');
     const query = input?.value?.trim();
 
-    if (!query) {
+    if (!query || query.length < 3) {
         showToast('Lütfen ne tür bir film izlemek istediğini yaz.');
         return;
     }
 
-    // Show loading in results area
-    showToast('Senin için öneriler aranıyor...');
+    // Show loading state
+    showToast('🤖 Gemini düşünüyor...');
 
-    // Extract keywords for TMDB search
-    const keywords = extractMovieKeywords(query);
+    try {
+        // Check if AIService is available
+        if (window.AIService && typeof window.AIService.getRecommendations === 'function') {
+            // Use real Gemini AI
+            const results = await window.AIService.getRecommendations(query);
 
-    // Navigate to discover results view with the search
-    await showDiscoverResults({
-        source: 'ai',
-        query: query,
-        keywords: keywords
-    });
+            if (results && results.length > 0) {
+                displayDiscoverResultsView(results, 'ai');
+                showToast(`✨ ${results.length} film önerisi bulundu!`);
+            } else {
+                showToast('Öneri bulunamadı, farklı bir şey deneyin.');
+            }
+        } else {
+            // Fallback to keyword-based search
+            console.warn('[handleAISearch] AIService not available, using fallback');
+            const keywords = extractMovieKeywords(query);
+            await showDiscoverResults({
+                source: 'ai',
+                query: query,
+                keywords: keywords
+            });
+        }
+    } catch (error) {
+        console.error('[handleAISearch] Error:', error);
+        showToast('Bir hata oluştu: ' + (error.message || 'Bilinmeyen hata'));
+
+        // Fallback on error
+        const keywords = extractMovieKeywords(query);
+        await showDiscoverResults({
+            source: 'ai',
+            query: query,
+            keywords: keywords
+        });
+    }
 }
 
 // Wizard Search Handler - Uses mood/genre chips, era chips

@@ -211,11 +211,13 @@
 
             <!-- Bottom Glass Console Panel -->
             <div class="discover-console glass-panel">
-                <label class="console-label">Bugün nasıl hissediyorsun?</label>
-                
-                <!-- AI Input with Button -->
+                <label class="console-label" data-i18n="aiInputLabel">Bugün nasıl hissediyorsun?</label>
+
+                <!-- AI Textarea (3 lines) -->
                 <div class="console-input-wrapper">
-                    <input type="text" id="ai-movie-input" class="console-input" placeholder="Bana bir film öner...">
+                    <textarea id="ai-movie-input" class="console-textarea" rows="3"
+                        placeholder="Beni çocukluğuma götürecek sıcak bir aile filmi..."
+                        data-i18n-placeholder="aiInputPlaceholder"></textarea>
                     <button class="console-ai-btn" onclick="handleAISearch()">
                         <span class="material-symbols-outlined">auto_awesome</span>
                     </button>
@@ -614,6 +616,8 @@
     <script src="i18n.js"></script>
     <script src="services/auth.js"></script>
     <script src="services/notifications.js"></script>
+    <script src="services/ai.js"></script>
+    <script src="services/store.js"></script>
     <script src="api.js"></script>
     <script src="app.js"></script>
     <script>
