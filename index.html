@@ -191,12 +191,12 @@
              VIEW: NE İZLESEM (Wizard) - Stitch Style
              ============================================ -->
         <section id="view-wizard" class="view">
-            <div class="wizard-container" style="padding: 16px; padding-top: 60px; padding-bottom: 100px;">
+            <div class="wizard-container" style="padding: 16px; padding-top: 16px; padding-bottom: 100px;">
 
                 <!-- ======== AI SEARCH SECTION ======== -->
-                <section class="ai-search-section" style="margin-bottom: 24px;">
-                    <h2 style="font-size: 24px; font-weight: 700; color: white; margin-bottom: 12px; line-height: 1.2;">
-                        Bugün <span style="color: #5858f3;">hangi moddasın?</span>
+                <section class="ai-search-section" style="margin-bottom: 20px;">
+                    <h2 style="font-size: 20px; font-weight: 700; color: white; margin-bottom: 10px; line-height: 1.2;">
+                        Ne <span style="color: #5858f3;">izlesem?</span>
                     </h2>
                     <div class="glass" style="border-radius: 16px; padding: 12px; margin-bottom: 8px;">
                         <textarea id="ai-movie-input" rows="2"
@@ -204,40 +204,37 @@
                             style="width: 100%; background: transparent; border: none; color: white; font-size: 14px; resize: none; line-height: 1.4; font-family: inherit; outline: none;"></textarea>
                     </div>
                     <button id="ai-search-btn" class="glass-active"
-                        style="width: 100%; height: 40px; border-radius: 9999px; border: none; color: white; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
-                        <span class="material-symbols-outlined" style="font-size: 18px;">auto_awesome</span>
+                        style="width: 100%; height: 36px; border-radius: 8px; border: none; color: white; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">auto_awesome</span>
                         Öner Bana
                     </button>
                 </section>
 
                 <!-- ======== WIZARD SECTION ======== -->
-                <section class="glass" style="border-radius: 24px; padding: 16px; margin-bottom: 20px;">
-                    <h3
-                        style="font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.5); margin-bottom: 16px; text-align: center; text-transform: uppercase; letter-spacing: 1px;">
-                        Bilemediysen <span style="color: #5858f3;">yardımcı olalım</span>
-                    </h3>
+                <section class="glass" style="border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                        <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
+                        <span
+                            style="font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px;">veya
+                            filtrele</span>
+                        <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
+                    </div>
 
                     <!-- Mood Selection -->
-                    <div style="margin-bottom: 16px;">
-                        <label
-                            style="font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 8px;">Mod</label>
+                    <div style="margin-bottom: 12px;">
                         <div class="mood-chips hide-scrollbar" id="mood-chips"
-                            style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px;">
+                            style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;">
                             <button class="mood-chip active" data-mood="chill"
-                                style="height: 36px; padding: 0 14px; border-radius: 9999px; border: none; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px;">😌
-                                Rahat</button>
+                                style="height: 32px; padding: 0 12px; border-radius: 8px; border: none; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap;">Rahat</button>
                             <button class="mood-chip" data-mood="adrenaline"
-                                style="height: 36px; padding: 0 14px; border-radius: 9999px; border: none; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px;">⚡
-                                Heyecan</button>
+                                style="height: 32px; padding: 0 12px; border-radius: 8px; border: none; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap;">Heyecan</button>
                             <button class="mood-chip" data-mood="tearjerker"
-                                style="height: 36px; padding: 0 14px; border-radius: 9999px; border: none; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px;">💧
-                                Duygusal</button>
+                                style="height: 32px; padding: 0 12px; border-radius: 8px; border: none; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap;">Duygusal</button>
                             <button class="mood-chip" data-mood="mindbending"
-                                style="height: 36px; padding: 0 14px; border-radius: 9999px; border: none; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px;">🧠
-                                Beyin Yakan</button>
+                                style="height: 32px; padding: 0 12px; border-radius: 8px; border: none; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap;">Beyin
+                                Yakan</button>
                             <button class="mood-chip" data-mood="funny"
-                                style="height: 36px; padding: 0 14px; border-radius: 9999px; border: none; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px;">😂
-                                Komedi</button>
+                                style="height: 32px; padding: 0 12px; border-radius: 8px; border: none; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap;">Komedi</button>
                         </div>
                     </div>
 
@@ -306,17 +303,17 @@
 
                     <!-- Find Button -->
                     <button id="wizard-search-btn" class="glass"
-                        style="width: 100%; height: 40px; border-radius: 9999px; color: white; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid rgba(255,255,255,0.1);">
-                        <span class="material-symbols-outlined" style="font-size: 18px;">search</span>
-                        Bul
+                        style="width: 100%; height: 36px; border-radius: 8px; color: white; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid rgba(255,255,255,0.1);">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">search</span>
+                        Filtrele
                     </button>
                 </section>
 
                 <!-- ======== SURPRISE BUTTON ======== -->
-                <section style="margin-bottom: 24px;">
+                <section style="margin-bottom: 20px;">
                     <button id="surprise-btn"
-                        style="width: 100%; height: 48px; background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3); background-size: 300% 300%; animation: gradient-shift 3s ease infinite; border: none; border-radius: 9999px; color: white; font-weight: 700; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; text-shadow: 0 1px 3px rgba(0,0,0,0.3); text-transform: uppercase; letter-spacing: 0.5px;">
-                        <span class="material-symbols-outlined" style="font-size: 20px;">casino</span>
+                        style="width: 100%; height: 36px; background: linear-gradient(135deg, #5858f3, #3b82f6); border: none; border-radius: 8px; color: white; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">casino</span>
                         Sürpriz Yap!
                     </button>
                 </section>
