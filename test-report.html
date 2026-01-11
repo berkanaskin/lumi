@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lumi v0.9.9 - Test</title>
+    <title>Lumi v0.9.10 - Test</title>
     <style>
         * {
             box-sizing: border-box;
@@ -172,31 +172,45 @@
 </head>
 
 <body>
-    <h1>🎯 Lumi v0.9.9</h1>
+    <h1>🎯 Lumi v0.9.10</h1>
     <p class="subtitle">Ctrl+Shift+R → Test et</p>
 
     <div class="section">
-        <h2>✨ Stitch Tasarım</h2>
+        <h2>✨ Yeni Tasarım</h2>
         <div class="test-item">
-            <div class="test-row"><span class="test-name">Başlık: "Bugün hangi moddasın?"</span>
+            <div class="test-row"><span class="test-name">Günün Önerisi: Banner en üstte, gradient</span>
                 <div class="btns"><button class="status-btn pass" onclick="toggle(this,'pass')">✓</button><button
                         class="status-btn fail" onclick="toggle(this,'fail')">✗</button></div>
             </div><input class="comment" placeholder="Yorum...">
         </div>
         <div class="test-item">
-            <div class="test-row"><span class="test-name">Mood Chips: h-40, rounded-full, icons</span>
+            <div class="test-row"><span class="test-name">Tür Chips: Rahat, Heyecan, Aksiyon, Korku vb.
+                    (birleşik)</span>
                 <div class="btns"><button class="status-btn pass" onclick="toggle(this,'pass')">✓</button><button
                         class="status-btn fail" onclick="toggle(this,'fail')">✗</button></div>
             </div><input class="comment" placeholder="Yorum...">
         </div>
         <div class="test-item">
-            <div class="test-row"><span class="test-name">Shuffle Button: mor, glow efekti</span>
+            <div class="test-row"><span class="test-name">Dönem Chips: Tüm Dönemler, Klasik, 80'ler vb.</span>
                 <div class="btns"><button class="status-btn pass" onclick="toggle(this,'pass')">✓</button><button
                         class="status-btn fail" onclick="toggle(this,'fail')">✗</button></div>
             </div><input class="comment" placeholder="Yorum...">
         </div>
         <div class="test-item">
-            <div class="test-row"><span class="test-name">Üst Boşluk doğru</span>
+            <div class="test-row"><span class="test-name">Butonlar: 32-36px, kompakt (Öner Bana, Filtrele,
+                    Sürpriz)</span>
+                <div class="btns"><button class="status-btn pass" onclick="toggle(this,'pass')">✓</button><button
+                        class="status-btn fail" onclick="toggle(this,'fail')">✗</button></div>
+            </div><input class="comment" placeholder="Yorum...">
+        </div>
+        <div class="test-item">
+            <div class="test-row"><span class="test-name">Placeholder: "Bana ruhumu okşayacak bir film öner..."</span>
+                <div class="btns"><button class="status-btn pass" onclick="toggle(this,'pass')">✓</button><button
+                        class="status-btn fail" onclick="toggle(this,'fail')">✗</button></div>
+            </div><input class="comment" placeholder="Yorum...">
+        </div>
+        <div class="test-item">
+            <div class="test-row"><span class="test-name">Üst Boşluk: padding-top 8px (daha yukarı)</span>
                 <div class="btns"><button class="status-btn pass" onclick="toggle(this,'pass')">✓</button><button
                         class="status-btn fail" onclick="toggle(this,'fail')">✗</button></div>
             </div><input class="comment" placeholder="Yorum...">
@@ -204,7 +218,7 @@
     </div>
 
     <div class="section">
-        <h2>🔘 Butonlar</h2>
+        <h2>🔘 Butonlar Çalışıyor mu?</h2>
         <div class="test-item">
             <div class="test-row"><span class="test-name">Öner Bana → Toast + sonuç</span>
                 <div class="btns"><button class="status-btn pass" onclick="toggle(this,'pass')">✓</button><button
@@ -218,13 +232,13 @@
             </div><input class="comment" placeholder="Yorum...">
         </div>
         <div class="test-item">
-            <div class="test-row"><span class="test-name">Sürpriz Yap! → Random filmler</span>
+            <div class="test-row"><span class="test-name">Sürpriz → Random filmler</span>
                 <div class="btns"><button class="status-btn pass" onclick="toggle(this,'pass')">✓</button><button
                         class="status-btn fail" onclick="toggle(this,'fail')">✗</button></div>
             </div><input class="comment" placeholder="Yorum...">
         </div>
         <div class="test-item">
-            <div class="test-row"><span class="test-name">Günün Önerisi görünüyor</span>
+            <div class="test-row"><span class="test-name">Günün Önerisi tıklanabilir</span>
                 <div class="btns"><button class="status-btn pass" onclick="toggle(this,'pass')">✓</button><button
                         class="status-btn fail" onclick="toggle(this,'fail')">✗</button></div>
             </div><input class="comment" placeholder="Yorum...">
@@ -243,7 +257,7 @@
                 <div class="stat-label">Hata</div>
             </div>
             <div>
-                <div class="stat-value pending" id="pending-count">8</div>
+                <div class="stat-value pending" id="pending-count">10</div>
                 <div class="stat-label">Bekliyor</div>
             </div>
         </div>
@@ -267,10 +281,10 @@
             const f = document.querySelectorAll('.status-btn.fail.active').length;
             document.getElementById('pass-count').textContent = p;
             document.getElementById('fail-count').textContent = f;
-            document.getElementById('pending-count').textContent = 8 - p - f;
+            document.getElementById('pending-count').textContent = 10 - p - f;
         }
         function exportResults() {
-            let r = '# Lumi v0.9.9 Test\n\n';
+            let r = '# Lumi v0.9.10 Test\n\n';
             document.querySelectorAll('.test-item').forEach(item => {
                 const name = item.querySelector('.test-name').textContent;
                 const p = item.querySelector('.status-btn.pass.active');

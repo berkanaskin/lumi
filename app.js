@@ -190,6 +190,9 @@ function initDiscoverModule() {
     setInterval(updateDailyTimer, 60000);
     updateDailyTimer();
 
+    // Set random poetic placeholder
+    setRandomPlaceholder();
+
     // Mood chips toggle
     document.querySelectorAll('.mood-chip').forEach(chip => {
         chip.addEventListener('click', function () {
@@ -315,6 +318,28 @@ async function handleSurpriseMe() {
 window.handleAISearch = handleAISearch;
 window.handleWizardSearch = handleWizardSearch;
 window.handleSurpriseMe = handleSurpriseMe;
+
+// Random poetic placeholders for AI search textarea
+const POETIC_PLACEHOLDERS = [
+    "Bana ruhumu okşayacak bir film öner...",
+    "Bu gece yıldızların altında ne izlesem?",
+    "Kalbimi ısıtacak bir hikaye arıyorum...",
+    "Hayallere dalabileceğim bir dünya göster...",
+    "Beni başka diyarlara götür...",
+    "Gecenin karanlığında parlayacak bir film...",
+    "Yağmurlu bir akşam için mükemmel öneri...",
+    "Kahve eşliğinde izlenecek bir başyapıt...",
+    "Unutulmaz karakterlerle dolu bir macera...",
+    "Finali beni düşündürecek bir film...",
+];
+
+function setRandomPlaceholder() {
+    const input = document.getElementById('ai-movie-input');
+    if (input) {
+        const randomIndex = Math.floor(Math.random() * POETIC_PLACEHOLDERS.length);
+        input.placeholder = POETIC_PLACEHOLDERS[randomIndex];
+    }
+}
 
 // Extract keywords from natural language query for TMDB
 function extractMovieKeywords(query) {
