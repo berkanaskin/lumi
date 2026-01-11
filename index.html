@@ -62,6 +62,30 @@
                                     <span>🇫🇷</span>
                                     <span>Français</span>
                                 </button>
+                                <button class="dropdown-item lang-option" data-lang="es-ES">
+                                    <span>🇪🇸</span>
+                                    <span>Español</span>
+                                </button>
+                                <button class="dropdown-item lang-option" data-lang="it-IT">
+                                    <span>🇮🇹</span>
+                                    <span>Italiano</span>
+                                </button>
+                                <button class="dropdown-item lang-option" data-lang="pt-BR">
+                                    <span>🇧🇷</span>
+                                    <span>Português</span>
+                                </button>
+                                <button class="dropdown-item lang-option" data-lang="ru-RU">
+                                    <span>🇷🇺</span>
+                                    <span>Русский</span>
+                                </button>
+                                <button class="dropdown-item lang-option" data-lang="ja-JP">
+                                    <span>🇯🇵</span>
+                                    <span>日本語</span>
+                                </button>
+                                <button class="dropdown-item lang-option" data-lang="ko-KR">
+                                    <span>🇰🇷</span>
+                                    <span>한국어</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -398,28 +422,30 @@
 
                 <!-- Action Buttons (Updated by JS based on auth state) -->
                 <div class="profile-actions" id="profile-actions" style="margin-top: var(--space-lg);">
-                    <!-- Guest State: Show Login Options -->
+                    <!-- Guest State: Only Test Login -->
                     <div id="guest-buttons">
                         <button class="profile-action-btn" onclick="handleTesterLoginFree()"
-                            style="width: 100%; padding: var(--space-md); background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); color: var(--text-primary); font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: var(--space-sm); margin-bottom: var(--space-sm);">
+                            style="width: 100%; padding: var(--space-md); background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); color: var(--text-primary); font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: var(--space-sm);">
                             <span class="material-symbols-outlined">person</span>
                             <span>Test Kullanıcı Girişi</span>
                         </button>
-                        <button class="profile-action-btn" onclick="handleTesterLoginPremium()"
-                            style="width: 100%; padding: var(--space-md); background: linear-gradient(135deg, var(--primary), #8b7cf7); border: none; border-radius: var(--radius-lg); color: white; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: var(--space-sm);">
-                            <span class="material-symbols-outlined">workspace_premium</span>
-                            <span>Test Premium Girişi</span>
-                        </button>
                     </div>
-                    <!-- Logged In State: Show Premium Upgrade (if free) and Logout -->
-                    <div id="loggedin-buttons" style="display: none;">
-                        <button class="profile-action-btn premium-btn" id="profile-premium-btn"
-                            onclick="showPremiumModal()"
+                    <!-- Free User State: Premium Upgrade + Logout -->
+                    <div id="free-user-buttons" style="display: none;">
+                        <button class="profile-action-btn" onclick="handleTesterLoginPremium()"
                             style="width: 100%; padding: var(--space-md); background: linear-gradient(135deg, var(--primary), #8b7cf7); border: none; border-radius: var(--radius-lg); color: white; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: var(--space-sm); margin-bottom: var(--space-sm);">
                             <span class="material-symbols-outlined">workspace_premium</span>
                             <span>Premium'a Yükselt</span>
                         </button>
-                        <button class="profile-action-btn logout-btn" id="profile-logout-btn" onclick="handleLogout()"
+                        <button class="profile-action-btn logout-btn" onclick="handleLogout()"
+                            style="width: 100%; padding: var(--space-md); background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius-lg); color: #ef4444; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: var(--space-sm);">
+                            <span class="material-symbols-outlined">logout</span>
+                            <span>Çıkış Yap</span>
+                        </button>
+                    </div>
+                    <!-- Premium User State: Only Logout -->
+                    <div id="premium-user-buttons" style="display: none;">
+                        <button class="profile-action-btn logout-btn" onclick="handleLogout()"
                             style="width: 100%; padding: var(--space-md); background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius-lg); color: #ef4444; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: var(--space-sm);">
                             <span class="material-symbols-outlined">logout</span>
                             <span>Çıkış Yap</span>
@@ -685,9 +711,14 @@
                     // Save preference
                     localStorage.setItem('language', lang);
 
-                    // Update app language (if i18n available)
+                    // Update app language state (used by API calls)
                     if (typeof state !== 'undefined') {
-                        state.currentLanguage = lang;
+                        state.language = lang;
+                    }
+
+                    // Update i18n if available
+                    if (typeof i18n !== 'undefined' && i18n.setLanguage) {
+                        i18n.setLanguage(lang);
                     }
 
                     closeAllDropdowns();

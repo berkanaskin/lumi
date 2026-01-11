@@ -262,12 +262,12 @@ async function loadDailyRecommendation() {
 
         let movies = [];
         if (category.list) {
-            const resp = await fetch(`${CONFIG.BASE_URL}/movie/${category.list}?api_key=${CONFIG.API_KEY}&language=${state.language}&page=1`);
+            const resp = await fetch(`${API_URLS.TMDB_BASE}/movie/${category.list}?api_key=${CONFIG.TMDB_API_KEY}&language=${state.language}&page=1`);
             const data = await resp.json();
             movies = data.results || [];
         } else if (category.genres) {
             const genreStr = category.genres.join(',');
-            const resp = await fetch(`${CONFIG.BASE_URL}/discover/movie?api_key=${CONFIG.API_KEY}&language=${state.language}&with_genres=${genreStr}&sort_by=vote_average.desc&vote_count.gte=500&page=1`);
+            const resp = await fetch(`${API_URLS.TMDB_BASE}/discover/movie?api_key=${CONFIG.TMDB_API_KEY}&language=${state.language}&with_genres=${genreStr}&sort_by=vote_average.desc&vote_count.gte=500&page=1`);
             const data = await resp.json();
             movies = data.results || [];
         }
@@ -352,7 +352,7 @@ async function loadRandomRecommendation() {
         const genres = moodGenres[activeMood] || [28, 35];
         const genreStr = genres.join(',');
 
-        const resp = await fetch(`${CONFIG.BASE_URL}/discover/movie?api_key=${CONFIG.API_KEY}&language=${state.language}&with_genres=${genreStr}&sort_by=popularity.desc&page=${Math.floor(Math.random() * 5) + 1}`);
+        const resp = await fetch(`${API_URLS.TMDB_BASE}/discover/movie?api_key=${CONFIG.TMDB_API_KEY}&language=${state.language}&with_genres=${genreStr}&sort_by=popularity.desc&page=${Math.floor(Math.random() * 5) + 1}`);
         const data = await resp.json();
 
         if (data.results?.length > 0) {
@@ -618,12 +618,18 @@ async function handleLogout() {
             state.userTier = 'guest';
             localStorage.removeItem('userTier');
             localStorage.removeItem('lumi_user');
-            // Reload page to reset all state
-            location.reload();
+            // Update UI without page reload
+            updateAuthUI();
+            updateProfileAuthUI();
+            // Show success message
+            showToast('Çıkış yapıldı');
         } catch (error) {
             console.error('Logout error:', error);
-            // Force reload even on error
-            location.reload();
+            // Still update UI
+            state.currentUser = null;
+            state.userTier = 'guest';
+            updateAuthUI();
+            updateProfileAuthUI();
         }
     }
 }
@@ -659,27 +665,29 @@ async function handleTesterLoginPremium() {
     }
 }
 
-// Update Profile Action Buttons based on Auth State
+// Update Profile Action Buttons based on Auth State (3 states: guest, free, premium)
 function updateProfileAuthUI() {
     const guestButtons = document.getElementById('guest-buttons');
-    const loggedinButtons = document.getElementById('loggedin-buttons');
-    const premiumBtn = document.getElementById('profile-premium-btn');
+    const freeUserButtons = document.getElementById('free-user-buttons');
+    const premiumUserButtons = document.getElementById('premium-user-buttons');
 
-    if (!guestButtons || !loggedinButtons) return;
+    // Hide all first
+    if (guestButtons) guestButtons.style.display = 'none';
+    if (freeUserButtons) freeUserButtons.style.display = 'none';
+    if (premiumUserButtons) premiumUserButtons.style.display = 'none';
 
     const isLoggedIn = window.AuthService && window.AuthService.isLoggedIn();
     const isPremium = window.AuthService && window.AuthService.isPremium();
 
-    if (isLoggedIn) {
-        guestButtons.style.display = 'none';
-        loggedinButtons.style.display = 'block';
-        // Hide premium button if already premium
-        if (premiumBtn) {
-            premiumBtn.style.display = isPremium ? 'none' : 'flex';
-        }
+    if (!isLoggedIn) {
+        // Guest state - show test login only
+        if (guestButtons) guestButtons.style.display = 'block';
+    } else if (isPremium) {
+        // Premium user - show logout only
+        if (premiumUserButtons) premiumUserButtons.style.display = 'block';
     } else {
-        guestButtons.style.display = 'block';
-        loggedinButtons.style.display = 'none';
+        // Free user - show premium upgrade + logout
+        if (freeUserButtons) freeUserButtons.style.display = 'block';
     }
 }
 
