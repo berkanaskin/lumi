@@ -3,7 +3,52 @@
 // Mobile-First Film Discovery App
 // ============================================
 
-const APP_VERSION = '0.9.6-beta';
+const APP_VERSION = '0.9.12-beta';
+
+// Toast notification function
+function showToast(message, duration = 3000) {
+    const container = document.getElementById('toast-container');
+    if (!container) {
+        console.warn('Toast container not found');
+        return;
+    }
+
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        padding: 12px 20px;
+        background: rgba(30, 30, 40, 0.95);
+        border: 1px solid rgba(120, 90, 242, 0.5);
+        border-radius: 12px;
+        color: white;
+        font-size: 14px;
+        font-weight: 500;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        pointer-events: auto;
+        animation: toastIn 0.3s ease;
+    `;
+    toast.textContent = message;
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.animation = 'toastOut 0.3s ease forwards';
+        setTimeout(() => toast.remove(), 300);
+    }, duration);
+}
+
+// Toast animations (inject CSS)
+const toastStyles = document.createElement('style');
+toastStyles.textContent = `
+    @keyframes toastIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes toastOut {
+        from { opacity: 1; transform: translateY(0); }
+        to { opacity: 0; transform: translateY(-20px); }
+    }
+`;
+document.head.appendChild(toastStyles);
 
 // DOM Elements
 const elements = {
@@ -321,16 +366,16 @@ window.handleSurpriseMe = handleSurpriseMe;
 
 // Random poetic placeholders for AI search textarea
 const POETIC_PLACEHOLDERS = [
-    "Bana ruhumu okşayacak bir film öner...",
-    "Bu gece yıldızların altında ne izlesem?",
-    "Kalbimi ısıtacak bir hikaye arıyorum...",
-    "Hayallere dalabileceğim bir dünya göster...",
-    "Beni başka diyarlara götür...",
-    "Gecenin karanlığında parlayacak bir film...",
-    "Yağmurlu bir akşam için mükemmel öneri...",
-    "Kahve eşliğinde izlenecek bir başyapıt...",
-    "Unutulmaz karakterlerle dolu bir macera...",
-    "Finali beni düşündürecek bir film...",
+    "Sonu ağzımı açık bırakacak ama izlerken de içimi yumuşatacak bir film arıyorum...",
+    "Uyumadan önce iç huzuru bulacağım bir dizi lazım...",
+    "Beni hem güldürecek hem ağlatacak duygusal bir hikaye...",
+    "Beynimin sınırlarını zorlayacak zihin bükücü bir film...",
+    "Gerilim dolu ama sonunda rahatlatıcı bir son istiyorum...",
+    "Saatlerce konuşacak bir hikaye ve unutulmaz karakterler...",
+    "90'ların nostaljisini hissedeceğim klasik bir yapım...",
+    "İzlerken zaman durmuş gibi hissedeceğim sinematik bir şaheser...",
+    "Aşkı ve kaybı anlamlandıran derin bir anlatı arıyorum...",
+    "Finali beni günlerce düşündürecek felsefi bir film...",
 ];
 
 function setRandomPlaceholder() {

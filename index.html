@@ -191,12 +191,13 @@
              VIEW: NE İZLESEM (Wizard) - v3 Redesign
              ============================================ -->
         <section id="view-wizard" class="view">
-            <div class="wizard-container" style="padding: 16px; padding-top: 0; padding-bottom: 100px;">
+            <div class="wizard-container"
+                style="padding: 16px; padding-top: 0; padding-bottom: 100px; margin-top: -8px;">
 
                 <!-- ======== GÜNÜN ÖNERİSİ BANNER ======== -->
                 <section class="daily-recommendation" id="daily-recommendation" style="margin-bottom: 16px;">
                     <div class="daily-card" id="daily-card"
-                        style="position: relative; border-radius: 16px; overflow: hidden; height: 180px; background: linear-gradient(135deg, rgba(120,90,242,0.5), rgba(20,20,40,0.95)); cursor: pointer;">
+                        style="position: relative; border-radius: 16px; overflow: hidden; height: 160px; background: linear-gradient(135deg, rgba(120,90,242,0.5), rgba(20,20,40,0.95)); cursor: pointer;">
                         <div id="daily-poster"
                             style="position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.5;">
                         </div>
@@ -245,7 +246,7 @@
                         <button id="surprise-btn" onclick="handleSurpriseMe()"
                             style="height: 36px; background: #785af2; border: none; border-radius: 8px; color: white; font-weight: 600; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
                             <span class="material-symbols-outlined" style="font-size: 16px;">shuffle</span>
-                            Sürpriz
+                            Sürpriz Yap
                         </button>
                     </div>
                 </div>
@@ -1682,6 +1683,11 @@
             }
         };
     </script>
+
+    <!-- Toast Container -->
+    <div id="toast-container"
+        style="position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); z-index: 10000; display: flex; flex-direction: column; gap: 8px; pointer-events: none;">
+    </div>
 </body>
 
 </html>
