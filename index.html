@@ -197,7 +197,7 @@
                 <!-- ======== GÜNÜN ÖNERİSİ BANNER ======== -->
                 <section class="daily-recommendation" id="daily-recommendation" style="margin-bottom: 16px;">
                     <div class="daily-card" id="daily-card"
-                        style="position: relative; border-radius: 16px; overflow: hidden; height: 170px; background: linear-gradient(135deg, rgba(120,90,242,0.5), rgba(20,20,40,0.95)); cursor: pointer;">
+                        style="position: relative; border-radius: 16px; overflow: hidden; height: 200px; background: linear-gradient(135deg, rgba(120,90,242,0.5), rgba(20,20,40,0.95)); cursor: pointer;">
                         <div id="daily-poster"
                             style="position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.5;">
                         </div>
@@ -335,6 +335,21 @@
                     <span class="material-symbols-outlined" style="font-size: 14px;">search</span>
                     Filtrele
                 </button>
+
+                <!-- ======== SONUÇLAR BÖLÜMÜ ======== -->
+                <div id="wizard-results" style="display: none; margin-top: 16px;">
+                    <div
+                        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                        <h3 id="wizard-results-title" style="font-size: 1rem; font-weight: 600; color: #fff;"></h3>
+                        <button id="wizard-results-close" onclick="closeWizardResults()"
+                            style="padding: 6px 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: rgba(255,255,255,0.7); font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                            <span class="material-symbols-outlined" style="font-size: 14px;">close</span>
+                            Kapat
+                        </button>
+                    </div>
+                    <div id="wizard-results-grid"
+                        style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;"></div>
+                </div>
 
             </div>
         </section>

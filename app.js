@@ -464,7 +464,7 @@ async function showDiscoverResults(params) {
     }
 }
 
-// Display discover results in home view grid
+// Display discover results in wizard view (not home!)
 function displayDiscoverResultsView(movies, source) {
     const sourceLabels = {
         'ai': '🤖 Senin İçin Öneriler',
@@ -474,52 +474,60 @@ function displayDiscoverResultsView(movies, source) {
 
     const label = sourceLabels[source] || 'Öneriler';
 
-    // Switch to home view
-    switchView('view-home');
+    // Get wizard results container
+    const resultsContainer = document.getElementById('wizard-results');
+    const resultsTitle = document.getElementById('wizard-results-title');
+    const resultsGrid = document.getElementById('wizard-results-grid');
 
-    // Get the feed grid
-    const feedGrid = document.getElementById('feed-grid');
-    if (!feedGrid) return;
+    if (!resultsContainer || !resultsGrid) {
+        console.error('Wizard results container not found');
+        return;
+    }
 
-    // Clear and show results with header
-    feedGrid.innerHTML = `
-        <div style="grid-column: 1 / -1; padding: var(--space-md);">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-lg);">
-                <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">${label}</h2>
-                <button onclick="loadHomePage()" style="padding: 8px 16px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-secondary); font-size: 0.8rem; cursor: pointer;">
-                    <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">close</span>
-                    Kapat
-                </button>
-            </div>
-        </div>
-    `;
+    // Set title and show container
+    resultsTitle.textContent = label;
+    resultsContainer.style.display = 'block';
+    resultsGrid.innerHTML = '';
 
     // Add movie cards
     movies.forEach(movie => {
         const posterUrl = movie.poster_path
-            ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-            : 'https://via.placeholder.com/500x750?text=No+Poster';
+            ? `https://image.tmdb.org/t/p/w342${movie.poster_path}`
+            : 'https://via.placeholder.com/342x513?text=No+Poster';
 
         const card = document.createElement('div');
-        card.className = 'feed-card';
-        card.style.cssText = 'cursor: pointer; border-radius: var(--radius-lg); overflow: hidden; background: var(--glass-bg); aspect-ratio: 2/3;';
+        card.style.cssText = 'cursor: pointer; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,0.05); aspect-ratio: 2/3;';
         card.innerHTML = `
             <div style="position: relative; width: 100%; height: 100%;">
                 <img src="${posterUrl}" alt="${movie.title}" style="width: 100%; height: 100%; object-fit: cover;">
-                <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%);"></div>
-                <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: var(--space-sm);">
-                    <div style="font-size: 0.75rem; font-weight: 600; color: white; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${movie.title}</div>
+                <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 50%);"></div>
+                <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 8px;">
+                    <div style="font-size: 11px; font-weight: 600; color: white; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${movie.title}</div>
                     <div style="display: flex; align-items: center; gap: 4px; margin-top: 4px;">
-                        <span style="color: #fbbf24; font-size: 0.7rem;">⭐ ${movie.vote_average?.toFixed(1) || 'N/A'}</span>
-                        <span style="color: var(--text-muted); font-size: 0.65rem;">${movie.release_date?.substring(0, 4) || ''}</span>
+                        <span style="color: #fbbf24; font-size: 10px;">⭐ ${movie.vote_average?.toFixed(1) || 'N/A'}</span>
+                        <span style="color: rgba(255,255,255,0.5); font-size: 9px;">${movie.release_date?.substring(0, 4) || ''}</span>
                     </div>
                 </div>
             </div>
         `;
         card.onclick = () => openDetailModal(movie.id, 'movie');
-        feedGrid.appendChild(card);
+        resultsGrid.appendChild(card);
     });
+
+    // Scroll to results
+    resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
+
+// Close wizard results
+function closeWizardResults() {
+    const resultsContainer = document.getElementById('wizard-results');
+    if (resultsContainer) {
+        resultsContainer.style.display = 'none';
+    }
+}
+
+// Expose closeWizardResults globally
+window.closeWizardResults = closeWizardResults;
 
 async function loadDailyRecommendation() {
     const stored = localStorage.getItem(DAILY_REC_KEY);
