@@ -188,165 +188,134 @@
         </section>
 
         <!-- ============================================
-             VIEW: NE İZLESEM (Wizard) - Stitch Style
+             VIEW: NE İZLESEM (Wizard) - Redesign v2
              ============================================ -->
         <section id="view-wizard" class="view">
-            <div class="wizard-container" style="padding: 16px; padding-top: 16px; padding-bottom: 100px;">
+            <div class="wizard-container" style="padding: 16px; padding-top: 8px; padding-bottom: 100px;">
 
-                <!-- ======== AI SEARCH SECTION ======== -->
-                <section class="ai-search-section" style="margin-bottom: 20px;">
-                    <h2
-                        style="font-size: 28px; font-weight: 700; color: white; margin-bottom: 12px; line-height: 1.15; letter-spacing: -0.5px;">
-                        Bugün hangi<br><span style="color: #785af2;">moddasın?</span>
-                    </h2>
-                    <div class="glass" style="border-radius: 16px; padding: 12px; margin-bottom: 8px;">
-                        <textarea id="ai-movie-input" rows="2"
-                            placeholder="Ne izlemek istersin? (ör: uzayda geçen aksiyon)"
-                            style="width: 100%; background: transparent; border: none; color: white; font-size: 14px; resize: none; line-height: 1.4; font-family: inherit; outline: none;"></textarea>
-                    </div>
-                    <button id="ai-search-btn" class="glass-active" onclick="handleAISearch()"
-                        style="width: 100%; height: 36px; border-radius: 8px; border: none; color: white; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                        <span class="material-symbols-outlined" style="font-size: 16px;">auto_awesome</span>
-                        Öner Bana
-                    </button>
-                </section>
-
-                <!-- ======== WIZARD SECTION ======== -->
-                <section class="glass" style="border-radius: 12px; padding: 14px; margin-bottom: 16px;">
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-                        <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
-                        <span
-                            style="font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px;">veya
-                            filtrele</span>
-                        <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
-                    </div>
-
-                    <!-- Mood Selection - Stitch Style -->
-                    <div style="margin-bottom: 16px;">
-                        <div class="mood-chips hide-scrollbar" id="mood-chips"
-                            style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px;">
-                            <button class="mood-chip glass-active active" data-mood="chill"
-                                style="height: 40px; padding: 0 24px; border-radius: 9999px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; color: white;">
-                                <span class="material-symbols-outlined"
-                                    style="font-size: 18px;">sentiment_satisfied</span>Rahat
-                            </button>
-                            <button class="mood-chip glass" data-mood="adrenaline"
-                                style="height: 40px; padding: 0 24px; border-radius: 9999px; border: none; font-size: 14px; font-weight: 500; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255,255,255,0.7);">
-                                <span class="material-symbols-outlined" style="font-size: 18px;">bolt</span>Heyecan
-                            </button>
-                            <button class="mood-chip glass" data-mood="tearjerker"
-                                style="height: 40px; padding: 0 24px; border-radius: 9999px; border: none; font-size: 14px; font-weight: 500; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255,255,255,0.7);">
-                                <span class="material-symbols-outlined"
-                                    style="font-size: 18px;">water_drop</span>Duygusal
-                            </button>
-                            <button class="mood-chip glass" data-mood="mindbending"
-                                style="height: 40px; padding: 0 24px; border-radius: 9999px; border: none; font-size: 14px; font-weight: 500; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255,255,255,0.7);">
-                                <span class="material-symbols-outlined" style="font-size: 18px;">psychology</span>Beyin
-                                Yakan
-                            </button>
+                <!-- ======== GÜNÜN ÖNERİSİ BANNER (En Üstte) ======== -->
+                <section class="daily-recommendation" id="daily-recommendation" style="margin-bottom: 20px;">
+                    <div class="daily-card" id="daily-card"
+                        style="position: relative; border-radius: 16px; overflow: hidden; height: 140px; background: linear-gradient(135deg, rgba(120,90,242,0.3), rgba(30,30,50,0.8));">
+                        <div id="daily-poster"
+                            style="position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.4;">
                         </div>
-                    </div>
-
-                    <!-- Platform Selection -->
-                    <div style="margin-bottom: 16px;">
                         <div
-                            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                            <label
-                                style="font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.5px;">Platformlar</label>
-                            <button id="select-all-platforms"
-                                style="font-size: 10px; font-weight: 700; color: #5858f3; background: none; border: none; cursor: pointer; text-transform: uppercase;">Tümünü
-                                Seç</button>
+                            style="position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10,10,15,0.95) 0%, rgba(10,10,15,0.6) 50%, transparent 100%);">
                         </div>
-                        <div class="platform-grid" id="platform-grid"
-                            style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;">
-                            <button class="platform-btn active" data-platform="netflix"
-                                style="aspect-ratio: 1; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none;"><span
-                                    style="color: #E50914; font-weight: 700; font-size: 18px;">N</span></button>
-                            <button class="platform-btn" data-platform="prime"
-                                style="aspect-ratio: 1; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none;"><span
-                                    style="color: #00A8E1; font-weight: 700; font-size: 9px;">prime</span></button>
-                            <button class="platform-btn" data-platform="disney"
-                                style="aspect-ratio: 1; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none;"><span
-                                    style="color: #113CCF; font-weight: 700; font-size: 14px;">D+</span></button>
-                            <button class="platform-btn" data-platform="apple"
-                                style="aspect-ratio: 1; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none;"><span
-                                    style="color: white; font-size: 18px;"></span></button>
-                            <button class="platform-btn" data-platform="mubi"
-                                style="aspect-ratio: 1; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none;"><span
-                                    style="color: #E9423A; font-weight: 700; font-size: 8px;">MUBI</span></button>
+                        <div
+                            style="position: relative; height: 100%; display: flex; align-items: center; padding: 16px;">
+                            <div style="flex: 1;">
+                                <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+                                    <span class="material-symbols-outlined"
+                                        style="color: #785af2; font-size: 16px;">star</span>
+                                    <span
+                                        style="font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px;">Günün
+                                        Önerisi</span>
+                                    <span class="daily-timer" id="daily-timer"
+                                        style="font-size: 10px; color: rgba(255,255,255,0.3); margin-left: auto;"></span>
+                                </div>
+                                <h3 id="daily-title"
+                                    style="font-size: 18px; font-weight: 700; color: white; margin-bottom: 4px; line-height: 1.2;">
+                                    Yükleniyor...</h3>
+                                <p id="daily-meta" style="font-size: 12px; color: rgba(255,255,255,0.5);"></p>
+                            </div>
                         </div>
-                    </div>
-
-                    <!-- Genre & Era Row -->
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
-                        <div>
-                            <label
-                                style="font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">Tür</label>
-                            <select id="genre-select" class="glass"
-                                style="width: 100%; height: 36px; padding: 0 10px; border-radius: 8px; color: white; font-size: 12px; cursor: pointer; appearance: none; background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 fill=%22%23888%22 viewBox=%220 0 24 24%22><path d=%22M7 10l5 5 5-5z%22/></svg>'); background-repeat: no-repeat; background-position: right 8px center; background-size: 14px;">
-                                <option value="">Fark Etmez</option>
-                                <option value="28">Aksiyon</option>
-                                <option value="35">Komedi</option>
-                                <option value="18">Drama</option>
-                                <option value="27">Korku</option>
-                                <option value="878">Bilim Kurgu</option>
-                                <option value="10749">Romantik</option>
-                                <option value="16">Animasyon</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label
-                                style="font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">Dönem</label>
-                            <select id="era-select" class="glass"
-                                style="width: 100%; height: 36px; padding: 0 10px; border-radius: 8px; color: white; font-size: 12px; cursor: pointer; appearance: none; background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 fill=%22%23888%22 viewBox=%220 0 24 24%22><path d=%22M7 10l5 5 5-5z%22/></svg>'); background-repeat: no-repeat; background-position: right 8px center; background-size: 14px;">
-                                <option value="">Fark Etmez</option>
-                                <option value="classic">Klasik</option>
-                                <option value="80s">80'ler</option>
-                                <option value="90s">90'lar</option>
-                                <option value="2000s">2000'ler</option>
-                                <option value="2010s">2010'lar</option>
-                                <option value="2020s">2020'ler</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Find Button -->
-                    <button id="wizard-search-btn" class="glass" onclick="handleWizardSearch()"
-                        style="width: 100%; height: 36px; border-radius: 8px; color: white; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid rgba(255,255,255,0.1);">
-                        <span class="material-symbols-outlined" style="font-size: 16px;">search</span>
-                        Filtrele
-                    </button>
-                </section>
-
-                <!-- ======== SHUFFLE / SURPRISE BUTTON - Stitch Style ======== -->
-                <section style="margin-bottom: 24px;">
-                    <button id="surprise-btn" onclick="handleSurpriseMe()"
-                        style="width: 100%; height: 48px; background: #785af2; border: none; border-radius: 9999px; color: white; font-weight: 700; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 0 20px rgba(120, 90, 242, 0.5);">
-                        <span class="material-symbols-outlined" style="font-size: 24px;">shuffle</span>
-                        Sürpriz Yap!
-                    </button>
-                </section>
-
-                <!-- ======== GÜNÜN ÖNERİSİ ======== -->
-                <section class="daily-recommendation" id="daily-recommendation">
-                    <div
-                        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span class="material-symbols-outlined" style="color: #5858f3; font-size: 20px;">star</span>
-                            <h2
-                                style="font-size: 14px; font-weight: 700; color: white; text-transform: uppercase; letter-spacing: 0.5px;">
-                                Günün Önerisi</h2>
-                        </div>
-                        <span class="daily-timer" id="daily-timer"
-                            style="font-size: 11px; color: rgba(255,255,255,0.5);"></span>
-                    </div>
-                    <div class="daily-card glass" id="daily-card"
-                        style="position: relative; border-radius: 24px; overflow: hidden; aspect-ratio: 2/3; max-height: 360px;">
-                        <div class="loading-state" style="display: flex; height: 100%;">
+                        <div class="loading-state"
+                            style="position: absolute; inset: 0; display: none; background: rgba(0,0,0,0.5);">
                             <div class="spinner"></div>
                         </div>
                     </div>
                 </section>
+
+                <!-- ======== BAŞLIK ======== -->
+                <h2
+                    style="font-size: 26px; font-weight: 700; color: white; margin-bottom: 16px; line-height: 1.15; letter-spacing: -0.5px;">
+                    Bugün hangi<br><span style="color: #785af2;">moddasın?</span>
+                </h2>
+
+                <!-- ======== AI SEARCH ======== -->
+                <div class="glass" style="border-radius: 12px; padding: 10px; margin-bottom: 8px;">
+                    <textarea id="ai-movie-input" rows="1" placeholder="Bana ruhumu okşayacak bir film öner..."
+                        style="width: 100%; background: transparent; border: none; color: white; font-size: 14px; resize: none; line-height: 1.4; font-family: inherit; outline: none;"></textarea>
+                </div>
+                <button id="ai-search-btn" class="glass-active" onclick="handleAISearch()"
+                    style="width: 100%; height: 32px; border-radius: 8px; border: none; color: white; font-weight: 600; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                    <span class="material-symbols-outlined" style="font-size: 14px;">auto_awesome</span>
+                    Öner Bana
+                </button>
+
+                <!-- ======== DIVIDER ======== -->
+                <div style="display: flex; align-items: center; gap: 8px; margin: 16px 0;">
+                    <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.08);"></div>
+                    <span
+                        style="font-size: 9px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1px;">veya
+                        filtrele</span>
+                    <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.08);"></div>
+                </div>
+
+                <!-- ======== TÜR/MOD CHIPS (Mood + Genre Merged) ======== -->
+                <div style="margin-bottom: 12px;">
+                    <div class="mood-chips hide-scrollbar" id="mood-chips"
+                        style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px;">
+                        <button class="mood-chip glass-active active" data-mood="chill"
+                            style="height: 32px; padding: 0 14px; border-radius: 9999px; border: none; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; color: white;">Rahat</button>
+                        <button class="mood-chip glass" data-mood="adrenaline"
+                            style="height: 32px; padding: 0 14px; border-radius: 9999px; border: none; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7);">Heyecan</button>
+                        <button class="mood-chip glass" data-mood="tearjerker"
+                            style="height: 32px; padding: 0 14px; border-radius: 9999px; border: none; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7);">Duygusal</button>
+                        <button class="mood-chip glass" data-mood="mindbending"
+                            style="height: 32px; padding: 0 14px; border-radius: 9999px; border: none; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7);">Beyin
+                            Yakan</button>
+                        <button class="mood-chip glass" data-genre="28"
+                            style="height: 32px; padding: 0 14px; border-radius: 9999px; border: none; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7);">Aksiyon</button>
+                        <button class="mood-chip glass" data-genre="27"
+                            style="height: 32px; padding: 0 14px; border-radius: 9999px; border: none; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7);">Korku</button>
+                        <button class="mood-chip glass" data-genre="878"
+                            style="height: 32px; padding: 0 14px; border-radius: 9999px; border: none; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7);">Bilim
+                            Kurgu</button>
+                        <button class="mood-chip glass" data-genre="10749"
+                            style="height: 32px; padding: 0 14px; border-radius: 9999px; border: none; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7);">Romantik</button>
+                        <button class="mood-chip glass" data-genre="16"
+                            style="height: 32px; padding: 0 14px; border-radius: 9999px; border: none; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7);">Animasyon</button>
+                    </div>
+                </div>
+
+                <!-- ======== DÖNEM CHIPS ======== -->
+                <div style="margin-bottom: 12px;">
+                    <div class="era-chips hide-scrollbar" id="era-chips"
+                        style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px;">
+                        <button class="era-chip glass active" data-era=""
+                            style="height: 28px; padding: 0 12px; border-radius: 9999px; border: none; font-size: 11px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7);">Tüm
+                            Dönemler</button>
+                        <button class="era-chip glass" data-era="classic"
+                            style="height: 28px; padding: 0 12px; border-radius: 9999px; border: none; font-size: 11px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7);">Klasik</button>
+                        <button class="era-chip glass" data-era="80s"
+                            style="height: 28px; padding: 0 12px; border-radius: 9999px; border: none; font-size: 11px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7);">80'ler</button>
+                        <button class="era-chip glass" data-era="90s"
+                            style="height: 28px; padding: 0 12px; border-radius: 9999px; border: none; font-size: 11px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7);">90'lar</button>
+                        <button class="era-chip glass" data-era="2000s"
+                            style="height: 28px; padding: 0 12px; border-radius: 9999px; border: none; font-size: 11px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7);">2000'ler</button>
+                        <button class="era-chip glass" data-era="2010s"
+                            style="height: 28px; padding: 0 12px; border-radius: 9999px; border: none; font-size: 11px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7);">2010'lar</button>
+                        <button class="era-chip glass" data-era="2020s"
+                            style="height: 28px; padding: 0 12px; border-radius: 9999px; border: none; font-size: 11px; font-weight: 500; cursor: pointer; white-space: nowrap; color: rgba(255,255,255,0.7);">2020'ler</button>
+                    </div>
+                </div>
+
+                <!-- ======== ACTION BUTTONS ======== -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px;">
+                    <button id="wizard-search-btn" class="glass" onclick="handleWizardSearch()"
+                        style="height: 36px; border-radius: 8px; color: white; font-weight: 600; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; border: 1px solid rgba(255,255,255,0.1);">
+                        <span class="material-symbols-outlined" style="font-size: 14px;">search</span>
+                        Filtrele
+                    </button>
+                    <button id="surprise-btn" onclick="handleSurpriseMe()"
+                        style="height: 36px; background: #785af2; border: none; border-radius: 8px; color: white; font-weight: 600; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                        <span class="material-symbols-outlined" style="font-size: 14px;">shuffle</span>
+                        Sürpriz
+                    </button>
+                </div>
 
             </div>
         </section>

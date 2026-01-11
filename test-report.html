@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lumi v0.9.8 - Test Report</title>
+    <title>Lumi v0.9.9 - Test</title>
     <style>
         * {
             box-sizing: border-box;
@@ -22,7 +22,7 @@
         }
 
         h1 {
-            color: #5858f3;
+            color: #785af2;
             margin-bottom: 8px;
         }
 
@@ -46,23 +46,27 @@
         }
 
         .test-item {
-            display: grid;
-            grid-template-columns: auto 1fr auto;
-            gap: 12px;
-            align-items: center;
+            display: flex;
+            flex-direction: column;
             padding: 12px;
             border-radius: 12px;
             margin-bottom: 8px;
             background: rgba(255, 255, 255, 0.02);
         }
 
+        .test-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
         .test-name {
             font-weight: 600;
         }
 
-        .test-desc {
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.5);
+        .btns {
+            display: flex;
+            gap: 4px;
         }
 
         .status-btn {
@@ -73,7 +77,6 @@
             color: rgba(255, 255, 255, 0.6);
             cursor: pointer;
             font-size: 0.8rem;
-            margin-left: 4px;
         }
 
         .status-btn.pass.active {
@@ -88,36 +91,39 @@
             border-color: #ef4444;
         }
 
-        .badge {
-            display: inline-block;
-            padding: 2px 8px;
+        .comment {
+            width: 100%;
+            margin-top: 8px;
+            padding: 8px 10px;
             border-radius: 6px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            margin-left: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.02);
+            color: #fff;
+            font-size: 0.85rem;
+            display: none;
         }
 
-        .badge.fix {
-            background: rgba(34, 197, 94, 0.2);
-            color: #22c55e;
+        .test-item.has-comment .comment {
+            display: block;
         }
 
         .summary {
-            background: linear-gradient(135deg, rgba(88, 88, 243, 0.1), rgba(88, 88, 243, 0.05));
-            border: 1px solid rgba(88, 88, 243, 0.3);
+            background: linear-gradient(135deg, rgba(120, 90, 242, 0.1), rgba(120, 90, 242, 0.05));
+            border: 1px solid rgba(120, 90, 242, 0.3);
             border-radius: 16px;
             padding: 20px;
             text-align: center;
+            margin-top: 20px;
         }
 
         .stats {
             display: flex;
             justify-content: center;
-            gap: 32px;
+            gap: 40px;
         }
 
         .stat-value {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: 700;
         }
 
@@ -134,10 +140,14 @@
             color: #ef4444;
         }
 
+        .stat-value.pending {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
         textarea {
             width: 100%;
             margin-top: 16px;
-            min-height: 100px;
+            min-height: 80px;
             padding: 12px;
             border-radius: 8px;
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -149,9 +159,9 @@
         .export-btn {
             display: block;
             width: 100%;
-            margin-top: 24px;
+            margin-top: 16px;
             padding: 14px;
-            background: #5858f3;
+            background: #785af2;
             border: none;
             border-radius: 12px;
             color: #fff;
@@ -162,103 +172,115 @@
 </head>
 
 <body>
-    <h1>🎯 Lumi v0.9.8 - Test Report</h1>
-    <p class="subtitle">Ctrl+Shift+R ile hard refresh yap. Yeni düzeltmeler: temiz tasarım, onclick handler'lar.</p>
+    <h1>🎯 Lumi v0.9.9</h1>
+    <p class="subtitle">Ctrl+Shift+R → Test et</p>
 
     <div class="section">
-        <h2>✨ Tasarım Düzeltmeleri</h2>
+        <h2>✨ Stitch Tasarım</h2>
         <div class="test-item">
-            <span class="test-name">Üst Boşluk <span class="badge fix">FIX</span></span>
-            <span class="test-desc">16px top padding - çok yukarı/aşağı değil mi?</span>
-            <div><button class="status-btn pass" onclick="this.classList.toggle('active')">✓</button><button
-                    class="status-btn fail" onclick="this.classList.toggle('active')">✗</button></div>
+            <div class="test-row"><span class="test-name">Başlık: "Bugün hangi moddasın?"</span>
+                <div class="btns"><button class="status-btn pass" onclick="toggle(this,'pass')">✓</button><button
+                        class="status-btn fail" onclick="toggle(this,'fail')">✗</button></div>
+            </div><input class="comment" placeholder="Yorum...">
         </div>
         <div class="test-item">
-            <span class="test-name">Buton Boyutları <span class="badge fix">FIX</span></span>
-            <span class="test-desc">36px yükseklik, 8px radius - kompakt görünüyor mu?</span>
-            <div><button class="status-btn pass" onclick="this.classList.toggle('active')">✓</button><button
-                    class="status-btn fail" onclick="this.classList.toggle('active')">✗</button></div>
+            <div class="test-row"><span class="test-name">Mood Chips: h-40, rounded-full, icons</span>
+                <div class="btns"><button class="status-btn pass" onclick="toggle(this,'pass')">✓</button><button
+                        class="status-btn fail" onclick="toggle(this,'fail')">✗</button></div>
+            </div><input class="comment" placeholder="Yorum...">
         </div>
         <div class="test-item">
-            <span class="test-name">Emoji Kaldırıldı <span class="badge fix">FIX</span></span>
-            <span class="test-desc">Mood chip'lerinde sadece metin var mı?</span>
-            <div><button class="status-btn pass" onclick="this.classList.toggle('active')">✓</button><button
-                    class="status-btn fail" onclick="this.classList.toggle('active')">✗</button></div>
+            <div class="test-row"><span class="test-name">Shuffle Button: mor, glow efekti</span>
+                <div class="btns"><button class="status-btn pass" onclick="toggle(this,'pass')">✓</button><button
+                        class="status-btn fail" onclick="toggle(this,'fail')">✗</button></div>
+            </div><input class="comment" placeholder="Yorum...">
         </div>
         <div class="test-item">
-            <span class="test-name">Başlık</span>
-            <span class="test-desc">"Ne izlesem?" yazıyor mu?</span>
-            <div><button class="status-btn pass" onclick="this.classList.toggle('active')">✓</button><button
-                    class="status-btn fail" onclick="this.classList.toggle('active')">✗</button></div>
+            <div class="test-row"><span class="test-name">Üst Boşluk doğru</span>
+                <div class="btns"><button class="status-btn pass" onclick="toggle(this,'pass')">✓</button><button
+                        class="status-btn fail" onclick="toggle(this,'fail')">✗</button></div>
+            </div><input class="comment" placeholder="Yorum...">
         </div>
     </div>
 
     <div class="section">
-        <h2>🔘 Buton Fonksiyonları</h2>
+        <h2>🔘 Butonlar</h2>
         <div class="test-item">
-            <span class="test-name">Öner Bana <span class="badge fix">FIX</span></span>
-            <span class="test-desc">Yazı yaz → "Öner Bana" → Toast + film sonuçları?</span>
-            <div><button class="status-btn pass" onclick="this.classList.toggle('active')">✓</button><button
-                    class="status-btn fail" onclick="this.classList.toggle('active')">✗</button></div>
+            <div class="test-row"><span class="test-name">Öner Bana → Toast + sonuç</span>
+                <div class="btns"><button class="status-btn pass" onclick="toggle(this,'pass')">✓</button><button
+                        class="status-btn fail" onclick="toggle(this,'fail')">✗</button></div>
+            </div><input class="comment" placeholder="Yorum...">
         </div>
         <div class="test-item">
-            <span class="test-name">Filtrele <span class="badge fix">FIX</span></span>
-            <span class="test-desc">Mod/Tür seç → "Filtrele" → Sonuçlar görünüyor mu?</span>
-            <div><button class="status-btn pass" onclick="this.classList.toggle('active')">✓</button><button
-                    class="status-btn fail" onclick="this.classList.toggle('active')">✗</button></div>
+            <div class="test-row"><span class="test-name">Filtrele → Toast + sonuç</span>
+                <div class="btns"><button class="status-btn pass" onclick="toggle(this,'pass')">✓</button><button
+                        class="status-btn fail" onclick="toggle(this,'fail')">✗</button></div>
+            </div><input class="comment" placeholder="Yorum...">
         </div>
         <div class="test-item">
-            <span class="test-name">Sürpriz Yap! <span class="badge fix">FIX</span></span>
-            <span class="test-desc">Mor buton → Random filmler?</span>
-            <div><button class="status-btn pass" onclick="this.classList.toggle('active')">✓</button><button
-                    class="status-btn fail" onclick="this.classList.toggle('active')">✗</button></div>
-        </div>
-    </div>
-
-    <div class="section">
-        <h2>🌍 Diğer</h2>
-        <div class="test-item">
-            <span class="test-name">Günün Önerisi</span>
-            <span class="test-desc">Film kartı görünüyor mu?</span>
-            <div><button class="status-btn pass" onclick="this.classList.toggle('active')">✓</button><button
-                    class="status-btn fail" onclick="this.classList.toggle('active')">✗</button></div>
+            <div class="test-row"><span class="test-name">Sürpriz Yap! → Random filmler</span>
+                <div class="btns"><button class="status-btn pass" onclick="toggle(this,'pass')">✓</button><button
+                        class="status-btn fail" onclick="toggle(this,'fail')">✗</button></div>
+            </div><input class="comment" placeholder="Yorum...">
         </div>
         <div class="test-item">
-            <span class="test-name">Dil Değişimi</span>
-            <span class="test-desc">İngilizce seçince tüm başlıklar İngilizce mi? (PRİORİTE DÜŞÜK)</span>
-            <div><button class="status-btn pass" onclick="this.classList.toggle('active')">✓</button><button
-                    class="status-btn fail" onclick="this.classList.toggle('active')">✗</button></div>
+            <div class="test-row"><span class="test-name">Günün Önerisi görünüyor</span>
+                <div class="btns"><button class="status-btn pass" onclick="toggle(this,'pass')">✓</button><button
+                        class="status-btn fail" onclick="toggle(this,'fail')">✗</button></div>
+            </div><input class="comment" placeholder="Yorum...">
         </div>
     </div>
 
     <div class="summary">
-        <h3>📊 Özet</h3>
+        <h3 style="margin-bottom: 12px;">📊 Özet</h3>
         <div class="stats">
             <div>
-                <div class="stat-value pass" id="p">0</div>
+                <div class="stat-value pass" id="pass-count">0</div>
                 <div class="stat-label">Geçti</div>
             </div>
             <div>
-                <div class="stat-value fail" id="f">0</div>
+                <div class="stat-value fail" id="fail-count">0</div>
                 <div class="stat-label">Hata</div>
+            </div>
+            <div>
+                <div class="stat-value pending" id="pending-count">8</div>
+                <div class="stat-label">Bekliyor</div>
             </div>
         </div>
     </div>
 
-    <textarea id="notes" placeholder="Genel yorum ve feedback..."></textarea>
+    <textarea id="notes" placeholder="Genel yorum..."></textarea>
     <button class="export-btn" onclick="exportResults()">📋 Sonuçları Kopyala</button>
 
     <script>
+        function toggle(btn, type) {
+            const item = btn.closest('.test-item');
+            const btns = item.querySelectorAll('.status-btn');
+            btns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            if (type === 'fail') item.classList.add('has-comment');
+            else item.classList.remove('has-comment');
+            updateCounts();
+        }
+        function updateCounts() {
+            const p = document.querySelectorAll('.status-btn.pass.active').length;
+            const f = document.querySelectorAll('.status-btn.fail.active').length;
+            document.getElementById('pass-count').textContent = p;
+            document.getElementById('fail-count').textContent = f;
+            document.getElementById('pending-count').textContent = 8 - p - f;
+        }
         function exportResults() {
-            let r = '# Lumi v0.9.8 Test Sonuçları\n\n';
-            document.querySelectorAll('.test-item').forEach(i => {
-                const n = i.querySelector('.test-name').textContent.replace(/FIX/g, '').trim();
-                const p = i.querySelector('.status-btn.pass.active');
-                const f = i.querySelector('.status-btn.fail.active');
-                r += `- ${n}: ${p ? '✅' : f ? '❌' : '⏳'}\n`;
+            let r = '# Lumi v0.9.9 Test\n\n';
+            document.querySelectorAll('.test-item').forEach(item => {
+                const name = item.querySelector('.test-name').textContent;
+                const p = item.querySelector('.status-btn.pass.active');
+                const f = item.querySelector('.status-btn.fail.active');
+                const c = item.querySelector('.comment').value;
+                r += `- ${name}: ${p ? '✅' : f ? '❌' : '⏳'}\n`;
+                if (c) r += `  > ${c}\n`;
             });
             const g = document.getElementById('notes').value;
-            if (g) r += '\n## Yorum\n' + g + '\n';
+            if (g) r += '\n## Genel Yorum\n' + g + '\n';
             navigator.clipboard.writeText(r).then(() => alert('Kopyalandı!'));
         }
     </script>

@@ -280,11 +280,16 @@ async function handleAISearch() {
     });
 }
 
-// Wizard Search Handler - Uses mood, platform, genre, era selections
+// Wizard Search Handler - Uses mood/genre chips, era chips
 async function handleWizardSearch() {
-    const mood = document.querySelector('.mood-chip.active')?.dataset.mood || 'chill';
-    const genre = document.getElementById('genre-select')?.value || '';
-    const era = document.getElementById('era-select')?.value || '';
+    // Get active mood chip - could have data-mood or data-genre
+    const activeChip = document.querySelector('.mood-chip.active');
+    const mood = activeChip?.dataset.mood || '';
+    const genre = activeChip?.dataset.genre || '';
+
+    // Get era from era chips
+    const activeEra = document.querySelector('.era-chip.active');
+    const era = activeEra?.dataset.era || '';
 
     showToast('Öneriler yükleniyor...');
 
@@ -305,6 +310,11 @@ async function handleSurpriseMe() {
         random: true
     });
 }
+
+// Expose handlers to window for onclick
+window.handleAISearch = handleAISearch;
+window.handleWizardSearch = handleWizardSearch;
+window.handleSurpriseMe = handleSurpriseMe;
 
 // Extract keywords from natural language query for TMDB
 function extractMovieKeywords(query) {
@@ -492,31 +502,36 @@ async function loadDailyRecommendation() {
 
 function renderDailyCard(movie, categoryLabel) {
     const dailyCard = document.getElementById('daily-card');
-    if (!dailyCard || !movie) return;
+    const dailyPoster = document.getElementById('daily-poster');
+    const dailyTitle = document.getElementById('daily-title');
+    const dailyMeta = document.getElementById('daily-meta');
 
-    const posterUrl = movie.poster_path
-        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-        : 'https://via.placeholder.com/500x750?text=No+Poster';
+    if (!movie) return;
 
-    dailyCard.innerHTML = `
-        <div style="position: absolute; inset: 0; background: url('${posterUrl}') center/cover;"></div>
-        <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(5,5,5,1) 0%, rgba(5,5,5,0.6) 50%, transparent 100%);"></div>
-        <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: var(--space-lg);">
-            <div style="display: inline-flex; align-items: center; gap: var(--space-xs); background: var(--primary); padding: 4px 12px; border-radius: 9999px; margin-bottom: var(--space-sm);">
-                <span class="material-symbols-outlined" style="font-size: 14px;">auto_awesome</span>
-                <span style="font-size: 0.75rem; font-weight: 600;">${categoryLabel}</span>
-            </div>
-            <h3 style="font-size: 1.25rem; font-weight: 700; color: white; margin-bottom: 4px;">${movie.title || movie.name}</h3>
-            <div style="display: flex; align-items: center; gap: var(--space-sm); color: var(--text-muted); font-size: 0.875rem;">
-                <span>⭐ ${movie.vote_average?.toFixed(1) || 'N/A'}</span>
-                <span>•</span>
-                <span>${movie.release_date?.substring(0, 4) || ''}</span>
-            </div>
-        </div>
-    `;
+    const posterUrl = movie.backdrop_path
+        ? `https://image.tmdb.org/t/p/w780${movie.backdrop_path}`
+        : movie.poster_path
+            ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+            : '';
 
-    dailyCard.style.cursor = 'pointer';
-    dailyCard.onclick = () => openDetailModal(movie.id, 'movie');
+    // Update banner elements
+    if (dailyPoster) {
+        dailyPoster.style.backgroundImage = posterUrl ? `url('${posterUrl}')` : '';
+    }
+    if (dailyTitle) {
+        dailyTitle.textContent = movie.title || movie.name || 'Günün Filmi';
+    }
+    if (dailyMeta) {
+        const year = movie.release_date?.substring(0, 4) || '';
+        const rating = movie.vote_average?.toFixed(1) || '';
+        dailyMeta.textContent = [year, rating ? `⭐ ${rating}` : '', categoryLabel].filter(Boolean).join(' • ');
+    }
+
+    // Make banner clickable
+    if (dailyCard) {
+        dailyCard.style.cursor = 'pointer';
+        dailyCard.onclick = () => openDetailModal(movie.id, 'movie');
+    }
 }
 
 function updateDailyTimer() {
