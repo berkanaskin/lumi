@@ -151,14 +151,15 @@
             <div class="search-container">
                 <div class="search-pill" id="search-trigger">
                     <span class="material-symbols-outlined search-icon">search</span>
-                    <input type="text" id="search-input" placeholder="Film ve Dizi ara..." autocomplete="off">
+                    <input type="text" id="search-input" placeholder="Film ve Dizi ara..."
+                        data-i18n-placeholder="search" autocomplete="off">
                     <button class="search-clear" id="search-clear-main">
                         <span class="material-symbols-outlined" style="font-size: 20px;">cancel</span>
                     </button>
 
                     <!-- Trend Chips (Focus State) -->
                     <div class="trend-chips-container" id="trend-chips-container">
-                        <div class="trend-chips-title">🔥 Trend Aramalar</div>
+                        <div class="trend-chips-title">🔥 <span data-i18n="trendingSearches">Trend Aramalar</span></div>
                         <div class="trend-chips" id="trend-chips">
                             <span class="trend-chip">Inception</span>
                             <span class="trend-chip">The Penguin</span>
@@ -199,7 +200,7 @@
             <div class="discover-top-info" id="discover-top-info">
                 <div class="daily-pick-badge" onclick="openDailyRecommendation()">
                     <span class="material-symbols-outlined">auto_awesome</span>
-                    GÜNÜN ÖNERİSİ
+                    <span data-i18n="dailyPick">GÜNÜN ÖNERİSİ</span>
                 </div>
                 <h1 class="discover-hero-title" id="discover-hero-title">Yükleniyor...</h1>
                 <p class="discover-hero-meta" id="discover-hero-meta"></p>
@@ -682,7 +683,9 @@
 
                     // Update i18n if available
                     if (typeof i18n !== 'undefined' && i18n.setLanguage) {
-                        i18n.setLanguage(lang);
+                        // Normalize to 2-letter ISO code (e.g., "en-US" -> "en")
+                        const normalizedLang = lang.split('-')[0];
+                        i18n.setLanguage(normalizedLang);
                     }
 
                     closeAllDropdowns();

@@ -5,13 +5,37 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ---
 
+## [0.9.10] - 2026-01-12 - Language Code Normalization
+
+### 🐛 Bug Fixes
+
+- **Language Code Mismatch:** `en-US` → `en` normalizasyonu eklendi
+  - `applyLanguage()` artık locale kodlarını (tr-TR, en-US) 2-letter ISO'ya dönüştürüyor
+  - `i18n.setLanguage()` aynı normalizasyonu içeriyor (güvenlik katmanı)
+  - Hatalı dil kodu için console warning eklendi
+
+### 🔧 Code Quality
+
+- Gereksiz `updateTranslations()` çağrısı kaldırıldı (setLanguage içinde zaten çağrılıyor)
+- Tüm dil değişim noktalarında tutarlı normalizasyon
+
+### 🔧 Technical
+
+- APP_VERSION: 0.9.10
+
+---
+
 ## [0.9.9] - 2026-01-12 - i18n Critical Bug Fix
 
 ### 🐛 Bug Fixes
 
-- **i18n Language Toggle:** Dil değiştiğinde UI string'leri artık güncelleniyor
+- **i18n Language Toggle - CRITICAL FIX:** Dil değiştiğinde UI string'leri artık güncelleniyor
+  - **Root Cause:** Language code mismatch (`"en-US"` passed to `setLanguage()` but translations use `"en"`)
+  - **Solution:** Language code normalization added (`lang.split('-')[0]`)
+  - **Location:** `index.html:684-688` (language toggle event handler)
   - `setLanguage()` artık `updateTranslations()` çağırıyor
   - Console'da `[i18n] Language changed to: xx` log mesajı
+  - ✅ **Verified:** Search placeholder, buttons, badges, mood chips all translate correctly
 
 ### 🌐 i18n Improvements
 

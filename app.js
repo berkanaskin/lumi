@@ -1,9 +1,9 @@
 // ============================================
-// LUMI v0.9.9 - i18n Fix & Verification Improvements
+// LUMI v0.9.10 - Language Code Normalization
 // Mobile-First Film Discovery App
 // ============================================
 
-const APP_VERSION = '0.9.9';
+const APP_VERSION = '0.9.10';
 
 // Toast notification function
 function showToast(message, duration = 3000) {
@@ -1347,9 +1347,12 @@ function loadLanguage() {
 
 // Apply language for UI and TMDB data - does NOT change region
 function applyLanguage(langCode) {
-    const langConfig = LANGUAGE_REGIONS[langCode] || LANGUAGE_REGIONS['tr'];
+    // Normalize to 2-letter ISO code (e.g., "en-US" -> "en", "tr-TR" -> "tr")
+    const normalizedLang = langCode.includes('-') ? langCode.split('-')[0] : langCode;
 
-    state.currentLanguageCode = langCode;
+    const langConfig = LANGUAGE_REGIONS[normalizedLang] || LANGUAGE_REGIONS['tr'];
+
+    state.currentLanguageCode = normalizedLang;
     state.currentLanguage = langConfig.lang; // For TMDB API calls
 
     // DO NOT change region here - region is auto-detected separately
@@ -1369,8 +1372,7 @@ function applyLanguage(langCode) {
 
     // Update i18n and apply translations
     if (window.i18n) {
-        i18n.setLanguage(langCode);
-        i18n.updateTranslations();
+        i18n.setLanguage(normalizedLang); // setLanguage now calls updateTranslations automatically
     }
 
     // Update auth UI to reflect new language (login button, dropdown menu)

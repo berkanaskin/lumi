@@ -68,6 +68,10 @@ const i18n = {
             recommendBtn: 'Öner Bana',
             surpriseBtn: 'Sürpriz Yap',
 
+            // Trending & Daily Pick
+            dailyPick: 'GÜNÜN ÖNERİSİ',
+            trendingSearches: 'Trend Aramalar',
+
             // Genres
             action: 'Aksiyon',
             comedy: 'Komedi',
@@ -228,6 +232,10 @@ const i18n = {
             // Action Buttons
             recommendBtn: 'Recommend',
             surpriseBtn: 'Surprise Me',
+
+            // Trending & Daily Pick
+            dailyPick: 'DAILY PICK',
+            trendingSearches: 'Trending Searches',
 
             // Genres
             action: 'Action',
@@ -948,16 +956,20 @@ const i18n = {
 
     // Set language and update UI
     setLanguage(langCode) {
-        if (this.translations[langCode]) {
-            this.currentLang = langCode;
-            localStorage.setItem('appLanguage', langCode);
+        // Normalize to 2-letter ISO code (e.g., "en-US" -> "en")
+        const normalized = langCode.includes('-') ? langCode.split('-')[0] : langCode;
+
+        if (this.translations[normalized]) {
+            this.currentLang = normalized;
+            localStorage.setItem('appLanguage', normalized);
 
             // Update all DOM elements with translations
             this.updateTranslations();
 
-            console.log(`[i18n] Language changed to: ${langCode}`);
+            console.log(`[i18n] Language changed to: ${normalized}`);
             return true;
         }
+        console.warn(`[i18n] Translation not found for: ${langCode} (normalized: ${normalized})`);
         return false;
     },
 
