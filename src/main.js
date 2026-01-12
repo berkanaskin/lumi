@@ -95,6 +95,18 @@ import {
     POETIC_PLACEHOLDERS,
 } from './features/discover.js';
 
+import {
+    openDetail,
+    openDetailModal,
+    closeModal,
+    playVideo,
+    closeVideo,
+    toggleLike,
+    toggleWatchlist,
+    switchVideoCategory,
+    mergeVideos,
+} from './features/detail.js';
+
 // ============================================
 // INITIALIZATION
 // ============================================
@@ -133,6 +145,17 @@ window.LumiModules = {
     setRandomPlaceholder,
     extractMovieKeywords,
     POETIC_PLACEHOLDERS,
+
+    // Detail Feature
+    openDetail,
+    openDetailModal,
+    closeModal,
+    playVideo,
+    closeVideo,
+    toggleLike,
+    toggleWatchlist,
+    switchVideoCategory,
+    mergeVideos,
 
     // State
     state,
