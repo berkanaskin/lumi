@@ -63,6 +63,11 @@ const i18n = {
             // Era Chips
             allEras: 'Tüm Dönemler',
             eraClassic: 'Klasik',
+            era80s: '80\'ler',
+            era90s: '90\'lar',
+            era2000s: '2000\'ler',
+            era2010s: '2010\'lar',
+            era2020s: '2020\'ler',
 
             // Action Buttons
             recommendBtn: 'Öner Bana',
@@ -228,6 +233,11 @@ const i18n = {
             // Era Chips
             allEras: 'All Eras',
             eraClassic: 'Classic',
+            era80s: '80s',
+            era90s: '90s',
+            era2000s: '2000s',
+            era2010s: '2010s',
+            era2020s: '2020s',
 
             // Action Buttons
             recommendBtn: 'Recommend',

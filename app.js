@@ -1,9 +1,9 @@
 // ============================================
-// LUMI v0.9.10 - Language Code Normalization
+// LUMI v0.9.11 - Comprehensive Sprint Implementation
 // Mobile-First Film Discovery App
 // ============================================
 
-const APP_VERSION = '0.9.10';
+const APP_VERSION = '0.9.11';
 
 // Toast notification function
 function showToast(message, duration = 3000) {

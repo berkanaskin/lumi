@@ -59,13 +59,18 @@
 
 ---
 
-## 🌍 Dil Desteği
+## 🌍 Dil Desteği (v0.9.9-0.9.11)
 
 - [x] i18n altyapısı (`i18n.js`)
 - [x] TR/EN çevirileri
-- [ ] Tüm UI elementleri çevrilmiş
+- [x] Dil değişimi anında uygulanır (setLanguage fix)
+- [x] Language code normalization (en-US → en)
+- [x] Decade chips i18n (80s, 90s, 2000s vb.)
+- [x] Mood chips i18n
+- [x] Action buttons i18n
+- [ ] Tüm UI elementleri çevrilmiş (~85%)
 - [ ] API sonuçları seçilen dilde
-- [ ] Dil değişimi anında uygulanır
+- [ ] Error messages i18n
 
 ---
 
@@ -125,14 +130,14 @@
 | Ne İzlesem Fonksiyon   | 5          | 5      | 100% |
 | Dokümantasyon          | 4          | 4      | 100% |
 | Üyelik                 | 1          | 4      | 25%  |
-| Dil                    | 2          | 5      | 40%  |
+| Dil                    | 7          | 10     | 70%  |
 | Bildirimler            | 1          | 2      | 50%  |
 | Detay Sayfası          | 2          | 9      | 22%  |
 | Listem                 | 1          | 3      | 33%  |
 | Profil                 | 1          | 4      | 25%  |
 | Kod Temizliği          | 4          | 4      | 100% |
-| **TOPLAM**             | **34**     | **54** | **63%** |
+| **TOPLAM**             | **39**     | **59** | **66%** |
 
 ---
 
-*Son güncelleme: 2026-01-12 02:30*
+*Son güncelleme: 2026-01-13 01:00*
