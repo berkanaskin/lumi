@@ -1,14 +1,15 @@
 {
   "name": "lumi",
-  "version": "1.0.0-alpha",
+  "version": "1.0.1",
   "description": "Lumi - Film Keşif Platformu | Mobile-First Web App",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "echo 'Lint not configured yet'",
-    "test": "echo 'Tests not configured yet'"
+    "lint": "eslint . --max-warnings 200",
+    "lint:fix": "eslint . --fix",
+    "test": "echo 'Vitest will be configured in Sprint 3' && exit 0"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,9 @@
   },
   "homepage": "https://berkanaskin.github.io/lumi",
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "eslint": "^9.39.2",
+    "globals": "^17.0.0",
     "vite": "^7.3.1"
   },
   "dependencies": {

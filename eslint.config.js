@@ -1,0 +1,102 @@
+import globals from 'globals';
+import js from '@eslint/js';
+
+export default [
+    // Base configuration
+    js.configs.recommended,
+
+    // Global settings
+    {
+        languageOptions: {
+            ecmaVersion: 2024,
+            sourceType: 'module',
+            globals: {
+                ...globals.browser,
+                ...globals.es2024,
+                // Firebase globals (loaded from CDN)
+                firebase: 'readonly',
+                // App globals (legacy support)
+                CONFIG: 'readonly',
+                FIREBASE_CONFIG: 'readonly',
+                API_URLS: 'readonly',
+                API: 'readonly',
+                i18n: 'readonly',
+                state: 'writable',
+                // Service globals
+                AuthService: 'readonly',
+                AIService: 'readonly',
+                StoreService: 'readonly',
+                NotificationService: 'readonly',
+            },
+        },
+        rules: {
+            // Relaxed rules for legacy code migration
+            'no-unused-vars': ['warn', {
+                argsIgnorePattern: '^_',
+                varsIgnorePattern: '^_'
+            }],
+            'no-undef': 'warn',
+            'no-console': 'off',
+            'semi': ['error', 'always'],
+            'quotes': ['warn', 'single', { avoidEscape: true }],
+            'indent': ['warn', 4, { SwitchCase: 1 }],
+            'no-mixed-spaces-and-tabs': 'warn',
+            'eqeqeq': ['warn', 'smart'],
+            'curly': ['warn', 'multi-line'],
+            'no-var': 'warn',
+            'prefer-const': 'warn',
+        },
+    },
+
+    // Ignore patterns
+    {
+        ignores: [
+            'dist/**',
+            'node_modules/**',
+            '*.min.js',
+            'stitch/**',
+            'assets/**',
+            // Legacy files - will be migrated in Sprint 2
+            'app.js',
+            'api.js',
+            'config.js',
+            'i18n.js',
+            'services/**',
+            // Config files (Node.js environment)
+            'vite.config.js',
+            'eslint.config.js',
+        ],
+    },
+
+    // Source files
+    {
+        files: ['src/**/*.js'],
+        rules: {
+            // Stricter rules for new modular code
+            'no-unused-vars': 'error',
+            'no-undef': 'error',
+        },
+    },
+
+    // API proxy files
+    {
+        files: ['api/**/*.js'],
+        languageOptions: {
+            globals: {
+                ...globals.node,
+                process: 'readonly',
+            },
+        },
+    },
+
+    // Legacy files (more relaxed)
+    {
+        files: ['app.js', 'api.js', 'config.js', 'i18n.js', 'services/**/*.js'],
+        rules: {
+            // Very relaxed for legacy code
+            'no-unused-vars': 'off',
+            'no-undef': 'off',
+            'prefer-const': 'off',
+        },
+    },
+];

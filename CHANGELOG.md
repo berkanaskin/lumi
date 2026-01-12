@@ -5,6 +5,36 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ---
 
+## [1.0.1] - 2026-01-13 - CI/CD Pipeline 🚀
+
+### 🔧 CI/CD
+
+- **GitHub Actions Workflow:** `.github/workflows/ci.yml`
+  - Lint job (ESLint)
+  - Test job (placeholder for Sprint 3)
+  - Build job (Vite production build)
+  - Deploy job (Vercel auto-deploy on main)
+
+### 📦 Dependencies
+
+- **ESLint:** Code quality tooling
+  - `eslint`: ^9.39.2
+  - `@eslint/js`: ^9.39.2
+  - `globals`: ^17.0.0
+
+### 📁 New Files
+
+- `.github/workflows/ci.yml` - CI/CD workflow
+- `.github/dependabot.yml` - Automated dependency updates
+- `eslint.config.js` - ESLint flat config
+
+### 🔧 Scripts
+
+- `npm run lint` - Run ESLint
+- `npm run lint:fix` - Auto-fix lint issues
+
+---
+
 ## [1.0.0-alpha] - 2026-01-13 - Vite Migration & Security 🔒
 
 ### 🎉 Major Changes
