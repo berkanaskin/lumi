@@ -107,6 +107,17 @@ import {
     mergeVideos,
 } from './features/detail.js';
 
+import {
+    handleAutocomplete,
+    showAutocomplete,
+    hideAutocomplete,
+    handleSearch,
+    clearSearch,
+    getSearchHistory,
+    addToSearchHistory,
+    clearSearchHistory,
+} from './features/search.js';
+
 // ============================================
 // INITIALIZATION
 // ============================================
@@ -156,6 +167,16 @@ window.LumiModules = {
     toggleWatchlist,
     switchVideoCategory,
     mergeVideos,
+
+    // Search Feature
+    handleAutocomplete,
+    showAutocomplete,
+    hideAutocomplete,
+    handleSearch,
+    clearSearch,
+    getSearchHistory,
+    addToSearchHistory,
+    clearSearchHistory,
 
     // State
     state,
