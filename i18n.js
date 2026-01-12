@@ -54,6 +54,20 @@ const i18n = {
             resetFilters: 'Tekrar Seç',
             loadMore: 'Daha Fazla Göster',
 
+            // Mood Chips
+            moodChill: 'Rahat',
+            moodAdrenaline: 'Heyecan',
+            moodTearjerker: 'Duygusal',
+            moodMindbending: 'Beyin Yakan',
+
+            // Era Chips
+            allEras: 'Tüm Dönemler',
+            eraClassic: 'Klasik',
+
+            // Action Buttons
+            recommendBtn: 'Öner Bana',
+            surpriseBtn: 'Sürpriz Yap',
+
             // Genres
             action: 'Aksiyon',
             comedy: 'Komedi',
@@ -200,6 +214,20 @@ const i18n = {
             resultsTitle: 'Picked for You',
             resetFilters: 'Try Again',
             loadMore: 'Load More',
+
+            // Mood Chips
+            moodChill: 'Chill',
+            moodAdrenaline: 'Adrenaline',
+            moodTearjerker: 'Emotional',
+            moodMindbending: 'Mind-bending',
+
+            // Era Chips
+            allEras: 'All Eras',
+            eraClassic: 'Classic',
+
+            // Action Buttons
+            recommendBtn: 'Recommend',
+            surpriseBtn: 'Surprise Me',
 
             // Genres
             action: 'Action',
@@ -918,11 +946,16 @@ const i18n = {
         return lang[key] || key;
     },
 
-    // Set language
+    // Set language and update UI
     setLanguage(langCode) {
         if (this.translations[langCode]) {
             this.currentLang = langCode;
             localStorage.setItem('appLanguage', langCode);
+
+            // Update all DOM elements with translations
+            this.updateTranslations();
+
+            console.log(`[i18n] Language changed to: ${langCode}`);
             return true;
         }
         return false;

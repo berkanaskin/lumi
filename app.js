@@ -1,9 +1,9 @@
 // ============================================
-// LUMI v0.9.8 - Audit Cleanup & Documentation
+// LUMI v0.9.9 - i18n Fix & Verification Improvements
 // Mobile-First Film Discovery App
 // ============================================
 
-const APP_VERSION = '0.9.8';
+const APP_VERSION = '0.9.9';
 
 // Toast notification function
 function showToast(message, duration = 3000) {

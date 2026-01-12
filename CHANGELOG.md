@@ -5,6 +5,31 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ---
 
+## [0.9.9] - 2026-01-12 - i18n Critical Bug Fix
+
+### 🐛 Bug Fixes
+
+- **i18n Language Toggle:** Dil değiştiğinde UI string'leri artık güncelleniyor
+  - `setLanguage()` artık `updateTranslations()` çağırıyor
+  - Console'da `[i18n] Language changed to: xx` log mesajı
+
+### 🌐 i18n Improvements
+
+- **data-i18n Attributes:** Discover sayfasındaki elementlere eklendi:
+  - Mood chips (Rahat, Heyecan, Duygusal, Beyin Yakan)
+  - Genre chips (Aksiyon, Korku, Bilim Kurgu, Romantik)
+  - Era chips (Tüm Dönemler, Klasik)
+  - Action buttons (Öner Bana, Sürpriz Yap)
+- **Yeni Çeviri Keyleri:**
+  - TR: `moodChill`, `moodAdrenaline`, `moodTearjerker`, `moodMindbending`
+  - EN: `recommendBtn`, `surpriseBtn`, `allEras`, `eraClassic`
+
+### 🔧 Technical
+
+- APP_VERSION: 0.9.9
+
+---
+
 ## [0.9.8] - 2026-01-12 - Audit Cleanup & Documentation
 
 ### 🧹 Kod Temizliği
