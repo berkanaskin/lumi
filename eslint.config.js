@@ -64,7 +64,10 @@ export default [
             'services/**',
             // Config files (Node.js environment)
             'vite.config.js',
+            'vitest.config.js',
             'eslint.config.js',
+            // Test files (handled by vitest)
+            'tests/**',
         ],
     },
 

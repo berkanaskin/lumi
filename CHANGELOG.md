@@ -5,6 +5,74 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ---
 
+## [1.2.0] - 2026-01-13 - Testing Infrastructure 🧪
+
+### 🧪 Testing
+
+- **Vitest Configuration:** Modern test framework with jsdom
+  - `vitest.config.js` with jsdom environment
+  - ESM-compatible setup with path aliases
+  - Coverage configuration (v8 provider)
+
+### ✅ Test Suites (45 Tests)
+
+- `tests/helpers.test.js` - Utility function tests
+  - debounce, throttle, formatDate, formatRuntime
+  - getYear, truncate, escapeHtml, formatNumber
+- `tests/constants.test.js` - Constants module tests
+  - Genre mappings (TR/EN), image URL generation
+  - Daily recommendation categories
+- `tests/platforms.test.js` - Platform URL tests
+  - Streaming platform URLs, Turkish platform detection
+
+### 📁 New Files
+
+- `vitest.config.js` - Vitest configuration
+- `tests/setup.js` - Global test mocks
+- `tests/helpers.test.js` - Helper tests
+- `tests/constants.test.js` - Constants tests
+- `tests/platforms.test.js` - Platform tests
+
+### 🔧 Scripts
+
+- `npm test` - Run all tests
+- `npm run test:watch` - Watch mode
+- `npm run test:ui` - Vitest UI
+- `npm run test:coverage` - Coverage report
+
+### 📦 Dependencies
+
+- `vitest`: ^4.0.17
+- `@vitest/ui`: ^4.0.17
+- `jsdom`: ^27.4.0
+
+---
+
+## [1.1.0] - 2026-01-13 - Modular Architecture 🏗️
+
+### 🏗️ Core Modules
+
+- **State Management:** `src/lib/state.js`
+  - Centralized app state with localStorage sync
+  - Event-driven updates with subscriptions
+- **Helpers:** `src/lib/helpers.js`
+  - debounce, throttle, formatters, utilities
+- **Platforms:** `src/lib/platforms.js`
+  - Streaming service URLs and helpers
+- **Constants:** `src/lib/constants.js`
+  - Genre mappings, image helpers, AI placeholders
+- **Navigation:** `src/lib/navigation.js`
+  - Page routing and bottom navigation
+
+### 🎨 UI Components
+
+- **Toast:** `src/ui/toast.js` - Notification system
+- **Theme:** `src/ui/theme.js` - Dark/light mode
+- **Movie Card:** `src/ui/movie-card.js` - Reusable cards
+- **Loading:** `src/ui/loading.js` - Skeletons & spinners
+
+---
+
 ## [1.0.1] - 2026-01-13 - CI/CD Pipeline 🚀
 
 ### 🔧 CI/CD
