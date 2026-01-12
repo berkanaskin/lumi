@@ -81,6 +81,20 @@ import {
 } from './lib/helpers.js';
 import { PLATFORM_URLS, getPlatformUrl, isTurkishPlatform } from './lib/platforms.js';
 
+// Features
+import {
+    initDiscoverModule,
+    handleAISearch,
+    handleWizardSearch,
+    handleSurpriseMe,
+    closeWizardResults,
+    loadDailyRecommendation,
+    openDailyRecommendation,
+    setRandomPlaceholder,
+    extractMovieKeywords,
+    POETIC_PLACEHOLDERS,
+} from './features/discover.js';
+
 // ============================================
 // INITIALIZATION
 // ============================================
@@ -107,6 +121,18 @@ window.LumiModules = {
     TMDBService,
     YouTubeService,
     RatingsService,
+
+    // Discover Feature
+    initDiscoverModule,
+    handleAISearch,
+    handleWizardSearch,
+    handleSurpriseMe,
+    closeWizardResults,
+    loadDailyRecommendation,
+    openDailyRecommendation,
+    setRandomPlaceholder,
+    extractMovieKeywords,
+    POETIC_PLACEHOLDERS,
 
     // State
     state,
