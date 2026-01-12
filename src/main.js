@@ -13,6 +13,14 @@
 // Configuration (must be first - sets up window.CONFIG)
 import { CONFIG, FIREBASE_CONFIG, API_URLS, isDevelopment } from './config.js';
 
+// API Services (modern replacement for api.js)
+import {
+    API,
+    TMDBService,
+    YouTubeService,
+    RatingsService
+} from './services/api.js';
+
 // State Management
 import {
     state,
@@ -94,6 +102,12 @@ if (isDevelopment) {
 
 // Make modules available globally for legacy code
 window.LumiModules = {
+    // API Services
+    API,
+    TMDBService,
+    YouTubeService,
+    RatingsService,
+
     // State
     state,
     elements,
@@ -161,6 +175,12 @@ export {
     FIREBASE_CONFIG,
     API_URLS,
     isDevelopment,
+
+    // API Services
+    API,
+    TMDBService,
+    YouTubeService,
+    RatingsService,
 
     // State
     state,

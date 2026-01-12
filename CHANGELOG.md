@@ -5,7 +5,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ---
 
-## [1.2.0] - 2026-01-13 - Testing Infrastructure 🧪
+## [0.12.0] - 2026-01-13 - Testing Infrastructure & API Service 🧪
 
 ### 🧪 Testing
 
@@ -48,7 +48,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ---
 
-## [1.1.0] - 2026-01-13 - Modular Architecture 🏗️
+## [0.11.0] - 2026-01-13 - Modular Architecture 🏗️
 
 ### 🏗️ Core Modules
 
@@ -73,7 +73,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ---
 
-## [1.0.1] - 2026-01-13 - CI/CD Pipeline 🚀
+## [0.10.1] - 2026-01-13 - CI/CD Pipeline 🚀
 
 ### 🔧 CI/CD
 
@@ -103,7 +103,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ---
 
-## [1.0.0-alpha] - 2026-01-13 - Vite Migration & Security 🔒
+## [0.10.0] - 2026-01-13 - Vite Migration & Security 🔒
 
 ### 🎉 Major Changes
 
