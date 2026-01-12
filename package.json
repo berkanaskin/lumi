@@ -1,0 +1,36 @@
+{
+  "name": "lumi",
+  "version": "1.0.0-alpha",
+  "description": "Lumi - Film Keşif Platformu | Mobile-First Web App",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "echo 'Lint not configured yet'",
+    "test": "echo 'Tests not configured yet'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/berkanaskin/lumi.git"
+  },
+  "keywords": [
+    "film",
+    "movie",
+    "discovery",
+    "ai",
+    "gemini"
+  ],
+  "author": "Berkan Askin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/berkanaskin/lumi/issues"
+  },
+  "homepage": "https://berkanaskin.github.io/lumi",
+  "devDependencies": {
+    "vite": "^7.3.1"
+  },
+  "dependencies": {
+    "firebase": "^12.7.0"
+  }
+}

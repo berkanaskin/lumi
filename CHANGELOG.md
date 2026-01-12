@@ -5,6 +5,46 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ---
 
+## [1.0.0-alpha] - 2026-01-13 - Vite Migration & Security 🔒
+
+### 🎉 Major Changes
+
+- **Vite Migration:** Modern build tool ile production-ready altyapı
+  - `npm run dev` ile hot-reload development
+  - `npm run build` ile optimized production build
+  - ESM modül sistemi
+
+### 🔐 Security
+
+- **Environment Variables:** API key'ler artık `.env.local` dosyasında
+  - Client-side safe: `VITE_` prefix
+  - Server-side only: No prefix (Gemini, RapidAPI)
+- **Backend Proxies:** Vercel Edge Functions
+  - `/api/tmdb` - TMDB proxy + caching
+  - `/api/gemini` - AI proxy (key hidden)
+  - `/api/youtube` - YouTube proxy + caching
+
+### 📁 New Files
+
+- `package.json` - npm configuration
+- `vite.config.js` - Vite build configuration
+- `vercel.json` - Vercel deployment config
+- `src/config.js` - Secure configuration module
+- `src/main.js` - Entry point
+- `api/tmdb.js` - TMDB proxy
+- `api/gemini.js` - Gemini AI proxy
+- `api/youtube.js` - YouTube proxy
+- `.env.local` - Development secrets
+- `.env.example` - Template for secrets
+
+### 🔧 Technical
+
+- APP_VERSION: 1.0.0-alpha
+- Node.js ESM modules (`"type": "module"`)
+- esbuild minification
+
+---
+
 ## [0.9.11] - 2026-01-13 - Comprehensive Sprint Implementation
 
 ### 🌐 i18n Completion
