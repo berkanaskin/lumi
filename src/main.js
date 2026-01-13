@@ -118,6 +118,22 @@ import {
     clearSearchHistory,
 } from './features/search.js';
 
+import {
+    loadAuth,
+    updateAuthUI,
+    openLoginModal,
+    closeLoginModal,
+    handleSocialLogin,
+    handleLogout,
+    handleTesterLoginFree,
+    handleTesterLoginPremium,
+    updateProfileAuthUI,
+    getUserStats,
+    saveUserRating,
+    getUserRating,
+    detectUserRegion,
+} from './features/profile.js';
+
 // ============================================
 // INITIALIZATION
 // ============================================
@@ -177,6 +193,21 @@ window.LumiModules = {
     getSearchHistory,
     addToSearchHistory,
     clearSearchHistory,
+
+    // Profile Feature
+    loadAuth,
+    updateAuthUI,
+    openLoginModal,
+    closeLoginModal,
+    handleSocialLogin,
+    handleLogout,
+    handleTesterLoginFree,
+    handleTesterLoginPremium,
+    updateProfileAuthUI,
+    getUserStats,
+    saveUserRating,
+    getUserRating,
+    detectUserRegion,
 
     // State
     state,
