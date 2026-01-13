@@ -5,6 +5,74 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ---
 
+## [0.13.0] - 2026-01-13 - Feature Module Decomposition 🏗️
+
+### 🎯 Major Achievement: app.js Decomposition
+
+Successfully extracted core functionality from monolithic `app.js` (4375 lines) into dedicated feature modules, following modern ESM architecture.
+
+### 📦 New Feature Modules
+
+#### Phase 1: API Service (`src/services/api.js`)
+
+- `TMDBService` - TMDB API calls with improved error handling
+- `YouTubeService` - YouTube trailer and video management
+- `RatingsService` - IMDB/RT/Metacritic rating aggregation
+- 17 API tests added
+
+#### Phase 2: Discover Module (`src/features/discover.js`)
+
+- AI search, wizard search, surprise me functionality
+- Daily recommendation system
+- Poetic Turkish placeholders
+- 17 discover tests added
+
+#### Phase 3: Detail Modal (`src/features/detail.js`)
+
+- Modal open/close, video player integration
+- Favorites, watchlist, star rating
+- Video category switching
+- 11 detail tests added
+
+#### Phase 4: Search Module (`src/features/search.js`)
+
+- Autocomplete with 300ms debounce
+- Search results with popularity sorting
+- Search history (max 10 items)
+- 9 search tests added
+
+#### Phase 5: Profile Module (`src/features/profile.js`)
+
+- Authentication state management
+- Social login, tester login
+- User stats and ratings
+- 9 profile tests added
+
+### 🧪 Test Coverage
+
+- **Total Tests: 108 passing**
+- Test files: 8
+- All feature modules fully tested
+
+### 📊 Code Metrics
+
+| Module | Lines | Functions |
+|--------|-------|-----------|
+| api.js | 674 | 25 |
+| discover.js | 557 | 11 |
+| detail.js | 541 | 15 |
+| search.js | 470 | 20 |
+| profile.js | 370 | 18 |
+| **Total** | **2,612** | **89** |
+
+### 🔗 Integration
+
+- All modules exported via `window.LumiModules`
+- Full backward compatibility maintained
+- Legacy HTML inline handlers continue working
+
+---
+
 ## [0.12.0] - 2026-01-13 - Testing Infrastructure & API Service 🧪
 
 ### 🧪 Testing

@@ -1,6 +1,6 @@
 {
   "name": "lumi",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "Lumi - Film Keşif Platformu | Mobile-First Web App",
   "type": "module",
   "scripts": {
