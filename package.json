@@ -41,6 +41,6 @@
     "vitest": "^4.0.17"
   },
   "dependencies": {
-    "firebase": "^12.7.0"
+    "firebase": "^12.8.0"
   }
 }
