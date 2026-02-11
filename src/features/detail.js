@@ -57,19 +57,26 @@ export async function openDetail(id, type, title, year, originalTitle) {
     const region = state.currentRegion || 'TR';
 
     try {
-        // Parallel fetch all data
-        const [details, providers, credits, tmdbVideos, youtubeVideos] = await Promise.all([
+        // Fetch TMDB data in parallel (except YouTube which needs title info)
+        const [details, providers, credits, tmdbVideos] = await Promise.all([
             API.getDetails(id, type, state.currentLanguage),
             API.getWatchProviders(id, type, region),
             API.getCredits(id, type),
             API.getTMDBVideos(id, type),
-            API.getMovieVideos(title, year, originalTitle),
         ]);
 
         if (!details) {
             elements.modalBody.innerHTML = '<p style="padding: 40px; text-align: center;">Detaylar yüklenemedi.</p>';
             return;
         }
+
+        // Derive title/year/originalTitle from TMDB response when not passed
+        const resolvedTitle = title || details.title || details.name || '';
+        const resolvedYear = year || (details.release_date || details.first_air_date || '').substring(0, 4);
+        const resolvedOriginal = originalTitle || details.original_title || details.original_name || '';
+
+        // Now fetch YouTube videos with resolved params
+        const youtubeVideos = await API.getMovieVideos(resolvedTitle, resolvedYear, resolvedOriginal);
 
         // Fetch additional data
         let imdbData = null;

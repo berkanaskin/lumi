@@ -272,6 +272,27 @@ window.openDetailModal = openDetailModal;
 window.loadHomePage = window.LumiModules?.loadHomePage; // defined in inline script
 window.updateAuthUI = updateAuthUI;
 
+// ============================================
+// APP INITIALIZATION
+// ============================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Load saved theme
+    loadTheme();
+
+    // Wire theme toggle button
+    document.getElementById('theme-toggle')?.addEventListener('click', toggleTheme);
+
+    // Initialize discover module (loads daily recommendation + timer)
+    initDiscoverModule();
+
+    // Load auth state
+    loadAuth();
+    updateAuthUI();
+
+    console.log('[Lumi] App initialized');
+});
+
 // Log successful initialization
 console.log('[Lumi] Modular architecture loaded');
 console.log('[Lumi] Modules: state, constants, navigation, toast, theme, loading, movie-card, helpers, platforms');
