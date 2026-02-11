@@ -1,13 +1,10 @@
-import { defineConfig, loadEnv } from 'vite';
-import { resolve } from 'path';
+import { defineConfig } from 'vite';
+import { resolve } from 'node:path';
 
-export default defineConfig(({ mode }) => {
-    // Load env file based on `mode` in the current working directory
-    const env = loadEnv(mode, process.cwd(), '');
-
+export default defineConfig(() => {
     return {
-        // Base path for GitHub Pages
-        base: mode === 'production' ? '/lumi/' : '/',
+        // Base path for Vercel (root)
+        base: '/',
 
         // Development server
         server: {

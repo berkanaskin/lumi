@@ -1,1152 +1,1568 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-    <meta name="description" content="Lumi - Film ve dizi keşfi için premium platform">
-    <meta name="theme-color" content="#050505">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"
+    />
+    <meta
+      name="description"
+      content="Lumi - Film ve dizi keşfi için premium platform"
+    />
+    <meta name="theme-color" content="#050505" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
     <title>Lumi</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="index_lumi.css?v=0.9.5-rc">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="index_lumi.css?v=0.9.5-rc" />
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-</head>
+  </head>
 
-<body>
+  <body>
     <!-- Ambient Glows (The Soul) -->
     <div class="ambient-glow ambient-glow-violet"></div>
     <div class="ambient-glow ambient-glow-blue"></div>
 
     <div class="app">
-        <!-- ============================================
+      <!-- ============================================
              GRADIENT HEADER (Fixed)
              ============================================ -->
-        <header class="gradient-header">
-            <div class="header-row">
-                <div class="header-left">
-                    <span class="brand-logo" id="brand-logo" onclick="loadHomePage()">LUMI</span>
+      <header class="gradient-header">
+        <div class="header-row">
+          <div class="header-left">
+            <span class="brand-logo" id="brand-logo" onclick="loadHomePage()"
+              >LUMI</span
+            >
+          </div>
+          <div class="header-actions">
+            <!-- Language Toggle -->
+            <div style="position: relative">
+              <button
+                class="header-btn lang-toggle"
+                id="lang-toggle"
+                title="Dil"
+              >
+                TR
+              </button>
+              <div
+                class="header-dropdown language-dropdown"
+                id="language-dropdown"
+              >
+                <div class="dropdown-header">
+                  <span class="dropdown-title">Dil Seçin</span>
                 </div>
-                <div class="header-actions">
-                    <!-- Language Toggle -->
-                    <div style="position: relative;">
-                        <button class="header-btn lang-toggle" id="lang-toggle" title="Dil">TR</button>
-                        <div class="header-dropdown language-dropdown" id="language-dropdown">
-                            <div class="dropdown-header">
-                                <span class="dropdown-title">Dil Seçin</span>
-                            </div>
-                            <div class="dropdown-list">
-                                <button class="dropdown-item lang-option active" data-lang="tr-TR">
-                                    <span>🇹🇷</span>
-                                    <span>Türkçe</span>
-                                </button>
-                                <button class="dropdown-item lang-option" data-lang="en-US">
-                                    <span>🇺🇸</span>
-                                    <span>English</span>
-                                </button>
-                                <button class="dropdown-item lang-option" data-lang="de-DE">
-                                    <span>🇩🇪</span>
-                                    <span>Deutsch</span>
-                                </button>
-                                <button class="dropdown-item lang-option" data-lang="fr-FR">
-                                    <span>🇫🇷</span>
-                                    <span>Français</span>
-                                </button>
-                                <button class="dropdown-item lang-option" data-lang="es-ES">
-                                    <span>🇪🇸</span>
-                                    <span>Español</span>
-                                </button>
-                                <button class="dropdown-item lang-option" data-lang="it-IT">
-                                    <span>🇮🇹</span>
-                                    <span>Italiano</span>
-                                </button>
-                                <button class="dropdown-item lang-option" data-lang="pt-BR">
-                                    <span>🇧🇷</span>
-                                    <span>Português</span>
-                                </button>
-                                <button class="dropdown-item lang-option" data-lang="ru-RU">
-                                    <span>🇷🇺</span>
-                                    <span>Русский</span>
-                                </button>
-                                <button class="dropdown-item lang-option" data-lang="ja-JP">
-                                    <span>🇯🇵</span>
-                                    <span>日本語</span>
-                                </button>
-                                <button class="dropdown-item lang-option" data-lang="ko-KR">
-                                    <span>🇰🇷</span>
-                                    <span>한국어</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Theme Toggle -->
-                    <button class="header-btn theme-toggle" id="theme-toggle" title="Tema">
-                        <span class="material-symbols-outlined">dark_mode</span>
-                    </button>
-
-                    <!-- Notifications -->
-                    <div style="position: relative;">
-                        <button class="header-btn has-badge" id="notifications-btn" title="Bildirimler">
-                            <span class="material-symbols-outlined">notifications</span>
-                        </button>
-                        <div class="header-dropdown" id="notifications-dropdown">
-                            <div class="dropdown-header">
-                                <span class="dropdown-title">Bildirimler</span>
-                                <button class="dropdown-action" id="mark-all-read">Tümünü Okundu İşaretle</button>
-                            </div>
-                            <div class="dropdown-list" id="notifications-list">
-                                <div class="dropdown-empty">
-                                    <span class="material-symbols-outlined"
-                                        style="font-size: 32px; opacity: 0.3; margin-bottom: 8px;">notifications_off</span>
-                                    <p>Bildirim bulunmuyor</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Profile -->
-                    <div style="position: relative;">
-                        <button class="header-btn profile-btn guest" id="profile-btn" title="Profil">
-                            <span class="material-symbols-outlined">person</span>
-                        </button>
-                        <div class="header-dropdown" id="profile-dropdown">
-                            <div class="profile-dropdown-header" id="profile-dropdown-info">
-                                <div class="profile-dropdown-avatar"
-                                    style="background: var(--bg-elevated); display: flex; align-items: center; justify-content: center;">
-                                    <span class="material-symbols-outlined"
-                                        style="font-size: 32px; color: var(--text-muted);">person</span>
-                                </div>
-                                <div class="profile-dropdown-name">Misafir</div>
-                                <span class="profile-dropdown-tier">Ücretsiz</span>
-                            </div>
-                            <button class="profile-menu-item" id="login-trigger">
-                                <span class="material-symbols-outlined">login</span>
-                                <span>Giriş Yap</span>
-                            </button>
-                            <button class="profile-menu-item" id="premium-trigger">
-                                <span class="material-symbols-outlined">workspace_premium</span>
-                                <span>Premium Ol</span>
-                            </button>
-                            <button class="profile-menu-item">
-                                <span class="material-symbols-outlined">settings</span>
-                                <span>Ayarlar</span>
-                            </button>
-                        </div>
-                    </div>
+                <div class="dropdown-list">
+                  <button
+                    class="dropdown-item lang-option active"
+                    data-lang="tr-TR"
+                  >
+                    <span>🇹🇷</span>
+                    <span>Türkçe</span>
+                  </button>
+                  <button class="dropdown-item lang-option" data-lang="en-US">
+                    <span>🇺🇸</span>
+                    <span>English</span>
+                  </button>
+                  <button class="dropdown-item lang-option" data-lang="de-DE">
+                    <span>🇩🇪</span>
+                    <span>Deutsch</span>
+                  </button>
+                  <button class="dropdown-item lang-option" data-lang="fr-FR">
+                    <span>🇫🇷</span>
+                    <span>Français</span>
+                  </button>
+                  <button class="dropdown-item lang-option" data-lang="es-ES">
+                    <span>🇪🇸</span>
+                    <span>Español</span>
+                  </button>
+                  <button class="dropdown-item lang-option" data-lang="it-IT">
+                    <span>🇮🇹</span>
+                    <span>Italiano</span>
+                  </button>
+                  <button class="dropdown-item lang-option" data-lang="pt-BR">
+                    <span>🇧🇷</span>
+                    <span>Português</span>
+                  </button>
+                  <button class="dropdown-item lang-option" data-lang="ru-RU">
+                    <span>🇷🇺</span>
+                    <span>Русский</span>
+                  </button>
+                  <button class="dropdown-item lang-option" data-lang="ja-JP">
+                    <span>🇯🇵</span>
+                    <span>日本語</span>
+                  </button>
+                  <button class="dropdown-item lang-option" data-lang="ko-KR">
+                    <span>🇰🇷</span>
+                    <span>한국어</span>
+                  </button>
                 </div>
+              </div>
             </div>
 
-            <!-- Search Bar -->
-            <div class="search-container">
-                <div class="search-pill" id="search-trigger">
-                    <span class="material-symbols-outlined search-icon">search</span>
-                    <input type="text" id="search-input" placeholder="Film ve Dizi ara..."
-                        data-i18n-placeholder="search" autocomplete="off">
-                    <button class="search-clear" id="search-clear-main">
-                        <span class="material-symbols-outlined" style="font-size: 20px;">cancel</span>
-                    </button>
+            <!-- Theme Toggle -->
+            <button
+              class="header-btn theme-toggle"
+              id="theme-toggle"
+              title="Tema"
+            >
+              <span class="material-symbols-outlined">dark_mode</span>
+            </button>
 
-                    <!-- Trend Chips (Focus State) -->
-                    <div class="trend-chips-container" id="trend-chips-container">
-                        <div class="trend-chips-title">🔥 <span data-i18n="trendingSearches">Trend Aramalar</span></div>
-                        <div class="trend-chips" id="trend-chips">
-                            <span class="trend-chip">Inception</span>
-                            <span class="trend-chip">The Penguin</span>
-                            <span class="trend-chip">Dune 2</span>
-                            <span class="trend-chip">Severance</span>
-                            <span class="trend-chip">Oppenheimer</span>
-                        </div>
-                    </div>
-
-                    <!-- Autocomplete Dropdown -->
-                    <div class="autocomplete-dropdown" id="autocomplete-dropdown"></div>
+            <!-- Notifications -->
+            <div style="position: relative">
+              <button
+                class="header-btn has-badge"
+                id="notifications-btn"
+                title="Bildirimler"
+              >
+                <span class="material-symbols-outlined">notifications</span>
+              </button>
+              <div class="header-dropdown" id="notifications-dropdown">
+                <div class="dropdown-header">
+                  <span class="dropdown-title">Bildirimler</span>
+                  <button class="dropdown-action" id="mark-all-read">
+                    Tümünü Okundu İşaretle
+                  </button>
                 </div>
+                <div class="dropdown-list" id="notifications-list">
+                  <div class="dropdown-empty">
+                    <span
+                      class="material-symbols-outlined"
+                      style="font-size: 32px; opacity: 0.3; margin-bottom: 8px"
+                      >notifications_off</span
+                    >
+                    <p>Bildirim bulunmuyor</p>
+                  </div>
+                </div>
+              </div>
             </div>
-        </header>
 
-        <!-- ============================================
+            <!-- Profile -->
+            <div style="position: relative">
+              <button
+                class="header-btn profile-btn guest"
+                id="profile-btn"
+                title="Profil"
+              >
+                <span class="material-symbols-outlined">person</span>
+              </button>
+              <div class="header-dropdown" id="profile-dropdown">
+                <div class="profile-dropdown-header" id="profile-dropdown-info">
+                  <div
+                    class="profile-dropdown-avatar"
+                    style="
+                      background: var(--bg-elevated);
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                    "
+                  >
+                    <span
+                      class="material-symbols-outlined"
+                      style="font-size: 32px; color: var(--text-muted)"
+                      >person</span
+                    >
+                  </div>
+                  <div class="profile-dropdown-name">Misafir</div>
+                  <span class="profile-dropdown-tier">Ücretsiz</span>
+                </div>
+                <button class="profile-menu-item" id="login-trigger">
+                  <span class="material-symbols-outlined">login</span>
+                  <span>Giriş Yap</span>
+                </button>
+                <button class="profile-menu-item" id="premium-trigger">
+                  <span class="material-symbols-outlined"
+                    >workspace_premium</span
+                  >
+                  <span>Premium Ol</span>
+                </button>
+                <button class="profile-menu-item">
+                  <span class="material-symbols-outlined">settings</span>
+                  <span>Ayarlar</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+          <div class="search-pill" id="search-trigger">
+            <span class="material-symbols-outlined search-icon">search</span>
+            <input
+              type="text"
+              id="search-input"
+              placeholder="Film ve Dizi ara..."
+              data-i18n-placeholder="search"
+              autocomplete="off"
+            />
+            <button class="search-clear" id="search-clear-main">
+              <span class="material-symbols-outlined" style="font-size: 20px"
+                >cancel</span
+              >
+            </button>
+
+            <!-- Trend Chips (Focus State) -->
+            <div class="trend-chips-container" id="trend-chips-container">
+              <div class="trend-chips-title">
+                🔥 <span data-i18n="trendingSearches">Trend Aramalar</span>
+              </div>
+              <div class="trend-chips" id="trend-chips">
+                <span class="trend-chip">Inception</span>
+                <span class="trend-chip">The Penguin</span>
+                <span class="trend-chip">Dune 2</span>
+                <span class="trend-chip">Severance</span>
+                <span class="trend-chip">Oppenheimer</span>
+              </div>
+            </div>
+
+            <!-- Autocomplete Dropdown -->
+            <div class="autocomplete-dropdown" id="autocomplete-dropdown"></div>
+          </div>
+        </div>
+      </header>
+
+      <!-- ============================================
              VIEW: HOME (Infinity Feed)
              ============================================ -->
-        <section id="view-home" class="view active">
-            <!-- Masonry Infinity Grid -->
-            <div class="masonry-grid no-scrollbar scroll-touch" id="feed-grid">
-                <!-- Content will be dynamically loaded -->
-                <div class="loading-state" id="feed-loading" style="display: flex; grid-column: 1 / -1; height: 100vh;">
-                    <div class="spinner"></div>
-                </div>
-            </div>
-        </section>
+      <section id="view-home" class="view active">
+        <!-- Masonry Infinity Grid -->
+        <div class="masonry-grid no-scrollbar scroll-touch" id="feed-grid">
+          <!-- Content will be dynamically loaded -->
+          <div
+            class="loading-state"
+            id="feed-loading"
+            style="display: flex; grid-column: 1 / -1; height: 100vh"
+          >
+            <div class="spinner"></div>
+          </div>
+        </div>
+      </section>
 
-        <!-- ============================================
+      <!-- ============================================
              VIEW: NE İZLESEM (Wizard) - v4 Immersive Design
              ============================================ -->
-        <section id="view-wizard" class="view discover-immersive">
-            <!-- Full-Viewport Hero Background -->
-            <div class="discover-hero-bg" id="discover-bg"></div>
-            <div class="discover-gradient-overlay"></div>
+      <section id="view-wizard" class="view discover-immersive">
+        <!-- Full-Viewport Hero Background -->
+        <div class="discover-hero-bg" id="discover-bg"></div>
+        <div class="discover-gradient-overlay"></div>
 
-            <!-- Top Info Area - Daily Pick -->
-            <div class="discover-top-info" id="discover-top-info">
-                <div class="daily-pick-badge" onclick="openDailyRecommendation()">
-                    <span class="material-symbols-outlined">auto_awesome</span>
-                    <span data-i18n="dailyPick">GÜNÜN ÖNERİSİ</span>
-                </div>
-                <h1 class="discover-hero-title" id="discover-hero-title">Yükleniyor...</h1>
-                <p class="discover-hero-meta" id="discover-hero-meta"></p>
-                <div class="discover-hero-chips" id="discover-hero-chips">
-                    <span class="hero-chip" id="hero-imdb-chip" style="display: none;">IMDb --</span>
-                    <span class="hero-chip" id="hero-timer-chip"></span>
-                </div>
-            </div>
+        <!-- Top Info Area - Daily Pick -->
+        <div class="discover-top-info" id="discover-top-info">
+          <div class="daily-pick-badge" onclick="openDailyRecommendation()">
+            <span class="material-symbols-outlined">auto_awesome</span>
+            <span data-i18n="dailyPick">GÜNÜN ÖNERİSİ</span>
+          </div>
+          <h1 class="discover-hero-title" id="discover-hero-title">
+            Yükleniyor...
+          </h1>
+          <p class="discover-hero-meta" id="discover-hero-meta"></p>
+          <div class="discover-hero-chips" id="discover-hero-chips">
+            <span class="hero-chip" id="hero-imdb-chip" style="display: none"
+              >IMDb --</span
+            >
+            <span class="hero-chip" id="hero-timer-chip"></span>
+          </div>
+        </div>
 
-            <!-- Bottom Glass Console Panel -->
-            <div class="discover-console glass-panel">
-                <label class="console-label" data-i18n="aiInputLabel">Bugün nasıl hissediyorsun?</label>
+        <!-- Bottom Glass Console Panel -->
+        <div class="discover-console glass-panel">
+          <label class="console-label" data-i18n="aiInputLabel"
+            >Bugün nasıl hissediyorsun?</label
+          >
 
-                <!-- AI Textarea (3 lines) -->
-                <div class="console-input-wrapper">
-                    <textarea id="ai-movie-input" class="console-textarea" rows="3"
-                        placeholder="Beni çocukluğuma götürecek sıcak bir aile filmi..."
-                        data-i18n-placeholder="aiInputPlaceholder"></textarea>
-                    <button class="console-ai-btn" onclick="handleAISearch()">
-                        <span class="material-symbols-outlined">auto_awesome</span>
-                    </button>
-                </div>
+          <!-- AI Textarea (3 lines) -->
+          <div class="console-input-wrapper">
+            <textarea
+              id="ai-movie-input"
+              class="console-textarea"
+              rows="3"
+              placeholder="Beni çocukluğuma götürecek sıcak bir aile filmi..."
+              data-i18n-placeholder="aiInputPlaceholder"
+            ></textarea>
+            <button class="console-ai-btn" onclick="handleAISearch()">
+              <span class="material-symbols-outlined">auto_awesome</span>
+            </button>
+          </div>
 
-                <!-- Mood/Genre Chips -->
-                <div class="console-chips hide-scrollbar" id="mood-chips">
-                    <button class="console-chip active" data-mood="chill">
-                        <span class="material-symbols-outlined">mood</span><span data-i18n="moodChill">Rahat</span>
-                    </button>
-                    <button class="console-chip" data-mood="adrenaline">
-                        <span class="material-symbols-outlined">bolt</span><span
-                            data-i18n="moodAdrenaline">Heyecan</span>
-                    </button>
-                    <button class="console-chip" data-mood="tearjerker">
-                        <span class="material-symbols-outlined">water_drop</span><span
-                            data-i18n="moodTearjerker">Duygusal</span>
-                    </button>
-                    <button class="console-chip" data-mood="mindbending">
-                        <span class="material-symbols-outlined">psychology</span><span data-i18n="moodMindbending">Beyin
-                            Yakan</span>
-                    </button>
-                    <button class="console-chip" data-genre="28">
-                        <span class="material-symbols-outlined">local_fire_department</span><span
-                            data-i18n="action">Aksiyon</span>
-                    </button>
-                    <button class="console-chip" data-genre="27">
-                        <span class="material-symbols-outlined">skull</span><span data-i18n="horror">Korku</span>
-                    </button>
-                    <button class="console-chip" data-genre="878">
-                        <span class="material-symbols-outlined">rocket_launch</span><span data-i18n="scifi">Bilim
-                            Kurgu</span>
-                    </button>
-                    <button class="console-chip" data-genre="10749">
-                        <span class="material-symbols-outlined">favorite</span><span data-i18n="romance">Romantik</span>
-                    </button>
-                </div>
+          <!-- Mood/Genre Chips -->
+          <div class="console-chips hide-scrollbar" id="mood-chips">
+            <button class="console-chip active" data-mood="chill">
+              <span class="material-symbols-outlined">mood</span
+              ><span data-i18n="moodChill">Rahat</span>
+            </button>
+            <button class="console-chip" data-mood="adrenaline">
+              <span class="material-symbols-outlined">bolt</span
+              ><span data-i18n="moodAdrenaline">Heyecan</span>
+            </button>
+            <button class="console-chip" data-mood="tearjerker">
+              <span class="material-symbols-outlined">water_drop</span
+              ><span data-i18n="moodTearjerker">Duygusal</span>
+            </button>
+            <button class="console-chip" data-mood="mindbending">
+              <span class="material-symbols-outlined">psychology</span
+              ><span data-i18n="moodMindbending">Beyin Yakan</span>
+            </button>
+            <button class="console-chip" data-genre="28">
+              <span class="material-symbols-outlined"
+                >local_fire_department</span
+              ><span data-i18n="action">Aksiyon</span>
+            </button>
+            <button class="console-chip" data-genre="27">
+              <span class="material-symbols-outlined">skull</span
+              ><span data-i18n="horror">Korku</span>
+            </button>
+            <button class="console-chip" data-genre="878">
+              <span class="material-symbols-outlined">rocket_launch</span
+              ><span data-i18n="scifi">Bilim Kurgu</span>
+            </button>
+            <button class="console-chip" data-genre="10749">
+              <span class="material-symbols-outlined">favorite</span
+              ><span data-i18n="romance">Romantik</span>
+            </button>
+          </div>
 
-                <!-- Era Chips -->
-                <div class="console-chips-secondary hide-scrollbar" id="era-chips">
-                    <button class="era-chip active" data-era="" data-i18n="allEras">Tüm Dönemler</button>
-                    <button class="era-chip" data-era="classic" data-i18n="eraClassic">Klasik</button>
-                    <button class="era-chip" data-era="80s" data-i18n="era80s">80'ler</button>
-                    <button class="era-chip" data-era="90s" data-i18n="era90s">90'lar</button>
-                    <button class="era-chip" data-era="2000s" data-i18n="era2000s">2000'ler</button>
-                    <button class="era-chip" data-era="2010s" data-i18n="era2010s">2010'lar</button>
-                    <button class="era-chip" data-era="2020s" data-i18n="era2020s">2020'ler</button>
-                </div>
+          <!-- Era Chips -->
+          <div class="console-chips-secondary hide-scrollbar" id="era-chips">
+            <button class="era-chip active" data-era="" data-i18n="allEras">
+              Tüm Dönemler
+            </button>
+            <button class="era-chip" data-era="classic" data-i18n="eraClassic">
+              Klasik
+            </button>
+            <button class="era-chip" data-era="80s" data-i18n="era80s">
+              80'ler
+            </button>
+            <button class="era-chip" data-era="90s" data-i18n="era90s">
+              90'lar
+            </button>
+            <button class="era-chip" data-era="2000s" data-i18n="era2000s">
+              2000'ler
+            </button>
+            <button class="era-chip" data-era="2010s" data-i18n="era2010s">
+              2010'lar
+            </button>
+            <button class="era-chip" data-era="2020s" data-i18n="era2020s">
+              2020'ler
+            </button>
+          </div>
 
-                <!-- Action Buttons -->
-                <div class="console-actions">
-                    <button class="console-btn primary" onclick="handleAISearch()">
-                        <span class="material-symbols-outlined">auto_awesome</span>
-                        <span data-i18n="recommendBtn">Öner Bana</span>
-                    </button>
-                    <button class="console-btn secondary" onclick="handleSurpriseMe()">
-                        <span class="material-symbols-outlined">shuffle</span>
-                        <span data-i18n="surpriseBtn">Sürpriz Yap</span>
-                    </button>
-                </div>
-            </div>
+          <!-- Action Buttons -->
+          <div class="console-actions">
+            <button class="console-btn primary" onclick="handleAISearch()">
+              <span class="material-symbols-outlined">auto_awesome</span>
+              <span data-i18n="recommendBtn">Öner Bana</span>
+            </button>
+            <button class="console-btn secondary" onclick="handleSurpriseMe()">
+              <span class="material-symbols-outlined">shuffle</span>
+              <span data-i18n="surpriseBtn">Sürpriz Yap</span>
+            </button>
+          </div>
+        </div>
 
-            <!-- Results Overlay (shows after search) -->
-            <div id="wizard-results" class="discover-results">
-                <div class="discover-results-header">
-                    <h3 id="wizard-results-title"></h3>
-                    <button class="discover-results-close" onclick="closeWizardResults()">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
-                </div>
-                <div id="wizard-results-grid" class="discover-results-grid"></div>
-            </div>
-        </section>
+        <!-- Results Overlay (shows after search) -->
+        <div id="wizard-results" class="discover-results">
+          <div class="discover-results-header">
+            <h3 id="wizard-results-title"></h3>
+            <button
+              class="discover-results-close"
+              onclick="closeWizardResults()"
+            >
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+          <div id="wizard-results-grid" class="discover-results-grid"></div>
+        </div>
+      </section>
 
-        <!-- ============================================
+      <!-- ============================================
              VIEW: FAVORITES (Listem)
              ============================================ -->
-        <section id="view-favorites" class="view" style="margin-top: -80px; padding-bottom: 120px;">
-            <div class="favorites-header">
-                <div class="favorites-title-row">
-                    <div style="width: 40px;"></div>
-                    <h1 class="favorites-title">LİSTEM</h1>
-                    <button class="settings-btn" id="favorites-settings-btn">
-                        <span class="material-symbols-outlined">settings</span>
-                    </button>
-                </div>
+      <section
+        id="view-favorites"
+        class="view"
+        style="margin-top: -80px; padding-bottom: 120px"
+      >
+        <div class="favorites-header">
+          <div class="favorites-title-row">
+            <div style="width: 40px"></div>
+            <h1 class="favorites-title">LİSTEM</h1>
+            <button class="settings-btn" id="favorites-settings-btn">
+              <span class="material-symbols-outlined">settings</span>
+            </button>
+          </div>
 
-                <div class="favorites-tabs-wrapper">
-                    <div class="favorites-tabs">
-                        <button class="fav-tab active" data-list="liked">Beğendiklerim</button>
-                        <button class="fav-tab" data-list="watchlist">İzleyeceklerim</button>
-                    </div>
-                </div>
+          <div class="favorites-tabs-wrapper">
+            <div class="favorites-tabs">
+              <button class="fav-tab active" data-list="liked">
+                Beğendiklerim
+              </button>
+              <button class="fav-tab" data-list="watchlist">
+                İzleyeceklerim
+              </button>
             </div>
+          </div>
+        </div>
 
-            <div class="favorites-grid" id="favorites-grid"></div>
+        <div class="favorites-grid" id="favorites-grid"></div>
 
-            <div class="empty-state" id="empty-list-message" style="display: none;">
-                <span class="material-symbols-outlined"
-                    style="font-size: 64px; opacity: 0.3; margin-bottom: var(--space-md);">bookmark</span>
-                <p>Henüz içerik eklemediniz</p>
-                <small style="color: var(--text-muted);">Film ve dizileri beğenin veya izleyeceklerinize ekleyin</small>
-            </div>
-        </section>
+        <div class="empty-state" id="empty-list-message" style="display: none">
+          <span
+            class="material-symbols-outlined"
+            style="
+              font-size: 64px;
+              opacity: 0.3;
+              margin-bottom: var(--space-md);
+            "
+            >bookmark</span
+          >
+          <p>Henüz içerik eklemediniz</p>
+          <small style="color: var(--text-muted)"
+            >Film ve dizileri beğenin veya izleyeceklerinize ekleyin</small
+          >
+        </div>
+      </section>
 
-        <!-- ============================================
+      <!-- ============================================
              VIEW: PROFILE
              ============================================ -->
-        <section id="view-profile" class="view" style="margin-top: -80px; padding-bottom: 150px;">
-            <div class="profile-header">
-                <div class="profile-avatar-container">
-                    <div class="profile-avatar-glow"></div>
-                    <div class="profile-avatar" id="profile-avatar">
-                        <img src="https://via.placeholder.com/120" alt="Avatar" id="profile-avatar-img">
-                    </div>
-                </div>
-                <h1 class="profile-name" id="profile-name">Misafir</h1>
-                <div class="profile-badge" id="profile-badge" style="display: none;">
-                    <span class="material-symbols-outlined" style="font-size: 16px;">verified</span>
-                    LUMI PREMIUM
-                </div>
+      <section
+        id="view-profile"
+        class="view"
+        style="margin-top: -80px; padding-bottom: 150px"
+      >
+        <div class="profile-header">
+          <div class="profile-avatar-container">
+            <div class="profile-avatar-glow"></div>
+            <div class="profile-avatar" id="profile-avatar">
+              <img
+                src="https://via.placeholder.com/120"
+                alt="Avatar"
+                id="profile-avatar-img"
+              />
             </div>
+          </div>
+          <h1 class="profile-name" id="profile-name">Misafir</h1>
+          <div class="profile-badge" id="profile-badge" style="display: none">
+            <span class="material-symbols-outlined" style="font-size: 16px"
+              >verified</span
+            >
+            LUMI PREMIUM
+          </div>
+        </div>
 
-            <div class="profile-stats">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <span class="material-symbols-outlined">movie</span>
-                    </div>
-                    <div class="stat-label">İzlenen Film</div>
-                    <div class="stat-value" id="stat-movies">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <span class="material-symbols-outlined">schedule</span>
-                    </div>
-                    <div class="stat-label">Toplam Süre</div>
-                    <div class="stat-value" id="stat-hours">0h</div>
-                </div>
+        <div class="profile-stats">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <span class="material-symbols-outlined">movie</span>
             </div>
-
-            <!-- Settings Section -->
-            <div class="profile-settings">
-                <h3 class="settings-title">Ayarlar</h3>
-                <div class="settings-panel">
-                    <!-- Dark Mode Toggle -->
-                    <div class="settings-item">
-                        <div class="settings-item-left">
-                            <div class="settings-icon">
-                                <span class="material-symbols-outlined">dark_mode</span>
-                            </div>
-                            <span class="settings-label">Karanlık Mod</span>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="profile-theme-toggle" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    <!-- Notifications Toggle -->
-                    <div class="settings-item">
-                        <div class="settings-item-left">
-                            <div class="settings-icon">
-                                <span class="material-symbols-outlined">notifications</span>
-                            </div>
-                            <span class="settings-label">Bildirimler</span>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="profile-notifications-toggle" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    <!-- Wi-Fi Download Toggle -->
-                    <div class="settings-item settings-item-last">
-                        <div class="settings-item-left">
-                            <div class="settings-icon">
-                                <span class="material-symbols-outlined">wifi</span>
-                            </div>
-                            <span class="settings-label">Wi-Fi'de İndir</span>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="profile-wifi-toggle">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Action Buttons (Updated by JS based on auth state) -->
-                <div class="profile-actions" id="profile-actions" style="margin-top: var(--space-lg);">
-                    <!-- Guest State: Only Test Login -->
-                    <div id="guest-buttons">
-                        <button class="profile-action-btn" onclick="handleTesterLoginFree()"
-                            style="width: 100%; padding: var(--space-md); background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); color: var(--text-primary); font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: var(--space-sm);">
-                            <span class="material-symbols-outlined">person</span>
-                            <span>Test Kullanıcı Girişi</span>
-                        </button>
-                    </div>
-                    <!-- Free User State: Premium Upgrade + Logout -->
-                    <div id="free-user-buttons" style="display: none;">
-                        <button class="profile-action-btn" onclick="handleTesterLoginPremium()"
-                            style="width: 100%; padding: var(--space-md); background: linear-gradient(135deg, var(--primary), #8b7cf7); border: none; border-radius: var(--radius-lg); color: white; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: var(--space-sm); margin-bottom: var(--space-sm);">
-                            <span class="material-symbols-outlined">workspace_premium</span>
-                            <span>Premium'a Yükselt</span>
-                        </button>
-                        <button class="profile-action-btn logout-btn" onclick="handleLogout()"
-                            style="width: 100%; padding: var(--space-md); background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius-lg); color: #ef4444; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: var(--space-sm);">
-                            <span class="material-symbols-outlined">logout</span>
-                            <span>Çıkış Yap</span>
-                        </button>
-                    </div>
-                    <!-- Premium User State: Only Logout -->
-                    <div id="premium-user-buttons" style="display: none;">
-                        <button class="profile-action-btn logout-btn" onclick="handleLogout()"
-                            style="width: 100%; padding: var(--space-md); background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius-lg); color: #ef4444; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: var(--space-sm);">
-                            <span class="material-symbols-outlined">logout</span>
-                            <span>Çıkış Yap</span>
-                        </button>
-                    </div>
-                </div>
-
-                <p class="profile-version">Lumi Version 0.9.8</p>
+            <div class="stat-label">İzlenen Film</div>
+            <div class="stat-value" id="stat-movies">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <span class="material-symbols-outlined">schedule</span>
             </div>
+            <div class="stat-label">Toplam Süre</div>
+            <div class="stat-value" id="stat-hours">0h</div>
+          </div>
+        </div>
 
-            <div id="profile-content" style="padding: 0 var(--space-lg);"></div>
-        </section>
+        <!-- Settings Section -->
+        <div class="profile-settings">
+          <h3 class="settings-title">Ayarlar</h3>
+          <div class="settings-panel">
+            <!-- Dark Mode Toggle -->
+            <div class="settings-item">
+              <div class="settings-item-left">
+                <div class="settings-icon">
+                  <span class="material-symbols-outlined">dark_mode</span>
+                </div>
+                <span class="settings-label">Karanlık Mod</span>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="profile-theme-toggle" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <!-- Notifications Toggle -->
+            <div class="settings-item">
+              <div class="settings-item-left">
+                <div class="settings-icon">
+                  <span class="material-symbols-outlined">notifications</span>
+                </div>
+                <span class="settings-label">Bildirimler</span>
+              </div>
+              <label class="toggle-switch">
+                <input
+                  type="checkbox"
+                  id="profile-notifications-toggle"
+                  checked
+                />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <!-- Wi-Fi Download Toggle -->
+            <div class="settings-item settings-item-last">
+              <div class="settings-item-left">
+                <div class="settings-icon">
+                  <span class="material-symbols-outlined">wifi</span>
+                </div>
+                <span class="settings-label">Wi-Fi'de İndir</span>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="profile-wifi-toggle" />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
 
-        <!-- ============================================
+          <!-- Action Buttons (Updated by JS based on auth state) -->
+          <div
+            class="profile-actions"
+            id="profile-actions"
+            style="margin-top: var(--space-lg)"
+          >
+            <!-- Guest State: Only Test Login -->
+            <div id="guest-buttons">
+              <button
+                class="profile-action-btn"
+                onclick="handleTesterLoginFree()"
+                style="
+                  width: 100%;
+                  padding: var(--space-md);
+                  background: var(--glass-bg);
+                  border: 1px solid var(--glass-border);
+                  border-radius: var(--radius-lg);
+                  color: var(--text-primary);
+                  font-weight: 500;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  gap: var(--space-sm);
+                "
+              >
+                <span class="material-symbols-outlined">person</span>
+                <span>Test Kullanıcı Girişi</span>
+              </button>
+            </div>
+            <!-- Free User State: Premium Upgrade + Logout -->
+            <div id="free-user-buttons" style="display: none">
+              <button
+                class="profile-action-btn"
+                onclick="handleTesterLoginPremium()"
+                style="
+                  width: 100%;
+                  padding: var(--space-md);
+                  background: linear-gradient(135deg, var(--primary), #8b7cf7);
+                  border: none;
+                  border-radius: var(--radius-lg);
+                  color: white;
+                  font-weight: 600;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  gap: var(--space-sm);
+                  margin-bottom: var(--space-sm);
+                "
+              >
+                <span class="material-symbols-outlined">workspace_premium</span>
+                <span>Premium'a Yükselt</span>
+              </button>
+              <button
+                class="profile-action-btn logout-btn"
+                onclick="handleLogout()"
+                style="
+                  width: 100%;
+                  padding: var(--space-md);
+                  background: rgba(239, 68, 68, 0.1);
+                  border: 1px solid rgba(239, 68, 68, 0.3);
+                  border-radius: var(--radius-lg);
+                  color: #ef4444;
+                  font-weight: 500;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  gap: var(--space-sm);
+                "
+              >
+                <span class="material-symbols-outlined">logout</span>
+                <span>Çıkış Yap</span>
+              </button>
+            </div>
+            <!-- Premium User State: Only Logout -->
+            <div id="premium-user-buttons" style="display: none">
+              <button
+                class="profile-action-btn logout-btn"
+                onclick="handleLogout()"
+                style="
+                  width: 100%;
+                  padding: var(--space-md);
+                  background: rgba(239, 68, 68, 0.1);
+                  border: 1px solid rgba(239, 68, 68, 0.3);
+                  border-radius: var(--radius-lg);
+                  color: #ef4444;
+                  font-weight: 500;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  gap: var(--space-sm);
+                "
+              >
+                <span class="material-symbols-outlined">logout</span>
+                <span>Çıkış Yap</span>
+              </button>
+            </div>
+          </div>
+
+          <p class="profile-version">Lumi Version 0.9.8</p>
+        </div>
+
+        <div id="profile-content" style="padding: 0 var(--space-lg)"></div>
+      </section>
+
+      <!-- ============================================
              FLOATING BOTTOM NAVIGATION (3 Icons)
              ============================================ -->
-        <nav class="bottom-nav" id="bottom-nav">
-            <button class="nav-item active" data-page="home">
-                <span class="material-symbols-outlined">home</span>
-            </button>
-            <button class="nav-item" data-page="wizard">
-                <span class="material-symbols-outlined">auto_awesome</span>
-            </button>
-            <button class="nav-item" data-page="favorites">
-                <span class="material-symbols-outlined">favorite</span>
-            </button>
-            <button class="nav-item" data-page="profile">
-                <span class="material-symbols-outlined">person</span>
-            </button>
-        </nav>
+      <nav class="bottom-nav" id="bottom-nav">
+        <button class="nav-item active" data-page="home">
+          <span class="material-symbols-outlined">home</span>
+        </button>
+        <button class="nav-item" data-page="wizard">
+          <span class="material-symbols-outlined">auto_awesome</span>
+        </button>
+        <button class="nav-item" data-page="favorites">
+          <span class="material-symbols-outlined">favorite</span>
+        </button>
+        <button class="nav-item" data-page="profile">
+          <span class="material-symbols-outlined">person</span>
+        </button>
+      </nav>
     </div>
 
     <!-- ============================================
          SEARCH OVERLAY
          ============================================ -->
     <div class="search-overlay" id="search-overlay">
-        <div class="search-header">
-            <div class="search-input-wrapper">
-                <div class="search-box">
-                    <div class="search-box-inner">
-                        <span class="material-symbols-outlined"
-                            style="color: var(--text-muted); margin-right: 8px;">search</span>
-                        <input type="text" id="search-input-overlay" placeholder="Film veya dizi ara..."
-                            autocomplete="off"
-                            style="flex: 1; background: none; border: none; color: white; font-size: 16px; outline: none;">
-                        <button class="search-clear" id="search-clear" style="display: none;">
-                            <span class="material-symbols-outlined" style="font-size: 20px;">cancel</span>
-                        </button>
-                    </div>
-                </div>
-                <button class="search-cancel" id="search-cancel">İptal</button>
+      <div class="search-header">
+        <div class="search-input-wrapper">
+          <div class="search-box">
+            <div class="search-box-inner">
+              <span
+                class="material-symbols-outlined"
+                style="color: var(--text-muted); margin-right: 8px"
+                >search</span
+              >
+              <input
+                type="text"
+                id="search-input-overlay"
+                placeholder="Film veya dizi ara..."
+                autocomplete="off"
+                style="
+                  flex: 1;
+                  background: none;
+                  border: none;
+                  color: white;
+                  font-size: 16px;
+                  outline: none;
+                "
+              />
+              <button
+                class="search-clear"
+                id="search-clear"
+                style="display: none"
+              >
+                <span class="material-symbols-outlined" style="font-size: 20px"
+                  >cancel</span
+                >
+              </button>
             </div>
-
-            <!-- Filter Chips -->
-            <div class="filter-chips" id="search-filter-chips">
-                <button class="filter-chip active" data-filter="all">All</button>
-                <button class="filter-chip" data-filter="movie">Movies</button>
-                <button class="filter-chip" data-filter="tv">TV Shows</button>
-                <button class="filter-chip" data-filter="person">People</button>
-            </div>
+          </div>
+          <button class="search-cancel" id="search-cancel">İptal</button>
         </div>
 
-        <div id="search-results-container" style="flex: 1; overflow-y: auto; padding: var(--space-md);"
-            class="no-scrollbar scroll-touch">
-            <h3
-                style="font-size: 0.875rem; font-weight: 600; color: var(--text-muted); margin-bottom: var(--space-md); padding: 0 4px;">
-                Top Results</h3>
-            <div class="search-results-grid" id="search-grid"></div>
+        <!-- Filter Chips -->
+        <div class="filter-chips" id="search-filter-chips">
+          <button class="filter-chip active" data-filter="all">All</button>
+          <button class="filter-chip" data-filter="movie">Movies</button>
+          <button class="filter-chip" data-filter="tv">TV Shows</button>
+          <button class="filter-chip" data-filter="person">People</button>
         </div>
+      </div>
+
+      <div
+        id="search-results-container"
+        style="flex: 1; overflow-y: auto; padding: var(--space-md)"
+        class="no-scrollbar scroll-touch"
+      >
+        <h3
+          style="
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: var(--space-md);
+            padding: 0 4px;
+          "
+        >
+          Top Results
+        </h3>
+        <div class="search-results-grid" id="search-grid"></div>
+      </div>
     </div>
 
     <!-- ============================================
          DETAIL MODAL (Bottom Sheet)
          ============================================ -->
     <div class="modal" id="detail-modal">
-        <div class="modal-backdrop"></div>
-        <div class="modal-content">
-            <div class="modal-handle"></div>
-            <button class="modal-close" id="modal-close">
-                <span class="material-symbols-outlined" style="font-size: 20px;">close</span>
-            </button>
-            <div class="modal-body" id="modal-body"></div>
-        </div>
+      <div class="modal-backdrop"></div>
+      <div class="modal-content">
+        <div class="modal-handle"></div>
+        <button class="modal-close" id="modal-close">
+          <span class="material-symbols-outlined" style="font-size: 20px"
+            >close</span
+          >
+        </button>
+        <div class="modal-body" id="modal-body"></div>
+      </div>
     </div>
 
     <!-- ============================================
          LOGIN MODAL
          ============================================ -->
     <div class="login-modal" id="login-modal">
-        <div class="login-modal-content">
-            <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: var(--space-sm);">Hoş Geldiniz</h2>
-            <p style="color: var(--text-secondary); margin-bottom: var(--space-lg);">Devam etmek için giriş yapın</p>
+      <div class="login-modal-content">
+        <h2
+          style="
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+          "
+        >
+          Hoş Geldiniz
+        </h2>
+        <p style="color: var(--text-secondary); margin-bottom: var(--space-lg)">
+          Devam etmek için giriş yapın
+        </p>
 
-            <!-- Social Login Buttons -->
-            <div class="social-login-btns">
-                <button class="social-btn google" id="google-login-btn" data-provider="google">
-                    <svg width="20" height="20" viewBox="0 0 24 24">
-                        <path
-                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                            fill="#4285F4" />
-                        <path
-                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                            fill="#34A853" />
-                        <path
-                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                            fill="#FBBC05" />
-                        <path
-                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                            fill="#EA4335" />
-                    </svg>
-                    <span>Google ile devam et</span>
-                </button>
-                <button class="social-btn apple" data-provider="apple">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
-                    </svg>
-                    <span>Apple ile devam et</span>
-                </button>
-            </div>
-
-            <!-- Divider -->
-            <div style="display: flex; align-items: center; gap: var(--space-md); margin: var(--space-lg) 0;">
-                <div style="flex: 1; height: 1px; background: var(--glass-border);"></div>
-                <span style="color: var(--text-muted); font-size: 0.875rem;">veya</span>
-                <div style="flex: 1; height: 1px; background: var(--glass-border);"></div>
-            </div>
-
-            <!-- Email/Password Form -->
-            <form id="email-login-form" style="display: flex; flex-direction: column; gap: var(--space-md);">
-                <input type="email" id="login-email" placeholder="E-posta"
-                    style="width: 100%; padding: var(--space-md); background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-primary); font-size: 1rem;">
-                <input type="password" id="login-password" placeholder="Şifre"
-                    style="width: 100%; padding: var(--space-md); background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-primary); font-size: 1rem;">
-                <button type="submit"
-                    style="width: 100%; padding: var(--space-md); background: var(--primary); border: none; border-radius: var(--radius-md); color: white; font-weight: 600; cursor: pointer;">
-                    Giriş Yap
-                </button>
-            </form>
-
-            <!-- Register Link -->
-            <p
-                style="margin-top: var(--space-md); text-align: center; font-size: 0.875rem; color: var(--text-secondary);">
-                Hesabınız yok mu? <a href="#" id="show-register" style="color: var(--primary);">Kayıt olun</a>
-            </p>
-
-            <!-- Tester Login (Dev Mode) -->
-            <div
-                style="margin-top: var(--space-lg); padding-top: var(--space-md); border-top: 1px dashed var(--glass-border);">
-                <button id="tester-login-btn"
-                    style="width: 100%; padding: var(--space-md); background: linear-gradient(135deg, #f59e0b, #ef4444); border: none; border-radius: var(--radius-md); color: white; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: var(--space-sm);">
-                    <span>👑</span>
-                    <span>Tester Premium ile Giriş</span>
-                </button>
-                <p
-                    style="margin-top: var(--space-xs); text-align: center; font-size: 0.75rem; color: var(--text-muted);">
-                    Geliştirici modu - Tüm premium özelliklere erişim
-                </p>
-            </div>
-
-            <button
-                style="margin-top: var(--space-lg); width: 100%; padding: var(--space-md); background: transparent; border: 1px solid var(--glass-border); border-radius: var(--radius-lg); color: var(--text-secondary); cursor: pointer;"
-                id="login-modal-close">Kapat</button>
+        <!-- Social Login Buttons -->
+        <div class="social-login-btns">
+          <button
+            class="social-btn google"
+            id="google-login-btn"
+            data-provider="google"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24">
+              <path
+                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                fill="#4285F4"
+              />
+              <path
+                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                fill="#34A853"
+              />
+              <path
+                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                fill="#FBBC05"
+              />
+              <path
+                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                fill="#EA4335"
+              />
+            </svg>
+            <span>Google ile devam et</span>
+          </button>
+          <button class="social-btn apple" data-provider="apple">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"
+              />
+            </svg>
+            <span>Apple ile devam et</span>
+          </button>
         </div>
-    </div>
 
+        <!-- Divider -->
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin: var(--space-lg) 0;
+          "
+        >
+          <div
+            style="flex: 1; height: 1px; background: var(--glass-border)"
+          ></div>
+          <span style="color: var(--text-muted); font-size: 0.875rem"
+            >veya</span
+          >
+          <div
+            style="flex: 1; height: 1px; background: var(--glass-border)"
+          ></div>
+        </div>
+
+        <!-- Email/Password Form -->
+        <form
+          id="email-login-form"
+          style="display: flex; flex-direction: column; gap: var(--space-md)"
+        >
+          <input
+            type="email"
+            id="login-email"
+            placeholder="E-posta"
+            style="
+              width: 100%;
+              padding: var(--space-md);
+              background: var(--glass-bg);
+              border: 1px solid var(--glass-border);
+              border-radius: var(--radius-md);
+              color: var(--text-primary);
+              font-size: 1rem;
+            "
+          />
+          <input
+            type="password"
+            id="login-password"
+            placeholder="Şifre"
+            style="
+              width: 100%;
+              padding: var(--space-md);
+              background: var(--glass-bg);
+              border: 1px solid var(--glass-border);
+              border-radius: var(--radius-md);
+              color: var(--text-primary);
+              font-size: 1rem;
+            "
+          />
+          <button
+            type="submit"
+            style="
+              width: 100%;
+              padding: var(--space-md);
+              background: var(--primary);
+              border: none;
+              border-radius: var(--radius-md);
+              color: white;
+              font-weight: 600;
+              cursor: pointer;
+            "
+          >
+            Giriş Yap
+          </button>
+        </form>
+
+        <!-- Register Link -->
+        <p
+          style="
+            margin-top: var(--space-md);
+            text-align: center;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+          "
+        >
+          Hesabınız yok mu?
+          <a href="#" id="show-register" style="color: var(--primary)"
+            >Kayıt olun</a
+          >
+        </p>
+
+        <!-- Tester Login (Dev Mode) -->
+        <div
+          style="
+            margin-top: var(--space-lg);
+            padding-top: var(--space-md);
+            border-top: 1px dashed var(--glass-border);
+          "
+        >
+          <button
+            id="tester-login-btn"
+            style="
+              width: 100%;
+              padding: var(--space-md);
+              background: linear-gradient(135deg, #f59e0b, #ef4444);
+              border: none;
+              border-radius: var(--radius-md);
+              color: white;
+              font-weight: 600;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: var(--space-sm);
+            "
+          >
+            <span>👑</span>
+            <span>Tester Premium ile Giriş</span>
+          </button>
+          <p
+            style="
+              margin-top: var(--space-xs);
+              text-align: center;
+              font-size: 0.75rem;
+              color: var(--text-muted);
+            "
+          >
+            Geliştirici modu - Tüm premium özelliklere erişim
+          </p>
+        </div>
+
+        <button
+          style="
+            margin-top: var(--space-lg);
+            width: 100%;
+            padding: var(--space-md);
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            color: var(--text-secondary);
+            cursor: pointer;
+          "
+          id="login-modal-close"
+        >
+          Kapat
+        </button>
+      </div>
+    </div>
 
     <!-- Vite Module Entry Point -->
     <script type="module" src="/src/main.js"></script>
 
-    <!-- Legacy Scripts (will be migrated to modules in Sprint 2) -->
-    <script src="config.js"></script>
+    <!-- Legacy Scripts (auth + i18n still needed - no ESM replacements yet) -->
     <script src="i18n.js"></script>
     <script src="services/auth.js"></script>
-    <script src="services/notifications.js"></script>
-    <script src="services/ai.js"></script>
-    <script src="services/store.js"></script>
-    <script src="api.js"></script>
-    <script src="app.js"></script>
     <script>
+      // ============================================
+      // LUMI SPA NAVIGATION v2.2.0
+      // ============================================
+      document.addEventListener("DOMContentLoaded", function () {
+        const feedGrid = document.getElementById("feed-grid");
+        const searchInput = document.getElementById("search-input");
+        const searchClearMain = document.getElementById("search-clear-main");
+        const trendChipsContainer = document.getElementById(
+          "trend-chips-container",
+        );
+        const autocompleteDropdown = document.getElementById(
+          "autocomplete-dropdown",
+        );
+        const searchOverlay = document.getElementById("search-overlay");
+        const searchInputOverlay = document.getElementById(
+          "search-input-overlay",
+        );
+        const searchCancel = document.getElementById("search-cancel");
+        const searchClear = document.getElementById("search-clear");
+
         // ============================================
-        // LUMI SPA NAVIGATION v2.2.0
+        // HEADER DROPDOWN HANDLERS
         // ============================================
-        document.addEventListener('DOMContentLoaded', function () {
-            const feedGrid = document.getElementById('feed-grid');
-            const searchInput = document.getElementById('search-input');
-            const searchClearMain = document.getElementById('search-clear-main');
-            const trendChipsContainer = document.getElementById('trend-chips-container');
-            const autocompleteDropdown = document.getElementById('autocomplete-dropdown');
-            const searchOverlay = document.getElementById('search-overlay');
-            const searchInputOverlay = document.getElementById('search-input-overlay');
-            const searchCancel = document.getElementById('search-cancel');
-            const searchClear = document.getElementById('search-clear');
+        const notificationsBtn = document.getElementById("notifications-btn");
+        const notificationsDropdown = document.getElementById(
+          "notifications-dropdown",
+        );
+        const profileBtn = document.getElementById("profile-btn");
+        const profileDropdown = document.getElementById("profile-dropdown");
 
-            // ============================================
-            // HEADER DROPDOWN HANDLERS
-            // ============================================
-            const notificationsBtn = document.getElementById('notifications-btn');
-            const notificationsDropdown = document.getElementById('notifications-dropdown');
-            const profileBtn = document.getElementById('profile-btn');
-            const profileDropdown = document.getElementById('profile-dropdown');
+        function closeAllDropdowns() {
+          document
+            .querySelectorAll(".header-dropdown")
+            .forEach((d) => d.classList.remove("active"));
+          trendChipsContainer?.classList.remove("active");
+          autocompleteDropdown?.classList.remove("active");
+        }
 
-            function closeAllDropdowns() {
-                document.querySelectorAll('.header-dropdown').forEach(d => d.classList.remove('active'));
-                trendChipsContainer?.classList.remove('active');
-                autocompleteDropdown?.classList.remove('active');
-            }
-
-            notificationsBtn?.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const isOpen = notificationsDropdown.classList.contains('active');
-                closeAllDropdowns();
-                if (!isOpen) notificationsDropdown.classList.add('active');
-            });
-
-            profileBtn?.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const isOpen = profileDropdown.classList.contains('active');
-                closeAllDropdowns();
-                if (!isOpen) profileDropdown.classList.add('active');
-            });
-
-            // Language Toggle
-            const langToggle = document.getElementById('lang-toggle');
-            const langDropdown = document.getElementById('language-dropdown');
-
-            langToggle?.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const isOpen = langDropdown?.classList.contains('active');
-                closeAllDropdowns();
-                if (!isOpen) langDropdown?.classList.add('active');
-            });
-
-            // Language Selection
-            document.querySelectorAll('.lang-option').forEach(option => {
-                option.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const lang = option.dataset.lang;
-                    const langCode = lang.split('-')[0].toUpperCase();
-
-                    // Update button text
-                    langToggle.textContent = langCode;
-
-                    // Update active state
-                    document.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
-                    option.classList.add('active');
-
-                    // Save preference
-                    localStorage.setItem('language', lang);
-
-                    // Update app language state (used by API calls)
-                    if (typeof state !== 'undefined') {
-                        state.language = lang;
-                    }
-
-                    // Update i18n if available
-                    if (typeof i18n !== 'undefined' && i18n.setLanguage) {
-                        // Normalize to 2-letter ISO code (e.g., "en-US" -> "en")
-                        const normalizedLang = lang.split('-')[0];
-                        i18n.setLanguage(normalizedLang);
-                    }
-
-                    closeAllDropdowns();
-
-                    // Reload content with new language
-                    if (typeof loadHomePage === 'function') {
-                        loadHomePage();
-                    }
-                });
-            });
-
-            // Close dropdowns on outside click
-            document.addEventListener('click', (e) => {
-                if (!e.target.closest('.header-dropdown') && !e.target.closest('.header-btn')) {
-                    closeAllDropdowns();
-                }
-            });
-
-            // Login trigger
-            document.getElementById('login-trigger')?.addEventListener('click', () => {
-                closeAllDropdowns();
-                document.getElementById('login-modal')?.classList.add('active');
-            });
-
-            // Premium trigger
-            document.getElementById('premium-trigger')?.addEventListener('click', () => {
-                closeAllDropdowns();
-                if (typeof showPremiumModal === 'function') showPremiumModal();
-            });
-
-            // ============================================
-            // LOGIN MODAL HANDLERS
-            // ============================================
-            const loginModal = document.getElementById('login-modal');
-            const loginModalClose = document.getElementById('login-modal-close');
-
-            // Close login modal
-            loginModalClose?.addEventListener('click', () => {
-                loginModal?.classList.remove('active');
-            });
-
-            // Google Login
-            document.getElementById('google-login-btn')?.addEventListener('click', async () => {
-                try {
-                    if (window.AuthService?.loginWithGoogle) {
-                        await window.AuthService.loginWithGoogle();
-                        loginModal?.classList.remove('active');
-                        if (typeof updateAuthUI === 'function') updateAuthUI();
-                        location.reload(); // Refresh to update UI
-                    } else {
-                        alert('Firebase henüz yüklenmedi. Lütfen bekleyin.');
-                    }
-                } catch (err) {
-                    console.error('Google login error:', err);
-                    alert('Giriş başarısız: ' + err.message);
-                }
-            });
-
-            // Email/Password Login
-            document.getElementById('email-login-form')?.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const email = document.getElementById('login-email')?.value;
-                const password = document.getElementById('login-password')?.value;
-
-                if (!email || !password) {
-                    alert('Lütfen e-posta ve şifre girin.');
-                    return;
-                }
-
-                try {
-                    if (window.AuthService?.loginWithEmail) {
-                        await window.AuthService.loginWithEmail(email, password);
-                        loginModal?.classList.remove('active');
-                        location.reload();
-                    }
-                } catch (err) {
-                    console.error('Email login error:', err);
-                    if (err.code === 'auth/user-not-found') {
-                        alert('Bu e-posta ile kayıtlı kullanıcı bulunamadı.');
-                    } else if (err.code === 'auth/wrong-password') {
-                        alert('Şifre yanlış.');
-                    } else {
-                        alert('Giriş başarısız: ' + err.message);
-                    }
-                }
-            });
-
-            // Tester Premium Login
-            document.getElementById('tester-login-btn')?.addEventListener('click', async () => {
-                try {
-                    if (window.AuthService?.loginAsTester) {
-                        await window.AuthService.loginAsTester();
-                        loginModal?.classList.remove('active');
-                        alert('👑 Tester Premium olarak giriş yapıldı!\n\nTüm premium özelliklere erişebilirsiniz.');
-                        location.reload();
-                    }
-                } catch (err) {
-                    console.error('Tester login error:', err);
-                }
-            });
-
-            // ============================================
-            // DUAL-MODE SEARCH (Header Search Bar)
-            // ============================================
-            let searchTimeout;
-
-            // Focus: Show trend chips
-            searchInput?.addEventListener('focus', () => {
-                if (!searchInput.value) {
-                    trendChipsContainer?.classList.add('active');
-                }
-                autocompleteDropdown?.classList.remove('active');
-            });
-
-            // Input: Show autocomplete (with debounce)
-            let autocompleteDebounce;
-            searchInput?.addEventListener('input', function () {
-                const query = this.value.trim();
-                searchClearMain.style.display = query ? 'block' : 'none';
-
-                // Clear previous debounce
-                clearTimeout(autocompleteDebounce);
-
-                if (query.length >= 2) {
-                    trendChipsContainer?.classList.remove('active');
-                    // Debounce: wait 300ms after last keystroke
-                    autocompleteDebounce = setTimeout(() => {
-                        showAutocomplete(query);
-                    }, 300);
-                } else {
-                    autocompleteDropdown?.classList.remove('active');
-                    if (!query) trendChipsContainer?.classList.add('active');
-                }
-            });
-
-            // Enter: Open full search overlay
-            searchInput?.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter' && this.value.trim()) {
-                    closeAllDropdowns();
-                    this.blur(); // Close mobile keyboard
-                    searchOverlay?.classList.add('active');
-                    if (searchInputOverlay) {
-                        searchInputOverlay.value = this.value;
-                        // Don't focus overlay input - let keyboard close
-                        searchInputOverlay.blur();
-                        handleOverlaySearch(this.value);
-                    }
-                }
-            });
-
-            // Blur: Hide dropdowns (with delay for click handling)
-            searchInput?.addEventListener('blur', () => {
-                setTimeout(() => {
-                    if (!document.activeElement?.closest('.search-pill')) {
-                        trendChipsContainer?.classList.remove('active');
-                        autocompleteDropdown?.classList.remove('active');
-                    }
-                }, 200);
-            });
-
-            // Clear button
-            searchClearMain?.addEventListener('click', () => {
-                searchInput.value = '';
-                searchClearMain.style.display = 'none';
-                autocompleteDropdown?.classList.remove('active');
-                trendChipsContainer?.classList.add('active');
-                searchInput.focus();
-            });
-
-            // Trend chip click
-            document.querySelectorAll('.trend-chip').forEach(chip => {
-                chip.addEventListener('click', function () {
-                    searchInput.value = this.textContent;
-                    trendChipsContainer?.classList.remove('active');
-                    showAutocomplete(this.textContent);
-                });
-            });
-
-            // ============================================
-            // BOTTOM NAV
-            // ============================================
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.addEventListener('click', function () {
-                    const page = this.dataset.page;
-                    switchView('view-' + page);
-                    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-
-            // ============================================
-            // SEARCH OVERLAY (Full Page)
-            // ============================================
-            searchCancel?.addEventListener('click', function () {
-                searchOverlay.classList.remove('active');
-                searchInputOverlay.value = '';
-                searchClear.style.display = 'none';
-                // Also clear main search input
-                if (searchInput) {
-                    searchInput.value = '';
-                    searchClearMain.style.display = 'none';
-                }
-                // Reset search state
-                if (typeof state !== 'undefined') {
-                    state.searchQuery = '';
-                    state.cameFromSearch = false;
-                    state.searchResultsVisible = false;
-                }
-            });
-
-            searchInputOverlay?.addEventListener('input', function () {
-                searchClear.style.display = this.value ? 'block' : 'none';
-                if (this.value.length >= 2) {
-                    handleOverlaySearch(this.value);
-                }
-            });
-
-            searchClear?.addEventListener('click', function () {
-                searchInputOverlay.value = '';
-                this.style.display = 'none';
-                document.getElementById('search-grid').innerHTML = '';
-            });
-
-            // Filter Chips
-            document.querySelectorAll('.filter-chip').forEach(chip => {
-                chip.addEventListener('click', function () {
-                    const group = this.parentElement;
-                    group.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-                    this.classList.add('active');
-                    if (searchInputOverlay.value) {
-                        handleOverlaySearch(searchInputOverlay.value);
-                    }
-                });
-            });
-
-            // ============================================
-            // FAVORITES TAB
-            // ============================================
-            document.querySelectorAll('.fav-tab').forEach(tab => {
-                tab.addEventListener('click', function () {
-                    document.querySelectorAll('.fav-tab').forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    loadFavoritesList(this.dataset.list);
-                });
-            });
-
-            // ============================================
-            // MODAL HANDLERS (with scroll lock)
-            // ============================================
-            document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
-                backdrop.addEventListener('click', function () {
-                    const modal = this.closest('.modal');
-                    modal.classList.remove('active');
-                    document.body.style.overflow = ''; // Unlock scroll
-                    // Restore search state when detail modal closes
-                    if (modal.id === 'detail-modal') {
-                        restoreSearchStateOnModalClose();
-                    }
-                    // Show bottom nav again
-                    const bottomNav = document.querySelector('.bottom-nav');
-                    if (bottomNav) bottomNav.style.display = '';
-                });
-            });
-
-            document.querySelectorAll('.modal-close').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    const modal = this.closest('.modal');
-                    modal.classList.remove('active');
-                    document.body.style.overflow = ''; // Unlock scroll
-                    // Restore search state when detail modal closes
-                    if (modal.id === 'detail-modal') {
-                        restoreSearchStateOnModalClose();
-                    }
-                    // Show bottom nav again
-                    const bottomNav = document.querySelector('.bottom-nav');
-                    if (bottomNav) bottomNav.style.display = '';
-                });
-            });
-
-            document.getElementById('login-modal-close')?.addEventListener('click', function () {
-                document.getElementById('login-modal').classList.remove('active');
-                document.body.style.overflow = '';
-            });
-
-            // ============================================
-            // INIT
-            // ============================================
-            loadInfinityFeed();
+        notificationsBtn?.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const isOpen = notificationsDropdown.classList.contains("active");
+          closeAllDropdowns();
+          if (!isOpen) notificationsDropdown.classList.add("active");
         });
 
-        // ============================================
-        // SEARCH STATE RESTORATION
-        // ============================================
-        function restoreSearchStateOnModalClose() {
-            // Check if user came from search (via app.js state)
-            if (typeof state !== 'undefined' && state.cameFromSearch) {
-                const searchInput = document.getElementById('search-input');
-                const searchClearMain = document.getElementById('search-clear-main');
-                const searchOverlay = document.getElementById('search-overlay');
-                const searchInputOverlay = document.getElementById('search-input-overlay');
-
-                // If we have a saved search query
-                if (state.searchQuery) {
-                    // Restore search input value
-                    if (searchInput) {
-                        searchInput.value = state.searchQuery;
-                        if (searchClearMain) searchClearMain.style.display = 'block';
-                    }
-
-                    // If search overlay was being used, reopen it with results
-                    if (state.searchResultsVisible && searchOverlay) {
-                        searchOverlay.classList.add('active');
-                        if (searchInputOverlay) {
-                            searchInputOverlay.value = state.searchQuery;
-                            // Re-run search to repopulate results
-                            handleOverlaySearch(state.searchQuery);
-                        }
-                    }
-
-                    // Restore scroll position
-                    if (state.searchScrollPosition) {
-                        setTimeout(() => {
-                            window.scrollTo({ top: state.searchScrollPosition, behavior: 'instant' });
-                        }, 100);
-                    }
-                }
-
-                // Reset the flag
-                state.cameFromSearch = false;
-                console.log('Search state restored:', state.searchQuery, 'Scroll:', state.searchScrollPosition);
-            } else {
-                // Not from search, clear the input as before
-                const searchInput = document.getElementById('search-input');
-                const searchClearMain = document.getElementById('search-clear-main');
-                if (searchInput) {
-                    searchInput.value = '';
-                    if (searchClearMain) searchClearMain.style.display = 'none';
-                }
-            }
-        }
-
-        // ============================================
-        // SPA VIEW ROUTER WITH HISTORY
-        // ============================================
-        function switchView(viewId, pushToHistory = true) {
-            document.querySelectorAll('.view').forEach(el => {
-                el.classList.remove('active');
-            });
-
-            const target = document.getElementById(viewId);
-            if (target) {
-                target.classList.add('active');
-            }
-
-            // Close search overlay if open
-            document.getElementById('search-overlay')?.classList.remove('active');
-
-            // Hide header search on wizard, profile, and favorites pages
-            const searchContainer = document.querySelector('.search-container');
-            if (searchContainer) {
-                const hideSearchPages = ['view-wizard', 'view-profile', 'view-favorites'];
-                searchContainer.style.display = hideSearchPages.includes(viewId) ? 'none' : 'block';
-            }
-
-            // Push to browser history for back button support
-            if (pushToHistory) {
-                const stateData = {
-                    view: viewId,
-                    searchQuery: typeof state !== 'undefined' ? state.searchQuery : '',
-                    searchResults: typeof state !== 'undefined' ? state.searchResults : []
-                };
-                history.pushState(stateData, '', `#${viewId.replace('view-', '')}`);
-            }
-
-            // Load content for specific views
-            if (viewId === 'view-favorites') {
-                loadFavoritesList('liked');
-            } else if (viewId === 'view-profile') {
-                loadProfileData();
-            }
-        }
-
-        // Navigate to home page (called by logo click)
-        function loadHomePage() {
-            switchView('view-home');
-            // Update bottom nav to show home as active
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.querySelector('.nav-item[data-page="home"]')?.classList.add('active');
-            // Scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // Handle browser back/forward buttons
-        window.addEventListener('popstate', function (event) {
-            if (event.state && event.state.view) {
-                // Restore view without pushing new history
-                switchView(event.state.view, false);
-
-                // Restore search state if available
-                if (typeof state !== 'undefined' && event.state.searchQuery) {
-                    state.searchQuery = event.state.searchQuery;
-                    state.searchResults = event.state.searchResults || [];
-                    const searchInput = document.getElementById('search-input');
-                    if (searchInput) {
-                        searchInput.value = state.searchQuery;
-                    }
-                }
-
-                // Update active nav item
-                const viewName = event.state.view.replace('view-', '');
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                document.querySelector(`.nav-item[data-page="${viewName}"]`)?.classList.add('active');
-            }
+        profileBtn?.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const isOpen = profileDropdown.classList.contains("active");
+          closeAllDropdowns();
+          if (!isOpen) profileDropdown.classList.add("active");
         });
 
+        // Language Toggle
+        const langToggle = document.getElementById("lang-toggle");
+        const langDropdown = document.getElementById("language-dropdown");
+
+        langToggle?.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const isOpen = langDropdown?.classList.contains("active");
+          closeAllDropdowns();
+          if (!isOpen) langDropdown?.classList.add("active");
+        });
+
+        // Language Selection
+        document.querySelectorAll(".lang-option").forEach((option) => {
+          option.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const lang = option.dataset.lang;
+            const langCode = lang.split("-")[0].toUpperCase();
+
+            // Update button text
+            langToggle.textContent = langCode;
+
+            // Update active state
+            document
+              .querySelectorAll(".lang-option")
+              .forEach((o) => o.classList.remove("active"));
+            option.classList.add("active");
+
+            // Save preference
+            localStorage.setItem("language", lang);
+
+            // Update app language state (used by API calls)
+            if (typeof state !== "undefined") {
+              state.language = lang;
+            }
+
+            // Update i18n if available
+            if (typeof i18n !== "undefined" && i18n.setLanguage) {
+              // Normalize to 2-letter ISO code (e.g., "en-US" -> "en")
+              const normalizedLang = lang.split("-")[0];
+              i18n.setLanguage(normalizedLang);
+            }
+
+            closeAllDropdowns();
+
+            // Reload content with new language
+            if (typeof loadHomePage === "function") {
+              loadHomePage();
+            }
+          });
+        });
+
+        // Close dropdowns on outside click
+        document.addEventListener("click", (e) => {
+          if (
+            !e.target.closest(".header-dropdown") &&
+            !e.target.closest(".header-btn")
+          ) {
+            closeAllDropdowns();
+          }
+        });
+
+        // Login trigger
+        document
+          .getElementById("login-trigger")
+          ?.addEventListener("click", () => {
+            closeAllDropdowns();
+            document.getElementById("login-modal")?.classList.add("active");
+          });
+
+        // Premium trigger
+        document
+          .getElementById("premium-trigger")
+          ?.addEventListener("click", () => {
+            closeAllDropdowns();
+            if (typeof showPremiumModal === "function") showPremiumModal();
+          });
+
         // ============================================
-        // INFINITY FEED - MIXED CONTENT
+        // LOGIN MODAL HANDLERS
         // ============================================
-        async function loadInfinityFeed() {
-            const feedGrid = document.getElementById('feed-grid');
-            const loadingEl = document.getElementById('feed-loading');
+        const loginModal = document.getElementById("login-modal");
+        const loginModalClose = document.getElementById("login-modal-close");
+
+        // Close login modal
+        loginModalClose?.addEventListener("click", () => {
+          loginModal?.classList.remove("active");
+        });
+
+        // Google Login
+        document
+          .getElementById("google-login-btn")
+          ?.addEventListener("click", async () => {
+            try {
+              if (window.AuthService?.loginWithGoogle) {
+                await window.AuthService.loginWithGoogle();
+                loginModal?.classList.remove("active");
+                if (typeof updateAuthUI === "function") updateAuthUI();
+                location.reload(); // Refresh to update UI
+              } else {
+                alert("Firebase henüz yüklenmedi. Lütfen bekleyin.");
+              }
+            } catch (err) {
+              console.error("Google login error:", err);
+              alert("Giriş başarısız: " + err.message);
+            }
+          });
+
+        // Email/Password Login
+        document
+          .getElementById("email-login-form")
+          ?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const email = document.getElementById("login-email")?.value;
+            const password = document.getElementById("login-password")?.value;
+
+            if (!email || !password) {
+              alert("Lütfen e-posta ve şifre girin.");
+              return;
+            }
 
             try {
-                // Fetch from multiple endpoints
-                const [trending, nowPlaying, topRated] = await Promise.all([
-                    API.getTrending ? API.getTrending() : fetch(`https://api.themoviedb.org/3/trending/all/week?api_key=${CONFIG.TMDB_API_KEY}&language=tr-TR`).then(r => r.json()),
-                    API.getNowPlaying ? API.getNowPlaying() : fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=${CONFIG.TMDB_API_KEY}&language=tr-TR`).then(r => r.json()),
-                    API.getTopRated ? API.getTopRated() : fetch(`https://api.themoviedb.org/3/movie/top_rated?api_key=${CONFIG.TMDB_API_KEY}&language=tr-TR`).then(r => r.json())
-                ]);
+              if (window.AuthService?.loginWithEmail) {
+                await window.AuthService.loginWithEmail(email, password);
+                loginModal?.classList.remove("active");
+                location.reload();
+              }
+            } catch (err) {
+              console.error("Email login error:", err);
+              if (err.code === "auth/user-not-found") {
+                alert("Bu e-posta ile kayıtlı kullanıcı bulunamadı.");
+              } else if (err.code === "auth/wrong-password") {
+                alert("Şifre yanlış.");
+              } else {
+                alert("Giriş başarısız: " + err.message);
+              }
+            }
+          });
 
-                // Combine and extract results
-                let allContent = [
-                    ...(trending.results || []),
-                    ...(nowPlaying.results || []),
-                    ...(topRated.results || [])
-                ];
+        // Tester Premium Login
+        document
+          .getElementById("tester-login-btn")
+          ?.addEventListener("click", async () => {
+            try {
+              if (window.AuthService?.loginAsTester) {
+                await window.AuthService.loginAsTester();
+                loginModal?.classList.remove("active");
+                alert(
+                  "👑 Tester Premium olarak giriş yapıldı!\n\nTüm premium özelliklere erişebilirsiniz.",
+                );
+                location.reload();
+              }
+            } catch (err) {
+              console.error("Tester login error:", err);
+            }
+          });
 
-                // Filter out items without posters
-                allContent = allContent.filter(item => item.poster_path);
+        // ============================================
+        // DUAL-MODE SEARCH (Header Search Bar)
+        // ============================================
+        let searchTimeout;
 
-                // Remove duplicates by ID
-                const seen = new Set();
-                allContent = allContent.filter(item => {
-                    if (seen.has(item.id)) return false;
-                    seen.add(item.id);
-                    return true;
+        // Focus: Show trend chips
+        searchInput?.addEventListener("focus", () => {
+          if (!searchInput.value) {
+            trendChipsContainer?.classList.add("active");
+          }
+          autocompleteDropdown?.classList.remove("active");
+        });
+
+        // Input: Show autocomplete (with debounce)
+        let autocompleteDebounce;
+        searchInput?.addEventListener("input", function () {
+          const query = this.value.trim();
+          searchClearMain.style.display = query ? "block" : "none";
+
+          // Clear previous debounce
+          clearTimeout(autocompleteDebounce);
+
+          if (query.length >= 2) {
+            trendChipsContainer?.classList.remove("active");
+            // Debounce: wait 300ms after last keystroke
+            autocompleteDebounce = setTimeout(() => {
+              showAutocomplete(query);
+            }, 300);
+          } else {
+            autocompleteDropdown?.classList.remove("active");
+            if (!query) trendChipsContainer?.classList.add("active");
+          }
+        });
+
+        // Enter: Open full search overlay
+        searchInput?.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" && this.value.trim()) {
+            closeAllDropdowns();
+            this.blur(); // Close mobile keyboard
+            searchOverlay?.classList.add("active");
+            if (searchInputOverlay) {
+              searchInputOverlay.value = this.value;
+              // Don't focus overlay input - let keyboard close
+              searchInputOverlay.blur();
+              handleOverlaySearch(this.value);
+            }
+          }
+        });
+
+        // Blur: Hide dropdowns (with delay for click handling)
+        searchInput?.addEventListener("blur", () => {
+          setTimeout(() => {
+            if (!document.activeElement?.closest(".search-pill")) {
+              trendChipsContainer?.classList.remove("active");
+              autocompleteDropdown?.classList.remove("active");
+            }
+          }, 200);
+        });
+
+        // Clear button
+        searchClearMain?.addEventListener("click", () => {
+          searchInput.value = "";
+          searchClearMain.style.display = "none";
+          autocompleteDropdown?.classList.remove("active");
+          trendChipsContainer?.classList.add("active");
+          searchInput.focus();
+        });
+
+        // Trend chip click
+        document.querySelectorAll(".trend-chip").forEach((chip) => {
+          chip.addEventListener("click", function () {
+            searchInput.value = this.textContent;
+            trendChipsContainer?.classList.remove("active");
+            showAutocomplete(this.textContent);
+          });
+        });
+
+        // ============================================
+        // BOTTOM NAV
+        // ============================================
+        document.querySelectorAll(".nav-item").forEach((item) => {
+          item.addEventListener("click", function () {
+            const page = this.dataset.page;
+            switchView("view-" + page);
+            document
+              .querySelectorAll(".nav-item")
+              .forEach((n) => n.classList.remove("active"));
+            this.classList.add("active");
+          });
+        });
+
+        // ============================================
+        // SEARCH OVERLAY (Full Page)
+        // ============================================
+        searchCancel?.addEventListener("click", function () {
+          searchOverlay.classList.remove("active");
+          searchInputOverlay.value = "";
+          searchClear.style.display = "none";
+          // Also clear main search input
+          if (searchInput) {
+            searchInput.value = "";
+            searchClearMain.style.display = "none";
+          }
+          // Reset search state
+          if (typeof state !== "undefined") {
+            state.searchQuery = "";
+            state.cameFromSearch = false;
+            state.searchResultsVisible = false;
+          }
+        });
+
+        searchInputOverlay?.addEventListener("input", function () {
+          searchClear.style.display = this.value ? "block" : "none";
+          if (this.value.length >= 2) {
+            handleOverlaySearch(this.value);
+          }
+        });
+
+        searchClear?.addEventListener("click", function () {
+          searchInputOverlay.value = "";
+          this.style.display = "none";
+          document.getElementById("search-grid").innerHTML = "";
+        });
+
+        // Filter Chips
+        document.querySelectorAll(".filter-chip").forEach((chip) => {
+          chip.addEventListener("click", function () {
+            const group = this.parentElement;
+            group
+              .querySelectorAll(".filter-chip")
+              .forEach((c) => c.classList.remove("active"));
+            this.classList.add("active");
+            if (searchInputOverlay.value) {
+              handleOverlaySearch(searchInputOverlay.value);
+            }
+          });
+        });
+
+        // ============================================
+        // FAVORITES TAB
+        // ============================================
+        document.querySelectorAll(".fav-tab").forEach((tab) => {
+          tab.addEventListener("click", function () {
+            document
+              .querySelectorAll(".fav-tab")
+              .forEach((t) => t.classList.remove("active"));
+            this.classList.add("active");
+            loadFavoritesList(this.dataset.list);
+          });
+        });
+
+        // ============================================
+        // MODAL HANDLERS (with scroll lock)
+        // ============================================
+        document.querySelectorAll(".modal-backdrop").forEach((backdrop) => {
+          backdrop.addEventListener("click", function () {
+            const modal = this.closest(".modal");
+            modal.classList.remove("active");
+            document.body.style.overflow = ""; // Unlock scroll
+            // Restore search state when detail modal closes
+            if (modal.id === "detail-modal") {
+              restoreSearchStateOnModalClose();
+            }
+            // Show bottom nav again
+            const bottomNav = document.querySelector(".bottom-nav");
+            if (bottomNav) bottomNav.style.display = "";
+          });
+        });
+
+        document.querySelectorAll(".modal-close").forEach((btn) => {
+          btn.addEventListener("click", function () {
+            const modal = this.closest(".modal");
+            modal.classList.remove("active");
+            document.body.style.overflow = ""; // Unlock scroll
+            // Restore search state when detail modal closes
+            if (modal.id === "detail-modal") {
+              restoreSearchStateOnModalClose();
+            }
+            // Show bottom nav again
+            const bottomNav = document.querySelector(".bottom-nav");
+            if (bottomNav) bottomNav.style.display = "";
+          });
+        });
+
+        document
+          .getElementById("login-modal-close")
+          ?.addEventListener("click", function () {
+            document.getElementById("login-modal").classList.remove("active");
+            document.body.style.overflow = "";
+          });
+
+        // ============================================
+        // INIT
+        // ============================================
+        loadInfinityFeed();
+      });
+
+      // ============================================
+      // SEARCH STATE RESTORATION
+      // ============================================
+      function restoreSearchStateOnModalClose() {
+        // Check if user came from search (via app.js state)
+        if (typeof state !== "undefined" && state.cameFromSearch) {
+          const searchInput = document.getElementById("search-input");
+          const searchClearMain = document.getElementById("search-clear-main");
+          const searchOverlay = document.getElementById("search-overlay");
+          const searchInputOverlay = document.getElementById(
+            "search-input-overlay",
+          );
+
+          // If we have a saved search query
+          if (state.searchQuery) {
+            // Restore search input value
+            if (searchInput) {
+              searchInput.value = state.searchQuery;
+              if (searchClearMain) searchClearMain.style.display = "block";
+            }
+
+            // If search overlay was being used, reopen it with results
+            if (state.searchResultsVisible && searchOverlay) {
+              searchOverlay.classList.add("active");
+              if (searchInputOverlay) {
+                searchInputOverlay.value = state.searchQuery;
+                // Re-run search to repopulate results
+                handleOverlaySearch(state.searchQuery);
+              }
+            }
+
+            // Restore scroll position
+            if (state.searchScrollPosition) {
+              setTimeout(() => {
+                window.scrollTo({
+                  top: state.searchScrollPosition,
+                  behavior: "instant",
                 });
+              }, 100);
+            }
+          }
 
-                // Shuffle array (Fisher-Yates)
-                for (let i = allContent.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [allContent[i], allContent[j]] = [allContent[j], allContent[i]];
-                }
+          // Reset the flag
+          state.cameFromSearch = false;
+          console.log(
+            "Search state restored:",
+            state.searchQuery,
+            "Scroll:",
+            state.searchScrollPosition,
+          );
+        } else {
+          // Not from search, clear the input as before
+          const searchInput = document.getElementById("search-input");
+          const searchClearMain = document.getElementById("search-clear-main");
+          if (searchInput) {
+            searchInput.value = "";
+            if (searchClearMain) searchClearMain.style.display = "none";
+          }
+        }
+      }
 
-                // Render masonry items
-                feedGrid.innerHTML = allContent.map(item => `
-                    <div class="masonry-item" data-id="${item.id}" data-type="${item.media_type || 'movie'}">
+      // ============================================
+      // SPA VIEW ROUTER WITH HISTORY
+      // ============================================
+      function switchView(viewId, pushToHistory = true) {
+        document.querySelectorAll(".view").forEach((el) => {
+          el.classList.remove("active");
+        });
+
+        const target = document.getElementById(viewId);
+        if (target) {
+          target.classList.add("active");
+        }
+
+        // Close search overlay if open
+        document.getElementById("search-overlay")?.classList.remove("active");
+
+        // Hide header search on wizard, profile, and favorites pages
+        const searchContainer = document.querySelector(".search-container");
+        if (searchContainer) {
+          const hideSearchPages = [
+            "view-wizard",
+            "view-profile",
+            "view-favorites",
+          ];
+          searchContainer.style.display = hideSearchPages.includes(viewId)
+            ? "none"
+            : "block";
+        }
+
+        // Push to browser history for back button support
+        if (pushToHistory) {
+          const stateData = {
+            view: viewId,
+            searchQuery: typeof state !== "undefined" ? state.searchQuery : "",
+            searchResults:
+              typeof state !== "undefined" ? state.searchResults : [],
+          };
+          history.pushState(stateData, "", `#${viewId.replace("view-", "")}`);
+        }
+
+        // Load content for specific views
+        if (viewId === "view-favorites") {
+          loadFavoritesList("liked");
+        } else if (viewId === "view-profile") {
+          loadProfileData();
+        }
+      }
+
+      // Navigate to home page (called by logo click)
+      function loadHomePage() {
+        switchView("view-home");
+        // Update bottom nav to show home as active
+        document
+          .querySelectorAll(".nav-item")
+          .forEach((n) => n.classList.remove("active"));
+        document
+          .querySelector('.nav-item[data-page="home"]')
+          ?.classList.add("active");
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      // Handle browser back/forward buttons
+      window.addEventListener("popstate", function (event) {
+        if (event.state && event.state.view) {
+          // Restore view without pushing new history
+          switchView(event.state.view, false);
+
+          // Restore search state if available
+          if (typeof state !== "undefined" && event.state.searchQuery) {
+            state.searchQuery = event.state.searchQuery;
+            state.searchResults = event.state.searchResults || [];
+            const searchInput = document.getElementById("search-input");
+            if (searchInput) {
+              searchInput.value = state.searchQuery;
+            }
+          }
+
+          // Update active nav item
+          const viewName = event.state.view.replace("view-", "");
+          document
+            .querySelectorAll(".nav-item")
+            .forEach((n) => n.classList.remove("active"));
+          document
+            .querySelector(`.nav-item[data-page="${viewName}"]`)
+            ?.classList.add("active");
+        }
+      });
+
+      // ============================================
+      // INFINITY FEED - MIXED CONTENT
+      // ============================================
+      async function loadInfinityFeed() {
+        const feedGrid = document.getElementById("feed-grid");
+        const loadingEl = document.getElementById("feed-loading");
+
+        try {
+          // Fetch from multiple endpoints
+          const [trending, nowPlaying, topRated] = await Promise.all([
+            API.getTrending
+              ? API.getTrending()
+              : fetch(
+                  `https://api.themoviedb.org/3/trending/all/week?api_key=${CONFIG.TMDB_API_KEY}&language=tr-TR`,
+                ).then((r) => r.json()),
+            API.getNowPlaying
+              ? API.getNowPlaying()
+              : fetch(
+                  `https://api.themoviedb.org/3/movie/now_playing?api_key=${CONFIG.TMDB_API_KEY}&language=tr-TR`,
+                ).then((r) => r.json()),
+            API.getTopRated
+              ? API.getTopRated()
+              : fetch(
+                  `https://api.themoviedb.org/3/movie/top_rated?api_key=${CONFIG.TMDB_API_KEY}&language=tr-TR`,
+                ).then((r) => r.json()),
+          ]);
+
+          // Combine and extract results
+          let allContent = [
+            ...(trending.results || []),
+            ...(nowPlaying.results || []),
+            ...(topRated.results || []),
+          ];
+
+          // Filter out items without posters
+          allContent = allContent.filter((item) => item.poster_path);
+
+          // Remove duplicates by ID
+          const seen = new Set();
+          allContent = allContent.filter((item) => {
+            if (seen.has(item.id)) return false;
+            seen.add(item.id);
+            return true;
+          });
+
+          // Shuffle array (Fisher-Yates)
+          for (let i = allContent.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [allContent[i], allContent[j]] = [allContent[j], allContent[i]];
+          }
+
+          // Render masonry items
+          feedGrid.innerHTML = allContent
+            .map(
+              (item) => `
+                    <div class="masonry-item" data-id="${item.id}" data-type="${item.media_type || "movie"}">
                         <img 
                             src="https://image.tmdb.org/t/p/w500${item.poster_path}" 
                             alt="${item.title || item.name}"
@@ -1154,223 +1570,262 @@
                             onerror="this.parentElement.style.display='none'"
                         >
                     </div>
-                `).join('');
+                `,
+            )
+            .join("");
 
-                // Add click handlers to open detail modal
-                feedGrid.querySelectorAll('.masonry-item').forEach(item => {
-                    item.addEventListener('click', function () {
-                        const id = this.dataset.id;
-                        const type = this.dataset.type;
-                        openDetailModal(id, type);
-                    });
-                });
-
-            } catch (error) {
-                console.error('Failed to load infinity feed:', error);
-                feedGrid.innerHTML = `
+          // Add click handlers to open detail modal
+          feedGrid.querySelectorAll(".masonry-item").forEach((item) => {
+            item.addEventListener("click", function () {
+              const id = this.dataset.id;
+              const type = this.dataset.type;
+              openDetailModal(id, type);
+            });
+          });
+        } catch (error) {
+          console.error("Failed to load infinity feed:", error);
+          feedGrid.innerHTML = `
                     <div class="empty-state" style="display: flex; grid-column: 1 / -1;">
                         <span class="material-symbols-outlined" style="font-size: 64px; opacity: 0.3;">error</span>
                         <p>İçerik yüklenemedi</p>
                     </div>
                 `;
-            }
         }
+      }
 
-        // ============================================
-        // SEARCH OVERLAY
-        // ============================================
-        let searchTimeout;
-        async function handleOverlaySearch(query) {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(async () => {
-                const searchGrid = document.getElementById('search-grid');
-                const activeFilter = document.querySelector('.filter-chip.active')?.dataset.filter || 'all';
+      // ============================================
+      // SEARCH OVERLAY
+      // ============================================
+      let searchTimeout;
+      async function handleOverlaySearch(query) {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(async () => {
+          const searchGrid = document.getElementById("search-grid");
+          const activeFilter =
+            document.querySelector(".filter-chip.active")?.dataset.filter ||
+            "all";
 
-                try {
-                    let endpoint = 'multi';
-                    if (activeFilter === 'movie') endpoint = 'movie';
-                    else if (activeFilter === 'tv') endpoint = 'tv';
-                    else if (activeFilter === 'person') endpoint = 'person';
+          try {
+            let endpoint = "multi";
+            if (activeFilter === "movie") endpoint = "movie";
+            else if (activeFilter === "tv") endpoint = "tv";
+            else if (activeFilter === "person") endpoint = "person";
 
-                    const response = await fetch(
-                        `https://api.themoviedb.org/3/search/${endpoint}?api_key=${CONFIG.TMDB_API_KEY}&language=tr-TR&query=${encodeURIComponent(query)}`
-                    );
-                    const data = await response.json();
+            const response = await fetch(
+              `https://api.themoviedb.org/3/search/${endpoint}?api_key=${CONFIG.TMDB_API_KEY}&language=tr-TR&query=${encodeURIComponent(query)}`,
+            );
+            const data = await response.json();
 
-                    if (data.results && data.results.length > 0) {
-                        searchGrid.innerHTML = data.results
-                            .filter(item => item.poster_path || item.profile_path)
-                            .slice(0, 20)
-                            .map(item => {
-                                const posterPath = item.poster_path || item.profile_path;
-                                const title = item.title || item.name;
-                                const year = (item.release_date || item.first_air_date || '').split('-')[0];
-                                const rating = item.vote_average?.toFixed(1) || '';
-                                const type = item.media_type === 'person' ? 'Actor' : (item.media_type === 'tv' ? 'TV Series' : year);
+            if (data.results && data.results.length > 0) {
+              searchGrid.innerHTML = data.results
+                .filter((item) => item.poster_path || item.profile_path)
+                .slice(0, 20)
+                .map((item) => {
+                  const posterPath = item.poster_path || item.profile_path;
+                  const title = item.title || item.name;
+                  const year = (
+                    item.release_date ||
+                    item.first_air_date ||
+                    ""
+                  ).split("-")[0];
+                  const rating = item.vote_average?.toFixed(1) || "";
+                  const type =
+                    item.media_type === "person"
+                      ? "Actor"
+                      : item.media_type === "tv"
+                        ? "TV Series"
+                        : year;
 
-                                return `
-                                    <div class="result-card" data-id="${item.id}" data-type="${item.media_type || 'movie'}">
+                  return `
+                                    <div class="result-card" data-id="${item.id}" data-type="${item.media_type || "movie"}">
                                         <div class="result-card-poster" style="background-image: url('https://image.tmdb.org/t/p/w342${posterPath}')"></div>
                                         <div class="result-card-info">
                                             <div class="result-card-title">${title}</div>
                                             <div class="result-card-meta">
                                                 <span>${type}</span>
-                                                ${rating ? `<span class="dot"></span><span class="result-card-rating"><span class="material-symbols-outlined">star</span>${rating}</span>` : ''}
+                                                ${rating ? `<span class="dot"></span><span class="result-card-rating"><span class="material-symbols-outlined">star</span>${rating}</span>` : ""}
                                             </div>
                                         </div>
                                     </div>
                                 `;
-                            }).join('');
+                })
+                .join("");
 
-                        // Add click handlers
-                        searchGrid.querySelectorAll('.result-card').forEach(card => {
-                            card.addEventListener('click', function () {
-                                const id = this.dataset.id;
-                                const type = this.dataset.type;
+              // Add click handlers
+              searchGrid.querySelectorAll(".result-card").forEach((card) => {
+                card.addEventListener("click", function () {
+                  const id = this.dataset.id;
+                  const type = this.dataset.type;
 
-                                // Save search state before opening detail
-                                if (typeof state !== 'undefined') {
-                                    state.cameFromSearch = true;
-                                    state.searchResultsVisible = true;
-                                    state.searchQuery = document.getElementById('search-input-overlay')?.value || '';
-                                    state.searchScrollPosition = document.getElementById('search-grid')?.scrollTop || 0;
-                                }
+                  // Save search state before opening detail
+                  if (typeof state !== "undefined") {
+                    state.cameFromSearch = true;
+                    state.searchResultsVisible = true;
+                    state.searchQuery =
+                      document.getElementById("search-input-overlay")?.value ||
+                      "";
+                    state.searchScrollPosition =
+                      document.getElementById("search-grid")?.scrollTop || 0;
+                  }
 
-                                // Hide search overlay (will be restored on modal close)
-                                document.getElementById('search-overlay').classList.remove('active');
-                                openDetailModal(id, type);
-                            });
-                        });
-                    } else {
-                        searchGrid.innerHTML = `
+                  // Hide search overlay (will be restored on modal close)
+                  document
+                    .getElementById("search-overlay")
+                    .classList.remove("active");
+                  openDetailModal(id, type);
+                });
+              });
+            } else {
+              searchGrid.innerHTML = `
                             <div style="grid-column: 1 / -1; text-align: center; padding: 48px; color: var(--text-muted);">
                                 <span class="material-symbols-outlined" style="font-size: 48px; opacity: 0.3;">search_off</span>
                                 <p>Sonuç bulunamadı</p>
                             </div>
                         `;
-                    }
-                } catch (error) {
-                    console.error('Search failed:', error);
-                }
-            }, 300);
-        }
+            }
+          } catch (error) {
+            console.error("Search failed:", error);
+          }
+        }, 300);
+      }
 
-        // ============================================
-        // AUTOCOMPLETE (Header Search)
-        // ============================================
-        let autocompleteRequestId = 0; // Track latest request
+      // ============================================
+      // AUTOCOMPLETE (Header Search)
+      // ============================================
+      let autocompleteRequestId = 0; // Track latest request
 
-        async function showAutocomplete(query) {
-            const dropdown = document.getElementById('autocomplete-dropdown');
-            const currentRequestId = ++autocompleteRequestId; // Increment request ID
+      async function showAutocomplete(query) {
+        const dropdown = document.getElementById("autocomplete-dropdown");
+        const currentRequestId = ++autocompleteRequestId; // Increment request ID
 
-            try {
-                const response = await fetch(
-                    `https://api.themoviedb.org/3/search/multi?api_key=${CONFIG.TMDB_API_KEY}&language=tr-TR&query=${encodeURIComponent(query)}`
-                );
-                const data = await response.json();
+        try {
+          const response = await fetch(
+            `https://api.themoviedb.org/3/search/multi?api_key=${CONFIG.TMDB_API_KEY}&language=tr-TR&query=${encodeURIComponent(query)}`,
+          );
+          const data = await response.json();
 
-                // Race condition guard: Only process if this is still the latest request
-                if (currentRequestId !== autocompleteRequestId) {
-                    return; // Stale request, ignore
-                }
+          // Race condition guard: Only process if this is still the latest request
+          if (currentRequestId !== autocompleteRequestId) {
+            return; // Stale request, ignore
+          }
 
-                if (data.results && data.results.length > 0) {
-                    dropdown.innerHTML = data.results
-                        .filter(item => item.poster_path || item.profile_path)
-                        .slice(0, 6)
-                        .map(item => {
-                            const posterPath = item.poster_path || item.profile_path;
-                            const title = item.title || item.name;
-                            const year = (item.release_date || item.first_air_date || '').split('-')[0];
-                            const rating = item.vote_average?.toFixed(1) || '';
-                            const mediaType = item.media_type === 'tv' ? 'Dizi' : (item.media_type === 'person' ? 'Kişi' : 'Film');
+          if (data.results && data.results.length > 0) {
+            dropdown.innerHTML = data.results
+              .filter((item) => item.poster_path || item.profile_path)
+              .slice(0, 6)
+              .map((item) => {
+                const posterPath = item.poster_path || item.profile_path;
+                const title = item.title || item.name;
+                const year = (
+                  item.release_date ||
+                  item.first_air_date ||
+                  ""
+                ).split("-")[0];
+                const rating = item.vote_average?.toFixed(1) || "";
+                const mediaType =
+                  item.media_type === "tv"
+                    ? "Dizi"
+                    : item.media_type === "person"
+                      ? "Kişi"
+                      : "Film";
 
-                            return `
-                                <div class="autocomplete-item" data-id="${item.id}" data-type="${item.media_type || 'movie'}">
+                return `
+                                <div class="autocomplete-item" data-id="${item.id}" data-type="${item.media_type || "movie"}">
                                     <div class="autocomplete-poster" style="background-image: url('https://image.tmdb.org/t/p/w92${posterPath}')"></div>
                                     <div class="autocomplete-info">
                                         <div class="autocomplete-title">${title}</div>
                                         <div class="autocomplete-meta">
                                             <span>${mediaType}</span>
-                                            ${year ? ` • ${year}` : ''}
-                                            ${rating ? `<span class="autocomplete-rating"><span class="material-symbols-outlined">star</span>${rating}</span>` : ''}
+                                            ${year ? ` • ${year}` : ""}
+                                            ${rating ? `<span class="autocomplete-rating"><span class="material-symbols-outlined">star</span>${rating}</span>` : ""}
                                         </div>
                                     </div>
                                 </div>
                             `;
-                        }).join('');
+              })
+              .join("");
 
-                    dropdown.classList.add('active');
+            dropdown.classList.add("active");
 
-                    // Add click handlers
-                    dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
-                        item.addEventListener('click', function () {
-                            const id = this.dataset.id;
-                            const type = this.dataset.type;
-                            dropdown.classList.remove('active');
-                            document.getElementById('search-input').blur();
-                            openDetailModal(id, type);
-                        });
-                    });
-                } else {
-                    dropdown.innerHTML = '<div class="dropdown-empty">Sonuç bulunamadı</div>';
-                    dropdown.classList.add('active');
-                }
-            } catch (error) {
-                console.error('Autocomplete failed:', error);
-                dropdown.classList.remove('active');
-            }
+            // Add click handlers
+            dropdown.querySelectorAll(".autocomplete-item").forEach((item) => {
+              item.addEventListener("click", function () {
+                const id = this.dataset.id;
+                const type = this.dataset.type;
+                dropdown.classList.remove("active");
+                document.getElementById("search-input").blur();
+                openDetailModal(id, type);
+              });
+            });
+          } else {
+            dropdown.innerHTML =
+              '<div class="dropdown-empty">Sonuç bulunamadı</div>';
+            dropdown.classList.add("active");
+          }
+        } catch (error) {
+          console.error("Autocomplete failed:", error);
+          dropdown.classList.remove("active");
         }
+      }
 
-        // ============================================
-        // DETAIL MODAL
-        // ============================================
-        async function openDetailModal(id, type) {
-            const modal = document.getElementById('detail-modal');
-            const modalBody = document.getElementById('modal-body');
+      // ============================================
+      // DETAIL MODAL
+      // ============================================
+      async function openDetailModal(id, type) {
+        const modal = document.getElementById("detail-modal");
+        const modalBody = document.getElementById("modal-body");
 
-            // SCROLL LOCK
-            document.body.style.overflow = 'hidden';
+        // SCROLL LOCK
+        document.body.style.overflow = "hidden";
 
-            modal.classList.add('active');
-            modalBody.innerHTML = '<div class="loading-state" style="display: flex; height: 300px;"><div class="spinner"></div></div>';
+        modal.classList.add("active");
+        modalBody.innerHTML =
+          '<div class="loading-state" style="display: flex; height: 300px;"><div class="spinner"></div></div>';
 
-            try {
-                // Fallback to direct API call
-                const response = await fetch(
-                    `https://api.themoviedb.org/3/${type}/${id}?api_key=${CONFIG.TMDB_API_KEY}&language=tr-TR&append_to_response=credits,videos,watch/providers`
-                );
-                const data = await response.json();
+        try {
+          // Fallback to direct API call
+          const response = await fetch(
+            `https://api.themoviedb.org/3/${type}/${id}?api_key=${CONFIG.TMDB_API_KEY}&language=tr-TR&append_to_response=credits,videos,watch/providers`,
+          );
+          const data = await response.json();
 
-                const title = data.title || data.name;
-                const year = (data.release_date || data.first_air_date || '').split('-')[0];
-                const rating = data.vote_average?.toFixed(1) || 'N/A';
-                const overview = data.overview || 'Açıklama bulunamadı.';
-                const backdrop = data.backdrop_path
-                    ? `https://image.tmdb.org/t/p/w780${data.backdrop_path}`
-                    : (data.poster_path ? `https://image.tmdb.org/t/p/w500${data.poster_path}` : '');
-                const runtime = data.runtime ? `${Math.floor(data.runtime / 60)}s ${data.runtime % 60}dk` : '';
-                const genres = data.genres || [];
+          const title = data.title || data.name;
+          const year = (data.release_date || data.first_air_date || "").split(
+            "-",
+          )[0];
+          const rating = data.vote_average?.toFixed(1) || "N/A";
+          const overview = data.overview || "Açıklama bulunamadı.";
+          const backdrop = data.backdrop_path
+            ? `https://image.tmdb.org/t/p/w780${data.backdrop_path}`
+            : data.poster_path
+              ? `https://image.tmdb.org/t/p/w500${data.poster_path}`
+              : "";
+          const runtime = data.runtime
+            ? `${Math.floor(data.runtime / 60)}s ${data.runtime % 60}dk`
+            : "";
+          const genres = data.genres || [];
 
-                // Get watch providers for Turkey
-                const providers = data['watch/providers']?.results?.TR?.flatrate || [];
+          // Get watch providers for Turkey
+          const providers =
+            data["watch/providers"]?.results?.TR?.flatrate || [];
 
-                // Get cast (first 6)
-                const cast = data.credits?.cast?.slice(0, 6) || [];
+          // Get cast (first 6)
+          const cast = data.credits?.cast?.slice(0, 6) || [];
 
-                // Check if in favorites
-                const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-                const isFavorite = favorites.some(f => f.id == id);
+          // Check if in favorites
+          const favorites = JSON.parse(
+            localStorage.getItem("favorites") || "[]",
+          );
+          const isFavorite = favorites.some((f) => f.id == id);
 
-                modalBody.innerHTML = `
+          modalBody.innerHTML = `
                     <div class="detail-backdrop" style="background-image: url('${backdrop}');"></div>
                     
                     <div class="detail-header">
                         <h2 class="detail-title">${title}</h2>
                         <div class="detail-meta">
                             <span>${year}</span>
-                            ${runtime ? `<span>${runtime}</span>` : ''}
+                            ${runtime ? `<span>${runtime}</span>` : ""}
                             <span class="detail-rating">
                                 <span class="material-symbols-outlined">star</span>
                                 ${rating}
@@ -1379,11 +1834,15 @@
                         </div>
                     </div>
 
-                    ${genres.length ? `
+                    ${
+                      genres.length
+                        ? `
                         <div class="detail-genres">
-                            ${genres.map(g => `<span class="genre-pill">${g.name}</span>`).join('')}
+                            ${genres.map((g) => `<span class="genre-pill">${g.name}</span>`).join("")}
                         </div>
-                    ` : ''}
+                    `
+                        : ""
+                    }
 
                     <p class="detail-overview">${overview}</p>
 
@@ -1406,32 +1865,44 @@
                     <!-- Crew Info -->
                     <div class="detail-crew" id="detail-crew">
                         ${(() => {
-                        const director = data.credits?.crew?.find(c => c.job === 'Director');
-                        const writer = data.credits?.crew?.find(c => c.job === 'Screenplay' || c.job === 'Writer');
-                        return `
-                                ${director ? `<div class="crew-item"><span class="crew-label">Yönetmen</span><span class="crew-name">${director.name}</span></div>` : ''}
-                                ${writer ? `<div class="crew-item"><span class="crew-label">Senarist</span><span class="crew-name">${writer.name}</span></div>` : ''}
+                          const director = data.credits?.crew?.find(
+                            (c) => c.job === "Director",
+                          );
+                          const writer = data.credits?.crew?.find(
+                            (c) => c.job === "Screenplay" || c.job === "Writer",
+                          );
+                          return `
+                                ${director ? `<div class="crew-item"><span class="crew-label">Yönetmen</span><span class="crew-name">${director.name}</span></div>` : ""}
+                                ${writer ? `<div class="crew-item"><span class="crew-label">Senarist</span><span class="crew-name">${writer.name}</span></div>` : ""}
                             `;
-                    })()}
+                        })()}
                     </div>
 
-                    ${providers.length ? `
+                    ${
+                      providers.length
+                        ? `
                         <div class="detail-providers">
                             <div class="detail-providers-title">Nerede İzlenir</div>
                             <div class="provider-logos">
-                                ${providers.map(p => `
+                                ${providers
+                                  .map(
+                                    (p) => `
                                     <div class="provider-logo" style="background-image: url('https://image.tmdb.org/t/p/w92${p.logo_path}');" title="${p.provider_name}"></div>
-                                `).join('')}
+                                `,
+                                  )
+                                  .join("")}
                             </div>
                         </div>
-                    ` : ''}
+                    `
+                        : ""
+                    }
 
                     <div class="detail-actions">
-                        <button class="detail-btn detail-btn-secondary ${isFavorite ? 'active' : ''}" id="detail-fav-btn" data-id="${id}" data-type="${type}" data-title="${title}" data-poster="${data.poster_path || ''}">
-                            <span class="material-symbols-outlined">${isFavorite ? 'favorite' : 'favorite_border'}</span>
-                            ${isFavorite ? 'Favorilerde' : 'Favorile'}
+                        <button class="detail-btn detail-btn-secondary ${isFavorite ? "active" : ""}" id="detail-fav-btn" data-id="${id}" data-type="${type}" data-title="${title}" data-poster="${data.poster_path || ""}">
+                            <span class="material-symbols-outlined">${isFavorite ? "favorite" : "favorite_border"}</span>
+                            ${isFavorite ? "Favorilerde" : "Favorile"}
                         </button>
-                        <button class="detail-btn detail-btn-primary" onclick="window.open('https://www.google.com/search?q=${encodeURIComponent(title + ' izle')}', '_blank')">
+                        <button class="detail-btn detail-btn-primary" onclick="window.open('https://www.google.com/search?q=${encodeURIComponent(title + " izle")}', '_blank')">
                             <span class="material-symbols-outlined">play_arrow</span>
                             İzle
                         </button>
@@ -1439,28 +1910,40 @@
 
                     <!-- Trailer Button -->
                     ${(() => {
-                        const trailer = data.videos?.results?.find(v => v.type === 'Trailer' && v.site === 'YouTube');
-                        return trailer ? `
+                      const trailer = data.videos?.results?.find(
+                        (v) => v.type === "Trailer" && v.site === "YouTube",
+                      );
+                      return trailer
+                        ? `
                             <button class="detail-btn detail-btn-trailer" onclick="window.open('https://www.youtube.com/watch?v=${trailer.key}', '_blank')">
                                 <span class="material-symbols-outlined">play_circle</span>
                                 Fragmanı İzle
                             </button>
-                        ` : '';
+                        `
+                        : "";
                     })()}
 
-                    ${cast.length ? `
+                    ${
+                      cast.length
+                        ? `
                         <div class="cast-section">
                             <h3 class="cast-title">Oyuncular</h3>
                             <div class="cast-list no-scrollbar">
-                                ${cast.map(c => `
+                                ${cast
+                                  .map(
+                                    (c) => `
                                     <div class="cast-item">
-                                        <div class="cast-avatar" style="background-image: url('${c.profile_path ? 'https://image.tmdb.org/t/p/w185' + c.profile_path : 'https://via.placeholder.com/72?text=' + c.name.charAt(0)}');"></div>
+                                        <div class="cast-avatar" style="background-image: url('${c.profile_path ? "https://image.tmdb.org/t/p/w185" + c.profile_path : "https://via.placeholder.com/72?text=" + c.name.charAt(0)}');"></div>
                                         <div class="cast-name">${c.name}</div>
                                     </div>
-                                `).join('')}
+                                `,
+                                  )
+                                  .join("")}
                             </div>
                         </div>
-                    ` : ''}
+                    `
+                        : ""
+                    }
 
                     <!-- Premium Trivia Section -->
                     <div class="trivia-section">
@@ -1468,167 +1951,201 @@
                             <span class="material-symbols-outlined">tips_and_updates</span>
                             Trivia & İlginç Bilgiler
                         </h3>
-                        <div class="trivia-content ${state.userTier !== 'premium' ? 'trivia-locked' : ''}" id="trivia-content">
+                        <div class="trivia-content ${state.userTier !== "premium" ? "trivia-locked" : ""}" id="trivia-content">
                             <p>Bu film hakkında ilginç bilgiler ve set arkası hikayeleri burada görüntülenir.</p>
                         </div>
-                        ${state.userTier !== 'premium' ? `
+                        ${
+                          state.userTier !== "premium"
+                            ? `
                             <div class="trivia-overlay">
                                 <span class="material-symbols-outlined">lock</span>
                                 <span>Premium Özellik</span>
                             </div>
-                        ` : ''}
+                        `
+                            : ""
+                        }
                     </div>
                 `;
 
-                // Add favorite button handler
-                document.getElementById('detail-fav-btn')?.addEventListener('click', function () {
-                    const favId = this.dataset.id;
-                    const favType = this.dataset.type;
-                    const favTitle = this.dataset.title;
-                    const favPoster = this.dataset.poster;
+          // Add favorite button handler
+          document
+            .getElementById("detail-fav-btn")
+            ?.addEventListener("click", function () {
+              const favId = this.dataset.id;
+              const favType = this.dataset.type;
+              const favTitle = this.dataset.title;
+              const favPoster = this.dataset.poster;
 
-                    let favs = JSON.parse(localStorage.getItem('favorites') || '[]');
-                    const existingIndex = favs.findIndex(f => f.id == favId);
+              let favs = JSON.parse(localStorage.getItem("favorites") || "[]");
+              const existingIndex = favs.findIndex((f) => f.id == favId);
 
-                    if (existingIndex > -1) {
-                        // Remove from favorites
-                        favs.splice(existingIndex, 1);
-                        this.classList.remove('active');
-                        this.innerHTML = '<span class="material-symbols-outlined">favorite_border</span> Favorile';
-                    } else {
-                        // Add to favorites
-                        favs.push({ id: favId, type: favType, title: favTitle, poster: favPoster });
-                        this.classList.add('active');
-                        this.innerHTML = '<span class="material-symbols-outlined">favorite</span> Favorilerde';
-                    }
-
-                    localStorage.setItem('favorites', JSON.stringify(favs));
+              if (existingIndex > -1) {
+                // Remove from favorites
+                favs.splice(existingIndex, 1);
+                this.classList.remove("active");
+                this.innerHTML =
+                  '<span class="material-symbols-outlined">favorite_border</span> Favorile';
+              } else {
+                // Add to favorites
+                favs.push({
+                  id: favId,
+                  type: favType,
+                  title: favTitle,
+                  poster: favPoster,
                 });
+                this.classList.add("active");
+                this.innerHTML =
+                  '<span class="material-symbols-outlined">favorite</span> Favorilerde';
+              }
 
-            } catch (error) {
-                console.error('Failed to load detail:', error);
-                modalBody.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 48px;">Detaylar yüklenemedi.</p>';
-            }
+              localStorage.setItem("favorites", JSON.stringify(favs));
+            });
+        } catch (error) {
+          console.error("Failed to load detail:", error);
+          modalBody.innerHTML =
+            '<p style="text-align: center; color: var(--text-muted); padding: 48px;">Detaylar yüklenemedi.</p>';
+        }
+      }
+
+      // ============================================
+      // FAVORITES LIST
+      // ============================================
+      function loadFavoritesList(listType) {
+        const grid = document.getElementById("favorites-grid");
+        const emptyMessage = document.getElementById("empty-list-message");
+
+        // Get from localStorage
+        const key = listType === "liked" ? "favorites" : "watchlist";
+        const items = JSON.parse(localStorage.getItem(key) || "[]");
+
+        if (items.length === 0) {
+          grid.innerHTML = "";
+          emptyMessage.style.display = "flex";
+          return;
         }
 
-        // ============================================
-        // FAVORITES LIST
-        // ============================================
-        function loadFavoritesList(listType) {
-            const grid = document.getElementById('favorites-grid');
-            const emptyMessage = document.getElementById('empty-list-message');
-
-            // Get from localStorage
-            const key = listType === 'liked' ? 'favorites' : 'watchlist';
-            const items = JSON.parse(localStorage.getItem(key) || '[]');
-
-            if (items.length === 0) {
-                grid.innerHTML = '';
-                emptyMessage.style.display = 'flex';
-                return;
-            }
-
-            emptyMessage.style.display = 'none';
-            grid.innerHTML = items.map(item => `
+        emptyMessage.style.display = "none";
+        grid.innerHTML = items
+          .map(
+            (item) => `
                 <div class="result-card" data-id="${item.id}" data-type="${item.type}">
                     <div class="result-card-poster" style="background-image: url('https://image.tmdb.org/t/p/w342${item.poster}')"></div>
                     <div class="result-card-info">
                         <div class="result-card-title">${item.title}</div>
                     </div>
                 </div>
-            `).join('');
+            `,
+          )
+          .join("");
 
-            // Add click handlers
-            grid.querySelectorAll('.result-card').forEach(card => {
-                card.addEventListener('click', function () {
-                    openDetailModal(this.dataset.id, this.dataset.type);
-                });
-            });
+        // Add click handlers
+        grid.querySelectorAll(".result-card").forEach((card) => {
+          card.addEventListener("click", function () {
+            openDetailModal(this.dataset.id, this.dataset.type);
+          });
+        });
+      }
+
+      // ============================================
+      // PROFILE DATA
+      // ============================================
+      function loadProfileData() {
+        const user = window.AuthService?.getCurrentUser?.();
+        const profileName = document.getElementById("profile-name");
+        const profileBadge = document.getElementById("profile-badge");
+        const profileAvatar = document.getElementById("profile-avatar-img");
+
+        if (user) {
+          profileName.textContent = user.name || "Kullanıcı";
+          if (user.photoURL) {
+            profileAvatar.src = user.photoURL;
+          }
+          if (user.tier === "premium") {
+            profileBadge.style.display = "inline-flex";
+          }
         }
 
-        // ============================================
-        // PROFILE DATA
-        // ============================================
-        function loadProfileData() {
-            const user = window.AuthService?.getCurrentUser?.();
-            const profileName = document.getElementById('profile-name');
-            const profileBadge = document.getElementById('profile-badge');
-            const profileAvatar = document.getElementById('profile-avatar-img');
+        // Load stats
+        const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+        document.getElementById("stat-movies").textContent = favorites.length;
 
-            if (user) {
-                profileName.textContent = user.name || 'Kullanıcı';
-                if (user.photoURL) {
-                    profileAvatar.src = user.photoURL;
-                }
-                if (user.tier === 'premium') {
-                    profileBadge.style.display = 'inline-flex';
-                }
+        // Sync theme toggle with current theme
+        const profileThemeToggle = document.getElementById(
+          "profile-theme-toggle",
+        );
+        if (profileThemeToggle) {
+          const currentTheme =
+            document.documentElement.getAttribute("data-theme") || "dark";
+          profileThemeToggle.checked = currentTheme === "dark";
+
+          profileThemeToggle.addEventListener("change", function () {
+            if (typeof toggleTheme === "function") {
+              toggleTheme();
             }
-
-            // Load stats
-            const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-            document.getElementById('stat-movies').textContent = favorites.length;
-
-            // Sync theme toggle with current theme
-            const profileThemeToggle = document.getElementById('profile-theme-toggle');
-            if (profileThemeToggle) {
-                const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-                profileThemeToggle.checked = currentTheme === 'dark';
-
-                profileThemeToggle.addEventListener('change', function () {
-                    if (typeof toggleTheme === 'function') {
-                        toggleTheme();
-                    }
-                    // Keep toggle synced
-                    const newTheme = document.documentElement.getAttribute('data-theme');
-                    this.checked = newTheme === 'dark';
-                });
-            }
+            // Keep toggle synced
+            const newTheme =
+              document.documentElement.getAttribute("data-theme");
+            this.checked = newTheme === "dark";
+          });
         }
+      }
 
-        // Override modal functions for compatibility
-        window.openModal = function (type, id) {
-            // Save current view state before opening modal
-            const searchOverlay = document.getElementById('search-overlay');
-            if (searchOverlay && searchOverlay.classList.contains('active')) {
-                state.lastView = 'search';
-                state.lastScrollPosition = document.getElementById('search-results-container')?.scrollTop || 0;
-            } else {
-                state.lastView = state.currentPage || 'home';
-                state.lastScrollPosition = window.scrollY;
-            }
-            openDetailModal(id, type);
-        };
+      // Override modal functions for compatibility
+      window.openModal = function (type, id) {
+        // Save current view state before opening modal
+        const searchOverlay = document.getElementById("search-overlay");
+        if (searchOverlay && searchOverlay.classList.contains("active")) {
+          state.lastView = "search";
+          state.lastScrollPosition =
+            document.getElementById("search-results-container")?.scrollTop || 0;
+        } else {
+          state.lastView = state.currentPage || "home";
+          state.lastScrollPosition = window.scrollY;
+        }
+        openDetailModal(id, type);
+      };
 
-        window.closeModal = function () {
-            const modal = document.getElementById('detail-modal');
-            modal.classList.remove('active');
-            document.body.style.overflow = '';
+      window.closeModal = function () {
+        const modal = document.getElementById("detail-modal");
+        modal.classList.remove("active");
+        document.body.style.overflow = "";
 
-            // Return to search if that's where user came from
-            if (state.lastView === 'search') {
-                const searchOverlay = document.getElementById('search-overlay');
-                if (searchOverlay) {
-                    searchOverlay.classList.add('active');
-                    // Restore scroll position after a tick
-                    setTimeout(() => {
-                        const container = document.getElementById('search-results-container');
-                        if (container) container.scrollTop = state.lastScrollPosition;
-                    }, 50);
-                }
-            } else {
-                // Restore scroll position for non-search views
-                setTimeout(() => {
-                    window.scrollTo(0, state.lastScrollPosition);
-                }, 50);
-            }
-        };
+        // Return to search if that's where user came from
+        if (state.lastView === "search") {
+          const searchOverlay = document.getElementById("search-overlay");
+          if (searchOverlay) {
+            searchOverlay.classList.add("active");
+            // Restore scroll position after a tick
+            setTimeout(() => {
+              const container = document.getElementById(
+                "search-results-container",
+              );
+              if (container) container.scrollTop = state.lastScrollPosition;
+            }, 50);
+          }
+        } else {
+          // Restore scroll position for non-search views
+          setTimeout(() => {
+            window.scrollTo(0, state.lastScrollPosition);
+          }, 50);
+        }
+      };
     </script>
 
     <!-- Toast Container -->
-    <div id="toast-container"
-        style="position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); z-index: 10000; display: flex; flex-direction: column; gap: 8px; pointer-events: none;">
-    </div>
-</body>
-
+    <div
+      id="toast-container"
+      style="
+        position: fixed;
+        bottom: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10000;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        pointer-events: none;
+      "
+    ></div>
+  </body>
 </html>

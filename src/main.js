@@ -262,6 +262,16 @@ window.LumiModules = {
     isTurkishPlatform,
 };
 
+// Direct window globals for inline script compatibility
+// The inline script in index.html accesses these as bare globals
+window.state = state;
+window.API = API;
+window.toggleTheme = toggleTheme;
+window.showAutocomplete = showAutocomplete;
+window.openDetailModal = openDetailModal;
+window.loadHomePage = window.LumiModules?.loadHomePage; // defined in inline script
+window.updateAuthUI = updateAuthUI;
+
 // Log successful initialization
 console.log('[Lumi] Modular architecture loaded');
 console.log('[Lumi] Modules: state, constants, navigation, toast, theme, loading, movie-card, helpers, platforms');

@@ -3307,7 +3307,7 @@ body.modal-open {
    ============================================ */
 @media (min-width: 480px) {
     .masonry-grid {
-        column-gap: 2px;
+        column-gap: 0;
     }
 
     .search-results-grid {

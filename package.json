@@ -4,7 +4,7 @@
   "description": "Lumi - Film Keşif Platformu | Mobile-First Web App",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --max-warnings 200",

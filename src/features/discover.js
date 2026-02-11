@@ -4,7 +4,6 @@
 // ============================================
 
 import { CONFIG, API_URLS } from '../config.js';
-import { state } from '../lib/state.js';
 import { showToast } from '../ui/toast.js';
 import { DAILY_REC_KEY, DAILY_REC_CATEGORIES, getGenreName } from '../lib/constants.js';
 
@@ -187,7 +186,7 @@ export async function handleSurpriseMe() {
  * Show discover results
  */
 export async function showDiscoverResults(params) {
-    let url = `${API_URLS.TMDB_BASE}/discover/movie?api_key=${CONFIG.TMDB_API_KEY}&language=${state.language}&sort_by=popularity.desc&vote_count.gte=100`;
+    let url = `${API_URLS.TMDB_BASE}/discover/movie?api_key=${CONFIG.TMDB_API_KEY}&language=${CONFIG.LANGUAGE}&sort_by=popularity.desc&vote_count.gte=100`;
 
     // Add genre filter
     if (params.genre) {
@@ -320,12 +319,12 @@ export async function loadDailyRecommendation() {
 
         let movies = [];
         if (category.list) {
-            const resp = await fetch(`${API_URLS.TMDB_BASE}/movie/${category.list}?api_key=${CONFIG.TMDB_API_KEY}&language=${state.language}&page=1`);
+            const resp = await fetch(`${API_URLS.TMDB_BASE}/movie/${category.list}?api_key=${CONFIG.TMDB_API_KEY}&language=${CONFIG.LANGUAGE}&page=1`);
             const data = await resp.json();
             movies = data.results || [];
         } else if (category.genres) {
             const genreStr = category.genres.join(',');
-            const resp = await fetch(`${API_URLS.TMDB_BASE}/discover/movie?api_key=${CONFIG.TMDB_API_KEY}&language=${state.language}&with_genres=${genreStr}&sort_by=vote_average.desc&vote_count.gte=500&page=1`);
+            const resp = await fetch(`${API_URLS.TMDB_BASE}/discover/movie?api_key=${CONFIG.TMDB_API_KEY}&language=${CONFIG.LANGUAGE}&with_genres=${genreStr}&sort_by=vote_average.desc&vote_count.gte=500&page=1`);
             const data = await resp.json();
             movies = data.results || [];
         }

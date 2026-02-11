@@ -1,33 +1,32 @@
 {
-    "$schema": "https://openapi.vercel.sh/vercel.json",
-    "name": "lumi",
-    "version": 2,
-    "buildCommand": "npm run build",
-    "outputDirectory": "dist",
-    "framework": "vite",
-    "rewrites": [
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
         {
-            "source": "/api/(.*)",
-            "destination": "/api/$1"
-        }
-    ],
-    "headers": [
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
         {
-            "source": "/(.*)",
-            "headers": [
-                {
-                    "key": "X-Content-Type-Options",
-                    "value": "nosniff"
-                },
-                {
-                    "key": "X-Frame-Options",
-                    "value": "DENY"
-                },
-                {
-                    "key": "X-XSS-Protection",
-                    "value": "1; mode=block"
-                }
-            ]
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
         }
-    ]
+      ]
+    }
+  ]
 }
