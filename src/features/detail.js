@@ -42,7 +42,7 @@ export async function openDetail(id, type, title, year, originalTitle) {
     state.currentItemType = type;
 
     // Show modal with loading
-    elements.modal.classList.add('visible');
+    elements.modal.classList.add('active');
     const loadingText = window.i18n?.t('loading') || 'Yükleniyor...';
     elements.modalBody.innerHTML = `<div class="loading-state visible"><div class="spinner"></div><p>${loadingText}</p></div>`;
     document.body.style.overflow = 'hidden';
@@ -79,8 +79,8 @@ export async function openDetail(id, type, title, year, originalTitle) {
         const youtubeVideos = await API.getMovieVideos(resolvedTitle, resolvedYear, resolvedOriginal);
 
         // Fetch additional data
-        let imdbData = null;
-        let triviaData = [];
+        const imdbData = null;
+        const triviaData = [];
         let allRatings = null;
         let turkishReleaseDate = null;
 
@@ -93,13 +93,9 @@ export async function openDetail(id, type, title, year, originalTitle) {
 
         if (imdbId) {
             try {
-                [imdbData, triviaData, allRatings] = await Promise.all([
-                    API.getMovieFromIMDB(imdbId),
-                    API.getMovieTrivia(imdbId),
-                    API.getAllRatings(imdbId),
-                ]);
+                allRatings = await API.getAllRatings(imdbId);
             } catch (innerErr) {
-                console.warn('IMDB/Trivia/Ratings fetch error:', innerErr);
+                console.warn('Ratings fetch error:', innerErr);
             }
         }
 
@@ -145,7 +141,7 @@ export function openDetailModal(id, type) {
  * Close detail modal
  */
 export function closeModal() {
-    elements.modal.classList.remove('visible');
+    elements.modal.classList.remove('active');
     document.body.style.overflow = '';
     document.body.classList.remove('modal-open');
 
