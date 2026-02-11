@@ -442,8 +442,6 @@ export function updateStarDisplay(stars, rating) {
  */
 export function renderDetail(details, providers, type, itemId) {
     const title = details.title || details.name;
-    const year = details.release_date?.substring(0, 4) || details.first_air_date?.substring(0, 4) || '';
-    const runtime = details.runtime ? `${Math.floor(details.runtime / 60)}sa ${details.runtime % 60}dk` : '';
     const tmdbScore = details.vote_average ? details.vote_average.toFixed(1) : '';
 
     // Image URLs
@@ -479,14 +477,15 @@ export function renderDetail(details, providers, type, itemId) {
     // Videos
     const videosHTML = buildVideosHTML();
 
-    // Series-specific info
-    const seriesInfoHTML = type === 'tv' ? buildSeriesInfoHTML(details) : '';
+    // Build date & series meta
+    const dateMetaHTML = buildDateMetaHTML(details, type);
 
-    // Turkish release date
-    const trRelease = state.currentTurkishReleaseDate;
-    const trReleaseHTML = trRelease
-        ? `<span class="detail-meta-dot"></span><span>🇹🇷 ${new Date(trRelease).toLocaleDateString('tr-TR')}</span>`
-        : '';
+    // Runtime
+    const runtime = details.runtime ? `${details.runtime} dk` : '';
+    // Episode runtime for TV
+    const episodeRuntime = (type === 'tv' && details.episode_run_time?.length)
+        ? `~${details.episode_run_time[0]} dk/bölüm` : '';
+    const runtimeDisplay = runtime || episodeRuntime;
 
     // Premium section
     const premiumHTML = buildPremiumSectionHTML();
@@ -511,9 +510,7 @@ export function renderDetail(details, providers, type, itemId) {
                 <div class="detail-core-info">
                     <h1 class="detail-title">${title}</h1>
                     <div class="detail-meta">
-                        <span>${year}</span>
-                        ${runtime ? `<span class="detail-meta-dot"></span><span>${runtime}</span>` : ''}
-                        ${trReleaseHTML}
+                        ${runtimeDisplay ? `<span>⏱ ${runtimeDisplay}</span>` : ''}
                     </div>
                     ${tmdbScore ? `
                     <div class="detail-score-badge">
@@ -522,35 +519,28 @@ export function renderDetail(details, providers, type, itemId) {
                         <span class="detail-score-max">/ 10</span>
                     </div>` : ''}
                     ${genres ? `<div class="detail-genres">${genres}</div>` : ''}
-                    ${seriesInfoHTML}
                 </div>
             </div>
         </div>
 
-        <!-- Action Bar -->
-        <div class="detail-actions">
-            <button id="like-btn" class="detail-action-btn detail-action-like ${isLiked ? 'active' : ''}">
-                <div class="detail-action-circle">
-                    <span>${isLiked ? '♥' : '♡'}</span>
-                </div>
-                <span class="detail-action-label">Beğen</span>
+        <!-- Action Bar (minimal inline) -->
+        <div class="detail-actions-inline">
+            <button id="like-btn" class="detail-inline-btn ${isLiked ? 'active' : ''}">
+                <span>${isLiked ? '♥' : '♡'}</span> Beğen
             </button>
-            <button id="watchlist-btn" class="detail-action-btn detail-action-watchlist ${isInWatchlist ? 'active' : ''}">
-                <div class="detail-action-circle">
-                    <span>${isInWatchlist ? '✓' : '+'}</span>
-                </div>
-                <span class="detail-action-label">Listeye Ekle</span>
+            <button id="watchlist-btn" class="detail-inline-btn ${isInWatchlist ? 'active' : ''}">
+                <span>${isInWatchlist ? '✓' : '+'}</span> Listeye Ekle
             </button>
-            <button class="detail-action-btn detail-action-rate">
-                <div class="detail-action-circle">
-                    <span>★</span>
-                </div>
-                <span class="detail-action-label">Puan Ver</span>
+            <button class="detail-inline-btn detail-inline-rate">
+                <span>★</span> Puan Ver
             </button>
         </div>
 
         <!-- Ratings Row -->
         ${ratingsHTML}
+
+        <!-- Date & Series Meta -->
+        ${dateMetaHTML}
 
         <!-- Overview -->
         <div class="detail-section">
@@ -606,18 +596,20 @@ function buildRatingsHTML(tmdbScore, allRatings) {
                 </div>
             `);
         }
-        if (allRatings.rottenTomatoes) {
+        // RT returns {tomatometer, audienceScore, url}
+        const rtScore = allRatings.rottenTomatoes?.tomatometer;
+        if (rtScore) {
             cards.push(`
                 <div class="detail-rating-card">
-                    <span class="detail-rating-source">RT</span>
-                    <span class="detail-rating-value detail-rating-rt">${allRatings.rottenTomatoes}</span>
+                    <span class="detail-rating-source">🍅 RT</span>
+                    <span class="detail-rating-value detail-rating-rt">${rtScore}%</span>
                 </div>
             `);
         }
         if (allRatings.metacritic) {
             cards.push(`
                 <div class="detail-rating-card">
-                    <span class="detail-rating-source">METACRITIC</span>
+                    <span class="detail-rating-source">META</span>
                     <span class="detail-rating-value detail-rating-meta">${allRatings.metacritic}</span>
                 </div>
             `);
@@ -661,35 +653,46 @@ function buildCastHTML(credits) {
 }
 
 function buildProvidersHTML(providers) {
-    const region = state.currentRegion || 'TR';
-    const regionData = providers?.results?.[region] || providers?.results?.US;
+    // API.getWatchProviders already returns region-specific data (not the wrapping results obj)
+    const regionData = providers;
     if (!regionData) return '';
 
     const flatrate = regionData.flatrate || [];
     const rent = regionData.rent || [];
     const buy = regionData.buy || [];
-    const allProviders = [...flatrate, ...rent, ...buy];
 
-    // Deduplicate by provider_id
-    const seen = new Set();
-    const unique = allProviders.filter(p => {
-        if (seen.has(p.provider_id)) return false;
-        seen.add(p.provider_id);
-        return true;
-    });
+    if (flatrate.length + rent.length + buy.length === 0) return '';
 
-    if (unique.length === 0) return '';
+    // Build categorized provider rows
+    const buildRow = (items, label) => {
+        if (!items.length) return '';
+        const logos = items.slice(0, 6).map(p => `
+            <div class="detail-provider-item">
+                <img src="https://image.tmdb.org/t/p/w92${p.logo_path}" alt="${p.provider_name}" title="${p.provider_name}" class="detail-provider-logo-img">
+                <span class="detail-provider-name">${p.provider_name}</span>
+            </div>
+        `).join('');
+        return `
+            <div class="detail-provider-category">
+                <span class="detail-provider-category-label">${label}</span>
+                <div class="detail-providers-row">${logos}</div>
+            </div>
+        `;
+    };
 
-    const logos = unique.slice(0, 8).map(p => `
-        <div class="detail-provider-logo">
-            <img src="https://image.tmdb.org/t/p/w92${p.logo_path}" alt="${p.provider_name}" title="${p.provider_name}">
-        </div>
-    `).join('');
+    const sections = [
+        buildRow(flatrate, 'Abonelik'),
+        buildRow(rent, 'Kiralık'),
+        buildRow(buy, 'Satın Al'),
+    ].join('');
+
+    const tmdbLink = regionData.link || '';
 
     return `
         <div class="detail-section">
-            <h3 class="detail-section-heading">Nereden İzlenir?</h3>
-            <div class="detail-providers-row">${logos}</div>
+            <h3 class="detail-section-heading">📺 Nereden İzlenir?</h3>
+            ${sections}
+            ${tmdbLink ? `<a href="${tmdbLink}" target="_blank" rel="noopener" class="detail-provider-tmdb-link">Tüm seçenekleri gör →</a>` : ''}
         </div>
     `;
 }
@@ -704,27 +707,91 @@ function buildVideosHTML() {
 
     return `
         <div class="detail-section">
-            <h3 class="detail-section-heading">Videolar</h3>
+            <h3 class="detail-section-heading">🎬 Videolar</h3>
             <div class="detail-video-tabs">
                 <button class="video-tab active" data-category="trailer">Fragman${trailerCount ? ` (${trailerCount})` : ''}</button>
                 <button class="video-tab" data-category="behindTheScenes">Kamera Arkası${btsCount ? ` (${btsCount})` : ''}</button>
                 <button class="video-tab" data-category="reviews">İncelemeler${reviewCount ? ` (${reviewCount})` : ''}</button>
             </div>
-            <div id="video-container" class="detail-video-grid"></div>
+            <div id="video-container" class="detail-video-scroll"></div>
         </div>
     `;
 }
 
-function buildSeriesInfoHTML(details) {
-    if (!details.number_of_seasons) return '';
+/**
+ * Build date & series metadata section
+ * Movies: Turkish theatrical release or global release date
+ * TV: first_air_date – last_air_date year range, season/episode count, status, next season info
+ */
+function buildDateMetaHTML(details, type) {
+    const items = [];
+
+    if (type === 'movie') {
+        // Turkish release date from API.getReleaseDates
+        const trRelease = state.currentTurkishReleaseDate;
+        if (trRelease?.date) {
+            const trDate = new Date(trRelease.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+            items.push(`<div class="detail-date-row"><span class="detail-date-label">🇹🇷 Vizyon Tarihi</span><span class="detail-date-value">${trDate}</span></div>`);
+        }
+        // Global release date
+        if (details.release_date) {
+            const globalDate = new Date(details.release_date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+            items.push(`<div class="detail-date-row"><span class="detail-date-label">🌍 Yayın Tarihi</span><span class="detail-date-value">${globalDate}</span></div>`);
+        }
+    } else if (type === 'tv') {
+        // Year range
+        const startYear = details.first_air_date?.substring(0, 4) || '';
+        const lastYear = details.last_air_date?.substring(0, 4) || '';
+        const isEnded = details.status === 'Ended' || details.status === 'Canceled';
+        const yearRange = startYear ? (isEnded ? `${startYear} – ${lastYear}` : `${startYear} – Devam Ediyor`) : '';
+
+        if (yearRange) {
+            items.push(`<div class="detail-date-row"><span class="detail-date-label">📅 Yayın Dönemi</span><span class="detail-date-value">${yearRange}</span></div>`);
+        }
+        // First air date
+        if (details.first_air_date) {
+            const firstAirDate = new Date(details.first_air_date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+            items.push(`<div class="detail-date-row"><span class="detail-date-label">📺 İlk Yayın</span><span class="detail-date-value">${firstAirDate}</span></div>`);
+        }
+        // Season & Episode count
+        const seasonEp = [];
+        if (details.number_of_seasons) seasonEp.push(`${details.number_of_seasons} Sezon`);
+        if (details.number_of_episodes) seasonEp.push(`${details.number_of_episodes} Bölüm`);
+        if (seasonEp.length) {
+            items.push(`<div class="detail-date-row"><span class="detail-date-label">📊 Toplam</span><span class="detail-date-value">${seasonEp.join(' · ')}</span></div>`);
+        }
+        // Status
+        const statusLabel = {
+            'Returning Series': 'Devam Ediyor',
+            'Ended': 'Tamamlandı',
+            'Canceled': 'İptal Edildi',
+            'In Production': 'Yapım Aşamasında',
+            'Planned': 'Planlanıyor',
+        };
+        if (details.status) {
+            items.push(`<div class="detail-date-row"><span class="detail-date-label">📌 Durum</span><span class="detail-date-value">${statusLabel[details.status] || details.status}</span></div>`);
+        }
+        // Next episode / next season info
+        if (details.next_episode_to_air) {
+            const nextDate = new Date(details.next_episode_to_air.air_date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+            const nextEpName = details.next_episode_to_air.name || '';
+            const seasonNum = details.next_episode_to_air.season_number;
+            const epNum = details.next_episode_to_air.episode_number;
+            items.push(`<div class="detail-date-row detail-date-highlight"><span class="detail-date-label">🆕 Yeni Bölüm</span><span class="detail-date-value">S${seasonNum}E${epNum}${nextEpName ? ` — ${nextEpName}` : ''}<br><small>${nextDate}</small></span></div>`);
+        }
+    }
+
+    if (items.length === 0) return '';
+
     return `
-        <div class="detail-series-info">
-            <span>📺 ${details.number_of_seasons} Sezon</span>
-            ${details.number_of_episodes ? `<span class="detail-meta-dot"></span><span>${details.number_of_episodes} Bölüm</span>` : ''}
-            ${details.status ? `<span class="detail-meta-dot"></span><span>${details.status === 'Ended' ? 'Tamamlandı' : details.status === 'Returning Series' ? 'Devam Ediyor' : details.status}</span>` : ''}
+        <div class="detail-section detail-date-section">
+            <h3 class="detail-section-heading">📋 Bilgiler</h3>
+            <div class="detail-date-grid">${items.join('')}</div>
         </div>
     `;
 }
+
+// buildSeriesInfoHTML is deprecated — series info handled by buildDateMetaHTML
 
 function buildPremiumSectionHTML() {
     // Check premium status — default to locked
