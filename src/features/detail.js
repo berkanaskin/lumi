@@ -432,50 +432,351 @@ export function updateStarDisplay(stars, rating) {
 }
 
 // ============================================
-// RENDER DETAIL (Stub - Full implementation in app.js)
+// RENDER DETAIL — Full Cinematic Implementation
 // ============================================
 
 /**
- * Render detail content
- * This is a stub that delegates to the full implementation in app.js
+ * Render cinematic detail content
+ * Design: Stitch MCP validated — hero backdrop, poster+info, actions,
+ * ratings, cast, providers, video tabs, premium section
  */
 export function renderDetail(details, providers, type, itemId) {
-    // Check if full renderDetail is available in window
-    if (window.renderDetailFull) {
-        window.renderDetailFull(details, providers, type, itemId);
-        return;
-    }
-
-    // Fallback basic render
     const title = details.title || details.name;
     const year = details.release_date?.substring(0, 4) || details.first_air_date?.substring(0, 4) || '';
+    const runtime = details.runtime ? `${Math.floor(details.runtime / 60)}sa ${details.runtime % 60}dk` : '';
+    const tmdbScore = details.vote_average ? details.vote_average.toFixed(1) : '';
+
+    // Image URLs
+    const backdropUrl = details.backdrop_path
+        ? `https://image.tmdb.org/t/p/w1280${details.backdrop_path}`
+        : '';
     const posterUrl = details.poster_path
         ? `https://image.tmdb.org/t/p/w500${details.poster_path}`
         : '';
 
+    // Genres
+    const genres = (details.genres || []).map(g =>
+        `<span class="detail-genre-pill">${g.name}</span>`
+    ).join('');
+
+    // Check like/watchlist state
+    const likedItems = JSON.parse(localStorage.getItem('liked_items') || '[]');
+    const watchlistItems = JSON.parse(localStorage.getItem('watchlist_items') || '[]');
+    const isLiked = likedItems.some(f => f.id === parseInt(itemId));
+    const isInWatchlist = watchlistItems.some(f => f.id === parseInt(itemId));
+
+    // Ratings
+    const allRatings = state.currentAllRatings;
+    const ratingsHTML = buildRatingsHTML(tmdbScore, allRatings);
+
+    // Credits / Cast
+    const credits = state.currentCredits;
+    const castHTML = buildCastHTML(credits);
+
+    // Watch Providers
+    const providersHTML = buildProvidersHTML(providers);
+
+    // Videos
+    const videosHTML = buildVideosHTML();
+
+    // Series-specific info
+    const seriesInfoHTML = type === 'tv' ? buildSeriesInfoHTML(details) : '';
+
+    // Turkish release date
+    const trRelease = state.currentTurkishReleaseDate;
+    const trReleaseHTML = trRelease
+        ? `<span class="detail-meta-dot"></span><span>🇹🇷 ${new Date(trRelease).toLocaleDateString('tr-TR')}</span>`
+        : '';
+
+    // Premium section
+    const premiumHTML = buildPremiumSectionHTML();
+
     elements.modalBody.innerHTML = `
-        <div class="modal-header">
-            <div class="modal-poster">
-                ${posterUrl ? `<img src="${posterUrl}" alt="${title}">` : '<div style="aspect-ratio:2/3;background:var(--glass);display:flex;align-items:center;justify-content:center;font-size:4rem;">🎬</div>'}
-            </div>
-            <div class="modal-details">
-                <h2 class="modal-title">${title}</h2>
-                <div class="modal-meta">
-                    <span>📅 ${year}</span>
-                    ${details.runtime ? `<span>⏱️ ${details.runtime} dk</span>` : ''}
+        <!-- Hero Backdrop -->
+        <div class="detail-hero">
+            ${backdropUrl
+                ? `<img src="${backdropUrl}" alt="${title}" class="detail-backdrop-img">`
+                : `<div class="detail-backdrop-placeholder"></div>`
+            }
+            <div class="detail-backdrop-gradient"></div>
+
+            <!-- Poster + Core Info overlaid on hero -->
+            <div class="detail-hero-content">
+                <div class="detail-poster-wrap">
+                    ${posterUrl
+                        ? `<img src="${posterUrl}" alt="${title}" class="detail-poster-img">`
+                        : `<div class="detail-poster-placeholder">🎬</div>`
+                    }
+                </div>
+                <div class="detail-core-info">
+                    <h1 class="detail-title">${title}</h1>
+                    <div class="detail-meta">
+                        <span>${year}</span>
+                        ${runtime ? `<span class="detail-meta-dot"></span><span>${runtime}</span>` : ''}
+                        ${trReleaseHTML}
+                    </div>
+                    ${tmdbScore ? `
+                    <div class="detail-score-badge">
+                        <span class="detail-star-icon">★</span>
+                        <span class="detail-score-value">${tmdbScore}</span>
+                        <span class="detail-score-max">/ 10</span>
+                    </div>` : ''}
+                    ${genres ? `<div class="detail-genres">${genres}</div>` : ''}
+                    ${seriesInfoHTML}
                 </div>
             </div>
         </div>
-        <div class="modal-content-body">
-            <div class="modal-section">
-                <h3 class="section-heading">📝 Özet</h3>
-                <p class="overview-text">${details.overview || 'Özet bulunamadı.'}</p>
-            </div>
+
+        <!-- Action Bar -->
+        <div class="detail-actions">
+            <button id="like-btn" class="detail-action-btn detail-action-like ${isLiked ? 'active' : ''}">
+                <div class="detail-action-circle">
+                    <span>${isLiked ? '♥' : '♡'}</span>
+                </div>
+                <span class="detail-action-label">Beğen</span>
+            </button>
+            <button id="watchlist-btn" class="detail-action-btn detail-action-watchlist ${isInWatchlist ? 'active' : ''}">
+                <div class="detail-action-circle">
+                    <span>${isInWatchlist ? '✓' : '+'}</span>
+                </div>
+                <span class="detail-action-label">Listeye Ekle</span>
+            </button>
+            <button class="detail-action-btn detail-action-rate">
+                <div class="detail-action-circle">
+                    <span>★</span>
+                </div>
+                <span class="detail-action-label">Puan Ver</span>
+            </button>
         </div>
+
+        <!-- Ratings Row -->
+        ${ratingsHTML}
+
+        <!-- Overview -->
+        <div class="detail-section">
+            <h3 class="detail-section-heading">Özet</h3>
+            <p class="detail-overview-text">${details.overview || 'Özet bulunamadı.'}</p>
+        </div>
+
+        <!-- Cast -->
+        ${castHTML}
+
+        <!-- Watch Providers -->
+        ${providersHTML}
+
+        <!-- Videos -->
+        ${videosHTML}
+
+        <!-- Premium Section -->
+        ${premiumHTML}
+
+        <!-- Video Player (hidden) -->
+        <div id="video-player"></div>
     `;
 
     // Attach event listeners
     attachDetailEventListeners(details, type, itemId);
+
+    // Initialize video content
+    renderVideoContent();
+}
+
+// ============================================
+// DETAIL SECTION BUILDERS
+// ============================================
+
+function buildRatingsHTML(tmdbScore, allRatings) {
+    const cards = [];
+
+    if (tmdbScore) {
+        cards.push(`
+            <div class="detail-rating-card">
+                <span class="detail-rating-source">TMDB</span>
+                <span class="detail-rating-value">${tmdbScore}</span>
+            </div>
+        `);
+    }
+
+    if (allRatings) {
+        if (allRatings.imdb) {
+            cards.push(`
+                <div class="detail-rating-card">
+                    <span class="detail-rating-source">IMDb</span>
+                    <span class="detail-rating-value">${allRatings.imdb}</span>
+                </div>
+            `);
+        }
+        if (allRatings.rottenTomatoes) {
+            cards.push(`
+                <div class="detail-rating-card">
+                    <span class="detail-rating-source">RT</span>
+                    <span class="detail-rating-value detail-rating-rt">${allRatings.rottenTomatoes}</span>
+                </div>
+            `);
+        }
+        if (allRatings.metacritic) {
+            cards.push(`
+                <div class="detail-rating-card">
+                    <span class="detail-rating-source">METACRITIC</span>
+                    <span class="detail-rating-value detail-rating-meta">${allRatings.metacritic}</span>
+                </div>
+            `);
+        }
+    }
+
+    if (cards.length === 0) return '';
+
+    return `
+        <div class="detail-section detail-ratings-row">
+            ${cards.join('')}
+        </div>
+    `;
+}
+
+function buildCastHTML(credits) {
+    if (!credits?.cast?.length) return '';
+
+    const castCards = credits.cast.slice(0, 15).map(person => {
+        const photoUrl = person.profile_path
+            ? `https://image.tmdb.org/t/p/w185${person.profile_path}`
+            : '';
+        return `
+            <div class="detail-cast-card">
+                ${photoUrl
+                    ? `<img src="${photoUrl}" alt="${person.name}" class="detail-cast-photo">`
+                    : `<div class="detail-cast-photo-placeholder">👤</div>`
+                }
+                <span class="detail-cast-name">${person.name}</span>
+                <span class="detail-cast-character">${person.character || ''}</span>
+            </div>
+        `;
+    }).join('');
+
+    return `
+        <div class="detail-section">
+            <h3 class="detail-section-heading">Oyuncular</h3>
+            <div class="detail-cast-scroll">${castCards}</div>
+        </div>
+    `;
+}
+
+function buildProvidersHTML(providers) {
+    const region = state.currentRegion || 'TR';
+    const regionData = providers?.results?.[region] || providers?.results?.US;
+    if (!regionData) return '';
+
+    const flatrate = regionData.flatrate || [];
+    const rent = regionData.rent || [];
+    const buy = regionData.buy || [];
+    const allProviders = [...flatrate, ...rent, ...buy];
+
+    // Deduplicate by provider_id
+    const seen = new Set();
+    const unique = allProviders.filter(p => {
+        if (seen.has(p.provider_id)) return false;
+        seen.add(p.provider_id);
+        return true;
+    });
+
+    if (unique.length === 0) return '';
+
+    const logos = unique.slice(0, 8).map(p => `
+        <div class="detail-provider-logo">
+            <img src="https://image.tmdb.org/t/p/w92${p.logo_path}" alt="${p.provider_name}" title="${p.provider_name}">
+        </div>
+    `).join('');
+
+    return `
+        <div class="detail-section">
+            <h3 class="detail-section-heading">Nereden İzlenir?</h3>
+            <div class="detail-providers-row">${logos}</div>
+        </div>
+    `;
+}
+
+function buildVideosHTML() {
+    const videos = state.currentVideos || {};
+    const trailerCount = videos.trailer?.length || 0;
+    const btsCount = videos.behindTheScenes?.length || 0;
+    const reviewCount = videos.reviews?.length || 0;
+
+    if (trailerCount + btsCount + reviewCount === 0) return '';
+
+    return `
+        <div class="detail-section">
+            <h3 class="detail-section-heading">Videolar</h3>
+            <div class="detail-video-tabs">
+                <button class="video-tab active" data-category="trailer">Fragman${trailerCount ? ` (${trailerCount})` : ''}</button>
+                <button class="video-tab" data-category="behindTheScenes">Kamera Arkası${btsCount ? ` (${btsCount})` : ''}</button>
+                <button class="video-tab" data-category="reviews">İncelemeler${reviewCount ? ` (${reviewCount})` : ''}</button>
+            </div>
+            <div id="video-container" class="detail-video-grid"></div>
+        </div>
+    `;
+}
+
+function buildSeriesInfoHTML(details) {
+    if (!details.number_of_seasons) return '';
+    return `
+        <div class="detail-series-info">
+            <span>📺 ${details.number_of_seasons} Sezon</span>
+            ${details.number_of_episodes ? `<span class="detail-meta-dot"></span><span>${details.number_of_episodes} Bölüm</span>` : ''}
+            ${details.status ? `<span class="detail-meta-dot"></span><span>${details.status === 'Ended' ? 'Tamamlandı' : details.status === 'Returning Series' ? 'Devam Ediyor' : details.status}</span>` : ''}
+        </div>
+    `;
+}
+
+function buildPremiumSectionHTML() {
+    // Check premium status — default to locked
+    const isPremium = state.isPremium || false;
+
+    if (isPremium) {
+        // TODO: render actual trivia/goofs content when available
+        return `
+            <div class="detail-section detail-premium-section detail-premium-unlocked">
+                <h3 class="detail-section-heading">✨ Premium İçerik</h3>
+                <div class="detail-premium-content">
+                    <div class="detail-premium-item">
+                        <h4>🎬 Trivia</h4>
+                        <p class="detail-premium-placeholder">Yakında eklenecek...</p>
+                    </div>
+                    <div class="detail-premium-item">
+                        <h4>🤦 Goofs</h4>
+                        <p class="detail-premium-placeholder">Yakında eklenecek...</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    return `
+        <div class="detail-section detail-premium-section detail-premium-locked">
+            <div class="detail-premium-header">
+                <h3 class="detail-section-heading">Premium İçerik</h3>
+                <span class="detail-premium-lock">🔒</span>
+            </div>
+            <div class="detail-premium-blur-wrap">
+                <div class="detail-premium-blur-overlay"></div>
+                <div class="detail-premium-blur-content">
+                    <div class="detail-premium-skeleton-row">
+                        <div class="detail-premium-skeleton-circle"></div>
+                        <div class="detail-premium-skeleton-lines">
+                            <div class="detail-premium-skeleton-line short"></div>
+                            <div class="detail-premium-skeleton-line"></div>
+                        </div>
+                    </div>
+                    <div class="detail-premium-skeleton-block"></div>
+                </div>
+                <div class="detail-premium-cta-layer">
+                    <p class="detail-premium-cta-text">Trivia, goofs ve özel içeriklere erişmek için</p>
+                    <button class="detail-premium-cta-btn" onclick="window.showPremiumModal && window.showPremiumModal()">
+                        <span>Premium'a Geç</span>
+                        <span>✨</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 /**
