@@ -37,7 +37,7 @@ export function toggleTheme() {
  * Update theme toggle icon
  */
 export function updateThemeIcon() {
-    const themeBtn = document.getElementById('theme-btn');
+    const themeBtn = document.getElementById('theme-toggle');
     if (!themeBtn) return;
 
     const currentTheme = document.documentElement.getAttribute('data-theme');

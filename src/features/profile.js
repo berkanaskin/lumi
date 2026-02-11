@@ -235,6 +235,7 @@ export async function handleLogout() {
         localStorage.removeItem('lumi_user');
         updateAuthUI();
         updateProfileAuthUI();
+        updateHeaderProfileDropdown();
         showToast('Çıkış yapıldı');
     } catch (error) {
         console.error('Logout error:', error);
@@ -242,6 +243,7 @@ export async function handleLogout() {
         state.userTier = 'guest';
         updateAuthUI();
         updateProfileAuthUI();
+        updateHeaderProfileDropdown();
     }
 }
 
@@ -257,11 +259,16 @@ export async function handleTesterLoginFree() {
         if (window.AuthService) {
             await window.AuthService.loginAsTesterFree();
             state.currentUser = window.AuthService.currentUser;
-            state.userTier = 'free';
-            updateAuthUI();
-            updateProfileAuthUI();
-            showToast('Test Kullanıcı olarak giriş yapıldı!');
+        } else {
+            // Fallback: set state directly when AuthService is not available
+            state.currentUser = { name: 'Test Kullanıcı', email: 'test@lumi.app', photoURL: null };
         }
+        state.userTier = 'free';
+        localStorage.setItem('userTier', 'free');
+        updateAuthUI();
+        updateProfileAuthUI();
+        updateHeaderProfileDropdown();
+        showToast('Test Kullanıcı olarak giriş yapıldı!');
     } catch (error) {
         console.error('Tester login error:', error);
         showToast('Giriş yapılamadı.');
@@ -276,12 +283,16 @@ export async function handleTesterLoginPremium() {
         if (window.AuthService) {
             await window.AuthService.loginAsTester();
             state.currentUser = window.AuthService.currentUser;
-            state.userTier = 'premium';
-            localStorage.setItem('userTier', 'premium');
-            updateAuthUI();
-            updateProfileAuthUI();
-            showToast('Test Premium olarak giriş yapıldı!');
+        } else {
+            // Fallback: set state directly when AuthService is not available
+            state.currentUser = { name: 'Premium Kullanıcı', email: 'premium@lumi.app', photoURL: null };
         }
+        state.userTier = 'premium';
+        localStorage.setItem('userTier', 'premium');
+        updateAuthUI();
+        updateProfileAuthUI();
+        updateHeaderProfileDropdown();
+        showToast('Test Premium olarak giriş yapıldı!');
     } catch (error) {
         console.error('Tester premium login error:', error);
         showToast('Giriş yapılamadı.');
@@ -311,8 +322,8 @@ export function updateProfileAuthUI() {
         premiumUserButtons.style.display = 'none';
     }
 
-    const isLoggedIn = window.AuthService && window.AuthService.isLoggedIn();
-    const isPremium = window.AuthService && window.AuthService.isPremium();
+    const isLoggedIn = state.currentUser != null || (window.AuthService && window.AuthService.isLoggedIn());
+    const isPremium = state.userTier === 'premium' || (window.AuthService && window.AuthService.isPremium());
 
     if (!isLoggedIn) {
         if (guestButtons) {
@@ -325,6 +336,59 @@ export function updateProfileAuthUI() {
     } else {
         if (freeUserButtons) {
             freeUserButtons.style.display = 'block';
+        }
+    }
+}
+
+/**
+ * Sync header profile button and dropdown with current login state
+ */
+export function updateHeaderProfileDropdown() {
+    const profileBtn = document.getElementById('profile-btn');
+    const dropdownInfo = document.getElementById('profile-dropdown-info');
+    const loginTrigger = document.getElementById('login-trigger');
+
+    if (state.currentUser) {
+        // User logged in — update profile button appearance
+        if (profileBtn) {
+            profileBtn.classList.remove('guest');
+            profileBtn.classList.add('logged-in');
+        }
+        // Update dropdown header
+        if (dropdownInfo) {
+            const nameEl = dropdownInfo.querySelector('.profile-dropdown-name');
+            const tierEl = dropdownInfo.querySelector('.profile-dropdown-tier');
+            const avatarEl = dropdownInfo.querySelector('.profile-dropdown-avatar');
+            if (nameEl) nameEl.textContent = state.currentUser.name || 'Kullanıcı';
+            if (tierEl) tierEl.textContent = state.userTier === 'premium' ? '⭐ Premium' : 'Ücretsiz';
+            if (avatarEl) {
+                const initial = state.currentUser.name?.charAt(0).toUpperCase() || '👤';
+                avatarEl.innerHTML = `<span class="material-symbols-outlined" style="font-size: 32px; color: var(--accent)">${initial === '👤' ? 'person' : ''}</span>`;
+                if (initial !== '👤') {
+                    avatarEl.innerHTML = `<span style="font-size: 24px; font-weight: 700; color: var(--accent)">${initial}</span>`;
+                }
+            }
+        }
+        // Hide login button, could show logout instead
+        if (loginTrigger) {
+            loginTrigger.innerHTML = '<span class="material-symbols-outlined">logout</span><span>Çıkış Yap</span>';
+            loginTrigger.onclick = () => handleLogout();
+        }
+    } else {
+        // Guest mode
+        if (profileBtn) {
+            profileBtn.classList.add('guest');
+            profileBtn.classList.remove('logged-in');
+        }
+        if (dropdownInfo) {
+            const nameEl = dropdownInfo.querySelector('.profile-dropdown-name');
+            const tierEl = dropdownInfo.querySelector('.profile-dropdown-tier');
+            if (nameEl) nameEl.textContent = 'Misafir';
+            if (tierEl) tierEl.textContent = 'Ücretsiz';
+        }
+        if (loginTrigger) {
+            loginTrigger.innerHTML = '<span class="material-symbols-outlined">login</span><span>Giriş Yap</span>';
+            loginTrigger.onclick = () => openLoginModal();
         }
     }
 }
@@ -412,6 +476,7 @@ if (typeof window !== 'undefined') {
     window.handleTesterLoginFree = handleTesterLoginFree;
     window.handleTesterLoginPremium = handleTesterLoginPremium;
     window.updateProfileAuthUI = updateProfileAuthUI;
+    window.updateHeaderProfileDropdown = updateHeaderProfileDropdown;
     window.getUserStats = getUserStats;
     window.saveUserRating = saveUserRating;
     window.getUserRating = getUserRating;
