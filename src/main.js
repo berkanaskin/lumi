@@ -277,6 +277,9 @@ window.updateAuthUI = updateAuthUI;
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize DOM element references
+    initElements();
+
     // Load saved theme
     loadTheme();
 
