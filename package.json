@@ -41,6 +41,8 @@
     "vitest": "^4.0.17"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.41",
+    "ai": "^6.0.116",
     "firebase": "^12.7.0"
   }
 }
