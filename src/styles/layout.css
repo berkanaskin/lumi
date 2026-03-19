@@ -1,0 +1,313 @@
+/* ============================================
+   LUMI - Layout System (Sidebar + Bottom Nav)
+   ============================================ */
+
+/* ============================================
+   DESKTOP LAYOUT (≥1024px)
+   ============================================ */
+
+@media (min-width: 1024px) {
+  body[data-view="desktop"] {
+    display: flex;
+    flex-direction: row;
+  }
+
+  /* Sidebar */
+  aside.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 250px;
+    height: 100vh;
+    background: var(--bg-surface);
+    border-right: 1px solid var(--glass-border);
+    padding: var(--space-lg);
+    overflow-y: auto;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  /* Hide bottom nav on desktop */
+  nav.bottom-nav {
+    display: none;
+  }
+
+  /* Main content area */
+  main.app-main {
+    margin-left: 250px;
+    flex: 1;
+    overflow: auto;
+    padding: var(--space-lg);
+  }
+
+  /* Grid layout on desktop */
+  .movie-grid {
+    display: grid;
+    gap: var(--space-md);
+    grid-template-columns: repeat(auto-fit, minmax(clamp(200px, 25vw, 300px), 1fr));
+    align-items: start;
+  }
+}
+
+/* ============================================
+   MOBILE LAYOUT (<768px)
+   ============================================ */
+
+@media (max-width: 767px) {
+  body[data-view="mobile"],
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Hide sidebar on mobile */
+  aside.sidebar {
+    display: none;
+  }
+
+  /* Bottom navigation */
+  nav.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: max(56px, calc(env(safe-area-inset-bottom, 0px) + 56px));
+    background: var(--bg-surface);
+    border-top: 1px solid var(--glass-border);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Main content with bottom padding */
+  main.app-main {
+    margin-left: 0;
+    padding-bottom: max(56px, calc(env(safe-area-inset-bottom, 0px) + 56px));
+    padding: var(--space-md);
+  }
+
+  /* Grid layout on mobile */
+  .movie-grid {
+    display: grid;
+    gap: var(--space-md);
+    grid-template-columns: repeat(auto-fit, minmax(clamp(130px, 40vw, 180px), 1fr));
+    align-items: start;
+  }
+}
+
+/* ============================================
+   TABLET LAYOUT (768px - 1023px)
+   ============================================ */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Sidebar becomes collapsible on tablet */
+  aside.sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    background: transparent;
+    border-bottom: 1px solid var(--glass-border);
+    border-right: none;
+    padding: var(--space-md);
+    overflow-x: auto;
+    overflow-y: hidden;
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
+
+  /* Hide bottom nav on tablet */
+  nav.bottom-nav {
+    display: none;
+  }
+
+  /* Main content */
+  main.app-main {
+    margin-left: 0;
+    padding: var(--space-lg);
+  }
+
+  /* Grid layout on tablet */
+  .movie-grid {
+    display: grid;
+    gap: var(--space-md);
+    grid-template-columns: repeat(auto-fit, minmax(clamp(160px, 30vw, 240px), 1fr));
+    align-items: start;
+  }
+}
+
+/* ============================================
+   NAVIGATION ITEMS
+   ============================================ */
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all var(--transition-normal);
+  white-space: nowrap;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.nav-item:hover {
+  color: var(--text-primary);
+  background: var(--glass-bg-hover);
+}
+
+.nav-item.active {
+  color: var(--primary);
+  background: rgba(88, 88, 243, 0.1);
+}
+
+/* Sidebar active indicator (left border) */
+@media (min-width: 1024px) {
+  .nav-item.active {
+    border-left: 3px solid var(--primary);
+    padding-left: calc(var(--space-md) - 3px);
+  }
+}
+
+/* Bottom nav active indicator (bottom border) */
+@media (max-width: 767px) {
+  .nav-item.active {
+    border-bottom: 3px solid var(--primary);
+    padding-bottom: calc(var(--space-md) - 3px);
+  }
+}
+
+/* Navigation label (hide on mobile bottom nav) */
+.nav-label {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .nav-label {
+    display: inline;
+  }
+}
+
+/* Navigation icons */
+.nav-item .material-symbols-outlined {
+  font-size: 24px;
+}
+
+/* ============================================
+   SIDEBAR LOGO
+   ============================================ */
+
+.sidebar-logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-lg);
+  font-family: var(--font-serif);
+}
+
+/* ============================================
+   APP HEADER
+   ============================================ */
+
+header.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--glass-border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.header-logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-serif);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.theme-toggle {
+  padding: var(--space-sm);
+  border-radius: var(--radius-md);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  transition: all var(--transition-normal);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-toggle:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--primary);
+}
+
+.theme-toggle .material-symbols-outlined {
+  font-size: 20px;
+}
+
+/* ============================================
+   RESPONSIVE UTILITIES
+   ============================================ */
+
+/* Hide on mobile */
+.hide-mobile {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .hide-mobile {
+    display: block;
+  }
+}
+
+/* Hide on desktop */
+.hide-desktop {
+  display: block;
+}
+
+@media (min-width: 1024px) {
+  .hide-desktop {
+    display: none;
+  }
+}
+
+/* Page regions with smooth transitions */
+[role="region"] {
+  animation: fadeIn var(--transition-normal) ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

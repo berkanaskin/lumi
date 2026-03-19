@@ -1,0 +1,371 @@
+/* ============================================
+   LUMI - Animations & Micro-Interactions
+   ============================================ */
+
+/* ============================================
+   PAGE TRANSITIONS
+   ============================================ */
+
+[role="region"] {
+  animation: fadeIn var(--transition-normal) ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  [role="region"] {
+    animation: none;
+  }
+}
+
+/* ============================================
+   TOAST NOTIFICATIONS
+   ============================================ */
+
+.toast {
+  position: fixed;
+  top: var(--space-md);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md) var(--space-lg);
+  max-width: 400px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: slideDown var(--transition-normal) ease;
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  color: var(--text-primary);
+  font-size: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.toast.removing {
+  animation: slideUp var(--transition-normal) ease forwards;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateX(-50%) translateY(-120%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-50%) translateY(-120%);
+    opacity: 0;
+  }
+}
+
+/* Toast types */
+.toast.toast-success {
+  border-color: var(--success);
+  color: white;
+}
+
+.toast.toast-success::before {
+  content: '✓';
+  color: var(--success);
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.toast.toast-error {
+  border-color: var(--error);
+  color: white;
+}
+
+.toast.toast-error::before {
+  content: '✕';
+  color: var(--error);
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.toast.toast-info {
+  border-color: var(--info);
+  color: white;
+}
+
+.toast.toast-info::before {
+  content: 'ℹ';
+  color: var(--info);
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.toast.toast-warning {
+  border-color: var(--warning);
+  color: white;
+}
+
+.toast.toast-warning::before {
+  content: '⚠';
+  color: var(--warning);
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex: 1;
+}
+
+.toast-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+}
+
+.toast-icon .material-symbols-outlined {
+  font-size: 20px;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: var(--space-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-normal);
+  min-width: 32px;
+  min-height: 32px;
+  flex-shrink: 0;
+}
+
+.toast-close:hover {
+  color: var(--text-primary);
+}
+
+.toast-close .material-symbols-outlined {
+  font-size: 18px;
+}
+
+/* ============================================
+   LOADING SPINNER
+   ============================================ */
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--glass-border);
+  border-top: 3px solid var(--primary);
+  border-right: 3px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1.2s linear infinite;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Respect prefers-reduced-motion for spinner */
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+    border-top-color: var(--primary);
+    border-right-color: transparent;
+  }
+}
+
+/* ============================================
+   BUTTON INTERACTIONS
+   ============================================ */
+
+button {
+  position: relative;
+  overflow: hidden;
+}
+
+button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+  pointer-events: none;
+}
+
+button:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* ============================================
+   FOCUS INDICATORS
+   ============================================ */
+
+button:focus,
+a:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.nav-item:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+
+/* ============================================
+   INPUT ANIMATIONS
+   ============================================ */
+
+input,
+textarea,
+select {
+  transition: border-color var(--transition-normal), background-color var(--transition-normal);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  background: var(--glass-bg-hover);
+  border-color: var(--primary);
+}
+
+/* ============================================
+   HOVER LIFT EFFECT
+   ============================================ */
+
+.lift-on-hover {
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.lift-on-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================
+   SKELETON/PLACEHOLDER ANIMATION
+   ============================================ */
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--glass-bg) 25%,
+    var(--glass-bg-hover) 50%,
+    var(--glass-bg) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+  border-radius: var(--radius-md);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    background: var(--glass-bg);
+  }
+}
+
+/* ============================================
+   SCROLL REVEAL
+   ============================================ */
+
+.fade-in-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity var(--transition-normal), transform var(--transition-normal);
+}
+
+.fade-in-on-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================
+   TRANSITION UTILITIES
+   ============================================ */
+
+.transition-fast {
+  transition: all var(--transition-fast);
+}
+
+.transition-normal {
+  transition: all var(--transition-normal);
+}
+
+.transition-smooth {
+  transition: all var(--transition-smooth);
+}
+
+/* ============================================
+   LIGHT THEME ADJUSTMENTS
+   ============================================ */
+
+[data-theme="light"] .toast {
+  background: rgba(0, 0, 0, 0.8);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  backdrop-filter: blur(12px);
+}
+
+[data-theme="light"] .spinner {
+  border-color: rgba(0, 0, 0, 0.1);
+}

@@ -504,13 +504,13 @@ export function renderDetail(details, providers, type, itemId) {
                 <div class="detail-poster-wrap">
                     ${posterUrl
                         ? `<img src="${posterUrl}" alt="${title}" class="detail-poster-img">`
-                        : `<div class="detail-poster-placeholder">🎬</div>`
+                        : `<div class="detail-poster-placeholder"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg></div>`
                     }
                 </div>
                 <div class="detail-core-info">
                     <h1 class="detail-title">${title}</h1>
                     <div class="detail-meta">
-                        ${runtimeDisplay ? `<span>⏱ ${runtimeDisplay}</span>` : ''}
+                        ${runtimeDisplay ? `<span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${runtimeDisplay}</span>` : ''}
                     </div>
                     ${tmdbScore ? `
                     <div class="detail-score-badge">
@@ -518,41 +518,40 @@ export function renderDetail(details, providers, type, itemId) {
                         <span class="detail-score-value">${tmdbScore}</span>
                         <span class="detail-score-max">/ 10</span>
                     </div>` : ''}
+                    <!-- Inline Ratings (next to score) -->
+                    ${ratingsHTML}
                     ${genres ? `<div class="detail-genres">${genres}</div>` : ''}
                 </div>
             </div>
         </div>
 
-        <!-- Action Bar (minimal inline) -->
+        <!-- Action Bar -->
         <div class="detail-actions-inline">
             <button id="like-btn" class="detail-inline-btn ${isLiked ? 'active' : ''}">
-                <span>${isLiked ? '♥' : '♡'}</span> Beğen
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="${isLiked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> Beğen
             </button>
             <button id="watchlist-btn" class="detail-inline-btn ${isInWatchlist ? 'active' : ''}">
-                <span>${isInWatchlist ? '✓' : '+'}</span> Listeye Ekle
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="${isInWatchlist ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg> Listeye Ekle
             </button>
             <button class="detail-inline-btn detail-inline-rate">
-                <span>★</span> Puan Ver
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Puan Ver
             </button>
         </div>
 
-        <!-- Ratings Row -->
-        ${ratingsHTML}
-
-        <!-- Date & Series Meta -->
-        ${dateMetaHTML}
+        <!-- Watch Providers (right after actions) -->
+        ${providersHTML}
 
         <!-- Overview -->
         <div class="detail-section">
-            <h3 class="detail-section-heading">Özet</h3>
+            <h3 class="detail-section-heading"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Özet</h3>
             <p class="detail-overview-text">${details.overview || 'Özet bulunamadı.'}</p>
         </div>
 
         <!-- Cast -->
         ${castHTML}
 
-        <!-- Watch Providers -->
-        ${providersHTML}
+        <!-- Date & Series Meta -->
+        ${dateMetaHTML}
 
         <!-- Videos -->
         ${videosHTML}
@@ -576,53 +575,24 @@ export function renderDetail(details, providers, type, itemId) {
 // ============================================
 
 function buildRatingsHTML(tmdbScore, allRatings) {
-    const cards = [];
-
-    if (tmdbScore) {
-        cards.push(`
-            <div class="detail-rating-card">
-                <span class="detail-rating-source">TMDB</span>
-                <span class="detail-rating-value">${tmdbScore}</span>
-            </div>
-        `);
-    }
+    const pills = [];
 
     if (allRatings) {
         if (allRatings.imdb) {
-            cards.push(`
-                <div class="detail-rating-card">
-                    <span class="detail-rating-source">IMDb</span>
-                    <span class="detail-rating-value">${allRatings.imdb}</span>
-                </div>
-            `);
+            pills.push(`<span class="detail-rating-pill"><span class="detail-rating-icon" style="color:#f5c518">★</span> <span class="detail-rating-label">IMDb</span> <strong>${allRatings.imdb}</strong></span>`);
         }
-        // RT returns {tomatometer, audienceScore, url}
         const rtScore = allRatings.rottenTomatoes?.tomatometer;
         if (rtScore) {
-            cards.push(`
-                <div class="detail-rating-card">
-                    <span class="detail-rating-source">🍅 RT</span>
-                    <span class="detail-rating-value detail-rating-rt">${rtScore}%</span>
-                </div>
-            `);
+            pills.push(`<span class="detail-rating-pill"><span class="detail-rating-icon">🍅</span> <strong class="detail-rating-rt">${rtScore}%</strong></span>`);
         }
         if (allRatings.metacritic) {
-            cards.push(`
-                <div class="detail-rating-card">
-                    <span class="detail-rating-source">META</span>
-                    <span class="detail-rating-value detail-rating-meta">${allRatings.metacritic}</span>
-                </div>
-            `);
+            pills.push(`<span class="detail-rating-pill"><span class="detail-rating-icon" style="color:#22c55e">▣</span> <strong class="detail-rating-meta">${allRatings.metacritic}</strong></span>`);
         }
     }
 
-    if (cards.length === 0) return '';
+    if (pills.length === 0) return '';
 
-    return `
-        <div class="detail-section detail-ratings-row">
-            ${cards.join('')}
-        </div>
-    `;
+    return `<div class="detail-inline-ratings">${pills.join('')}</div>`;
 }
 
 function buildCastHTML(credits) {
@@ -646,53 +616,39 @@ function buildCastHTML(credits) {
 
     return `
         <div class="detail-section">
-            <h3 class="detail-section-heading">Oyuncular</h3>
+            <h3 class="detail-section-heading"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Oyuncular</h3>
             <div class="detail-cast-scroll">${castCards}</div>
         </div>
     `;
 }
 
 function buildProvidersHTML(providers) {
-    // API.getWatchProviders already returns region-specific data (not the wrapping results obj)
     const regionData = providers;
     if (!regionData) return '';
 
-    const flatrate = regionData.flatrate || [];
-    const rent = regionData.rent || [];
-    const buy = regionData.buy || [];
+    // Merge all providers, deduplicate by provider_id
+    const allProviders = [
+        ...(regionData.flatrate || []),
+        ...(regionData.rent || []),
+        ...(regionData.buy || []),
+    ];
+    const seen = new Set();
+    const unique = allProviders.filter(p => {
+        if (seen.has(p.provider_id)) return false;
+        seen.add(p.provider_id);
+        return true;
+    });
 
-    if (flatrate.length + rent.length + buy.length === 0) return '';
+    if (unique.length === 0) return '';
 
-    // Build categorized provider rows
-    const buildRow = (items, label) => {
-        if (!items.length) return '';
-        const logos = items.slice(0, 6).map(p => `
-            <div class="detail-provider-item">
-                <img src="https://image.tmdb.org/t/p/w92${p.logo_path}" alt="${p.provider_name}" title="${p.provider_name}" class="detail-provider-logo-img">
-                <span class="detail-provider-name">${p.provider_name}</span>
-            </div>
-        `).join('');
-        return `
-            <div class="detail-provider-category">
-                <span class="detail-provider-category-label">${label}</span>
-                <div class="detail-providers-row">${logos}</div>
-            </div>
-        `;
-    };
-
-    const sections = [
-        buildRow(flatrate, 'Abonelik'),
-        buildRow(rent, 'Kiralık'),
-        buildRow(buy, 'Satın Al'),
-    ].join('');
-
-    const tmdbLink = regionData.link || '';
+    const logos = unique.slice(0, 10).map(p => `
+        <img src="https://image.tmdb.org/t/p/w92${p.logo_path}" alt="${p.provider_name}" title="${p.provider_name}" class="detail-provider-logo-compact">
+    `).join('');
 
     return `
-        <div class="detail-section">
-            <h3 class="detail-section-heading">📺 Nereden İzlenir?</h3>
-            ${sections}
-            ${tmdbLink ? `<a href="${tmdbLink}" target="_blank" rel="noopener" class="detail-provider-tmdb-link">Tüm seçenekleri gör →</a>` : ''}
+        <div class="detail-section detail-providers-compact">
+            <h3 class="detail-section-heading"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>Nereden İzlenir?</h3>
+            <div class="detail-providers-row-compact">${logos}</div>
         </div>
     `;
 }
@@ -707,7 +663,7 @@ function buildVideosHTML() {
 
     return `
         <div class="detail-section">
-            <h3 class="detail-section-heading">🎬 Videolar</h3>
+            <h3 class="detail-section-heading"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>Videolar</h3>
             <div class="detail-video-tabs">
                 <button class="video-tab active" data-category="trailer">Fragman${trailerCount ? ` (${trailerCount})` : ''}</button>
                 <button class="video-tab" data-category="behindTheScenes">Kamera Arkası${btsCount ? ` (${btsCount})` : ''}</button>
@@ -731,12 +687,12 @@ function buildDateMetaHTML(details, type) {
         const trRelease = state.currentTurkishReleaseDate;
         if (trRelease?.date) {
             const trDate = new Date(trRelease.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
-            items.push(`<div class="detail-date-row"><span class="detail-date-label">🇹🇷 Vizyon Tarihi</span><span class="detail-date-value">${trDate}</span></div>`);
+            items.push(`<div class="detail-info-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span class="detail-info-label">TR Vizyon</span><span class="detail-info-value">${trDate}</span></div>`);
         }
         // Global release date
         if (details.release_date) {
             const globalDate = new Date(details.release_date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
-            items.push(`<div class="detail-date-row"><span class="detail-date-label">🌍 Yayın Tarihi</span><span class="detail-date-value">${globalDate}</span></div>`);
+            items.push(`<div class="detail-info-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span class="detail-info-label">Yayın</span><span class="detail-info-value">${globalDate}</span></div>`);
         }
     } else if (type === 'tv') {
         // Year range
@@ -746,19 +702,19 @@ function buildDateMetaHTML(details, type) {
         const yearRange = startYear ? (isEnded ? `${startYear} – ${lastYear}` : `${startYear} – Devam Ediyor`) : '';
 
         if (yearRange) {
-            items.push(`<div class="detail-date-row"><span class="detail-date-label">📅 Yayın Dönemi</span><span class="detail-date-value">${yearRange}</span></div>`);
+            items.push(`<div class="detail-info-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span class="detail-info-label">Dönem</span><span class="detail-info-value">${yearRange}</span></div>`);
         }
         // First air date
         if (details.first_air_date) {
             const firstAirDate = new Date(details.first_air_date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
-            items.push(`<div class="detail-date-row"><span class="detail-date-label">📺 İlk Yayın</span><span class="detail-date-value">${firstAirDate}</span></div>`);
+            items.push(`<div class="detail-info-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg><span class="detail-info-label">İlk Yayın</span><span class="detail-info-value">${firstAirDate}</span></div>`);
         }
         // Season & Episode count
         const seasonEp = [];
         if (details.number_of_seasons) seasonEp.push(`${details.number_of_seasons} Sezon`);
         if (details.number_of_episodes) seasonEp.push(`${details.number_of_episodes} Bölüm`);
         if (seasonEp.length) {
-            items.push(`<div class="detail-date-row"><span class="detail-date-label">📊 Toplam</span><span class="detail-date-value">${seasonEp.join(' · ')}</span></div>`);
+            items.push(`<div class="detail-info-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="detail-info-label">Toplam</span><span class="detail-info-value">${seasonEp.join(' · ')}</span></div>`);
         }
         // Status
         const statusLabel = {
@@ -769,7 +725,7 @@ function buildDateMetaHTML(details, type) {
             'Planned': 'Planlanıyor',
         };
         if (details.status) {
-            items.push(`<div class="detail-date-row"><span class="detail-date-label">📌 Durum</span><span class="detail-date-value">${statusLabel[details.status] || details.status}</span></div>`);
+            items.push(`<div class="detail-info-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span class="detail-info-label">Durum</span><span class="detail-info-value">${statusLabel[details.status] || details.status}</span></div>`);
         }
         // Next episode / next season info
         if (details.next_episode_to_air) {
@@ -777,16 +733,16 @@ function buildDateMetaHTML(details, type) {
             const nextEpName = details.next_episode_to_air.name || '';
             const seasonNum = details.next_episode_to_air.season_number;
             const epNum = details.next_episode_to_air.episode_number;
-            items.push(`<div class="detail-date-row detail-date-highlight"><span class="detail-date-label">🆕 Yeni Bölüm</span><span class="detail-date-value">S${seasonNum}E${epNum}${nextEpName ? ` — ${nextEpName}` : ''}<br><small>${nextDate}</small></span></div>`);
+            items.push(`<div class="detail-info-pill detail-info-highlight"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><span class="detail-info-label">Yeni Bölüm</span><span class="detail-info-value">S${seasonNum}E${epNum}${nextEpName ? ` — ${nextEpName}` : ''}<br><small>${nextDate}</small></span></div>`);
         }
     }
 
     if (items.length === 0) return '';
 
     return `
-        <div class="detail-section detail-date-section">
-            <h3 class="detail-section-heading">📋 Bilgiler</h3>
-            <div class="detail-date-grid">${items.join('')}</div>
+        <div class="detail-section detail-info-section">
+            <h3 class="detail-section-heading"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Bilgiler</h3>
+            <div class="detail-info-pills">${items.join('')}</div>
         </div>
     `;
 }

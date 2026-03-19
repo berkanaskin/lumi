@@ -113,7 +113,7 @@ export function showAutocomplete(results) {
         });
     });
 
-    dropdown.classList.add('visible');
+    dropdown.classList.add('active');
 }
 
 /**
@@ -122,7 +122,7 @@ export function showAutocomplete(results) {
 export function hideAutocomplete() {
     const dropdown = elements.autocompleteDropdown;
     if (dropdown) {
-        dropdown.classList.remove('visible');
+        dropdown.classList.remove('active');
     }
 }
 

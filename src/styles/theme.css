@@ -1,0 +1,127 @@
+/* ============================================
+   LUMI - Theme System (Dark & Light)
+   ============================================ */
+
+/* ---- Dark Theme (Default) ---- */
+[data-theme="dark"],
+:root {
+  --bg-void: #050505;
+  --bg-surface: #0a0a0f;
+  --bg-elevated: #121218;
+
+  /* Brand & Interactive */
+  --primary: #5858f3;
+  --primary-glow: rgba(88, 88, 243, 0.4);
+  --accent: #3b82f6;
+  --accent-glow: rgba(59, 130, 246, 0.3);
+
+  /* Glass Effects */
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-bg-hover: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-active: rgba(88, 88, 243, 0.5);
+
+  /* Text */
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-muted: rgba(255, 255, 255, 0.4);
+
+  /* Semantic Colors */
+  --success: #10b981;
+  --error: #ff6b6b;
+  --warning: #f59e0b;
+  --info: #3b82f6;
+}
+
+/* ---- Light Theme ---- */
+[data-theme="light"] {
+  --bg-void: #f8f9fa;
+  --bg-surface: #ffffff;
+  --bg-elevated: #f0f2f5;
+
+  /* Glass Effects - Light */
+  --glass-bg: rgba(0, 0, 0, 0.02);
+  --glass-bg-hover: rgba(0, 0, 0, 0.05);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-border-active: rgba(88, 88, 243, 0.5);
+
+  /* Text */
+  --text-primary: #1a1a2e;
+  --text-secondary: rgba(0, 0, 0, 0.65);
+  --text-muted: rgba(0, 0, 0, 0.4);
+
+  /* Brand consistency */
+  --primary: #5858f3;
+  --primary-glow: rgba(88, 88, 243, 0.2);
+  --accent: #5858f3;
+  --accent-glow: rgba(88, 88, 243, 0.15);
+
+  /* Semantic Colors */
+  --success: #059669;
+  --error: #dc2626;
+  --warning: #d97706;
+  --info: #2563eb;
+}
+
+/* ---- OS Preference Fallback ---- */
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    --bg-void: #f8f9fa;
+    --bg-surface: #ffffff;
+    --bg-elevated: #f0f2f5;
+
+    --glass-bg: rgba(0, 0, 0, 0.02);
+    --glass-bg-hover: rgba(0, 0, 0, 0.05);
+    --glass-border: rgba(0, 0, 0, 0.08);
+    --glass-border-active: rgba(88, 88, 243, 0.5);
+
+    --text-primary: #1a1a2e;
+    --text-secondary: rgba(0, 0, 0, 0.65);
+    --text-muted: rgba(0, 0, 0, 0.4);
+
+    --primary: #5858f3;
+    --primary-glow: rgba(88, 88, 243, 0.2);
+    --accent: #5858f3;
+    --accent-glow: rgba(88, 88, 243, 0.15);
+
+    --success: #059669;
+    --error: #dc2626;
+    --warning: #d97706;
+    --info: #2563eb;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --bg-void: #050505;
+    --bg-surface: #0a0a0f;
+    --bg-elevated: #121218;
+
+    --primary: #5858f3;
+    --primary-glow: rgba(88, 88, 243, 0.4);
+    --accent: #3b82f6;
+    --accent-glow: rgba(59, 130, 246, 0.3);
+
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-bg-hover: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-border-active: rgba(88, 88, 243, 0.5);
+
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --text-muted: rgba(255, 255, 255, 0.4);
+
+    --success: #10b981;
+    --error: #ff6b6b;
+    --warning: #f59e0b;
+    --info: #3b82f6;
+  }
+}
+
+/* ---- Theme Transition ---- */
+
+html,
+body {
+  transition: color var(--transition-normal), background-color var(--transition-normal);
+}
