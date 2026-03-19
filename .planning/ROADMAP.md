@@ -13,7 +13,7 @@ Lumi transforms from a working SPA into a polished, differentiated movie/TV disc
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Design Foundation** - Cinematic overhaul of all pages, polished design system, solid auth/watchlist UX (2/2 complete)
-- [ ] **Phase 2: Hybrid AI Search** - Natural language discovery via embedding search + LLM fallback, personalization, diversity injection
+- [x] **Phase 2: Hybrid AI Search** - Natural language discovery via embedding search + LLM fallback, personalization, diversity injection (4/4 complete)
 - [ ] **Phase 3: Content Enrichment** - Streaming availability by country, aggregated ratings, comprehensive video/cast/trivia content
 - [ ] **Phase 4: Premium Platform** - Community ratings, PWA install + offline, freemium subscription model
 
@@ -50,8 +50,8 @@ Plans:
 Plans:
 - [x] 02-01-PLAN.md — Embedding pipeline infrastructure (OpenAI embeddings, Firestore vector index, batch generation, cost logging) (COMPLETE)
 - [x] 02-01b-PLAN.md — Configuration & API service extension (OPENAI_API_KEY, EMBEDDING_CONFIG, COST_CONFIG, EmbeddingService methods) (COMPLETE)
-- [ ] 02-02-PLAN.md — Hybrid search API (embedding + LLM fallback, confidence scoring, cost dashboard endpoint)
-- [ ] 02-03-PLAN.md — Search UI (autocomplete enhancement, results page, personalization, diversity injection, infinite scroll)
+- [x] 02-02-PLAN.md — Hybrid search API (embedding + LLM fallback, confidence scoring, cost dashboard endpoint) (COMPLETE)
+- [x] 02-03-PLAN.md — Search UI (autocomplete enhancement, results page, personalization, diversity injection, infinite scroll) (COMPLETE)
 
 ### Phase 3: Content Enrichment
 **Goal**: Detail pages become the authoritative source for everything a user needs to decide to watch something — availability, ratings, videos, people, and release info all in one place
@@ -93,6 +93,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Design Foundation | 2/2 | COMPLETE | 2026-03-19 |
-| 2. Hybrid AI Search | 1/3 | IN PROGRESS | - |
+| 2. Hybrid AI Search | 4/4 | COMPLETE | 2026-03-19 |
 | 3. Content Enrichment | 0/2 | Pending | - |
 | 4. Premium Platform | 0/2 | Pending | - |
