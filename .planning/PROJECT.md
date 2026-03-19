@@ -29,12 +29,15 @@ When someone doesn't know what to watch, Lumi understands what they're in the mo
 - ✓ Complete design overhaul of all pages — Phase 1
 - ✓ API calls routed through server-side Edge Functions — Phase 1
 - ✓ Turkish-safe i18n with complete EN/TR coverage — Phase 1
+- ✓ Natural language search with hybrid AI (embedding + LLM fallback) — Phase 2
+- ✓ Autocomplete with poster thumbnails for title/actor/genre — Phase 2
+- ✓ Watchlist-based personalized recommendations — Phase 2
+- ✓ Diversity injection ("Belki de bunu beğenirsin") — Phase 2
+- ✓ API cost monitoring dashboard (admin-only) — Phase 2
 
 ### Active
 
 <!-- Current scope. Building toward these. -->
-
-- [ ] Natural language search — user describes mood/preference in free text, gets intelligent recommendations via hybrid AI (embedding search + LLM fallback)
 - [ ] Location-based streaming availability — show which platforms (Netflix, BluTV, MUBI, etc.) have the content based on user's current country
 - [ ] Aggregated ratings display — show scores from IMDB, Rotten Tomatoes, Metacritic, and other major platforms on detail pages
 - [ ] Comprehensive video content — trailers, behind-the-scenes, BTS, interviews, all project-related video content in one place
@@ -94,4 +97,4 @@ Key existing infrastructure:
 | User community ratings as Premium feature | Incentivizes premium while keeping core discovery free | — Pending |
 
 ---
-*Last updated: 2026-03-19 after Phase 1 completion*
+*Last updated: 2026-03-20 after Phase 2 completion*
