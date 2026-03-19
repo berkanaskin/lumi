@@ -4,6 +4,7 @@
 // ============================================
 
 import { CONFIG, API_URLS } from '../config.js';
+import { TMDBService } from '../services/api.js';
 import { showToast } from '../ui/toast.js';
 import { DAILY_REC_KEY, DAILY_REC_CATEGORIES, getGenreName } from '../lib/constants.js';
 
@@ -186,28 +187,28 @@ export async function handleSurpriseMe() {
  * Show discover results
  */
 export async function showDiscoverResults(params) {
-    let url = `${API_URLS.TMDB_BASE}/discover/movie?api_key=${CONFIG.TMDB_API_KEY}&language=${CONFIG.LANGUAGE}&sort_by=popularity.desc&vote_count.gte=100`;
+    // Build discover endpoint using TMDBService (routes through Edge Function)
+    let endpoint = `/discover/movie?language=${CONFIG.LANGUAGE}&sort_by=popularity.desc&vote_count.gte=100`;
 
     // Add genre filter
     if (params.genre) {
-        url += `&with_genres=${params.genre}`;
+        endpoint += `&with_genres=${params.genre}`;
     } else if (params.mood && MOOD_GENRES[params.mood]) {
-        url += `&with_genres=${MOOD_GENRES[params.mood]}`;
+        endpoint += `&with_genres=${MOOD_GENRES[params.mood]}`;
     }
 
     // Add era filter
     if (params.era && ERA_RANGES[params.era]) {
-        url += `&primary_release_date.gte=${ERA_RANGES[params.era].gte}&primary_release_date.lte=${ERA_RANGES[params.era].lte}`;
+        endpoint += `&primary_release_date.gte=${ERA_RANGES[params.era].gte}&primary_release_date.lte=${ERA_RANGES[params.era].lte}`;
     }
 
     // For surprise, add randomness
     if (params.random) {
-        url += `&page=${Math.floor(Math.random() * 5) + 1}&vote_average.gte=7`;
+        endpoint += `&page=${Math.floor(Math.random() * 5) + 1}&vote_average.gte=7`;
     }
 
     try {
-        const resp = await fetch(url);
-        const data = await resp.json();
+        const data = await TMDBService.fetch(endpoint);
 
         if (data.results && data.results.length > 0) {
             let movies = data.results;
@@ -319,13 +320,11 @@ export async function loadDailyRecommendation() {
 
         let movies = [];
         if (category.list) {
-            const resp = await fetch(`${API_URLS.TMDB_BASE}/movie/${category.list}?api_key=${CONFIG.TMDB_API_KEY}&language=${CONFIG.LANGUAGE}&page=1`);
-            const data = await resp.json();
+            const data = await TMDBService.fetch(`/movie/${category.list}?language=${CONFIG.LANGUAGE}&page=1`);
             movies = data.results || [];
         } else if (category.genres) {
             const genreStr = category.genres.join(',');
-            const resp = await fetch(`${API_URLS.TMDB_BASE}/discover/movie?api_key=${CONFIG.TMDB_API_KEY}&language=${CONFIG.LANGUAGE}&with_genres=${genreStr}&sort_by=vote_average.desc&vote_count.gte=500&page=1`);
-            const data = await resp.json();
+            const data = await TMDBService.fetch(`/discover/movie?language=${CONFIG.LANGUAGE}&with_genres=${genreStr}&sort_by=vote_average.desc&vote_count.gte=500&page=1`);
             movies = data.results || [];
         }
 

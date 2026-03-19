@@ -7,17 +7,29 @@ import { CONFIG, API_URLS } from '../config.js';
 
 /**
  * TMDB Service - Movie and TV data
+ * Routes through Vercel Edge Function for security
  */
 export const TMDBService = {
     /**
-     * Generic TMDB API request
+     * Generic TMDB API request (via Edge Function)
      */
     async fetch(endpoint, options = {}) {
-        const separator = endpoint.includes('?') ? '&' : '?';
-        const url = `${API_URLS.TMDB_BASE}${endpoint}${separator}api_key=${CONFIG.TMDB_API_KEY}`;
+        // Route through Edge Function instead of direct API call
+        // Parse endpoint to separate path from query params
+        const endpointUrl = new URL(`https://api.themoviedb.org/3${endpoint}`);
+        const path = endpoint.split('?')[0];
+
+        // Build Edge Function URL with endpoint and all query params
+        const proxyUrl = new URL('/api/tmdb', window.location.origin);
+        proxyUrl.searchParams.set('endpoint', path);
+
+        // Forward all query parameters
+        for (const [key, value] of endpointUrl.searchParams.entries()) {
+            proxyUrl.searchParams.set(key, value);
+        }
 
         try {
-            const response = await fetch(url, options);
+            const response = await fetch(proxyUrl.toString(), options);
             if (!response.ok) {
                 throw new Error(`TMDB API error: ${response.status}`);
             }
@@ -338,13 +350,21 @@ export const TMDBService = {
  */
 export const YouTubeService = {
     /**
-     * Search YouTube
+     * Search YouTube (via Edge Function)
      */
     async search(query, maxResults = 8) {
-        const url = `${API_URLS.YOUTUBE_BASE}/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=${maxResults}&key=${CONFIG.YOUTUBE_API_KEY}&relevanceLanguage=tr&videoDuration=medium`;
+        // Route through Edge Function instead of direct API call
+        const proxyUrl = new URL('/api/youtube', window.location.origin);
+        proxyUrl.searchParams.set('endpoint', '/search');
+        proxyUrl.searchParams.set('part', 'snippet');
+        proxyUrl.searchParams.set('q', query);
+        proxyUrl.searchParams.set('type', 'video');
+        proxyUrl.searchParams.set('maxResults', maxResults);
+        proxyUrl.searchParams.set('relevanceLanguage', 'tr');
+        proxyUrl.searchParams.set('videoDuration', 'medium');
 
         try {
-            const response = await fetch(url);
+            const response = await fetch(proxyUrl.toString());
             const data = await response.json();
 
             if (data.error) {

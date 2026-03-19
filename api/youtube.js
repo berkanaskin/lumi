@@ -13,7 +13,7 @@ export default async function handler(request) {
     try {
         const { searchParams } = new URL(request.url);
         const endpoint = searchParams.get('endpoint');
-        const apiKey = process.env.VITE_YOUTUBE_API_KEY;
+        const apiKey = process.env.YOUTUBE_API_KEY || process.env.VITE_YOUTUBE_API_KEY;
 
         if (!endpoint) {
             return new Response(
