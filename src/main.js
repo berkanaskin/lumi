@@ -48,6 +48,8 @@ import {
     goBack,
     hideAllSections,
     setupBottomNav,
+    initNavigation,
+    updateActiveNavItem,
     PAGES
 } from './lib/navigation.js';
 
@@ -230,6 +232,8 @@ window.LumiModules = {
     goBack,
     hideAllSections,
     setupBottomNav,
+    initNavigation,
+    updateActiveNavItem,
     PAGES,
 
     // UI
@@ -285,6 +289,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Wire theme toggle button
     document.getElementById('theme-toggle')?.addEventListener('click', toggleTheme);
+
+    // Initialize navigation system (sidebar + bottom nav)
+    initNavigation();
 
     // Initialize discover module (loads daily recommendation + timer)
     initDiscoverModule();
