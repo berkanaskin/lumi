@@ -135,7 +135,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PLAT-01 | Phase 4 | Pending |
 | PLAT-02 | Phase 4 | Pending |
 | PLAT-03 | Phase 1 | Pending |
-| PLAT-04 | Phase 2 | In Progress (infrastructure built) |
+| PLAT-04 | Phase 2 | In Progress (configuration complete: COST_CONFIG defined, metric logging methods added) |
 | PLAT-05 | Phase 1 | Pending |
 
 **Coverage:**

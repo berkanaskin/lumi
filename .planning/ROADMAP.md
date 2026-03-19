@@ -45,10 +45,11 @@ Plans:
   3. User can search by title, actor, or genre with autocomplete suggestions appearing as they type
   4. Logged-in user receives recommendations that reflect their watchlist and rating history
   5. Search results include occasional results outside the user's typical genres (diversity injection visible over multiple searches)
-**Plans**: 3 plans in 2 waves
+**Plans**: 4 plans in 2 waves
 
 Plans:
 - [x] 02-01-PLAN.md — Embedding pipeline infrastructure (OpenAI embeddings, Firestore vector index, batch generation, cost logging) (COMPLETE)
+- [x] 02-01b-PLAN.md — Configuration & API service extension (OPENAI_API_KEY, EMBEDDING_CONFIG, COST_CONFIG, EmbeddingService methods) (COMPLETE)
 - [ ] 02-02-PLAN.md — Hybrid search API (embedding + LLM fallback, confidence scoring, cost dashboard endpoint)
 - [ ] 02-03-PLAN.md — Search UI (autocomplete enhancement, results page, personalization, diversity injection, infinite scroll)
 
