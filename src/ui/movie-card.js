@@ -1,15 +1,16 @@
 /**
  * LUMI - Movie Card Component
- * v1.1.0
- * 
- * Reusable movie/TV card component.
+ * v2.0.0
+ *
+ * Redesigned movie card with poster-dominant layout,
+ * info overlay on hover, and premium Letterboxd-inspired aesthetic.
  */
 
 import { getImageUrl } from '../lib/constants.js';
 import { escapeHtml } from '../lib/helpers.js';
 
 /**
- * Create a movie card element
+ * Create a movie card element with poster-dominant layout
  * @param {Object} item - Movie/TV show data
  * @param {string} mediaType - 'movie' or 'tv'
  * @param {Object} options - Additional options
@@ -35,27 +36,40 @@ export function createMovieCard(item, mediaType = 'movie', options = {}) {
     card.dataset.id = item.id;
     card.dataset.type = mediaType;
 
-    card.innerHTML = `
-        <div class="movie-card-poster">
-            <img 
-                src="${posterUrl}" 
-                alt="${escapeHtml(title)}"
+    // Use innerHTML with escapeHtml for XSS prevention
+    card.innerHTML = escapeHtml(`
+        <div class="movie-card-image">
+            <img
+                src="${posterUrl}"
+                alt="${title} (${year})"
                 ${lazy ? 'loading="lazy"' : ''}
-            >
-            ${showRating ? `
-                <div class="movie-card-rating">
-                    <span class="rating-star">⭐</span>
-                    <span class="rating-value">${rating}</span>
-                </div>
-            ` : ''}
+                class="movie-poster"
+            />
         </div>
-        <div class="movie-card-info">
-            <div class="movie-card-title">${escapeHtml(title)}</div>
-            ${showYear && year ? `<div class="movie-card-year">${year}</div>` : ''}
+        <div class="movie-card-overlay">
+            <div class="movie-card-content">
+                <h3 class="movie-title">${title}</h3>
+                <p class="movie-year">${year}</p>
+                ${showRating ? `<p class="movie-rating">★ ${rating}</p>` : ''}
+                <button class="btn-add-watchlist" data-id="${item.id}">
+                    Add to Watchlist
+                </button>
+            </div>
         </div>
-    `;
+    `);
 
-    // Add click handler
+    // Add rating badge if needed
+    if (showRating) {
+        const ratingBadge = document.createElement('div');
+        ratingBadge.className = 'movie-card-rating';
+        ratingBadge.innerHTML = `
+            <span class="rating-star">⭐</span>
+            <span class="rating-value">${rating}</span>
+        `;
+        card.querySelector('.movie-card-image').appendChild(ratingBadge);
+    }
+
+    // Add click handler for detail modal
     card.addEventListener('click', () => {
         if (onClick) {
             onClick(item, mediaType);
@@ -82,21 +96,36 @@ export function createMovieCardHTML(item, mediaType = 'movie') {
         : 'https://via.placeholder.com/342x513?text=No+Poster';
     const originalTitle = item.original_title || item.original_name || '';
 
+    // Sanitize for inline onclick
+    const escapedTitle = escapeHtml(title).replace(/'/g, "\\'");
+    const escapedOriginal = escapeHtml(originalTitle).replace(/'/g, "\\'");
+
     return `
-        <div class="movie-card" 
-             onclick="openDetail(${item.id}, '${mediaType}', '${escapeHtml(title).replace(/'/g, "\\'")}', '${year}', '${escapeHtml(originalTitle).replace(/'/g, "\\'")}')"
-             data-id="${item.id}" 
+        <div class="movie-card"
+             onclick="openDetail(${item.id}, '${mediaType}', '${escapedTitle}', '${year}', '${escapedOriginal}')"
+             data-id="${item.id}"
              data-type="${mediaType}">
-            <div class="movie-card-poster">
-                <img src="${posterUrl}" alt="${escapeHtml(title)}" loading="lazy">
+            <div class="movie-card-image">
+                <img
+                    src="${posterUrl}"
+                    alt="${escapeHtml(title)}"
+                    loading="lazy"
+                    class="movie-poster"
+                />
                 <div class="movie-card-rating">
                     <span class="rating-star">⭐</span>
                     <span class="rating-value">${rating}</span>
                 </div>
             </div>
-            <div class="movie-card-info">
-                <div class="movie-card-title">${escapeHtml(title)}</div>
-                <div class="movie-card-year">${year}</div>
+            <div class="movie-card-overlay">
+                <div class="movie-card-content">
+                    <h3 class="movie-title">${escapeHtml(title)}</h3>
+                    <p class="movie-year">${year}</p>
+                    <p class="movie-rating">★ ${rating}</p>
+                    <button class="btn-add-watchlist" data-id="${item.id}">
+                        Add to Watchlist
+                    </button>
+                </div>
             </div>
         </div>
     `;
