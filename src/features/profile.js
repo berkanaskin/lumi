@@ -8,6 +8,184 @@ import { state } from '../lib/state.js';
 import { showToast } from '../ui/toast.js';
 
 // ============================================
+// LOGIN WALL INITIALIZATION
+// ============================================
+
+/**
+ * Initialize login wall with Firebase authentication handlers
+ */
+export function initAuth() {
+    // Wire up Google login button
+    const googleBtn = document.getElementById('btn-google');
+    if (googleBtn) {
+        googleBtn.addEventListener('click', handleGoogleLogin);
+    }
+
+    // Wire up email/password form
+    const emailForm = document.getElementById('email-login-form-wall');
+    if (emailForm) {
+        emailForm.addEventListener('submit', handleEmailLogin);
+    }
+
+    // Listen for auth state changes
+    window.addEventListener('authStateChanged', (event) => {
+        const user = event.detail?.user;
+        if (user) {
+            hideLoginWall();
+        } else {
+            showLoginWall();
+        }
+    });
+
+    // Check initial auth state
+    if (window.AuthService) {
+        const currentUser = window.AuthService.getCurrentUser?.();
+        if (currentUser) {
+            hideLoginWall();
+        } else {
+            showLoginWall();
+        }
+    }
+}
+
+/**
+ * Show login wall (blocks access)
+ */
+export function showLoginWall() {
+    const wall = document.getElementById('login-wall');
+    if (wall) {
+        wall.classList.add('active');
+        wall.style.pointerEvents = 'auto';
+    }
+}
+
+/**
+ * Hide login wall (allows access)
+ */
+export function hideLoginWall() {
+    const wall = document.getElementById('login-wall');
+    if (wall) {
+        wall.classList.remove('active');
+        wall.style.pointerEvents = 'none';
+    }
+}
+
+/**
+ * Show login error message
+ */
+function showLoginError(message) {
+    const errorDiv = document.getElementById('login-error');
+    if (errorDiv) {
+        errorDiv.textContent = message;
+        errorDiv.classList.add('visible');
+        setTimeout(() => {
+            errorDiv.classList.remove('visible');
+        }, 5000);
+    }
+}
+
+/**
+ * Handle Google OAuth login
+ */
+async function handleGoogleLogin() {
+    const googleBtn = document.getElementById('btn-google');
+    if (googleBtn) {
+        googleBtn.textContent = 'Signing in...';
+        googleBtn.disabled = true;
+    }
+
+    try {
+        if (!window.AuthService) {
+            showLoginError('Authentication service not available');
+            return;
+        }
+
+        const user = await window.AuthService.loginWithGoogle();
+        if (user) {
+            state.currentUser = {
+                uid: user.id || user.uid,
+                email: user.email,
+                displayName: user.name || user.displayName || user.email
+            };
+            hideLoginWall();
+        }
+    } catch (error) {
+        console.error('[Google Login] Error:', error);
+        showLoginError('Login failed: ' + (error.message || 'Unknown error'));
+    } finally {
+        if (googleBtn) {
+            googleBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg><span>Continue with Google</span>';
+            googleBtn.disabled = false;
+        }
+    }
+}
+
+/**
+ * Handle email/password login or signup
+ */
+async function handleEmailLogin(e) {
+    e.preventDefault();
+
+    const emailInput = document.getElementById('email-input-wall');
+    const passwordInput = document.getElementById('password-input-wall');
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+
+    if (!emailInput?.value || !passwordInput?.value) {
+        showLoginError('Please enter email and password');
+        return;
+    }
+
+    if (submitBtn) {
+        submitBtn.textContent = 'Signing in...';
+        submitBtn.disabled = true;
+    }
+
+    try {
+        if (!window.AuthService) {
+            showLoginError('Authentication service not available');
+            return;
+        }
+
+        let user;
+
+        // Try to login first
+        try {
+            user = await window.AuthService.loginWithEmail(emailInput.value, passwordInput.value);
+        } catch (error) {
+            // If login fails and it's a user-not-found error, try to register
+            if (error.code === 'auth/user-not-found' || error.message?.includes('user-not-found')) {
+                user = await window.AuthService.registerWithEmail(
+                    emailInput.value,
+                    passwordInput.value,
+                    emailInput.value.split('@')[0] // Use email prefix as display name
+                );
+            } else {
+                throw error;
+            }
+        }
+
+        if (user) {
+            state.currentUser = {
+                uid: user.id || user.uid,
+                email: user.email,
+                displayName: user.name || user.displayName || user.email
+            };
+            hideLoginWall();
+            emailInput.value = '';
+            passwordInput.value = '';
+        }
+    } catch (error) {
+        console.error('[Email Login] Error:', error);
+        showLoginError('Authentication failed: ' + (error.message || 'Unknown error'));
+    } finally {
+        if (submitBtn) {
+            submitBtn.textContent = 'Continue with Email';
+            submitBtn.disabled = false;
+        }
+    }
+}
+
+// ============================================
 // AUTHENTICATION
 // ============================================
 

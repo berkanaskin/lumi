@@ -1,0 +1,262 @@
+/**
+ * LUMI - Form & Login Wall Styles
+ * Cinematic login interface and form components
+ */
+
+/* ============================================
+   LOGIN WALL (Full Screen Authentication)
+   ============================================ */
+
+.login-wall {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.login-wall:not(.active) {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.login-wall.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.login-backdrop {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #1a0033 0%, #0a0a1a 50%, #1a0a0a 100%);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.login-backdrop-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.5) 100%);
+  backdrop-filter: blur(12px);
+}
+
+.login-panel {
+  position: relative;
+  z-index: 1;
+  background: rgba(10, 10, 15, 0.95);
+  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
+  border-radius: var(--radius-xl, 24px);
+  padding: var(--space-2xl, 48px);
+  width: 90%;
+  max-width: 420px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+.login-header {
+  margin-bottom: var(--space-2xl, 48px);
+}
+
+.login-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0 0 var(--space-sm, 12px) 0;
+  background: linear-gradient(135deg, #fff 0%, #5858f3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.05em;
+}
+
+.login-tagline {
+  color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+  font-size: 16px;
+  margin: 0;
+  font-weight: 400;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md, 16px);
+}
+
+.btn-google,
+.btn-email {
+  width: 100%;
+  padding: var(--space-md, 16px) var(--space-lg, 24px);
+  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
+  border-radius: var(--radius-md, 12px);
+  background: var(--glass-bg, rgba(255, 255, 255, 0.05));
+  color: var(--text-primary, #fff);
+  cursor: pointer;
+  transition: all var(--transition-normal, 0.2s ease);
+  font-size: 16px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm, 12px);
+  font-family: inherit;
+}
+
+.btn-google:hover,
+.btn-email:hover {
+  background: var(--glass-bg-hover, rgba(255, 255, 255, 0.1));
+  border-color: var(--primary, #5858f3);
+  box-shadow: 0 0 20px rgba(88, 88, 243, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-google:active,
+.btn-email:active {
+  transform: translateY(0);
+}
+
+.login-divider {
+  color: var(--text-muted, rgba(255, 255, 255, 0.4));
+  margin: var(--space-lg, 24px) 0;
+  font-size: 14px;
+  position: relative;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 45%;
+  height: 1px;
+  background: var(--glass-border, rgba(255, 255, 255, 0.1));
+}
+
+.login-divider::before {
+  left: 0;
+}
+
+.login-divider::after {
+  right: 0;
+}
+
+.email-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md, 16px);
+}
+
+.email-form input {
+  padding: var(--space-md, 16px) var(--space-lg, 24px);
+  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
+  border-radius: var(--radius-md, 12px);
+  background: var(--glass-bg, rgba(255, 255, 255, 0.05));
+  color: var(--text-primary, #fff);
+  font-size: 16px;
+  transition: all var(--transition-normal, 0.2s ease);
+  font-family: inherit;
+}
+
+.email-form input::placeholder {
+  color: var(--text-muted, rgba(255, 255, 255, 0.4));
+}
+
+.email-form input:focus {
+  outline: none;
+  border-color: var(--primary, #5858f3);
+  background: var(--glass-bg-hover, rgba(255, 255, 255, 0.1));
+  box-shadow: 0 0 0 3px rgba(88, 88, 243, 0.2);
+}
+
+.login-footer {
+  margin-top: var(--space-lg, 24px);
+  color: var(--text-muted, rgba(255, 255, 255, 0.4));
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.login-footer small {
+  display: block;
+}
+
+.login-error {
+  color: #ff6b6b;
+  margin-top: var(--space-md, 16px);
+  font-size: 14px;
+  display: none;
+  padding: var(--space-md, 16px);
+  background: rgba(255, 107, 107, 0.1);
+  border-radius: var(--radius-md, 12px);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+.login-error.visible {
+  display: block;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+  .login-panel {
+    padding: var(--space-lg, 24px);
+    width: 95%;
+    margin: var(--space-lg, 24px);
+  }
+
+  .login-title {
+    font-size: 28px;
+  }
+
+  .login-tagline {
+    font-size: 14px;
+  }
+
+  .btn-google,
+  .btn-email {
+    padding: var(--space-md, 16px) var(--space-lg, 24px);
+    font-size: 14px;
+  }
+
+  .email-form input {
+    padding: var(--space-sm, 12px) var(--space-md, 16px);
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+.login-wall button:focus-visible,
+.login-wall input:focus-visible {
+  outline: 2px solid var(--primary, #5858f3);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: more) {
+  .login-panel {
+    border-width: 2px;
+  }
+
+  .btn-google,
+  .btn-email,
+  .email-form input {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .login-wall,
+  .login-panel,
+  .btn-google,
+  .btn-email,
+  .email-form input {
+    transition: none;
+  }
+}

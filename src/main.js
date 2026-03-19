@@ -121,6 +121,7 @@ import {
 } from './features/search.js';
 
 import {
+    initAuth,
     loadAuth,
     updateAuthUI,
     openLoginModal,
@@ -281,6 +282,9 @@ window.updateAuthUI = updateAuthUI;
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize login wall with Firebase
+    initAuth();
+
     // Initialize DOM element references
     initElements();
 
