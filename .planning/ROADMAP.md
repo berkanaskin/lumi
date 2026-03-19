@@ -12,7 +12,7 @@ Lumi transforms from a working SPA into a polished, differentiated movie/TV disc
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [x] **Phase 1: Design Foundation** - Cinematic overhaul of all pages, polished design system, solid auth/watchlist UX (1/2 complete)
+- [x] **Phase 1: Design Foundation** - Cinematic overhaul of all pages, polished design system, solid auth/watchlist UX (2/2 complete)
 - [ ] **Phase 2: Hybrid AI Search** - Natural language discovery via embedding search + LLM fallback, personalization, diversity injection
 - [ ] **Phase 3: Content Enrichment** - Streaming availability by country, aggregated ratings, comprehensive video/cast/trivia content
 - [ ] **Phase 4: Premium Platform** - Community ratings, PWA install + offline, freemium subscription model
@@ -45,11 +45,12 @@ Plans:
   3. User can search by title, actor, or genre with autocomplete suggestions appearing as they type
   4. Logged-in user receives recommendations that reflect their watchlist and rating history
   5. Search results include occasional results outside the user's typical genres (diversity injection visible over multiple searches)
-**Plans**: TBD
+**Plans**: 3 plans in 2 waves
 
 Plans:
-- [ ] 02-01: Embedding pipeline + Firestore vector index + Edge Function search API
-- [ ] 02-02: Search UI, autocomplete, personalization, diversity injection, and API cost dashboard
+- [ ] 02-01-PLAN.md — Embedding pipeline infrastructure (OpenAI embeddings, Firestore vector index, batch generation, cost logging)
+- [ ] 02-02-PLAN.md — Hybrid search API (embedding + LLM fallback, confidence scoring, cost dashboard endpoint)
+- [ ] 02-03-PLAN.md — Search UI (autocomplete enhancement, results page, personalization, diversity injection, infinite scroll)
 
 ### Phase 3: Content Enrichment
 **Goal**: Detail pages become the authoritative source for everything a user needs to decide to watch something — availability, ratings, videos, people, and release info all in one place
@@ -90,7 +91,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Design Foundation | 2/2 | Planned | - |
-| 2. Hybrid AI Search | 0/2 | Pending | - |
+| 1. Design Foundation | 2/2 | COMPLETE | 2026-03-19 |
+| 2. Hybrid AI Search | 0/3 | PLANNED | - |
 | 3. Content Enrichment | 0/2 | Pending | - |
 | 4. Premium Platform | 0/2 | Pending | - |
