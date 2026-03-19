@@ -518,6 +518,81 @@ export const RatingsService = {
 };
 
 /**
+ * Embedding Service - AI-powered search infrastructure
+ * Handles embeddings generation, metric logging, and search history
+ */
+export const EmbeddingService = {
+    /**
+     * Generate embeddings for content batch
+     * Used by admin tools to trigger batch embedding generation
+     */
+    async generateEmbeddings(limit = 50, version = 'v1') {
+        try {
+            const response = await fetch('/api/embeddings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ limit, version }),
+            });
+            if (!response.ok) {
+                throw new Error(`Embedding generation failed: ${response.status}`);
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('[EmbeddingService] generateEmbeddings error:', error);
+            throw error;
+        }
+    },
+
+    /**
+     * Log a metric (search cost, confidence, etc.) to api_metrics collection
+     * Used after each search to track costs and performance
+     */
+    async logMetric(metric) {
+        try {
+            const response = await fetch('/api/metrics', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(metric),
+            });
+            if (!response.ok) {
+                console.warn('[EmbeddingService] Metric logging failed:', response.status);
+            }
+            return response.ok;
+        } catch (error) {
+            console.warn('[EmbeddingService] Metric logging error:', error);
+            return false;
+        }
+    },
+
+    /**
+     * Log search query silently for personalization enrichment
+     * Failures do not disrupt user experience (silent logging pattern)
+     * Only logged for authenticated users
+     * No sensitive data — only query text, result count, timestamp
+     */
+    async logSearchQuery(query, userId, resultsCount = 0) {
+        try {
+            const response = await fetch('/api/search-history', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    query,
+                    userId,
+                    resultsCount,
+                    timestamp: new Date().toISOString(),
+                }),
+            });
+            if (!response.ok) {
+                console.warn('[EmbeddingService] Failed to log search history');
+            }
+        } catch (error) {
+            console.warn('[EmbeddingService] Search history logging error:', error);
+            // Silently fail — don't disrupt user experience
+        }
+    },
+};
+
+/**
  * Combined API object (for legacy compatibility)
  */
 export const API = {
@@ -549,6 +624,11 @@ export const API = {
 
     // Ratings methods
     getAllRatings: (...args) => RatingsService.getAllRatings(...args),
+
+    // Embedding methods
+    generateEmbeddings: (...args) => EmbeddingService.generateEmbeddings(...args),
+    logMetric: (...args) => EmbeddingService.logMetric(...args),
+    logSearchQuery: (...args) => EmbeddingService.logSearchQuery(...args),
 };
 
 // Legacy window export
@@ -557,4 +637,5 @@ if (typeof window !== 'undefined') {
     window.TMDBService = TMDBService;
     window.YouTubeService = YouTubeService;
     window.RatingsService = RatingsService;
+    window.EmbeddingService = EmbeddingService;
 }
