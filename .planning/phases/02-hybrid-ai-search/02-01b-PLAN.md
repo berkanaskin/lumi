@@ -2,7 +2,7 @@
 phase: 02-hybrid-ai-search
 plan: 01b
 type: execute
-wave: 1
+wave: 2
 depends_on: [02-01]
 files_modified: [src/config.js, src/services/api.js]
 autonomous: true
@@ -115,13 +115,9 @@ From 02-CONTEXT.md: Search history saved silently (no user UI) for personalizati
     - Run: `grep -q "512" src/config.js && echo "PASS"` — embedding dimension set correctly
     - No syntax errors: `node -c src/config.js`
   </verify>
-  <acceptance_criteria>
-    - OPENAI_API_KEY exported from config (from process.env)
-    - EMBEDDING_CONFIG includes model, dimensions, batch size, threshold
-    - COST_CONFIG includes pricing constants
-    - All values match research recommendations (512 dims, 0.75 threshold, 0.02/0.15 costs)
-    - Config is properly exported for use by api/embeddings.js and other modules
-  </acceptance_criteria>
+  <done>
+    OPENAI_API_KEY exported from process.env. EMBEDDING_CONFIG includes model, dimensions, batch size, threshold. COST_CONFIG includes pricing constants. All values match research recommendations (512 dims, 0.75 threshold, 0.02/0.15 costs). Config properly exported for use by api/embeddings.js and other modules.
+  </done>
 </task>
 
 <task type="auto">
@@ -182,13 +178,9 @@ From 02-CONTEXT.md: Search history saved silently (no user UI) for personalizati
     - Run: `grep -q "/api/metrics" src/services/api.js && echo "PASS"` — metrics endpoint referenced
     - No syntax errors: `node -c src/services/api.js`
   </verify>
-  <acceptance_criteria>
-    - Two new async methods added to API service layer
-    - generateEmbeddings() calls /api/embeddings with limit and version
-    - logMetric() calls /api/metrics with metric object
-    - Both methods properly handle responses and errors
-    - Methods are exported for use by downstream code (Plan 02, Plan 03)
-  </acceptance_criteria>
+  <done>
+    Two new async methods added to API service layer: generateEmbeddings() and logMetric(). generateEmbeddings() calls /api/embeddings with limit and version. logMetric() calls /api/metrics with metric object. Both methods properly handle responses and errors. Methods are exported for use by downstream code (Plan 02, Plan 03).
+  </done>
 </task>
 
 <task type="auto">
@@ -242,14 +234,9 @@ From 02-CONTEXT.md: Search history saved silently (no user UI) for personalizati
     - Run: `grep -q "try.*catch" src/services/api.js && grep -A5 "logSearchQuery"` — error handling present
     - No syntax errors: `node -c src/services/api.js`
   </verify>
-  <acceptance_criteria>
-    - Method added: async logSearchQuery(query, userId, resultsCount)
-    - POSTs to /api/search-history with {query, userId, resultsCount, timestamp}
-    - Gracefully handles errors (try/catch, console.warn only)
-    - Does not throw or block on failure (silent)
-    - Includes comment explaining silent logging and privacy
-    - Exported for use by Plan 03 search UI
-  </acceptance_criteria>
+  <done>
+    Method added: async logSearchQuery(query, userId, resultsCount). POSTs to /api/search-history with {query, userId, resultsCount, timestamp}. Gracefully handles errors with try/catch. Does not throw or block on failure (silent). Includes comment explaining silent logging and privacy. Exported for use by Plan 03 search UI.
+  </done>
 </task>
 
 </tasks>
