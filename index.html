@@ -252,9 +252,42 @@
       </header>
 
       <!-- ============================================
+             DESKTOP SIDEBAR NAVIGATION
+             ============================================ -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav">
+          <a href="#" class="nav-item" data-page="home" aria-label="Home">
+            <span class="material-symbols-outlined">home</span>
+            <span class="nav-label">Home</span>
+          </a>
+          <a href="#" class="nav-item" data-page="wizard" aria-label="Discover">
+            <span class="material-symbols-outlined">explore</span>
+            <span class="nav-label">Discover</span>
+          </a>
+          <a href="#" class="nav-item" data-page="search" aria-label="Search">
+            <span class="material-symbols-outlined">search</span>
+            <span class="nav-label">Search</span>
+          </a>
+          <a href="#" class="nav-item" data-page="favorites" aria-label="Favorites">
+            <span class="material-symbols-outlined">favorite</span>
+            <span class="nav-label">Favorites</span>
+          </a>
+          <a href="#" class="nav-item" data-page="profile" aria-label="Profile">
+            <span class="material-symbols-outlined">person</span>
+            <span class="nav-label">Profile</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- ============================================
+             MAIN CONTENT AREA
+             ============================================ -->
+      <main class="app-main">
+
+      <!-- ============================================
              VIEW: HOME (Infinity Feed)
              ============================================ -->
-      <section id="view-home" class="view active">
+      <section id="view-home" class="view active" role="region" aria-label="Home">
         <!-- Masonry Infinity Grid -->
         <div class="masonry-grid no-scrollbar scroll-touch" id="feed-grid">
           <!-- Content will be dynamically loaded -->
@@ -271,7 +304,7 @@
       <!-- ============================================
              VIEW: NE İZLESEM (Wizard) - v4 Immersive Design
              ============================================ -->
-      <section id="view-wizard" class="view discover-immersive">
+      <section id="view-wizard" class="view discover-immersive" role="region" aria-label="Discover">
         <!-- Full-Viewport Hero Background -->
         <div class="discover-hero-bg" id="discover-bg"></div>
         <div class="discover-gradient-overlay"></div>
@@ -411,6 +444,8 @@
         id="view-favorites"
         class="view"
         style="margin-top: -80px; padding-bottom: 120px"
+        role="region"
+        aria-label="Favorites"
       >
         <div class="favorites-header">
           <div class="favorites-title-row">
@@ -459,6 +494,8 @@
         id="view-profile"
         class="view"
         style="margin-top: -80px; padding-bottom: 150px"
+        role="region"
+        aria-label="Profile"
       >
         <div class="profile-header">
           <div class="profile-avatar-container">
@@ -654,22 +691,24 @@
         <div id="profile-content" style="padding: 0 var(--space-lg)"></div>
       </section>
 
+      </main>
+
       <!-- ============================================
-             FLOATING BOTTOM NAVIGATION (3 Icons)
+             MOBILE BOTTOM NAVIGATION
              ============================================ -->
       <nav class="bottom-nav" id="bottom-nav">
-        <button class="nav-item active" data-page="home">
+        <a href="#" class="nav-item" data-page="home" aria-label="Home">
           <span class="material-symbols-outlined">home</span>
-        </button>
-        <button class="nav-item" data-page="wizard">
-          <span class="material-symbols-outlined">auto_awesome</span>
-        </button>
-        <button class="nav-item" data-page="favorites">
-          <span class="material-symbols-outlined">favorite</span>
-        </button>
-        <button class="nav-item" data-page="profile">
+        </a>
+        <a href="#" class="nav-item" data-page="wizard" aria-label="Discover">
+          <span class="material-symbols-outlined">explore</span>
+        </a>
+        <a href="#" class="nav-item" data-page="search" aria-label="Search">
+          <span class="material-symbols-outlined">search</span>
+        </a>
+        <a href="#" class="nav-item" data-page="profile" aria-label="Profile">
           <span class="material-symbols-outlined">person</span>
-        </button>
+        </a>
       </nav>
     </div>
 
