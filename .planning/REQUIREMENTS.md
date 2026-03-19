@@ -102,11 +102,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DISC-01 | Phase 2 | Pending |
-| DISC-02 | Phase 2 | Pending |
+| DISC-01 | Phase 2 | In Progress (infrastructure built) |
+| DISC-02 | Phase 2 | In Progress (infrastructure built) |
 | DISC-03 | Phase 2 | Pending |
 | DISC-04 | Phase 2 | Pending |
-| DISC-05 | Phase 2 | Pending |
+| DISC-05 | Phase 2 | In Progress (infrastructure built) |
 | DISC-06 | Phase 2 | Pending |
 | DETL-01 | Phase 3 | Pending |
 | DETL-02 | Phase 3 | Pending |
@@ -135,7 +135,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PLAT-01 | Phase 4 | Pending |
 | PLAT-02 | Phase 4 | Pending |
 | PLAT-03 | Phase 1 | Pending |
-| PLAT-04 | Phase 2 | Pending |
+| PLAT-04 | Phase 2 | In Progress (infrastructure built) |
 | PLAT-05 | Phase 1 | Pending |
 
 **Coverage:**

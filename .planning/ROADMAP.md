@@ -48,7 +48,7 @@ Plans:
 **Plans**: 3 plans in 2 waves
 
 Plans:
-- [ ] 02-01-PLAN.md — Embedding pipeline infrastructure (OpenAI embeddings, Firestore vector index, batch generation, cost logging)
+- [x] 02-01-PLAN.md — Embedding pipeline infrastructure (OpenAI embeddings, Firestore vector index, batch generation, cost logging) (COMPLETE)
 - [ ] 02-02-PLAN.md — Hybrid search API (embedding + LLM fallback, confidence scoring, cost dashboard endpoint)
 - [ ] 02-03-PLAN.md — Search UI (autocomplete enhancement, results page, personalization, diversity injection, infinite scroll)
 
@@ -92,6 +92,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Design Foundation | 2/2 | COMPLETE | 2026-03-19 |
-| 2. Hybrid AI Search | 0/3 | PLANNED | - |
+| 2. Hybrid AI Search | 1/3 | IN PROGRESS | - |
 | 3. Content Enrichment | 0/2 | Pending | - |
 | 4. Premium Platform | 0/2 | Pending | - |
