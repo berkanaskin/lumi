@@ -29,11 +29,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User can sign up, log in (Google or email), manage watchlist and favorites with a smooth, intuitive flow
   4. All UI strings display correctly in English and Turkish with no broken characters or layout issues
   5. No API keys are exposed in browser DevTools — all external calls route through server-side Edge Functions
-**Plans**: TBD
+**Plans**: 2 plans in 2 waves
 
 Plans:
-- [ ] 01-01: Design system + page overhaul (discover, search, detail, profile pages unified to cinematic Letterboxd-style)
-- [ ] 01-02: Auth, watchlist, i18n, and API security hardening
+- [ ] 01-01-PLAN.md — Modular CSS refactoring, theme system, navigation (sidebar/bottom-nav), movie cards, toast, loading spinner
+- [ ] 01-02-PLAN.md — Authentication wall (Google OAuth + email/password), watchlist management, i18n verification (EN/TR), API security hardening (Edge Functions)
 
 ### Phase 2: Hybrid AI Search
 **Goal**: Users can describe what they want to watch in plain language and get accurate, relevant recommendations instantly
@@ -90,7 +90,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Design Foundation | 0/2 | Not started | - |
-| 2. Hybrid AI Search | 0/2 | Not started | - |
-| 3. Content Enrichment | 0/2 | Not started | - |
-| 4. Premium Platform | 0/2 | Not started | - |
+| 1. Design Foundation | 2/2 | Planned | - |
+| 2. Hybrid AI Search | 0/2 | Pending | - |
+| 3. Content Enrichment | 0/2 | Pending | - |
+| 4. Premium Platform | 0/2 | Pending | - |
