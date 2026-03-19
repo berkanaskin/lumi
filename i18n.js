@@ -163,6 +163,36 @@ const i18n = {
             aiSearching: '🤖 Gemini düşünüyor...',
             aiRecommendations: 'AI Önerileri',
 
+            // Authentication
+            continueWithGoogle: 'Google ile devam et',
+            continueWithEmail: 'E-posta ile devam et',
+            tagline: 'İzle. Anında. Harikaca.',
+            email: 'E-posta',
+            password: 'Şifre',
+            signOut: 'Çıkış Yap',
+
+            // Watchlist & Favorites
+            addToWatchlist: 'İzle Listesine Ekle',
+            removeFromWatchlist: 'İzle Listesinden Çıkar',
+            removeFromWatchlistConfirm: 'İzle Listesinden Çıkarmak İstiyor musunuz?',
+            watchlistEmpty: 'İzle Listesinde film yok',
+            watchlistEmptyHint: 'Keşfet veya Ara sayfalarından film ekleyerek başlayın.',
+
+            addToFavorites: 'Favorilere Ekle',
+            removeFromFavorites: 'Favorilerden Çıkar',
+            favoritesEmpty: 'Favorin yok',
+            favoritesEmptyHint: 'Favori filmlerini işaretleyerek buradan görüntüle.',
+
+            // Errors & Validation
+            loadFailed: 'Filmler yüklenemedi. Lütfen bağlantınızı kontrol edip yeniden deneyin.',
+            loginRequired: 'Film kaydetmek için lütfen giriş yapın',
+            authError: 'Giriş yapılamadı',
+            authFailed: 'Kimlik doğrulama başarısız oldu',
+
+            // Loading States
+            loadingMovies: 'Filmler yükleniyor...',
+            searching: 'Aranıyor...',
+
             // Detail Tabs
             detailTabOverview: 'Özet',
             detailTabCast: 'Kadro',
@@ -313,7 +343,32 @@ const i18n = {
             continueWithGoogle: 'Continue with Google',
             continueWithFacebook: 'Continue with Facebook',
             continueWithApple: 'Continue with Apple',
+            email: 'Email',
+            password: 'Password',
+            signOut: 'Sign Out',
             close: 'Close',
+
+            // Watchlist & Favorites
+            addToWatchlist: 'Add to Watchlist',
+            removeFromWatchlist: 'Remove from Watchlist',
+            removeFromWatchlistConfirm: 'Remove from Watchlist?',
+            watchlistEmpty: 'No movies in your watchlist yet.',
+            watchlistEmptyHint: 'Start by adding movies from Discover or Search.',
+
+            addToFavorites: 'Add to Favorites',
+            removeFromFavorites: 'Remove from Favorites',
+            favoritesEmpty: 'No favorites yet.',
+            favoritesEmptyHint: 'Mark your favorite movies to see them here.',
+
+            // Errors & Validation
+            loadFailed: 'Could not load movies. Please check your connection and try again.',
+            loginRequired: 'Please log in to save movies',
+            authError: 'Login failed',
+            authFailed: 'Authentication failed',
+
+            // Loading States
+            loadingMovies: 'Loading movies...',
+            searching: 'Searching...',
 
             // Favorites
             favAll: 'All',
@@ -1013,6 +1068,31 @@ const i18n = {
 
         // Update page title
         document.title = this.t('appTitle');
+    },
+
+    // Turkish-safe string operations
+    toTurkishUpperCase(str) {
+        return str.toLocaleUpperCase('tr-TR');
+    },
+
+    toTurkishLowerCase(str) {
+        return str.toLocaleLowerCase('tr-TR');
+    },
+
+    // Detect user locale
+    detectLocale() {
+        const saved = localStorage.getItem('appLanguage');
+        if (saved) return saved;
+
+        const browserLocale = navigator.language || navigator.userLanguage;
+        if (browserLocale.startsWith('tr')) return 'tr';
+        if (browserLocale.startsWith('en')) return 'en';
+        return 'en';
+    },
+
+    // Set user locale
+    setLocale(locale) {
+        this.changeLanguage(locale);
     }
 };
 
