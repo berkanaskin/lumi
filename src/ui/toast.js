@@ -1,66 +1,140 @@
 /**
  * LUMI - Toast Notifications
- * v1.1.0
- * 
- * Provides toast notification functionality.
+ * v2.0.0
+ *
+ * Premium toast notifications with glassmorphism,
+ * semantic colors, and top-center positioning.
  */
 
-// Inject toast animations CSS
-const toastStyles = document.createElement('style');
-toastStyles.textContent = `
-    @keyframes toastIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes toastOut {
-        from { opacity: 1; transform: translateY(0); }
-        to { opacity: 0; transform: translateY(-20px); }
-    }
-    .toast {
-        background: var(--glass-bg);
-        color: var(--text-primary);
-        padding: 12px 20px;
-        border-radius: var(--radius-md);
-        font-size: 14px;
-        font-weight: 500;
-        backdrop-filter: blur(20px);
-        border: 1px solid var(--glass-border);
-        pointer-events: auto;
-        animation: toastIn 0.3s ease;
-        max-width: 300px;
-        text-align: center;
-    }
-    .toast.hide {
-        animation: toastOut 0.3s ease forwards;
-    }
-`;
-document.head.appendChild(toastStyles);
+import { escapeHtml } from '../lib/helpers.js';
 
 /**
- * Show a toast notification
- * @param {string} message - The message to display
- * @param {number} duration - Duration in milliseconds (default: 3000)
+ * Toast type definitions
  */
-export function showToast(message, duration = 3000) {
-    const container = document.getElementById('toast-container');
-    if (!container) {
-        console.warn('[Toast] Container not found');
-        return;
+const TOAST_TYPES = {
+    success: 'success',
+    error: 'error',
+    info: 'info',
+    warning: 'warning'
+};
+
+/**
+ * Get icon for toast type
+ * @param {string} type - Toast type
+ * @returns {string} Material icon name
+ */
+function getIconForType(type) {
+    const icons = {
+        success: 'check_circle',
+        error: 'error',
+        info: 'info',
+        warning: 'warning'
+    };
+    return icons[type] || 'info';
+}
+
+/**
+ * Show a toast notification at top-center
+ * @param {string} message - Message to display
+ * @param {string} type - Type: 'success', 'error', 'info', 'warning' (default: 'info')
+ * @param {number} duration - Duration in milliseconds (default: 3000, 0 = infinite)
+ * @returns {HTMLElement} Toast element
+ */
+export function showToast(message, type = 'info', duration = 3000) {
+    const container = document.body;
+
+    // Validate type
+    if (!TOAST_TYPES[type]) {
+        console.warn(`[Toast] Unknown type "${type}", defaulting to "info"`);
+        type = 'info';
     }
 
     const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.textContent = message;
-    container.appendChild(toast);
+    toast.className = `toast toast-${type}`;
+    toast.setAttribute('role', 'alert');
 
-    // Auto remove after duration
-    setTimeout(() => {
-        toast.classList.add('hide');
-        setTimeout(() => toast.remove(), 300);
-    }, duration);
+    const iconName = getIconForType(type);
+
+    // Sanitize message for security
+    const safeMessage = escapeHtml(message);
+
+    toast.innerHTML = `
+        <div class="toast-content">
+            <span class="toast-icon">
+                <span class="material-symbols-outlined">${iconName}</span>
+            </span>
+            <p>${safeMessage}</p>
+            <button class="toast-close" aria-label="Close notification">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+    `;
+
+    document.body.appendChild(toast);
+
+    // Close button handler
+    const closeBtn = toast.querySelector('.toast-close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            toast.classList.add('removing');
+            setTimeout(() => toast.remove(), 300);
+        });
+    }
+
+    // Auto-dismiss after duration
+    if (duration > 0) {
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.classList.add('removing');
+                setTimeout(() => toast.remove(), 300);
+            }
+        }, duration);
+    }
+
+    return toast;
+}
+
+/**
+ * Show success toast
+ * @param {string} message
+ * @param {number} duration
+ */
+export function showSuccessToast(message, duration = 3000) {
+    return showToast(message, 'success', duration);
+}
+
+/**
+ * Show error toast
+ * @param {string} message
+ * @param {number} duration
+ */
+export function showErrorToast(message, duration = 3000) {
+    return showToast(message, 'error', duration);
+}
+
+/**
+ * Show info toast
+ * @param {string} message
+ * @param {number} duration
+ */
+export function showInfoToast(message, duration = 3000) {
+    return showToast(message, 'info', duration);
+}
+
+/**
+ * Show warning toast
+ * @param {string} message
+ * @param {number} duration
+ */
+export function showWarningToast(message, duration = 3000) {
+    return showToast(message, 'warning', duration);
 }
 
 // Legacy compatibility
 if (typeof window !== 'undefined') {
     window.showToast = showToast;
+    window.showSuccessToast = showSuccessToast;
+    window.showErrorToast = showErrorToast;
+    window.showInfoToast = showInfoToast;
+    window.showWarningToast = showWarningToast;
 }

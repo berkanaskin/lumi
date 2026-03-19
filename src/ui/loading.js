@@ -1,38 +1,51 @@
 /**
  * LUMI - Loading & UI Feedback
- * v1.1.0
- * 
- * Loading indicators and UI feedback components.
+ * v2.0.0
+ *
+ * Loading indicators, spinners, and UI feedback components
+ * with Lumi-branded CSS-based spinner.
  */
 
 /**
- * Show loading indicator
- * @param {string} message - Optional loading message
+ * Show CSS-based loading spinner
+ * @param {HTMLElement} target - Target element (default: document.body)
+ * @returns {HTMLElement} Spinner element
  */
-export function showLoading(message = '') {
-    const loader = document.getElementById('loading-indicator');
-    if (loader) {
-        loader.classList.add('active');
-        const text = loader.querySelector('.loading-text');
-        if (text && message) {
-            text.textContent = message;
-        }
-    }
+export function showLoading(target = document.body) {
+    // Remove existing spinner if any
+    hideLoading();
+
+    const loader = document.createElement('div');
+    loader.className = 'loading-spinner';
+    loader.setAttribute('role', 'status');
+    loader.setAttribute('aria-label', 'Loading...');
+
+    loader.innerHTML = `
+        <div class="spinner">
+            <div class="spinner-ring"></div>
+        </div>
+    `;
+
+    target.appendChild(loader);
+    return loader;
 }
 
 /**
- * Hide loading indicator
+ * Hide loading spinner
+ * @param {HTMLElement} loader - Spinner element (or removes all if not provided)
  */
-export function hideLoading() {
-    const loader = document.getElementById('loading-indicator');
-    if (loader) {
-        loader.classList.remove('active');
+export function hideLoading(loader = null) {
+    if (loader && loader.parentNode) {
+        loader.remove();
+    } else {
+        // Remove all spinners
+        document.querySelectorAll('.loading-spinner').forEach(el => el.remove());
     }
 }
 
 /**
  * Show no results message
- * @param {string} message - Optional custom message
+ * @param {string} message - Custom message
  */
 export function showNoResults(message = 'Sonuç bulunamadı') {
     const noResults = document.getElementById('no-results');
@@ -56,7 +69,7 @@ export function hideNoResults() {
 }
 
 /**
- * Show skeleton loading cards
+ * Show skeleton loading cards (placeholder animation)
  * @param {HTMLElement} container - Container element
  * @param {number} count - Number of skeleton cards
  */
@@ -67,10 +80,10 @@ export function showSkeletons(container, count = 6) {
     for (let i = 0; i < count; i++) {
         container.innerHTML += `
             <div class="skeleton-card">
-                <div class="skeleton-poster"></div>
+                <div class="skeleton-poster skeleton"></div>
                 <div class="skeleton-info">
-                    <div class="skeleton-title"></div>
-                    <div class="skeleton-year"></div>
+                    <div class="skeleton-title skeleton"></div>
+                    <div class="skeleton-year skeleton"></div>
                 </div>
             </div>
         `;
