@@ -7,6 +7,7 @@
 import { state, elements } from '../lib/state.js';
 import { CONFIG } from '../config.js';
 import { API } from '../services/api.js';
+import { renderAutocomplete, getFlatItemsList, getItemText } from '../ui/autocomplete-dropdown.js';
 
 // ============================================
 // IMDB RATING CACHE
@@ -58,45 +59,33 @@ export function showAutocomplete(results) {
         return;
     }
 
-    dropdown.innerHTML = results.map(item => {
-        const mediaType = item.media_type || state.currentType;
-        const title = item.title || item.name;
-        const date = item.release_date || item.first_air_date;
-        const year = date ? new Date(date).getFullYear() : '';
-        const rating = item.vote_average ? item.vote_average.toFixed(1) : null;
-        const posterUrl = item.poster_path
-            ? `https://image.tmdb.org/t/p/w92${item.poster_path}`
-            : '';
-        const typeLabel = mediaType === 'movie' ? 'Film' : 'Dizi';
+    // Store results for keyboard navigation
+    if (!state.autocompleteResults) {
+        state.autocompleteResults = [];
+        state.activeAutocompleteIndex = -1;
+    }
+    state.autocompleteResults = results;
+    state.activeAutocompleteIndex = -1;
 
-        return `
-            <div class="autocomplete-item" data-id="${item.id}" data-type="${mediaType}" data-title="${title}" data-year="${year}" data-original="${item.original_title || item.original_name || ''}">
-                <div class="autocomplete-poster">
-                    ${posterUrl
-                ? `<img src="${posterUrl}" alt="${title}" loading="lazy">`
-                : '<div class="no-img">🎬</div>'
-            }
-                </div>
-                <div class="autocomplete-info">
-                    <div class="autocomplete-title">${title}</div>
-                    <div class="autocomplete-meta">
-                        <span>${typeLabel}</span>
-                        ${year ? `<span>${year}</span>` : ''}
-                        ${rating ? `<span class="autocomplete-rating">⭐ ${rating}</span>` : ''}
-                    </div>
-                </div>
-            </div>
-        `;
-    }).join('');
+    // Organize results by type
+    const suggestions = {
+        titles: results.filter(r => r.media_type === 'movie' || r.media_type === 'tv'),
+        actors: [],
+        genres: [],
+    };
 
-    // Add click handlers
-    dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
-        item.addEventListener('click', () => {
-            const id = item.dataset.id;
-            const type = item.dataset.type;
-            const title = item.dataset.title;
-            const year = item.dataset.year;
-            const original = item.dataset.original;
+    // Render using new component
+    dropdown.innerHTML = renderAutocomplete(suggestions, state.activeAutocompleteIndex);
+
+    // Add click handlers to rendered items
+    dropdown.querySelectorAll('.autocomplete-item').forEach((itemEl, index) => {
+        itemEl.addEventListener('click', () => {
+            const result = results[index];
+            if (!result) return;
+
+            const mediaType = result.media_type || state.currentType;
+            const title = result.title || result.name;
+            const original = result.original_title || result.original_name || '';
 
             // Mark that user came from autocomplete
             state.cameFromAutocomplete = true;
@@ -108,7 +97,7 @@ export function showAutocomplete(results) {
 
             // Open detail
             if (window.openDetail) {
-                window.openDetail(id, type, title, year, original);
+                window.openDetail(result.id, mediaType, title, '', original);
             }
         });
     });
