@@ -35,26 +35,15 @@ const searchState = {
  * Initialize search results page
  */
 export function initSearchResults() {
-    const container = document.getElementById('search-results-page');
+    // Use existing search container from HTML
+    const container = document.getElementById('search-results-container');
     if (!container) {
         console.warn('[SearchResults] Container not found');
         return;
     }
 
-    // Wire up form submission
-    const form = container.querySelector('.search-form');
-    if (form) {
-        form.addEventListener('submit', handleSearchSubmit);
-    }
-
-    // Wire up clear button
-    const clearBtn = container.querySelector('.clear-btn');
-    if (clearBtn) {
-        clearBtn.addEventListener('click', clearSearchResults);
-    }
-
     // Wire up infinite scroll
-    setupInfiniteScroll();
+    setupInfiniteScroll(container);
 
     console.log('[SearchResults] Initialized');
 }
@@ -64,16 +53,16 @@ export function initSearchResults() {
 // ============================================
 
 /**
- * Handle search form submission
+ * Handle search form submission from autocomplete or main search
  */
-async function handleSearchSubmit(e) {
-    e.preventDefault();
+export async function handleSearchSubmit(query) {
+    if (!query || typeof query !== 'string') {
+        showToast('Please enter a search query');
+        return;
+    }
 
-    const input = document.querySelector('#search-results-page .search-input');
-    if (!input) return;
-
-    const query = input.value.trim();
-    if (!query || query.length < 2) {
+    query = query.trim();
+    if (query.length < 2) {
         showToast('Please enter a search query');
         return;
     }
@@ -104,7 +93,7 @@ async function loadSearchBatch(page) {
     }
 
     searchState.isLoading = true;
-    const container = document.getElementById('search-results-page');
+    const container = document.getElementById('search-results-container');
     if (!container) return;
 
     try {
@@ -233,7 +222,7 @@ function separateByPersonalization(results, userTopGenres) {
  * Render search results to page
  */
 function renderSearchResults(container, primaryResults, diversityResults) {
-    const gridContainer = container.querySelector('.result-cards-grid');
+    const gridContainer = container.querySelector('#search-grid') || container.querySelector('.search-results-grid');
     if (!gridContainer) return;
 
     // Append primary results
@@ -245,11 +234,11 @@ function renderSearchResults(container, primaryResults, diversityResults) {
 
     // Add diversity section if has results
     if (diversityResults && diversityResults.length > 0) {
-        const diversitySectionContainer = container.querySelector('.results-diversity');
-        if (diversitySectionContainer) {
-            const diversityHTML = renderDiversitySection(diversityResults);
-            diversitySectionContainer.innerHTML = diversityHTML;
-        }
+        const diversitySection = document.createElement('div');
+        diversitySection.className = 'results-diversity';
+        const diversityHTML = renderDiversitySection(diversityResults);
+        diversitySection.innerHTML = diversityHTML;
+        container.appendChild(diversitySection);
     }
 }
 
@@ -257,7 +246,7 @@ function renderSearchResults(container, primaryResults, diversityResults) {
  * Show empty state
  */
 function showEmptyState(container) {
-    const gridContainer = container.querySelector('.result-cards-grid');
+    const gridContainer = container.querySelector('#search-grid') || container.querySelector('.search-results-grid');
     if (!gridContainer) return;
 
     gridContainer.innerHTML = `
@@ -277,11 +266,7 @@ function showEmptyState(container) {
     gridContainer.querySelectorAll('.suggestion-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const query = btn.dataset.query;
-            const input = container.querySelector('.search-input');
-            if (input) {
-                input.value = query;
-                handleSearchSubmit({ preventDefault: () => {} });
-            }
+            handleSearchSubmit(query);
         });
     });
 }
@@ -290,7 +275,7 @@ function showEmptyState(container) {
  * Show error state
  */
 function showErrorState(container, error) {
-    const gridContainer = container.querySelector('.result-cards-grid');
+    const gridContainer = container.querySelector('#search-grid') || container.querySelector('.search-results-grid');
     if (!gridContainer) return;
 
     gridContainer.innerHTML = `
@@ -310,15 +295,14 @@ function showErrorState(container, error) {
 /**
  * Setup infinite scroll listener
  */
-function setupInfiniteScroll() {
-    const container = document.getElementById('search-results-page');
+function setupInfiniteScroll(container) {
+    if (!container) {
+        container = document.getElementById('search-results-container');
+    }
     if (!container) return;
 
-    const resultsContainer = container.querySelector('.search-results-container');
-    if (!resultsContainer) return;
-
-    resultsContainer.addEventListener('scroll', throttle(() => {
-        const scrollPercentage = (resultsContainer.scrollTop + resultsContainer.clientHeight) / resultsContainer.scrollHeight;
+    container.addEventListener('scroll', throttle(() => {
+        const scrollPercentage = (container.scrollTop + container.clientHeight) / container.scrollHeight;
 
         // Load more when at 85% depth
         if (scrollPercentage > 0.85 && searchState.hasMoreResults && !searchState.isLoading) {
@@ -349,14 +333,9 @@ function throttle(func, delay) {
 /**
  * Clear search and restore home
  */
-function clearSearchResults() {
-    const container = document.getElementById('search-results-page');
+export function clearSearchResults() {
+    const container = document.getElementById('search-results-container');
     if (!container) return;
-
-    const input = container.querySelector('.search-input');
-    if (input) {
-        input.value = '';
-    }
 
     searchState.query = '';
     searchState.currentPage = 0;
@@ -364,21 +343,12 @@ function clearSearchResults() {
     searchState.diversityResults = [];
     searchState.hasMoreResults = true;
 
-    const gridContainer = container.querySelector('.result-cards-grid');
+    const gridContainer = container.querySelector('#search-grid') || container.querySelector('.search-results-grid');
     if (gridContainer) {
         gridContainer.innerHTML = '';
     }
 
-    const diversityContainer = container.querySelector('.results-diversity');
-    if (diversityContainer) {
-        diversityContainer.innerHTML = '';
-    }
-
-    // Show home section
-    const homeSection = document.getElementById('home');
-    if (homeSection) {
-        homeSection.style.display = 'block';
-    }
-    container.style.display = 'none';
+    const diversitySections = container.querySelectorAll('.results-diversity');
+    diversitySections.forEach(section => section.remove());
 }
 

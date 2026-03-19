@@ -121,6 +121,12 @@ import {
 } from './features/search.js';
 
 import {
+    initSearchResults,
+    handleSearchSubmit as submitSearch,
+    clearSearchResults,
+} from './pages/search-results.js';
+
+import {
     initAuth,
     loadAuth,
     updateAuthUI,
@@ -196,6 +202,9 @@ window.LumiModules = {
     getSearchHistory,
     addToSearchHistory,
     clearSearchHistory,
+    initSearchResults,
+    submitSearch,
+    clearSearchResults,
 
     // Profile Feature
     loadAuth,
@@ -299,6 +308,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize discover module (loads daily recommendation + timer)
     initDiscoverModule();
+
+    // Initialize search results page
+    initSearchResults();
 
     // Load auth state
     loadAuth();
