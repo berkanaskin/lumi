@@ -343,6 +343,76 @@ export const TMDBService = {
         if (!path) return null;
         return `${API_URLS.TMDB_IMAGE}/${size}${path}`;
     },
+
+    /**
+     * Hybrid AI search - natural language movie/TV discovery
+     * Implements embedding-first with LLM fallback
+     */
+    async hybridSearch(query, userId) {
+        if (!query || typeof query !== 'string' || query.trim().length === 0) {
+            throw new Error('Search query must be a non-empty string');
+        }
+
+        if (!userId) {
+            throw new Error('userId is required for search');
+        }
+
+        try {
+            const response = await fetch('/api/search', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    query: query.trim(),
+                    userId: userId,
+                    limit: 20,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Hybrid search failed: ${response.statusText}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('[TMDB] Hybrid search error:', error);
+            throw error;
+        }
+    },
+
+    /**
+     * Get cost dashboard metrics (admin only)
+     * Returns API usage, costs, alerts, and trends
+     */
+    async getCostDashboard(authToken) {
+        if (!authToken || typeof authToken !== 'string') {
+            throw new Error('Valid authentication token required');
+        }
+
+        try {
+            const response = await fetch('/api/cost-dashboard', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`,
+                },
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    throw new Error('Unauthorized: Invalid or expired token');
+                }
+                if (response.status === 403) {
+                    throw new Error('Forbidden: Admin access required');
+                }
+                throw new Error(`Cost dashboard failed: ${response.statusText}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('[TMDB] Cost dashboard error:', error);
+            throw error;
+        }
+    },
 };
 
 /**
@@ -611,6 +681,10 @@ export const API = {
     getPosterUrl: (...args) => TMDBService.getPosterUrl(...args),
     getIMDBId: (...args) => TMDBService.getIMDBId(...args),
 
+    // Hybrid AI search methods
+    hybridSearch: (...args) => TMDBService.hybridSearch(...args),
+    getCostDashboard: (...args) => TMDBService.getCostDashboard(...args),
+
     // YouTube methods
     searchYouTube: (...args) => YouTubeService.search(...args),
     getMovieVideos: (...args) => YouTubeService.getMovieVideos(...args),
@@ -631,6 +705,15 @@ export const API = {
     logSearchQuery: (...args) => EmbeddingService.logSearchQuery(...args),
 };
 
+/**
+ * Search Service - Hybrid AI search and cost dashboard
+ * Exported separately for convenience
+ */
+export const SearchService = {
+    hybridSearch: (...args) => TMDBService.hybridSearch(...args),
+    getCostDashboard: (...args) => TMDBService.getCostDashboard(...args),
+};
+
 // Legacy window export
 if (typeof window !== 'undefined') {
     window.API = API;
@@ -638,4 +721,5 @@ if (typeof window !== 'undefined') {
     window.YouTubeService = YouTubeService;
     window.RatingsService = RatingsService;
     window.EmbeddingService = EmbeddingService;
+    window.SearchService = SearchService;
 }
