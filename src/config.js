@@ -51,6 +51,27 @@ export const API_URLS = {
     GEMINI_PROXY: '/api/gemini',
     REVENUECAT_PROXY: '/api/revenuecat',
     RAPIDAPI_PROXY: '/api/rapidapi',
+    EMBEDDINGS_PROXY: '/api/embeddings',
+    METRICS_PROXY: '/api/metrics',
+    SEARCH_HISTORY_PROXY: '/api/search-history',
+};
+
+// OpenAI Configuration (server-side, via Vercel env)
+export const OPENAI_API_KEY = process.env.OPENAI_API_KEY || '';
+
+// Embedding Configuration
+export const EMBEDDING_CONFIG = {
+    model: 'text-embedding-3-small',
+    dimensions: 512,
+    batchSize: 50,
+    confidenceThreshold: 0.75,
+};
+
+// Cost Monitoring
+export const COST_CONFIG = {
+    embeddingCostPer1M: 0.02,  // $/1M tokens
+    llmCostPer1M: 0.15,         // $/1M tokens
+    monthlyBudgetAlert: 50,     // Alert if > $50/month
 };
 
 // Development mode check
