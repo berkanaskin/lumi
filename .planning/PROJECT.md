@@ -23,13 +23,18 @@ When someone doesn't know what to watch, Lumi understands what they're in the mo
 - ✓ User can get AI-powered recommendations — existing (Gemini AI search)
 - ✓ App supports internationalization (EN/TR) — existing (i18n.js)
 - ✓ App is deployed and accessible via Vercel — existing (vercel.json)
+- ✓ Cinematic Letterboxd-style design with dark/light themes — Phase 1
+- ✓ Responsive design (sidebar desktop, bottom nav mobile) — Phase 1
+- ✓ Smooth page transitions and micro-interactions — Phase 1
+- ✓ Complete design overhaul of all pages — Phase 1
+- ✓ API calls routed through server-side Edge Functions — Phase 1
+- ✓ Turkish-safe i18n with complete EN/TR coverage — Phase 1
 
 ### Active
 
 <!-- Current scope. Building toward these. -->
 
 - [ ] Natural language search — user describes mood/preference in free text, gets intelligent recommendations via hybrid AI (embedding search + LLM fallback)
-- [ ] Cinematic Letterboxd-style design overhaul — dark theme, poster-heavy, premium visual feel
 - [ ] Location-based streaming availability — show which platforms (Netflix, BluTV, MUBI, etc.) have the content based on user's current country
 - [ ] Aggregated ratings display — show scores from IMDB, Rotten Tomatoes, Metacritic, and other major platforms on detail pages
 - [ ] Comprehensive video content — trailers, behind-the-scenes, BTS, interviews, all project-related video content in one place
@@ -89,4 +94,4 @@ Key existing infrastructure:
 | User community ratings as Premium feature | Incentivizes premium while keeping core discovery free | — Pending |
 
 ---
-*Last updated: 2026-03-18 after initialization*
+*Last updated: 2026-03-19 after Phase 1 completion*
