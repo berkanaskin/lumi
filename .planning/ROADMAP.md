@@ -12,7 +12,7 @@ Lumi transforms from a working SPA into a polished, differentiated movie/TV disc
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Design Foundation** - Cinematic overhaul of all pages, polished design system, solid auth/watchlist UX
+- [x] **Phase 1: Design Foundation** - Cinematic overhaul of all pages, polished design system, solid auth/watchlist UX (1/2 complete)
 - [ ] **Phase 2: Hybrid AI Search** - Natural language discovery via embedding search + LLM fallback, personalization, diversity injection
 - [ ] **Phase 3: Content Enrichment** - Streaming availability by country, aggregated ratings, comprehensive video/cast/trivia content
 - [ ] **Phase 4: Premium Platform** - Community ratings, PWA install + offline, freemium subscription model
@@ -32,8 +32,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans in 2 waves
 
 Plans:
-- [ ] 01-01-PLAN.md — Modular CSS refactoring, theme system, navigation (sidebar/bottom-nav), movie cards, toast, loading spinner
-- [ ] 01-02-PLAN.md — Authentication wall (Google OAuth + email/password), watchlist management, i18n verification (EN/TR), API security hardening (Edge Functions)
+- [x] 01-01-PLAN.md — Modular CSS refactoring, theme system, navigation (sidebar/bottom-nav), movie cards, toast, loading spinner (COMPLETE)
+- [x] 01-02-PLAN.md — Authentication wall (Google OAuth + email/password), watchlist management, i18n verification (EN/TR), API security hardening (Edge Functions) (COMPLETE)
 
 ### Phase 2: Hybrid AI Search
 **Goal**: Users can describe what they want to watch in plain language and get accurate, relevant recommendations instantly

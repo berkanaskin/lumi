@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Phase 1 UI-SPEC approved
-last_updated: "2026-03-19T20:28:10.294Z"
+stopped_at: Completed 01-02 Plan (authentication, watchlist, i18n, API security)
+last_updated: "2026-03-19T20:39:00.000Z"
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 2
-  completed_plans: 0
+  completed_plans: 1
 ---
 
 # Project State
@@ -24,15 +24,15 @@ See: .planning/PROJECT.md (updated 2026-03-19)
 ## Current Position
 
 Phase: 01 (design-foundation) — EXECUTING
-Plan: 1 of 2
+Plan: 2 of 2 (01-02-PLAN.md COMPLETE)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 0
-- Average duration: —
-- Total execution time: 0 hours
+- Total plans completed: 1
+- Average duration: 45 minutes
+- Total execution time: 45 minutes
 
 **By Phase:**
 
@@ -54,6 +54,10 @@ Plan: 1 of 2
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- **01-02 Implementation:** Route all external API calls through Vercel Edge Functions (PLAT-05)
+- **Authentication:** Full-screen login wall blocks access until Firebase auth complete (USER-01)
+- **Watchlist:** localStorage + Firestore persistence for multi-device access (USER-02)
+- **i18n:** Complete EN/TR with Turkish-safe character handling for capital I (PLAT-03)
 - Stack: Vite + vanilla JS + Firebase — no migration
 - AI search: Hybrid (OpenAI embeddings + Gemini LLM fallback) — cost-controlled
 - Design: Letterboxd-inspired cinematic dark theme
