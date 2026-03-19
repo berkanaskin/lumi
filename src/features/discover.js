@@ -4,8 +4,9 @@
 // ============================================
 
 import { CONFIG, API_URLS } from '../config.js';
-import { TMDBService } from '../services/api.js';
+import { TMDBService, SearchService, EmbeddingService } from '../services/api.js';
 import { showToast } from '../ui/toast.js';
+import { showLoading, hideLoading } from '../ui/loading.js';
 import { DAILY_REC_KEY, DAILY_REC_CATEGORIES, getGenreName } from '../lib/constants.js';
 
 // ============================================
@@ -98,7 +99,7 @@ export function extractMovieKeywords(query) {
 // ============================================
 
 /**
- * Handle AI-powered search
+ * Handle AI-powered search using hybrid search endpoint
  */
 export async function handleAISearch() {
     const input = document.getElementById('ai-movie-input');
@@ -109,40 +110,60 @@ export async function handleAISearch() {
         return;
     }
 
-    showToast('🤖 Gemini düşünüyor...');
+    showToast('🤖 Aranıyor...');
+    const spinner = showLoading();
 
     try {
-        // Check if AIService is available
-        if (window.AIService && typeof window.AIService.getRecommendations === 'function') {
-            const results = await window.AIService.getRecommendations(query);
+        // Get userId for personalization
+        const userId = window.AuthService?.currentUser?.uid || 'anonymous';
 
-            if (results && results.length > 0) {
-                displayDiscoverResultsView(results, 'ai');
-                showToast(`✨ ${results.length} film önerisi bulundu!`);
-            } else {
-                showToast('Öneri bulunamadı, farklı bir şey deneyin.');
-            }
-        } else {
-            // Fallback to keyword-based search
-            console.warn('[handleAISearch] AIService not available, using fallback');
-            const keywords = extractMovieKeywords(query);
-            await showDiscoverResults({
-                source: 'ai',
+        // Call hybrid search endpoint
+        const response = await SearchService.hybridSearch(query, userId);
+
+        hideLoading(spinner);
+
+        if (response && response.results && response.results.length > 0) {
+            displayDiscoverResultsView(response.results, 'ai');
+            showToast(`✨ ${response.results.length} film önerisi bulundu!`);
+
+            // Log metric
+            EmbeddingService.logMetric({
+                type: 'search',
                 query: query,
-                keywords: keywords,
+                resultsCount: response.results.length,
+                source: response.source || 'hybrid',
+                confidence: response.confidence || 0.8,
+                timestamp: new Date().toISOString(),
+            }).catch(() => {
+                // Silently fail
             });
+
+            // Log search query for personalization
+            EmbeddingService.logSearchQuery(query, userId, response.results.length).catch(() => {
+                // Silently fail
+            });
+        } else {
+            hideLoading(spinner);
+            showToast('Öneri bulunamadı, farklı bir şey deneyin.');
         }
     } catch (error) {
         console.error('[handleAISearch] Error:', error);
+        hideLoading(spinner);
         showToast('Bir hata oluştu: ' + (error.message || 'Bilinmeyen hata'));
 
-        // Fallback on error
-        const keywords = extractMovieKeywords(query);
-        await showDiscoverResults({
-            source: 'ai',
-            query: query,
-            keywords: keywords,
-        });
+        // Optional: Retry after 3 seconds
+        setTimeout(async () => {
+            try {
+                const userId = window.AuthService?.currentUser?.uid || 'anonymous';
+                const response = await SearchService.hybridSearch(query, userId);
+                if (response && response.results && response.results.length > 0) {
+                    displayDiscoverResultsView(response.results, 'ai');
+                    showToast(`✨ ${response.results.length} film önerisi bulundu!`);
+                }
+            } catch (retryError) {
+                console.error('[handleAISearch] Retry failed:', retryError);
+            }
+        }, 3000);
     }
 }
 
