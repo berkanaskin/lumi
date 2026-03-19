@@ -1,0 +1,20 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "movie_embeddings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "embedding",
+          "vectorConfig": {
+            "dimension": 512
+          }
+        },
+        {
+          "fieldPath": "year",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ]
+}
