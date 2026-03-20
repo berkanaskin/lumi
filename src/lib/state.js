@@ -36,6 +36,10 @@ export const state = {
     currentLanguage: 'tr',
     currentRegion: 'TR',
 
+    // Country detection state (set by GeoIPService on app init)
+    countryDetected: false,  // true once auto-detection has run
+    countryName: 'Turkey',   // display name for country selector
+
     // Current page/view
     currentPage: 'home',
     lastPage: null,

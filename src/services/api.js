@@ -547,18 +547,18 @@ export const YouTubeService = {
 
 /**
  * Ratings Service - IMDB, Rotten Tomatoes, Metacritic
+ * Routes through /api/omdb proxy — OMDB_API_KEY is server-side only.
  */
 export const RatingsService = {
     /**
-     * Get all ratings from OMDB
+     * Get all ratings from OMDb via server-side proxy.
+     * Returns imdb, rottenTomatoes, metacritic, and awards.
      */
     async getAllRatings(imdbId) {
-        if (!imdbId || !CONFIG.OMDB_API_KEY) return null;
+        if (!imdbId) return null;
 
         try {
-            const response = await fetch(
-                `${API_URLS.OMDB_BASE}/?i=${imdbId}&apikey=${CONFIG.OMDB_API_KEY}`
-            );
+            const response = await fetch('/api/omdb?imdbId=' + encodeURIComponent(imdbId));
 
             if (!response.ok) return null;
 
@@ -579,10 +579,56 @@ export const RatingsService = {
                     url: 'https://www.rottentomatoes.com',
                 },
                 metacritic: findRating('Metacritic') ? parseInt(findRating('Metacritic')) : null,
+                awards: data.Awards || null,
             };
         } catch (error) {
             console.error('[Ratings] Error:', error);
             return null;
+        }
+    },
+};
+
+/**
+ * Streaming Availability Service
+ * Routes through /api/streaming-availability proxy — RapidAPI key is server-side only.
+ */
+export const StreamingAvailabilityService = {
+    /**
+     * Get streaming providers for a title by IMDb ID and country.
+     * @param {string} imdbId - IMDb ID (tt-prefixed)
+     * @param {string} country - ISO 3166-1 alpha-2 country code (lowercase, e.g. 'tr')
+     * @returns {Promise<{ options: Array, fetchedAt: number } | null>}
+     */
+    async getProviders(imdbId, country) {
+        try {
+            const response = await fetch(
+                `/api/streaming-availability?imdbId=${encodeURIComponent(imdbId)}&country=${country.toLowerCase()}`
+            );
+            if (!response.ok) return null;
+            return response.json();
+        } catch (error) {
+            console.error('[StreamingAvailability] Error:', error);
+            return null;
+        }
+    },
+};
+
+/**
+ * GeoIP Service - Auto-detect user's country via server-side proxy.
+ * Falls back to Turkey (TR) on any error.
+ */
+export const GeoIPService = {
+    /**
+     * Detect the current user's country.
+     * @returns {Promise<{ countryCode: string, countryName: string }>}
+     */
+    async detectCountry() {
+        try {
+            const response = await fetch('/api/geoip');
+            if (!response.ok) return { countryCode: 'TR', countryName: 'Turkey' };
+            return response.json();
+        } catch {
+            return { countryCode: 'TR', countryName: 'Turkey' };
         }
     },
 };
@@ -699,6 +745,12 @@ export const API = {
     // Ratings methods
     getAllRatings: (...args) => RatingsService.getAllRatings(...args),
 
+    // Streaming Availability methods
+    getStreamingProviders: (...args) => StreamingAvailabilityService.getProviders(...args),
+
+    // GeoIP methods
+    detectCountry: () => GeoIPService.detectCountry(),
+
     // Embedding methods
     generateEmbeddings: (...args) => EmbeddingService.generateEmbeddings(...args),
     logMetric: (...args) => EmbeddingService.logMetric(...args),
@@ -722,4 +774,6 @@ if (typeof window !== 'undefined') {
     window.RatingsService = RatingsService;
     window.EmbeddingService = EmbeddingService;
     window.SearchService = SearchService;
+    window.StreamingAvailabilityService = StreamingAvailabilityService;
+    window.GeoIPService = GeoIPService;
 }

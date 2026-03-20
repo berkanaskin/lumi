@@ -17,10 +17,8 @@ export const CONFIG = {
     // YouTube Data API Key (public, rate-limited)
     YOUTUBE_API_KEY: import.meta.env.VITE_YOUTUBE_API_KEY || '',
 
-    // OMDB API Key - IMDb, RT, Metacritic ratings
-    OMDB_API_KEY: import.meta.env.VITE_OMDB_API_KEY || '',
-
     // Defaults
+    // OMDb and Streaming Availability keys are server-side only (api/omdb.js, api/streaming-availability.js)
     DEFAULT_COUNTRY: 'TR',
     LANGUAGE: 'tr-TR',
 
@@ -45,9 +43,9 @@ export const API_URLS = {
     TMDB_BASE: 'https://api.themoviedb.org/3',
     TMDB_IMAGE: 'https://image.tmdb.org/t/p',
     YOUTUBE_BASE: 'https://www.googleapis.com/youtube/v3',
-    OMDB_BASE: 'https://www.omdbapi.com',
 
     // Backend proxy endpoints (for server-side keys)
+    // OMDb and Streaming Availability keys are server-side only (api/omdb.js, api/streaming-availability.js)
     GEMINI_PROXY: '/api/gemini',
     REVENUECAT_PROXY: '/api/revenuecat',
     RAPIDAPI_PROXY: '/api/rapidapi',
