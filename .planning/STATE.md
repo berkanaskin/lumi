@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Phase 3 UI-SPEC approved
-last_updated: "2026-03-20T19:02:50.537Z"
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-03-20T21:02:23.076Z"
 progress:
   total_phases: 4
   completed_phases: 2
-  total_plans: 6
-  completed_plans: 6
+  total_plans: 9
+  completed_plans: 7
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-19)
 
 **Core value:** When someone doesn't know what to watch, Lumi understands what they're in the mood for and finds it — instantly, accurately, and beautifully.
-**Current focus:** Phase 02 — hybrid-ai-search
+**Current focus:** Phase 03 — content-enrichment
 
 ## Current Position
 
-Phase: 02 (hybrid-ai-search) — EXECUTING
-Plan: 4 of 4 (Plan 03 completed)
+Phase: 03 (content-enrichment) — EXECUTING
+Plan: 1 of 3
 
 ## Performance Metrics
 
@@ -47,6 +47,7 @@ Plan: 4 of 4 (Plan 03 completed)
 
 *Updated after each plan completion*
 | Phase 02 P03 | 4m 4s | 5 tasks | 4 files |
+| Phase 03 P01 | 5min | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -63,6 +64,8 @@ Recent decisions affecting current work:
 - AI search: Hybrid (OpenAI embeddings + Gemini LLM fallback) — cost-controlled
 - Design: Letterboxd-inspired cinematic dark theme
 - PWA over native apps — single codebase
+- [Phase 03]: OMDB_API_KEY removed from client config — all OMDb calls proxy through /api/omdb Edge Function
+- [Phase 03]: Firestore streaming cache uses 24h TTL freshness with 48h document expiry, keyed by tmdbId_COUNTRY
 
 ### Pending Todos
 
@@ -74,6 +77,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T19:02:50.534Z
-Stopped at: Phase 3 UI-SPEC approved
-Resume file: .planning/phases/03-content-enrichment/03-UI-SPEC.md
+Last session: 2026-03-20T21:02:23.073Z
+Stopped at: Completed 03-01-PLAN.md
+Resume file: None
