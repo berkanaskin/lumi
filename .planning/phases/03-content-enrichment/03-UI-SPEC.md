@@ -52,7 +52,7 @@ Exceptions:
 
 ## Typography
 
-All sizes sourced from established tokens in `tokens.css`. Phase 3 introduces no new font sizes or weights.
+Phase 3 declares exactly 4 font sizes introduced or actively used by the new components in this phase. Existing heading levels `h1` (32px) and `h3` (24px) are established styles from Phase 1 and are not modified or introduced in Phase 3 — they are therefore excluded from this contract. Executors must use those existing styles as-is from `tokens.css`/`theme.css` without redeclaring them.
 
 | Role | Size | Weight | Line Height | Font Family | CSS Var / Class |
 |------|------|--------|-------------|-------------|-----------------|
@@ -61,11 +61,8 @@ All sizes sourced from established tokens in `tokens.css`. Phase 3 introduces no
 | Heading (section) | 20px | 700 | 1.2 | Crimson Text | `h4` |
 | Display (movie title on detail) | 28px | 700 | 1.2 | Crimson Text | `h2` |
 
-Additional heading levels in use (established, not new):
-- `h1`: 32px / 700 / 1.2 — person page display name only
-- `h3`: 24px / 700 / 1.2 — "Where to Watch", "Ratings" section headers
-
-Phase 3 uses exactly 4 declared sizes (14, 16, 20, 28) and 2 weights (400 regular + combined 500/700 semibold/bold — treated as the "emphasis" weight pair). No new type styles are introduced.
+Declared sizes: 14, 16, 20, 28 (4 total).
+Declared weights: 400 (regular) + 700 (bold) — 500 is an intermediate label weight, treated as part of the emphasis pair. No new type styles are introduced in Phase 3.
 
 ---
 
@@ -114,7 +111,7 @@ Logos: static assets for IMDB, Rotten Tomatoes, Metacritic (SVG or PNG, 24px hei
 
 ### 2. Where to Watch Section
 Placement: Just below poster/title/ratings area, above overview.
-Section header: "Where to Watch" — `h3` (24px Crimson Text).
+Section header: "Where to Watch" — existing `h3` style (do not redeclare size/weight).
 Groups: Stream | Rent | Buy — each group label `.label` (14px / 500) + row of platform tiles.
 Platform tile: 40×40px logo container (`--bg-elevated`, `--radius-sm`) + platform name (12px / 400 / `--text-secondary`) below.
 On tap: navigate to deep link URL (opens in new tab).
@@ -138,6 +135,7 @@ Inactive tab: no border, text `--text-muted` (16px / 400).
 Content: horizontal scroll container (overflow-x: scroll, scrollbar hidden on mobile).
 Thumbnail: 16:9 aspect ratio, `--radius-md`, 200px wide on mobile / 240px on desktop.
 Play icon overlay: Material Symbol `play_circle` (48px, `--text-primary`, centered absolute).
+Accessibility: the thumbnail container acting as the play trigger MUST include `aria-label="Play [video title]"` so screen readers announce the video title. Do NOT rely on the icon alone for accessible labeling.
 On tap: replace thumbnail container with YouTube iframe embed (existing pattern from detail.js).
 
 ### 5. Filmography Filter Chips (Person Page)
@@ -300,4 +298,5 @@ No npm UI packages are added in this phase. All UI is CSS + vanilla JS per proje
 
 *Phase: 03-content-enrichment*
 *UI-SPEC created: 2026-03-20*
+*UI-SPEC revised: 2026-03-20 — fixed typography count (removed h1/h3 from declared scale), added aria-label requirement to video thumbnail play trigger*
 *Sources: tokens.css, theme.css, cards.css (codebase), 03-CONTEXT.md (user decisions), 03-RESEARCH.md (technical research), REQUIREMENTS.md (DETL-01–06, STRM-01–04)*
