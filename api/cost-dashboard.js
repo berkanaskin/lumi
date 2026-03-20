@@ -14,7 +14,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
 
 export const config = {
-    runtime: 'edge',
+    runtime: 'nodejs',
 };
 
 /**
