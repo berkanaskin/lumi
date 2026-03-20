@@ -66,8 +66,8 @@ Plans:
 **Plans**: 3 plans in 3 waves
 
 Plans:
-- [ ] 03-01-PLAN.md — Wave 1: Edge Function proxies (streaming-availability, omdb, geoip), Firestore streaming cache, API service updates, country detection
-- [ ] 03-02-PLAN.md — Wave 2: Detail page UI overhaul: ratings bar, Where to Watch streaming section, video tabs, cinema badge, trivia Premium gate, country selector, i18n
+- [x] 03-01-PLAN.md — Wave 1: Edge Function proxies (streaming-availability, omdb, geoip), Firestore streaming cache, API service updates, country detection
+- [x] 03-02-PLAN.md — Wave 2: Detail page UI overhaul: ratings bar, Where to Watch streaming section, video tabs, cinema badge, trivia Premium gate, country selector, i18n
 - [ ] 03-03-PLAN.md — Wave 3: Person (actor/director) page: bio, awards, filmography grid with filters/sort, "Frequently Works With" collaborators, cast-click handlers, watchlist streaming data infrastructure
 
 ### Phase 4: Premium Platform
@@ -95,5 +95,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Design Foundation | 2/2 | COMPLETE | 2026-03-19 |
 | 2. Hybrid AI Search | 4/4 | COMPLETE | 2026-03-19 |
-| 3. Content Enrichment | 1/3 | In Progress|  |
+| 3. Content Enrichment | 2/3 | In Progress|  |
 | 4. Premium Platform | 0/2 | Pending | - |

@@ -18,18 +18,18 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Content Detail
 
-- [ ] **DETL-01**: User can view comprehensive detail page with synopsis, cast, crew, genres, runtime, and release dates
+- [x] **DETL-01**: User can view comprehensive detail page with synopsis, cast, crew, genres, runtime, and release dates
 - [x] **DETL-02**: Detail page shows aggregated ratings from IMDB, Rotten Tomatoes, and Metacritic with source breakdown (not just averaged)
-- [ ] **DETL-03**: User can watch trailers, behind-the-scenes content, interviews, and BTS videos from detail page
-- [ ] **DETL-04**: User can access full trivia content for movies/shows (Premium feature)
+- [x] **DETL-03**: User can watch trailers, behind-the-scenes content, interviews, and BTS videos from detail page
+- [x] **DETL-04**: User can access full trivia content for movies/shows (Premium feature)
 - [ ] **DETL-05**: User can navigate to actor/director pages showing filmography, career info, and related content
-- [ ] **DETL-06**: Detail page shows cinema release date for theatrical releases (Free) and streaming release tracking
+- [x] **DETL-06**: Detail page shows cinema release date for theatrical releases (Free) and streaming release tracking
 
 ### Streaming Intelligence
 
 - [x] **STRM-01**: User can see which streaming platforms have the content available in their current country
 - [x] **STRM-02**: Streaming availability auto-detects user's country with manual override option (for VPN users)
-- [ ] **STRM-03**: User can set a notification to be alerted when desired content drops on a streaming platform (Premium)
+- [x] **STRM-03**: User can set a notification to be alerted when desired content drops on a streaming platform (Premium)
 - [x] **STRM-04**: Streaming availability data shows freshness indicator ("Last updated: X hours ago")
 
 ### User & Account
@@ -108,15 +108,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DISC-04 | Phase 2 | Pending |
 | DISC-05 | Phase 2 | In Progress (infrastructure built) |
 | DISC-06 | Phase 2 | Pending |
-| DETL-01 | Phase 3 | Pending |
+| DETL-01 | Phase 3 | Complete |
 | DETL-02 | Phase 3 | Complete |
-| DETL-03 | Phase 3 | Pending |
-| DETL-04 | Phase 3 | Pending |
+| DETL-03 | Phase 3 | Complete |
+| DETL-04 | Phase 3 | Complete |
 | DETL-05 | Phase 3 | Pending |
-| DETL-06 | Phase 3 | Pending |
+| DETL-06 | Phase 3 | Complete |
 | STRM-01 | Phase 3 | Complete |
 | STRM-02 | Phase 3 | Complete |
-| STRM-03 | Phase 3 | Pending |
+| STRM-03 | Phase 3 | Complete |
 | STRM-04 | Phase 3 | Complete |
 | USER-01 | Phase 1 | Pending |
 | USER-02 | Phase 1 | Pending |

@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-03-20T21:02:23.076Z"
+stopped_at: Completed 03-02-PLAN.md (Tasks 1-2 done, Task 3 human-verify checkpoint)
+last_updated: "2026-03-20T21:17:53.721Z"
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 9
-  completed_plans: 7
+  completed_plans: 8
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-19)
 ## Current Position
 
 Phase: 03 (content-enrichment) — EXECUTING
-Plan: 1 of 3
+Plan: 2 of 3
 
 ## Performance Metrics
 
@@ -48,6 +48,7 @@ Plan: 1 of 3
 *Updated after each plan completion*
 | Phase 02 P03 | 4m 4s | 5 tasks | 4 files |
 | Phase 03 P01 | 5min | 2 tasks | 9 files |
+| Phase 03 P02 | 35min | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -66,6 +67,8 @@ Recent decisions affecting current work:
 - PWA over native apps — single codebase
 - [Phase 03]: OMDB_API_KEY removed from client config — all OMDb calls proxy through /api/omdb Edge Function
 - [Phase 03]: Firestore streaming cache uses 24h TTL freshness with 48h document expiry, keyed by tmdbId_COUNTRY
+- [Phase 03]: i18n keys added to i18n.js inline + JSON files created as artifacts for tooling
+- [Phase 03]: Ratings logos sourced from Wikimedia Commons SVG URLs, streaming tiles use streamingavailability.com CDN with letter fallback
 
 ### Pending Todos
 
@@ -77,6 +80,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T21:02:23.073Z
-Stopped at: Completed 03-01-PLAN.md
+Last session: 2026-03-20T21:17:53.716Z
+Stopped at: Completed 03-02-PLAN.md (Tasks 1-2 done, Task 3 human-verify checkpoint)
 Resume file: None
