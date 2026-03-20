@@ -113,7 +113,7 @@ Logos: static assets for IMDB, Rotten Tomatoes, Metacritic (SVG or PNG, 24px hei
 Placement: Just below poster/title/ratings area, above overview.
 Section header: "Where to Watch" — existing `h3` style (do not redeclare size/weight).
 Groups: Stream | Rent | Buy — each group label `.label` (14px / 400) + row of platform tiles.
-Platform tile: 40×40px logo container (`--bg-elevated`, `--radius-sm`) + platform name (12px / 400 / `--text-secondary`) below.
+Platform tile: 40×40px logo container (`--bg-elevated`, `--radius-sm`) + platform name (14px / 400 / `--text-secondary`) below.
 On tap: navigate to deep link URL (opens in new tab).
 Freshness line: below the section, `.label` (14px / `--text-muted`): "Updated 3 hours ago".
 Stale warning (>24h): replace muted text with `--warning` color + Material Symbol `warning` icon (18px).
@@ -154,7 +154,7 @@ Metadata row: birth date, birthplace, known-for department — `.label` (14px / 
 ### 7. Frequently Works With (Person Page)
 Section header: "Frequently Works With" — `h4` (20px Crimson Text).
 Layout: horizontal scroll of person chips.
-Person chip: circular avatar (48×48px, `--radius-full`) + name label (12px / `--text-secondary`) below.
+Person chip: circular avatar (48×48px, `--radius-full`) + name label (14px / 400 / `--text-secondary`) below.
 On tap: navigate to /person/:id.
 
 ### 8. Trivia Premium Gate
