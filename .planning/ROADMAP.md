@@ -63,12 +63,12 @@ Plans:
   3. User can browse trailers, behind-the-scenes clips, and interviews from the detail page without leaving the app
   4. User can navigate to an actor or director page and see their full filmography and career info
   5. Streaming availability data shows when it was last updated, and user can manually set their country if auto-detection is wrong
-**Plans**: 3 plans in 2 waves
+**Plans**: 3 plans in 3 waves
 
 Plans:
-- [ ] 03-01-PLAN.md — Edge Function proxies (streaming-availability, omdb, geoip), Firestore streaming cache, API service updates, country detection
-- [ ] 03-02-PLAN.md — Detail page UI overhaul: ratings bar, Where to Watch streaming section, video tabs, cinema badge, trivia Premium gate, country selector
-- [ ] 03-03-PLAN.md — Person (actor/director) page: bio, filmography grid with filters/sort, "Frequently Works With" collaborators, watchlist streaming data infrastructure
+- [ ] 03-01-PLAN.md — Wave 1: Edge Function proxies (streaming-availability, omdb, geoip), Firestore streaming cache, API service updates, country detection
+- [ ] 03-02-PLAN.md — Wave 2: Detail page UI overhaul: ratings bar, Where to Watch streaming section, video tabs, cinema badge, trivia Premium gate, country selector, i18n
+- [ ] 03-03-PLAN.md — Wave 3: Person (actor/director) page: bio, awards, filmography grid with filters/sort, "Frequently Works With" collaborators, cast-click handlers, watchlist streaming data infrastructure
 
 ### Phase 4: Premium Platform
 **Goal**: Lumi is an installable app users return to — with a sustainable freemium model, community ratings, and platform drop notifications
