@@ -205,7 +205,42 @@ const i18n = {
             // Time
             minutes: 'dk',
             movie: 'Film',
-            tvShow: 'Dizi'
+            tvShow: 'Dizi',
+
+            // Streaming & Where to Watch (Phase 3)
+            'streaming.whereToWatch': 'Nerede İzlenir',
+            'streaming.stream': 'İzle',
+            'streaming.rent': 'Kirala',
+            'streaming.buy': 'Satın Al',
+            'streaming.notAvailable': '{country} için yayın platformu bulunamadı',
+            'streaming.updatedAgo': '{time} önce güncellendi',
+            'streaming.staleWarning': 'Veriler güncel olmayabilir',
+            'streaming.tmdbFallback': '(TMDB verisi)',
+
+            // Ratings (Phase 3)
+            'ratings.outOf10': '/10',
+            'ratings.percent': '%',
+            'ratings.outOf100': '/100',
+
+            // Video Tabs (Phase 3)
+            'videos.trailers': 'Fragmanlar',
+            'videos.behindTheScenes': 'Kamera Arkası',
+            'videos.interviews': 'Röportajlar',
+
+            // Cinema Badge (Phase 3)
+            'cinema.inCinemasDate': '{date} sinemalarda',
+            'cinema.nowInCinemas': 'Şu an sinemalarda',
+            'cinema.streamingDate': '{date} yayına giriyor',
+
+            // Trivia Gate (Phase 3)
+            'trivia.title': 'Trivia ve Ödüller',
+            'trivia.unlockTitle': 'Trivia\'yı Aç',
+            'trivia.unlockBody': 'Tam trivia ve ödül detayları Lumi Premium ile kullanılabilir.',
+            'trivia.unlockCTA': 'Premium ile Kilidi Aç',
+
+            // Country Selector (Phase 3)
+            'country.changeCountry': 'Ülkeyi Değiştir',
+            'country.selector': 'Ülke'
         },
 
         en: {
@@ -400,7 +435,42 @@ const i18n = {
             // Time
             minutes: 'min',
             movie: 'Movie',
-            tvShow: 'TV Show'
+            tvShow: 'TV Show',
+
+            // Streaming & Where to Watch (Phase 3)
+            'streaming.whereToWatch': 'Where to Watch',
+            'streaming.stream': 'Stream',
+            'streaming.rent': 'Rent',
+            'streaming.buy': 'Buy',
+            'streaming.notAvailable': 'Not available for streaming in {country}',
+            'streaming.updatedAgo': 'Updated {time} ago',
+            'streaming.staleWarning': 'Data may be outdated',
+            'streaming.tmdbFallback': '(TMDB data)',
+
+            // Ratings (Phase 3)
+            'ratings.outOf10': '/10',
+            'ratings.percent': '%',
+            'ratings.outOf100': '/100',
+
+            // Video Tabs (Phase 3)
+            'videos.trailers': 'Trailers',
+            'videos.behindTheScenes': 'Behind the Scenes',
+            'videos.interviews': 'Interviews',
+
+            // Cinema Badge (Phase 3)
+            'cinema.inCinemasDate': 'In cinemas {date}',
+            'cinema.nowInCinemas': 'Now in cinemas',
+            'cinema.streamingDate': 'Streaming {date}',
+
+            // Trivia Gate (Phase 3)
+            'trivia.title': 'Trivia & Awards',
+            'trivia.unlockTitle': 'Unlock Trivia',
+            'trivia.unlockBody': 'Full trivia and awards details are available with Lumi Premium.',
+            'trivia.unlockCTA': 'Unlock with Premium',
+
+            // Country Selector (Phase 3)
+            'country.changeCountry': 'Change Country',
+            'country.selector': 'Country'
         },
 
         de: {

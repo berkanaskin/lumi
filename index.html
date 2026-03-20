@@ -133,6 +133,40 @@
             >
           </div>
           <div class="header-actions">
+            <!-- Country Selector -->
+            <div style="position: relative">
+              <button
+                id="country-selector"
+                class="country-selector-btn header-btn"
+                aria-label="Change Country"
+                title="Change Country"
+              >
+                <span class="country-flag">🇹🇷</span>
+                <span class="country-code">TR</span>
+              </button>
+              <div id="country-dropdown" class="country-dropdown hidden">
+                <div class="dropdown-header">
+                  <span class="dropdown-title">Country</span>
+                </div>
+                <div class="dropdown-list">
+                  <button class="country-item active" data-code="TR" data-name="Turkey">🇹🇷 Turkey</button>
+                  <button class="country-item" data-code="US" data-name="United States">🇺🇸 United States</button>
+                  <button class="country-item" data-code="GB" data-name="United Kingdom">🇬🇧 United Kingdom</button>
+                  <button class="country-item" data-code="DE" data-name="Germany">🇩🇪 Germany</button>
+                  <button class="country-item" data-code="FR" data-name="France">🇫🇷 France</button>
+                  <button class="country-item" data-code="ES" data-name="Spain">🇪🇸 Spain</button>
+                  <button class="country-item" data-code="IT" data-name="Italy">🇮🇹 Italy</button>
+                  <button class="country-item" data-code="NL" data-name="Netherlands">🇳🇱 Netherlands</button>
+                  <button class="country-item" data-code="BR" data-name="Brazil">🇧🇷 Brazil</button>
+                  <button class="country-item" data-code="IN" data-name="India">🇮🇳 India</button>
+                  <button class="country-item" data-code="JP" data-name="Japan">🇯🇵 Japan</button>
+                  <button class="country-item" data-code="KR" data-name="South Korea">🇰🇷 South Korea</button>
+                  <button class="country-item" data-code="AU" data-name="Australia">🇦🇺 Australia</button>
+                  <button class="country-item" data-code="CA" data-name="Canada">🇨🇦 Canada</button>
+                </div>
+              </div>
+            </div>
+
             <!-- Language Toggle -->
             <div style="position: relative">
               <button

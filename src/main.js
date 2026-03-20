@@ -18,7 +18,8 @@ import {
     API,
     TMDBService,
     YouTubeService,
-    RatingsService
+    RatingsService,
+    GeoIPService
 } from './services/api.js';
 
 // State Management
@@ -290,6 +291,73 @@ window.updateAuthUI = updateAuthUI;
 // APP INITIALIZATION
 // ============================================
 
+/**
+ * Update the country selector button display.
+ */
+function updateCountrySelector() {
+    const btn = document.getElementById('country-selector');
+    if (!btn) return;
+    const code = state.currentRegion || 'TR';
+    const flagEmoji = String.fromCodePoint(...[...code.toUpperCase()].map(c => 0x1F1E6 + c.charCodeAt(0) - 65));
+    const flagEl = btn.querySelector('.country-flag');
+    const codeEl = btn.querySelector('.country-code');
+    if (flagEl) flagEl.textContent = flagEmoji;
+    if (codeEl) codeEl.textContent = code.toUpperCase();
+}
+
+/**
+ * Initialize country selector dropdown.
+ */
+function initCountrySelector() {
+    const btn = document.getElementById('country-selector');
+    const dropdown = document.getElementById('country-dropdown');
+    if (!btn || !dropdown) return;
+
+    // Set initial display
+    updateCountrySelector();
+
+    // Toggle dropdown on button click
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle('hidden');
+        btn.classList.toggle('active');
+    });
+
+    // Close on outside click
+    document.addEventListener('click', () => {
+        dropdown.classList.add('hidden');
+        btn.classList.remove('active');
+    });
+
+    // Handle country selection
+    dropdown.addEventListener('click', (e) => {
+        const item = e.target.closest('.country-item');
+        if (!item) return;
+
+        const code = item.dataset.code;
+        const name = item.dataset.name;
+
+        state.currentRegion = code;
+        state.countryName = name;
+        localStorage.setItem('lumi_country', code);
+        localStorage.setItem('lumi_country_name', name);
+
+        // Update active item styling
+        dropdown.querySelectorAll('.country-item').forEach(el => el.classList.remove('active'));
+        item.classList.add('active');
+
+        dropdown.classList.add('hidden');
+        btn.classList.remove('active');
+        updateCountrySelector();
+
+        // If detail page is open, re-fetch streaming data
+        if (state.currentItemId && state.currentItemType) {
+            const { openDetail } = window.LumiModules || {};
+            if (openDetail) openDetail(state.currentItemId, state.currentItemType);
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize login wall with Firebase
     initAuth();
@@ -315,6 +383,31 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load auth state
     loadAuth();
     updateAuthUI();
+
+    // Initialize country selector in header
+    initCountrySelector();
+
+    // Auto-detect user country (if not already saved)
+    if (!state.countryDetected) {
+        const saved = localStorage.getItem('lumi_country');
+        if (saved) {
+            state.currentRegion = saved;
+            state.countryName = localStorage.getItem('lumi_country_name') || saved;
+            state.countryDetected = true;
+            updateCountrySelector();
+        } else {
+            GeoIPService.detectCountry().then(({ countryCode, countryName }) => {
+                state.currentRegion = countryCode;
+                state.countryName = countryName;
+                state.countryDetected = true;
+                localStorage.setItem('lumi_country', countryCode);
+                localStorage.setItem('lumi_country_name', countryName);
+                updateCountrySelector();
+            }).catch(err => {
+                console.warn('[Lumi] GeoIP detection failed:', err);
+            });
+        }
+    }
 
     console.log('[Lumi] App initialized');
 });

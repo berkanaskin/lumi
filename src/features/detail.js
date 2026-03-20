@@ -6,7 +6,9 @@
 
 import { state, elements } from '../lib/state.js';
 import { showToast } from '../ui/toast.js';
-import { API } from '../services/api.js';
+import { API, GeoIPService } from '../services/api.js';
+import { getStreamingWithCache } from '../services/streaming-cache.js';
+import { getPlatformUrl } from '../lib/platforms.js';
 
 // ============================================
 // MODAL STATE
@@ -91,11 +93,16 @@ export async function openDetail(id, type, title, year, originalTitle) {
         const imdbId = await API.getIMDBId(id, type);
         console.log('IMDB ID:', imdbId);
 
+        // Fetch streaming availability and ratings in parallel
+        let streamingData = null;
         if (imdbId) {
             try {
-                allRatings = await API.getAllRatings(imdbId);
+                [streamingData, allRatings] = await Promise.all([
+                    getStreamingWithCache(id, imdbId, state.currentRegion || 'TR'),
+                    API.getAllRatings(imdbId),
+                ]);
             } catch (innerErr) {
-                console.warn('Ratings fetch error:', innerErr);
+                console.warn('Streaming/Ratings fetch error:', innerErr);
             }
         }
 
@@ -104,6 +111,7 @@ export async function openDetail(id, type, title, year, originalTitle) {
         state.currentTrivia = triviaData;
         state.currentCredits = credits;
         state.currentAllRatings = allRatings;
+        state.currentStreamingData = streamingData;
         state.currentTurkishReleaseDate = turkishReleaseDate;
 
         // Process videos
@@ -120,7 +128,7 @@ export async function openDetail(id, type, title, year, originalTitle) {
         state.currentTitle = title;
 
         // Render the detail view
-        renderDetail(details, providers, type, id);
+        renderDetail(details, providers, type, id, streamingData);
     } catch (error) {
         console.error('openDetail error:', error);
         elements.modalBody.innerHTML = `<div class="error-state">
@@ -228,23 +236,33 @@ export function renderVideoContent() {
         return;
     }
 
-    const videos = state.currentVideos?.[currentVideoCategory] || [];
+    // 'interviews' maps to legacy 'reviews' key in state.currentVideos
+    const categoryKey = currentVideoCategory === 'interviews' ? 'reviews' : currentVideoCategory;
+    const videos = state.currentVideos?.[categoryKey] || [];
 
     if (videos.length === 0) {
         container.innerHTML = '<p class="no-videos">Bu kategoride video bulunamadı.</p>';
         return;
     }
 
-    container.innerHTML = videos.map(v => `
-        <div class="video-card" onclick="playVideo('${v.id.videoId}')">
-            <div class="video-thumbnail">
-                <img src="${v.snippet?.thumbnails?.medium?.url || `https://img.youtube.com/vi/${v.id.videoId}/mqdefault.jpg`}" alt="${v.snippet?.title || 'Video'}">
-                <div class="play-overlay">▶️</div>
-                ${v.isOfficial ? '<span class="official-badge">Resmi</span>' : ''}
+    container.innerHTML = videos.map(v => {
+        const videoId = v.id.videoId;
+        const videoTitle = v.snippet?.title || 'Video';
+        const thumbUrl = v.snippet?.thumbnails?.medium?.url
+            || `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+        return `
+        <div class="video-thumb" role="button" tabindex="0"
+            aria-label="Play ${videoTitle.replace(/"/g, '&quot;')}"
+            onclick="playVideo('${videoId}')"
+            onkeydown="if(event.key==='Enter'||event.key===' ')playVideo('${videoId}')">
+            <img src="${thumbUrl}" alt="${videoTitle.replace(/"/g, '&quot;')}"
+                style="width:100%;height:100%;object-fit:cover;border-radius:inherit">
+            <div class="video-thumb__play">
+                <span class="material-symbols-outlined">play_circle</span>
             </div>
-            <p class="video-title">${v.snippet?.title || 'Video'}</p>
-        </div>
-    `).join('');
+            ${v.isOfficial ? '<span class="official-badge">Official</span>' : ''}
+        </div>`;
+    }).join('');
 }
 
 /**
@@ -440,7 +458,7 @@ export function updateStarDisplay(stars, rating) {
  * Design: Stitch MCP validated — hero backdrop, poster+info, actions,
  * ratings, cast, providers, video tabs, premium section
  */
-export function renderDetail(details, providers, type, itemId) {
+export function renderDetail(details, providers, type, itemId, streamingData) {
     const title = details.title || details.name;
     const tmdbScore = details.vote_average ? details.vote_average.toFixed(1) : '';
 
@@ -471,11 +489,18 @@ export function renderDetail(details, providers, type, itemId) {
     const credits = state.currentCredits;
     const castHTML = buildCastHTML(credits);
 
-    // Watch Providers
-    const providersHTML = buildProvidersHTML(providers);
+    // Streaming (new enriched section)
+    const effectiveStreamingData = streamingData || state.currentStreamingData;
+    const streamingHTML = buildStreamingHTML(effectiveStreamingData, title);
 
-    // Videos
+    // Cinema badge (overlaid on poster)
+    const cinemaBadgeHTML = buildCinemaBadgeHTML(type, details);
+
+    // Videos (with category tabs)
     const videosHTML = buildVideosHTML();
+
+    // Trivia gate
+    const triviaGateHTML = buildTriviaGateHTML(allRatings);
 
     // Build date & series meta
     const dateMetaHTML = buildDateMetaHTML(details, type);
@@ -486,9 +511,6 @@ export function renderDetail(details, providers, type, itemId) {
     const episodeRuntime = (type === 'tv' && details.episode_run_time?.length)
         ? `~${details.episode_run_time[0]} dk/bölüm` : '';
     const runtimeDisplay = runtime || episodeRuntime;
-
-    // Premium section
-    const premiumHTML = buildPremiumSectionHTML();
 
     elements.modalBody.innerHTML = `
         <!-- Hero Backdrop -->
@@ -501,14 +523,15 @@ export function renderDetail(details, providers, type, itemId) {
 
             <!-- Poster + Core Info overlaid on hero -->
             <div class="detail-hero-content">
-                <div class="detail-poster-wrap">
+                <div class="detail-poster-wrap" style="position:relative">
                     ${posterUrl
                         ? `<img src="${posterUrl}" alt="${title}" class="detail-poster-img">`
                         : `<div class="detail-poster-placeholder"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg></div>`
                     }
+                    ${cinemaBadgeHTML}
                 </div>
                 <div class="detail-core-info">
-                    <h1 class="detail-title">${title}</h1>
+                    <h2 class="detail-title">${title}</h2>
                     <div class="detail-meta">
                         ${runtimeDisplay ? `<span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${runtimeDisplay}</span>` : ''}
                     </div>
@@ -518,12 +541,13 @@ export function renderDetail(details, providers, type, itemId) {
                         <span class="detail-score-value">${tmdbScore}</span>
                         <span class="detail-score-max">/ 10</span>
                     </div>` : ''}
-                    <!-- Inline Ratings (next to score) -->
-                    ${ratingsHTML}
                     ${genres ? `<div class="detail-genres">${genres}</div>` : ''}
                 </div>
             </div>
         </div>
+
+        <!-- Ratings Bar -->
+        ${ratingsHTML}
 
         <!-- Action Bar -->
         <div class="detail-actions-inline">
@@ -538,8 +562,8 @@ export function renderDetail(details, providers, type, itemId) {
             </button>
         </div>
 
-        <!-- Watch Providers (right after actions) -->
-        ${providersHTML}
+        <!-- Where to Watch (Streaming) -->
+        ${streamingHTML}
 
         <!-- Overview -->
         <div class="detail-section">
@@ -553,11 +577,11 @@ export function renderDetail(details, providers, type, itemId) {
         <!-- Date & Series Meta -->
         ${dateMetaHTML}
 
-        <!-- Videos -->
+        <!-- Videos (with Trailers / BTS / Interviews tabs) -->
         ${videosHTML}
 
-        <!-- Premium Section -->
-        ${premiumHTML}
+        <!-- Trivia & Awards (Premium Gate) -->
+        ${triviaGateHTML}
 
         <!-- Video Player (hidden) -->
         <div id="video-player"></div>
@@ -575,24 +599,239 @@ export function renderDetail(details, providers, type, itemId) {
 // ============================================
 
 function buildRatingsHTML(tmdbScore, allRatings) {
-    const pills = [];
+    if (!allRatings) return '';
 
-    if (allRatings) {
-        if (allRatings.imdb) {
-            pills.push(`<span class="detail-rating-pill"><span class="detail-rating-icon" style="color:#f5c518">★</span> <span class="detail-rating-label">IMDb</span> <strong>${allRatings.imdb}</strong></span>`);
-        }
-        const rtScore = allRatings.rottenTomatoes?.tomatometer;
-        if (rtScore) {
-            pills.push(`<span class="detail-rating-pill"><span class="detail-rating-icon">🍅</span> <strong class="detail-rating-rt">${rtScore}%</strong></span>`);
-        }
-        if (allRatings.metacritic) {
-            pills.push(`<span class="detail-rating-pill"><span class="detail-rating-icon" style="color:#22c55e">▣</span> <strong class="detail-rating-meta">${allRatings.metacritic}</strong></span>`);
+    const items = [];
+
+    // IMDb — logo + score/10
+    if (allRatings.imdb) {
+        items.push(`
+            <div class="ratings-bar__item">
+                <img class="ratings-bar__logo" height="24"
+                    src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg"
+                    alt="IMDb" loading="lazy">
+                <span class="ratings-bar__score">${allRatings.imdb}/10</span>
+            </div>`);
+    }
+
+    // Rotten Tomatoes — skip for TV shows (OMDb does not return RT for TV)
+    const rtScore = allRatings.rottenTomatoes?.tomatometer;
+    if (rtScore != null) {
+        const rtFresh = parseInt(rtScore, 10) >= 60;
+        items.push(`
+            <div class="ratings-bar__item">
+                <img class="ratings-bar__logo" height="24"
+                    src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Rotten_Tomatoes.svg"
+                    alt="Rotten Tomatoes" loading="lazy">
+                <span class="ratings-bar__score">${rtScore}%</span>
+            </div>`);
+    }
+
+    // Metacritic — logo + score/100
+    if (allRatings.metacritic) {
+        items.push(`
+            <div class="ratings-bar__item">
+                <img class="ratings-bar__logo" height="24"
+                    src="https://upload.wikimedia.org/wikipedia/commons/2/20/Metacritic.svg"
+                    alt="Metacritic" loading="lazy">
+                <span class="ratings-bar__score">${allRatings.metacritic}/100</span>
+            </div>`);
+    }
+
+    if (items.length === 0) return '';
+
+    return `<div class="ratings-bar">${items.join('')}</div>`;
+}
+
+/**
+ * Build the "Where to Watch" streaming section with grouped providers.
+ */
+function buildStreamingHTML(streamingData, title) {
+    const t = window.i18n?.t.bind(window.i18n) || ((k) => k);
+    const sectionLabel = t('streaming.whereToWatch') || 'Where to Watch';
+
+    if (!streamingData) {
+        return `
+            <div class="streaming-section">
+                <h3 class="detail-section-heading">${sectionLabel}</h3>
+                <div class="skeleton ratings-skeleton" style="height:60px;border-radius:8px;"></div>
+            </div>`;
+    }
+
+    const providers = streamingData.providers || [];
+
+    // No providers
+    if (providers.length === 0) {
+        const countryName = state.countryName || state.currentRegion || 'this country';
+        const noAvailText = (t('streaming.notAvailable') || 'Not available for streaming in {country}')
+            .replace('{country}', countryName);
+        return `
+            <div class="streaming-section">
+                <h3 class="detail-section-heading">${sectionLabel}</h3>
+                <p class="label streaming-freshness">${noAvailText}</p>
+            </div>`;
+    }
+
+    // Group by stream / rent / buy
+    const groups = { stream: [], rent: [], buy: [] };
+    for (const p of providers) {
+        const g = p.group || 'stream';
+        if (groups[g]) groups[g].push(p);
+    }
+
+    const groupLabels = {
+        stream: t('streaming.stream') || 'Stream',
+        rent: t('streaming.rent') || 'Rent',
+        buy: t('streaming.buy') || 'Buy',
+    };
+
+    let groupsHTML = '';
+    for (const [key, list] of Object.entries(groups)) {
+        if (list.length === 0) continue;
+        const tiles = list.map(provider => {
+            const deepLink = provider.link || getPlatformUrl(provider.serviceName, title);
+            const logoUrl = `https://img.streamingavailability.com/img/icons/${provider.serviceId}.png`;
+            const safeName = provider.serviceName.replace(/"/g, '&quot;');
+            return `
+                <button class="streaming-tile" onclick="window.open('${deepLink}','_blank')"
+                    title="${safeName}" aria-label="Watch on ${safeName}">
+                    <div class="streaming-tile__logo-wrap">
+                        <img src="${logoUrl}" alt="${safeName}"
+                            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+                            width="40" height="40" loading="lazy">
+                        <div class="streaming-tile__fallback" style="display:none">${provider.serviceName.charAt(0)}</div>
+                    </div>
+                    <span class="label">${provider.serviceName}</span>
+                </button>`;
+        }).join('');
+        groupsHTML += `
+            <div class="streaming-group">
+                <span class="label streaming-group__label">${groupLabels[key]}</span>
+                <div class="streaming-tiles">${tiles}</div>
+            </div>`;
+    }
+
+    // Freshness line
+    let freshnessHTML = '';
+    if (streamingData.fetchedAt) {
+        const ageMs = Date.now() - (streamingData.fetchedAt?.toMillis?.() || streamingData.fetchedAt);
+        const ageHours = Math.floor(ageMs / (1000 * 60 * 60));
+        const ageMin = Math.floor(ageMs / (1000 * 60));
+        const isStale = ageMs > 24 * 60 * 60 * 1000;
+        const timeStr = ageHours > 0 ? `${ageHours}h` : `${ageMin}m`;
+        const updatedText = (t('streaming.updatedAgo') || 'Updated {time} ago').replace('{time}', timeStr);
+        const staleText = t('streaming.staleWarning') || 'Data may be outdated';
+        if (isStale) {
+            freshnessHTML = `<p class="label streaming-freshness streaming-freshness--stale">
+                <span class="material-symbols-outlined" style="font-size:18px;vertical-align:-4px">warning</span>
+                ${staleText}</p>`;
+        } else {
+            freshnessHTML = `<p class="label streaming-freshness">${updatedText}</p>`;
         }
     }
 
-    if (pills.length === 0) return '';
+    // Fallback indicator
+    const fallbackHTML = streamingData.fallback
+        ? `<span class="label" style="color:var(--text-muted);font-size:12px"> ${t('streaming.tmdbFallback') || '(TMDB data)'}</span>`
+        : '';
 
-    return `<div class="detail-inline-ratings">${pills.join('')}</div>`;
+    return `
+        <div class="streaming-section">
+            <h3 class="detail-section-heading">${sectionLabel}${fallbackHTML}</h3>
+            ${groupsHTML}
+            ${freshnessHTML}
+        </div>`;
+}
+
+/**
+ * Build cinema release badge (overlaid on poster top-left).
+ */
+function buildCinemaBadgeHTML(type, details) {
+    if (type !== 'movie') return '';
+
+    const trRelease = state.currentTurkishReleaseDate;
+    if (!trRelease) return '';
+
+    const releaseType = trRelease.type; // 3 = theatrical, 4 = digital
+    const releaseDate = trRelease.date ? new Date(trRelease.date) : null;
+
+    if (!releaseDate) return '';
+
+    const now = new Date();
+    const diffMs = releaseDate - now;
+    const diffDays = diffMs / (1000 * 60 * 60 * 24);
+
+    const t = window.i18n?.t.bind(window.i18n) || ((k) => k);
+    const locale = state.currentLanguage === 'tr' ? 'tr-TR' : 'en-US';
+    const formattedDate = releaseDate.toLocaleDateString(locale, { month: 'long', day: 'numeric' });
+
+    let badgeText = '';
+    let badgeClass = 'cinema-badge';
+
+    if (releaseType === 3) {
+        // Theatrical release
+        if (diffDays > 0) {
+            // Upcoming
+            badgeText = (t('cinema.inCinemasDate') || 'In cinemas {date}').replace('{date}', formattedDate);
+            badgeClass = 'cinema-badge';
+        } else if (diffDays > -60) {
+            // Now showing (within 60 days of release)
+            badgeText = t('cinema.nowInCinemas') || 'Now in cinemas';
+            badgeClass = 'cinema-badge cinema-badge--active';
+        } else {
+            return ''; // Too old, no badge
+        }
+    } else if (releaseType === 4) {
+        // Digital release
+        badgeText = (t('cinema.streamingDate') || 'Streaming {date}').replace('{date}', formattedDate);
+        badgeClass = 'cinema-badge';
+    } else {
+        return '';
+    }
+
+    return `<div class="${badgeClass}">${badgeText}</div>`;
+}
+
+/**
+ * Build trivia & awards section with Premium gate.
+ */
+function buildTriviaGateHTML(allRatings) {
+    const t = window.i18n?.t.bind(window.i18n) || ((k) => k);
+    const isPremium = state.isPremium || false;
+
+    const titleText = t('trivia.title') || 'Trivia & Awards';
+    const unlockTitle = t('trivia.unlockTitle') || 'Unlock Trivia';
+    const unlockBody = t('trivia.unlockBody') || 'Full trivia and awards details are available with Lumi Premium.';
+    const unlockCTA = t('trivia.unlockCTA') || 'Unlock with Premium';
+
+    // Awards teaser (free OMDb data — not premium-gated)
+    const awardsTeaserHTML = allRatings?.awards
+        ? `<p class="label" style="color:var(--text-muted);margin-bottom:var(--space-sm)">${allRatings.awards}</p>`
+        : '';
+
+    if (isPremium) {
+        return `
+            <div class="detail-section trivia-gate trivia-gate--unlocked">
+                <h4>${titleText}</h4>
+                ${awardsTeaserHTML}
+                <p class="body-text" style="color:var(--text-secondary)">Coming soon...</p>
+            </div>`;
+    }
+
+    return `
+        <div class="detail-section trivia-gate">
+            <h4>${titleText}</h4>
+            ${awardsTeaserHTML}
+            <div class="trivia-gate__blur" aria-hidden="true"></div>
+            <div class="trivia-gate__overlay">
+                <span class="material-symbols-outlined" style="font-size:32px;color:var(--text-muted)">lock</span>
+                <h4 style="margin:var(--space-sm) 0">${unlockTitle}</h4>
+                <p class="body-text" style="color:var(--text-secondary);margin-bottom:var(--space-md)">${unlockBody}</p>
+                <button class="trivia-gate__cta" onclick="window.showPremiumModal && window.showPremiumModal()">
+                    ${unlockCTA}
+                </button>
+            </div>
+        </div>`;
 }
 
 function buildCastHTML(credits) {
@@ -657,19 +896,24 @@ function buildVideosHTML() {
     const videos = state.currentVideos || {};
     const trailerCount = videos.trailer?.length || 0;
     const btsCount = videos.behindTheScenes?.length || 0;
-    const reviewCount = videos.reviews?.length || 0;
+    const interviewCount = videos.interviews?.length || videos.reviews?.length || 0;
 
-    if (trailerCount + btsCount + reviewCount === 0) return '';
+    if (trailerCount + btsCount + interviewCount === 0) return '';
+
+    const t = window.i18n?.t.bind(window.i18n) || ((k) => k);
+    const trailersLabel = t('videos.trailers') || 'Trailers';
+    const btsLabel = t('videos.behindTheScenes') || 'Behind the Scenes';
+    const interviewsLabel = t('videos.interviews') || 'Interviews';
 
     return `
         <div class="detail-section">
             <h3 class="detail-section-heading"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>Videolar</h3>
-            <div class="detail-video-tabs">
-                <button class="video-tab active" data-category="trailer">Fragman${trailerCount ? ` (${trailerCount})` : ''}</button>
-                <button class="video-tab" data-category="behindTheScenes">Kamera Arkası${btsCount ? ` (${btsCount})` : ''}</button>
-                <button class="video-tab" data-category="reviews">İncelemeler${reviewCount ? ` (${reviewCount})` : ''}</button>
+            <div class="video-tabs">
+                <button class="video-tab active" data-category="trailer">${trailersLabel}${trailerCount ? ` (${trailerCount})` : ''}</button>
+                <button class="video-tab" data-category="behindTheScenes">${btsLabel}${btsCount ? ` (${btsCount})` : ''}</button>
+                <button class="video-tab" data-category="interviews">${interviewsLabel}${interviewCount ? ` (${interviewCount})` : ''}</button>
             </div>
-            <div id="video-container" class="detail-video-scroll"></div>
+            <div id="video-container" class="video-scroll"></div>
         </div>
     `;
 }
