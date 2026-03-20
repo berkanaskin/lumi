@@ -43,9 +43,9 @@ Declared values (multiples of 4, sourced from `--space-*` tokens in `tokens.css`
 | 2xl | `--space-2xl` | 48px | Major section breaks (e.g., between streaming and overview) |
 | 3xl | `--space-3xl` | 64px | Page-level vertical rhythm |
 
-Exceptions:
+Exceptions (component dimensions, not spacing tokens — these are fixed-size constraints, not increments on the 8-pt scale):
 - Touch targets for filter chips (All / Movies / TV Shows / As Director): minimum 44px height to meet mobile tap target requirements
-- Platform logo containers in the streaming section: 40px × 40px fixed size (not on the 8-pt scale, but standard logo display size)
+- Platform logo containers in the streaming section: 40px × 40px fixed size (standard logo display size)
 - Country selector in header: 36px height (fits header bar height constraint)
 
 ---
@@ -57,12 +57,12 @@ Phase 3 declares exactly 4 font sizes introduced or actively used by the new com
 | Role | Size | Weight | Line Height | Font Family | CSS Var / Class |
 |------|------|--------|-------------|-------------|-----------------|
 | Body | 16px | 400 | 1.5 | Spline Sans | `body`, `.body-text` |
-| Label | 14px | 500 | 1.4 | Spline Sans | `.label` |
+| Label | 14px | 400 | 1.4 | Spline Sans | `.label` |
 | Heading (section) | 20px | 700 | 1.2 | Crimson Text | `h4` |
 | Display (movie title on detail) | 28px | 700 | 1.2 | Crimson Text | `h2` |
 
 Declared sizes: 14, 16, 20, 28 (4 total).
-Declared weights: 400 (regular) + 700 (bold) — 500 is an intermediate label weight, treated as part of the emphasis pair. No new type styles are introduced in Phase 3.
+Declared weights: 400 (regular) + 700 (bold) — 2 weights only. Labels at 14px use weight 400; their smaller size and `--text-muted` color provide sufficient visual differentiation from body text without a distinct weight. No new type styles are introduced in Phase 3.
 
 ---
 
@@ -112,7 +112,7 @@ Logos: static assets for IMDB, Rotten Tomatoes, Metacritic (SVG or PNG, 24px hei
 ### 2. Where to Watch Section
 Placement: Just below poster/title/ratings area, above overview.
 Section header: "Where to Watch" — existing `h3` style (do not redeclare size/weight).
-Groups: Stream | Rent | Buy — each group label `.label` (14px / 500) + row of platform tiles.
+Groups: Stream | Rent | Buy — each group label `.label` (14px / 400) + row of platform tiles.
 Platform tile: 40×40px logo container (`--bg-elevated`, `--radius-sm`) + platform name (12px / 400 / `--text-secondary`) below.
 On tap: navigate to deep link URL (opens in new tab).
 Freshness line: below the section, `.label` (14px / `--text-muted`): "Updated 3 hours ago".
@@ -123,14 +123,14 @@ No streaming data state: show `.label` text "Not available for streaming in [Cou
 Placement: Overlay on poster (top-left corner) OR as inline badge in the title area — either is acceptable.
 Executor discretion: Use poster overlay if poster is present; use inline badge in title area on list/card views.
 States:
-- Upcoming: dark badge (`--bg-elevated`, `--radius-full`) with text "In cinemas [Month Day]" (14px / 500 / `--text-primary`)
-- Now showing: accent-bordered badge (`--glass-border-active`) with text "Now in cinemas" (14px / 500 / `--primary`)
+- Upcoming: dark badge (`--bg-elevated`, `--radius-full`) with text "In cinemas [Month Day]" (14px / 400 / `--text-primary`)
+- Now showing: accent-bordered badge (`--glass-border-active`) with text "Now in cinemas" (14px / 400 / `--primary`)
 - Streaming date: badge with text "Streaming [Month Day]" (14px / 400 / `--text-secondary`)
 
 ### 4. Video Category Tabs
 Placement: In the Videos section of the detail page.
 Tabs: Trailers | Behind the Scenes | Interviews.
-Active tab: bottom border 2px `--primary`, text `--text-primary` (16px / 500).
+Active tab: bottom border 2px `--primary`, text `--text-primary` (16px / 400).
 Inactive tab: no border, text `--text-muted` (16px / 400).
 Content: horizontal scroll container (overflow-x: scroll, scrollbar hidden on mobile).
 Thumbnail: 16:9 aspect ratio, `--radius-md`, 200px wide on mobile / 240px on desktop.
@@ -143,13 +143,13 @@ Chips: All | Movies | TV Shows | As Director.
 Active chip: `--primary` background, `--text-primary` text, `--radius-full`.
 Inactive chip: `--glass-bg` background, `--glass-border` border, `--text-secondary` text, `--radius-full`.
 Height: 44px minimum (touch target). Horizontal padding: `--space-md` (16px).
-Sort control: right-aligned dropdown or toggle — "Newest first" / "By rating". `.label` styling.
+Sort control: right-aligned dropdown or toggle — "Newest first" / "By rating". `.label` styling (14px / 400).
 
 ### 6. Person Bio Card (Person Page)
 Layout: Two-column on desktop (photo left, bio right), single-column stacked on mobile.
 Photo: 160×240px (2:3 ratio), `--radius-md`, poster style.
 Bio text: `.body-text` (16px / 400 / `--text-secondary`), max 4 lines with "Show more" expand.
-Metadata row: birth date, birthplace, known-for department — `.label` (14px / 500 / `--text-muted`).
+Metadata row: birth date, birthplace, known-for department — `.label` (14px / 400 / `--text-muted`).
 
 ### 7. Frequently Works With (Person Page)
 Section header: "Frequently Works With" — `h4` (20px Crimson Text).
@@ -168,7 +168,7 @@ No free teaser — section is fully locked with no visible trivia content.
 
 ### 9. Country Selector (Header)
 Position: In main app header, right side (alongside existing header controls).
-Appearance: compact button showing country flag emoji + 2-letter country code (e.g., "TR"). `.label` styling.
+Appearance: compact button showing country flag emoji + 2-letter country code (e.g., "TR"). `.label` styling (14px / 400).
 On tap: opens a dropdown/sheet with searchable country list.
 Active item in list: `--primary` accent left border, `--bg-elevated` background.
 Save behavior: persists to localStorage + `state.currentRegion`.
@@ -299,4 +299,5 @@ No npm UI packages are added in this phase. All UI is CSS + vanilla JS per proje
 *Phase: 03-content-enrichment*
 *UI-SPEC created: 2026-03-20*
 *UI-SPEC revised: 2026-03-20 — fixed typography count (removed h1/h3 from declared scale), added aria-label requirement to video thumbnail play trigger*
+*UI-SPEC revised: 2026-03-20 — fixed Dimension 4 block: removed weight 500, Label role now uses weight 400 (14px size + --text-muted color provides differentiation); updated Design System summary to 2 weights: 400, 700; updated all component specs from weight 500 to 400; added Dimension 5 clarifying note that spacing exceptions are component dimensions not spacing tokens*
 *Sources: tokens.css, theme.css, cards.css (codebase), 03-CONTEXT.md (user decisions), 03-RESEARCH.md (technical research), REQUIREMENTS.md (DETL-01–06, STRM-01–04)*
