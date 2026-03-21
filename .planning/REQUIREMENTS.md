@@ -22,7 +22,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **DETL-02**: Detail page shows aggregated ratings from IMDB, Rotten Tomatoes, and Metacritic with source breakdown (not just averaged)
 - [x] **DETL-03**: User can watch trailers, behind-the-scenes content, interviews, and BTS videos from detail page
 - [x] **DETL-04**: User can access full trivia content for movies/shows (Premium feature)
-- [ ] **DETL-05**: User can navigate to actor/director pages showing filmography, career info, and related content
+- [x] **DETL-05**: User can navigate to actor/director pages showing filmography, career info, and related content
 - [x] **DETL-06**: Detail page shows cinema release date for theatrical releases (Free) and streaming release tracking
 
 ### Streaming Intelligence
@@ -112,7 +112,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DETL-02 | Phase 3 | Complete |
 | DETL-03 | Phase 3 | Complete |
 | DETL-04 | Phase 3 | Complete |
-| DETL-05 | Phase 3 | Pending |
+| DETL-05 | Phase 3 | Complete |
 | DETL-06 | Phase 3 | Complete |
 | STRM-01 | Phase 3 | Complete |
 | STRM-02 | Phase 3 | Complete |

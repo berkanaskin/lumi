@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Design Foundation** - Cinematic overhaul of all pages, polished design system, solid auth/watchlist UX (2/2 complete)
 - [x] **Phase 2: Hybrid AI Search** - Natural language discovery via embedding search + LLM fallback, personalization, diversity injection (4/4 complete)
-- [ ] **Phase 3: Content Enrichment** - Streaming availability by country, aggregated ratings, comprehensive video/cast/trivia content
+- [x] **Phase 3: Content Enrichment** - Streaming availability by country, aggregated ratings, comprehensive video/cast/trivia content (completed 2026-03-21)
 - [ ] **Phase 4: Premium Platform** - Community ratings, PWA install + offline, freemium subscription model
 
 ## Phase Details
@@ -68,7 +68,7 @@ Plans:
 Plans:
 - [x] 03-01-PLAN.md — Wave 1: Edge Function proxies (streaming-availability, omdb, geoip), Firestore streaming cache, API service updates, country detection
 - [x] 03-02-PLAN.md — Wave 2: Detail page UI overhaul: ratings bar, Where to Watch streaming section, video tabs, cinema badge, trivia Premium gate, country selector, i18n
-- [ ] 03-03-PLAN.md — Wave 3: Person (actor/director) page: bio, awards, filmography grid with filters/sort, "Frequently Works With" collaborators, cast-click handlers, watchlist streaming data infrastructure
+- [x] 03-03-PLAN.md — Wave 3: Person (actor/director) page: bio, awards, filmography grid with filters/sort, "Frequently Works With" collaborators, cast-click handlers, watchlist streaming data infrastructure
 
 ### Phase 4: Premium Platform
 **Goal**: Lumi is an installable app users return to — with a sustainable freemium model, community ratings, and platform drop notifications
@@ -95,5 +95,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Design Foundation | 2/2 | COMPLETE | 2026-03-19 |
 | 2. Hybrid AI Search | 4/4 | COMPLETE | 2026-03-19 |
-| 3. Content Enrichment | 2/3 | In Progress|  |
+| 3. Content Enrichment | 3/3 | Complete   | 2026-03-21 |
 | 4. Premium Platform | 0/2 | Pending | - |
