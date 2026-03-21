@@ -746,6 +746,290 @@
 }
 
 /* ============================================
+   INFO PILLS (Date, Season, Status meta)
+   ============================================ */
+
+.detail-info-section {
+  /* inherits .detail-section padding */
+}
+
+.detail-info-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.detail-info-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.detail-info-pill svg {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.detail-info-label {
+  font-weight: 500;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.detail-info-value {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.detail-info-highlight {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* ============================================
+   COMPACT PROVIDERS (fallback)
+   ============================================ */
+
+.detail-providers-compact {
+  /* inherits .detail-section */
+}
+
+.detail-providers-row-compact {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.detail-provider-logo-compact {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  border: 1px solid var(--glass-border);
+  transition: transform var(--transition-fast);
+}
+
+.detail-provider-logo-compact:hover {
+  transform: scale(1.1);
+}
+
+/* ============================================
+   VIDEO PLAYER
+   ============================================ */
+
+.video-player-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-top: var(--space-md);
+}
+
+.video-player-container iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.close-video {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: background var(--transition-fast);
+}
+
+.close-video:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.no-videos {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  padding: var(--space-md) 0;
+  text-align: center;
+}
+
+/* ============================================
+   PREMIUM SECTION (Locked & Unlocked)
+   ============================================ */
+
+.detail-premium-section {
+  /* inherits .detail-section */
+}
+
+.detail-premium-unlocked .detail-premium-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.detail-premium-item h4 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  margin-bottom: var(--space-xs);
+  color: var(--text-primary);
+}
+
+.detail-premium-placeholder {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+/* Locked state */
+.detail-premium-locked {
+  position: relative;
+  overflow: hidden;
+}
+
+.detail-premium-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.detail-premium-lock {
+  font-size: 1.25rem;
+  opacity: 0.6;
+}
+
+.detail-premium-blur-wrap {
+  position: relative;
+  margin-top: var(--space-sm);
+  min-height: 120px;
+}
+
+.detail-premium-blur-overlay {
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-md);
+  z-index: 1;
+}
+
+.detail-premium-blur-content {
+  padding: var(--space-md);
+  opacity: 0.4;
+}
+
+/* Skeleton placeholders inside premium blur */
+.detail-premium-skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.detail-premium-skeleton-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--glass-bg-hover);
+  flex-shrink: 0;
+}
+
+.detail-premium-skeleton-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.detail-premium-skeleton-line {
+  height: 10px;
+  background: var(--glass-bg-hover);
+  border-radius: var(--radius-sm);
+  width: 100%;
+}
+
+.detail-premium-skeleton-line.short {
+  width: 60%;
+}
+
+.detail-premium-skeleton-block {
+  height: 60px;
+  background: var(--glass-bg-hover);
+  border-radius: var(--radius-md);
+}
+
+/* CTA overlay on locked content */
+.detail-premium-cta-layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  padding: var(--space-lg);
+  text-align: center;
+}
+
+.detail-premium-cta-text {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: var(--space-md);
+}
+
+.detail-premium-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 10px 24px;
+  border-radius: var(--radius-full);
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: inherit;
+  min-height: 44px;
+  box-shadow: 0 4px 20px var(--primary-glow);
+}
+
+.detail-premium-cta-btn:hover {
+  background: #4848e3;
+  transform: translateY(-1px);
+}
+
+.detail-premium-cta-btn:active {
+  transform: scale(0.97);
+}
+
+/* Unlocked modifier for trivia gate */
+.trivia-gate--unlocked .trivia-gate__blur {
+  display: none;
+}
+
+.trivia-gate--unlocked .trivia-gate__overlay {
+  display: none;
+}
+
+/* ============================================
    LIGHT THEME OVERRIDES
    ============================================ */
 
@@ -764,4 +1048,13 @@
 
 [data-theme="light"] .country-dropdown {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .detail-premium-blur-overlay {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="light"] .detail-info-pill {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.1);
 }
