@@ -42,6 +42,11 @@ export const PAGES = {
         id: 'view-profile',
         title: 'Profil',
         icon: 'person'
+    },
+    person: {
+        id: 'view-person',
+        title: 'Person',
+        icon: 'person'
     }
 };
 

@@ -1,0 +1,521 @@
+/* ============================================
+   LUMI - Person Page Styles
+   Phase 3 Plan 03
+   ============================================ */
+
+/* ============================================
+   PERSON PAGE CONTAINER
+   ============================================ */
+
+#view-person {
+    overflow-y: auto;
+    height: 100%;
+}
+
+.person-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-lg);
+    padding-bottom: var(--space-3xl);
+}
+
+/* ============================================
+   BACK BUTTON
+   ============================================ */
+
+.person-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    color: var(--text-secondary);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--space-sm) 0;
+    margin-bottom: var(--space-lg);
+    font-size: 14px;
+    font-weight: 400;
+    transition: color var(--transition-fast);
+    border-radius: var(--radius-sm);
+}
+
+.person-back-btn:hover {
+    color: var(--text-primary);
+}
+
+.person-back-btn:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.person-back-btn .material-symbols-outlined {
+    font-size: 20px;
+}
+
+/* ============================================
+   PERSON BIO
+   ============================================ */
+
+.person-bio {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.person-photo-wrap {
+    flex-shrink: 0;
+}
+
+.person-photo {
+    width: 160px;
+    height: 240px;
+    border-radius: var(--radius-md);
+    object-fit: cover;
+    display: block;
+}
+
+.person-photo-placeholder {
+    width: 160px;
+    height: 240px;
+    border-radius: var(--radius-md);
+    background: var(--bg-elevated);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.person-bio-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.person-name {
+    font-family: "Crimson Text", serif;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.person-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.4;
+    align-items: center;
+}
+
+.person-meta-sep {
+    color: var(--glass-border);
+    opacity: 0.6;
+}
+
+.person-biography {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.person-biography.expanded {
+    display: block;
+    -webkit-line-clamp: unset;
+    overflow: visible;
+}
+
+.person-show-more {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--primary);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-top: var(--space-xs);
+    align-self: flex-start;
+}
+
+.person-show-more:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* ============================================
+   AWARDS
+   ============================================ */
+
+.person-awards {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm) 0;
+    margin-bottom: var(--space-md);
+}
+
+.person-awards__icon {
+    font-size: 20px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.person-awards__text {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+/* ============================================
+   FILMOGRAPHY SECTION
+   ============================================ */
+
+.filmography-section {
+    margin-bottom: var(--space-xl);
+}
+
+.filmography-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+    gap: var(--space-sm);
+}
+
+.filmography-header h4 {
+    font-family: "Crimson Text", serif;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.filmography-sort {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.filmography-sort-select {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 400;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: var(--space-md);
+}
+
+.filmography-sort-select:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* ============================================
+   FILTER CHIPS
+   ============================================ */
+
+.filmography-filters {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-sm);
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: var(--space-sm);
+    margin-bottom: var(--space-md);
+}
+
+.filmography-filters::-webkit-scrollbar {
+    display: none;
+}
+
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 var(--space-md);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--text-secondary);
+    border-radius: var(--radius-full);
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.filter-chip:hover {
+    background: var(--glass-bg-hover);
+}
+
+.filter-chip:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.filter-chip:active {
+    transform: scale(0.97);
+}
+
+.filter-chip.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--text-primary);
+}
+
+/* ============================================
+   FILMOGRAPHY GRID
+   ============================================ */
+
+.filmography-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: var(--space-md);
+}
+
+.filmography-card {
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: transform var(--transition-fast), background var(--transition-fast);
+    background: var(--glass-bg);
+}
+
+.filmography-card:hover {
+    transform: scale(1.03);
+    background: var(--glass-bg-hover);
+}
+
+.filmography-card:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.filmography-card:active {
+    transform: scale(0.97);
+}
+
+.filmography-card__poster {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    display: block;
+}
+
+.filmography-card__title {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-primary);
+    margin-top: var(--space-xs);
+    padding: 0 var(--space-xs);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.filmography-card__year {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-muted);
+    padding: 0 var(--space-xs) var(--space-xs);
+}
+
+/* ============================================
+   COLLABORATORS
+   ============================================ */
+
+.collaborators-section {
+    margin-top: var(--space-xl);
+    margin-bottom: var(--space-xl);
+}
+
+.collaborators-section h4 {
+    font-family: "Crimson Text", serif;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--text-primary);
+    margin-bottom: var(--space-md);
+}
+
+.collaborators-scroll {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-md);
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: var(--space-sm);
+}
+
+.collaborators-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.collaborator-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform var(--transition-fast);
+}
+
+.collaborator-chip:hover {
+    transform: scale(1.05);
+}
+
+.collaborator-chip:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-full);
+}
+
+.collaborator-chip:active {
+    transform: scale(0.97);
+}
+
+.collaborator-chip__avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+    display: block;
+}
+
+.collaborator-chip__avatar--placeholder {
+    background: var(--bg-elevated);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.collaborator-chip__name {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    text-align: center;
+    max-width: 64px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ============================================
+   ERROR STATE
+   ============================================ */
+
+.person-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    padding: var(--space-3xl) var(--space-lg);
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+/* ============================================
+   SKELETON ANIMATIONS
+   ============================================ */
+
+.skeleton-bio {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: var(--space-lg);
+}
+
+.skeleton-bio-lines {
+    display: flex;
+    flex-direction: column;
+    padding-top: var(--space-sm);
+}
+
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--bg-elevated) 0%,
+        var(--glass-bg) 50%,
+        var(--bg-elevated) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s linear infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 640px) {
+    .person-page {
+        padding: var(--space-md);
+        padding-bottom: 100px; /* account for bottom nav */
+    }
+
+    .person-bio {
+        grid-template-columns: 1fr;
+    }
+
+    .person-photo-wrap {
+        display: flex;
+        justify-content: center;
+    }
+
+    .person-photo {
+        width: 140px;
+        height: 210px;
+    }
+
+    .person-photo-placeholder {
+        width: 140px;
+        height: 210px;
+    }
+
+    .person-name {
+        font-size: 24px;
+    }
+
+    .filmography-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .skeleton-bio {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+    .filmography-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+}

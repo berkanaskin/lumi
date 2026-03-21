@@ -842,7 +842,8 @@ function buildCastHTML(credits) {
             ? `https://image.tmdb.org/t/p/w185${person.profile_path}`
             : '';
         return `
-            <div class="detail-cast-card">
+            <div class="detail-cast-card" data-person-id="${person.id}"
+                role="button" tabindex="0" aria-label="${person.name}" style="cursor:pointer">
                 ${photoUrl
                     ? `<img src="${photoUrl}" alt="${person.name}" class="detail-cast-photo">`
                     : `<div class="detail-cast-photo-placeholder">👤</div>`
@@ -1092,6 +1093,26 @@ export function attachDetailEventListeners(details, type, itemId) {
     // Video tabs
     document.querySelectorAll('.video-tab').forEach(tab => {
         tab.onclick = () => switchVideoCategory(tab.dataset.category);
+    });
+
+    // Cast card — navigate to person page
+    document.querySelectorAll('.detail-cast-card[data-person-id]').forEach(card => {
+        card.addEventListener('click', () => {
+            const personId = card.dataset.personId;
+            if (!personId) return;
+            // Save return context
+            state.returnToDetail = { id: itemId, type };
+            closeModal();
+            if (window.loadPersonPage) {
+                window.loadPersonPage(parseInt(personId));
+            }
+        });
+        card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                card.click();
+            }
+        });
     });
 }
 

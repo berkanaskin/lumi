@@ -144,6 +144,11 @@ import {
     detectUserRegion,
 } from './features/profile.js';
 
+import {
+    initPersonPage,
+    loadPersonPage,
+} from './features/person.js';
+
 // ============================================
 // INITIALIZATION
 // ============================================
@@ -275,6 +280,10 @@ window.LumiModules = {
     PLATFORM_URLS,
     getPlatformUrl,
     isTurkishPlatform,
+
+    // Person Feature
+    initPersonPage,
+    loadPersonPage,
 };
 
 // Direct window globals for inline script compatibility
@@ -286,6 +295,7 @@ window.showAutocomplete = showAutocomplete;
 window.openDetailModal = openDetailModal;
 window.loadHomePage = window.LumiModules?.loadHomePage; // defined in inline script
 window.updateAuthUI = updateAuthUI;
+window.loadPersonPage = loadPersonPage;
 
 // ============================================
 // APP INITIALIZATION
@@ -383,6 +393,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load auth state
     loadAuth();
     updateAuthUI();
+
+    // Initialize person page
+    initPersonPage();
 
     // Initialize country selector in header
     initCountrySelector();
