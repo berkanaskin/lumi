@@ -45,7 +45,7 @@ export async function openDetail(id, type, title, year, originalTitle) {
 
     // Show modal with loading
     elements.modal.classList.add('active');
-    const loadingText = window.i18n?.t('loading') || 'Yükleniyor...';
+    const loadingText = (window.i18n?.t('loading') !== 'loading' ? window.i18n?.t('loading') : null) || 'Yükleniyor...';
     elements.modalBody.innerHTML = `<div class="loading-state visible"><div class="spinner"></div><p>${loadingText}</p></div>`;
     document.body.style.overflow = 'hidden';
     document.body.classList.add('modal-open');
@@ -654,8 +654,8 @@ function buildRatingsHTML(tmdbScore, allRatings) {
  * Build the "Where to Watch" streaming section with grouped providers.
  */
 function buildStreamingHTML(streamingData, title) {
-    const t = window.i18n?.t.bind(window.i18n) || ((k) => k);
-    const sectionLabel = t('streaming.whereToWatch') || 'Where to Watch';
+    const t = (key, fallback) => window.i18n?.t(key) !== key ? window.i18n.t(key) : fallback;
+    const sectionLabel = t('streaming.whereToWatch', 'Nerede İzlenir');
 
     if (!streamingData) {
         return `
@@ -670,7 +670,7 @@ function buildStreamingHTML(streamingData, title) {
     // No providers
     if (providers.length === 0) {
         const countryName = state.countryName || state.currentRegion || 'this country';
-        const noAvailText = (t('streaming.notAvailable') || 'Not available for streaming in {country}')
+        const noAvailText = t('streaming.notAvailable', '{country} için yayın platformu bulunamadı')
             .replace('{country}', countryName);
         return `
             <div class="streaming-section">
@@ -687,9 +687,9 @@ function buildStreamingHTML(streamingData, title) {
     }
 
     const groupLabels = {
-        stream: t('streaming.stream') || 'Stream',
-        rent: t('streaming.rent') || 'Rent',
-        buy: t('streaming.buy') || 'Buy',
+        stream: t('streaming.stream', 'İzle'),
+        rent: t('streaming.rent', 'Kirala'),
+        buy: t('streaming.buy', 'Satın Al'),
     };
 
     let groupsHTML = '';
@@ -732,8 +732,8 @@ function buildStreamingHTML(streamingData, title) {
         const ageMin = Math.floor(ageMs / (1000 * 60));
         const isStale = ageMs > 24 * 60 * 60 * 1000;
         const timeStr = ageHours > 0 ? `${ageHours}h` : `${ageMin}m`;
-        const updatedText = (t('streaming.updatedAgo') || 'Updated {time} ago').replace('{time}', timeStr);
-        const staleText = t('streaming.staleWarning') || 'Data may be outdated';
+        const updatedText = t('streaming.updatedAgo', '{time} önce güncellendi').replace('{time}', timeStr);
+        const staleText = t('streaming.staleWarning', 'Veriler güncel olmayabilir');
         if (isStale) {
             freshnessHTML = `<p class="label streaming-freshness streaming-freshness--stale">
                 <span class="material-symbols-outlined" style="font-size:18px;vertical-align:-4px">warning</span>
@@ -745,7 +745,7 @@ function buildStreamingHTML(streamingData, title) {
 
     // Fallback indicator
     const fallbackHTML = streamingData.fallback
-        ? `<span class="label" style="color:var(--text-muted);font-size:12px"> ${t('streaming.tmdbFallback') || '(TMDB data)'}</span>`
+        ? `<span class="label" style="color:var(--text-muted);font-size:12px"> ${t('streaming.tmdbFallback', '(TMDB verisi)')}</span>`
         : '';
 
     return `
@@ -774,7 +774,7 @@ function buildCinemaBadgeHTML(type, details) {
     const diffMs = releaseDate - now;
     const diffDays = diffMs / (1000 * 60 * 60 * 24);
 
-    const t = window.i18n?.t.bind(window.i18n) || ((k) => k);
+    const t = (key, fallback) => window.i18n?.t(key) !== key ? window.i18n.t(key) : fallback;
     const locale = state.currentLanguage === 'tr' ? 'tr-TR' : 'en-US';
     const formattedDate = releaseDate.toLocaleDateString(locale, { month: 'long', day: 'numeric' });
 
@@ -785,18 +785,18 @@ function buildCinemaBadgeHTML(type, details) {
         // Theatrical release
         if (diffDays > 0) {
             // Upcoming
-            badgeText = (t('cinema.inCinemasDate') || 'In cinemas {date}').replace('{date}', formattedDate);
+            badgeText = t('cinema.inCinemasDate', '{date} sinemalarda').replace('{date}', formattedDate);
             badgeClass = 'cinema-badge';
         } else if (diffDays > -60) {
             // Now showing (within 60 days of release)
-            badgeText = t('cinema.nowInCinemas') || 'Now in cinemas';
+            badgeText = t('cinema.nowInCinemas', 'Şu an sinemalarda');
             badgeClass = 'cinema-badge cinema-badge--active';
         } else {
             return ''; // Too old, no badge
         }
     } else if (releaseType === 4) {
         // Digital release
-        badgeText = (t('cinema.streamingDate') || 'Streaming {date}').replace('{date}', formattedDate);
+        badgeText = t('cinema.streamingDate', '{date} yayına giriyor').replace('{date}', formattedDate);
         badgeClass = 'cinema-badge';
     } else {
         return '';
@@ -809,13 +809,13 @@ function buildCinemaBadgeHTML(type, details) {
  * Build trivia & awards section with Premium gate.
  */
 function buildTriviaGateHTML(allRatings) {
-    const t = window.i18n?.t.bind(window.i18n) || ((k) => k);
+    const t = (key, fallback) => window.i18n?.t(key) !== key ? window.i18n.t(key) : fallback;
     const isPremium = state.isPremium || false;
 
-    const titleText = t('trivia.title') || 'Trivia & Awards';
-    const unlockTitle = t('trivia.unlockTitle') || 'Unlock Trivia';
-    const unlockBody = t('trivia.unlockBody') || 'Full trivia and awards details are available with Lumi Premium.';
-    const unlockCTA = t('trivia.unlockCTA') || 'Unlock with Premium';
+    const titleText = t('trivia.title', 'Trivia ve Ödüller');
+    const unlockTitle = t('trivia.unlockTitle', 'Trivia\'yı Aç');
+    const unlockBody = t('trivia.unlockBody', 'Tam trivia ve ödül detayları Lumi Premium ile kullanılabilir.');
+    const unlockCTA = t('trivia.unlockCTA', 'Premium ile Kilidi Aç');
 
     // Awards teaser (free OMDb data — not premium-gated)
     const awardsTeaserHTML = allRatings?.awards
@@ -914,10 +914,10 @@ function buildVideosHTML() {
 
     if (trailerCount + btsCount + interviewCount === 0) return '';
 
-    const t = window.i18n?.t.bind(window.i18n) || ((k) => k);
-    const trailersLabel = t('videos.trailers') || 'Trailers';
-    const btsLabel = t('videos.behindTheScenes') || 'Behind the Scenes';
-    const interviewsLabel = t('videos.interviews') || 'Interviews';
+    const t = (key, fallback) => window.i18n?.t(key) !== key ? window.i18n.t(key) : fallback;
+    const trailersLabel = t('videos.trailers', 'Fragmanlar');
+    const btsLabel = t('videos.behindTheScenes', 'Kamera Arkası');
+    const interviewsLabel = t('videos.interviews', 'Röportajlar');
 
     return `
         <div class="detail-section">

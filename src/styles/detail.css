@@ -667,8 +667,7 @@
   font-size: 0.875rem;
   font-weight: 700;
   color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   margin-bottom: var(--space-sm);
   display: flex;
   align-items: center;
