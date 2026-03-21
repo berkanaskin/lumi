@@ -487,6 +487,265 @@
 }
 
 /* ============================================
+   DETAIL HERO / MODAL LAYOUT
+   ============================================ */
+
+.detail-hero {
+  position: relative;
+  width: calc(100% + 48px);
+  margin: -24px -24px 0;
+  overflow: hidden;
+}
+
+.detail-backdrop-img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  display: block;
+}
+
+.detail-backdrop-placeholder {
+  width: 100%;
+  height: 280px;
+  background: var(--bg-elevated);
+}
+
+.detail-backdrop-gradient {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70%;
+  background: linear-gradient(to bottom, transparent 0%, var(--bg-surface) 100%);
+  pointer-events: none;
+}
+
+.detail-hero-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-md);
+  padding: 0 var(--space-lg) var(--space-md);
+  z-index: 2;
+}
+
+.detail-poster-wrap {
+  flex-shrink: 0;
+}
+
+.detail-poster-img {
+  width: 120px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.detail-poster-placeholder {
+  width: 120px;
+  height: 180px;
+  border-radius: var(--radius-md);
+  background: var(--bg-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.detail-core-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.detail-core-info .detail-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: var(--space-xs);
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.detail-core-info .detail-meta {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.8125rem;
+  margin-bottom: var(--space-xs);
+}
+
+.detail-score-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: var(--space-xs);
+}
+
+.detail-star-icon {
+  color: #facc15;
+  font-size: 1rem;
+}
+
+.detail-score-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.detail-score-max {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.detail-genre-pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  margin-right: var(--space-xs);
+  margin-top: var(--space-xs);
+}
+
+/* ============================================
+   ACTION BAR (INLINE)
+   ============================================ */
+
+.detail-actions-inline {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.detail-inline-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.detail-inline-btn:hover {
+  background: var(--glass-bg-hover);
+  color: var(--text-primary);
+}
+
+.detail-inline-btn.active {
+  background: rgba(88, 88, 243, 0.15);
+  border-color: rgba(88, 88, 243, 0.3);
+  color: var(--primary);
+}
+
+.detail-inline-btn svg {
+  flex-shrink: 0;
+}
+
+/* ============================================
+   DETAIL SECTIONS
+   ============================================ */
+
+.detail-section {
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.detail-section-heading {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: var(--space-sm);
+  display: flex;
+  align-items: center;
+}
+
+.detail-overview-text {
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ============================================
+   DETAIL CAST (new class names)
+   ============================================ */
+
+.detail-cast-scroll {
+  display: flex;
+  gap: var(--space-md);
+  overflow-x: auto;
+  padding-bottom: var(--space-sm);
+  scrollbar-width: none;
+}
+
+.detail-cast-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.detail-cast-card {
+  flex-shrink: 0;
+  text-align: center;
+  width: 76px;
+}
+
+.detail-cast-photo {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: var(--space-xs);
+  display: block;
+}
+
+.detail-cast-photo-placeholder {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: var(--space-xs);
+}
+
+.detail-cast-name {
+  display: block;
+  font-size: 0.6875rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.detail-cast-character {
+  display: block;
+  font-size: 0.625rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================
    LIGHT THEME OVERRIDES
    ============================================ */
 
