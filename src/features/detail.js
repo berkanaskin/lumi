@@ -106,18 +106,17 @@ export async function openDetail(id, type, title, year, originalTitle) {
 
         const imdbId = await imdbIdPromise;
 
-        // Fetch streaming + ratings in parallel (needs imdbId)
+        // Fetch streaming + ratings in parallel
+        // getStreamingWithCache handles null imdbId by falling back to TMDB watch providers
+        // allRatings requires imdbId — skip if not available
         let streamingData = null;
         let allRatings = null;
-        if (imdbId) {
-            try {
-                [streamingData, allRatings] = await Promise.all([
-                    getStreamingWithCache(id, imdbId, state.currentRegion || 'TR', type),
-                    API.getAllRatings(imdbId),
-                ]);
-            } catch (innerErr) {
-                console.warn('Streaming/Ratings fetch error:', innerErr);
-            }
+        try {
+            const streamingPromise = getStreamingWithCache(id, imdbId, state.currentRegion || 'TR', type);
+            const ratingsPromise = imdbId ? API.getAllRatings(imdbId) : Promise.resolve(null);
+            [streamingData, allRatings] = await Promise.all([streamingPromise, ratingsPromise]);
+        } catch (innerErr) {
+            console.warn('Streaming/Ratings fetch error:', innerErr);
         }
 
         const [youtubeVideos, turkishReleaseDate] = await Promise.all([youtubePromise, releaseDatePromise]);

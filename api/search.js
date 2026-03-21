@@ -12,7 +12,7 @@
 import { embedMany, generateObject } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { z } from 'zod';
-import { initializeApp, cert } from 'firebase-admin/app';
+import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 
 export const config = {
@@ -30,9 +30,9 @@ function initializeFirebase() {
         }
 
         const serviceAccount = JSON.parse(serviceAccountJson);
-        const app = initializeApp({
-            credential: cert(serviceAccount),
-        });
+        const app = getApps().length === 0
+            ? initializeApp({ credential: cert(serviceAccount) })
+            : getApps()[0];
 
         return getFirestore(app);
     } catch (error) {
@@ -63,13 +63,14 @@ async function getTMDBMovie(tmdbId) {
 
         const data = await response.json();
         return {
+            id: data.id,
             tmdbId: data.id,
             title: data.title,
-            year: data.release_date ? new Date(data.release_date).getFullYear() : null,
-            genres: data.genres ? data.genres.map(g => g.name) : [],
-            poster: data.poster_path,
-            rating: data.vote_average,
-            description: data.overview,
+            release_date: data.release_date || null,
+            genre_ids: data.genres ? data.genres.map(g => g.id) : [],
+            poster_path: data.poster_path || null,
+            vote_average: data.vote_average || 0,
+            overview: data.overview || '',
         };
     } catch (error) {
         console.error('[Search] TMDB fetch error:', error);
@@ -180,13 +181,15 @@ export default async function handler(request) {
                 for (const doc of snapshots.docs) {
                     const movie = doc.data();
                     if (movie && movie.title) {
+                        const tmdbId = movie.tmdbId || movie.id;
                         results.push({
-                            tmdbId: movie.tmdbId || movie.id,
+                            id: tmdbId,
+                            tmdbId: tmdbId,
                             title: movie.title,
-                            year: movie.year,
-                            genres: movie.genres || [],
-                            poster: movie.poster,
-                            rating: movie.rating || 0,
+                            release_date: movie.year ? `${movie.year}-01-01` : null,
+                            genre_ids: [],
+                            poster_path: movie.poster || null,
+                            vote_average: movie.rating || 0,
                         });
                     }
                 }

@@ -1347,8 +1347,11 @@
         searchInput?.addEventListener("focus", () => {
           if (!searchInput.value) {
             trendChipsContainer?.classList.add("active");
+            // Only clear autocomplete when input is empty — on mobile, the virtual
+            // keyboard causes a blur/re-focus cycle which would otherwise kill the
+            // dropdown mid-session while the user is still typing.
+            autocompleteDropdown?.classList.remove("active");
           }
-          autocompleteDropdown?.classList.remove("active");
         });
 
         // Input: Show autocomplete (with debounce)
@@ -1387,14 +1390,16 @@
           }
         });
 
-        // Blur: Hide dropdowns (with delay for click handling)
+        // Blur: Hide dropdowns (with delay for click/tap handling)
+        // 300ms gives mobile touch events enough time to register before we hide
+        // the dropdown. On desktop 200ms was enough but mobile tap is slower.
         searchInput?.addEventListener("blur", () => {
           setTimeout(() => {
             if (!document.activeElement?.closest(".search-pill")) {
               trendChipsContainer?.classList.remove("active");
               autocompleteDropdown?.classList.remove("active");
             }
-          }, 200);
+          }, 300);
         });
 
         // Clear button
@@ -1925,15 +1930,21 @@
 
             dropdown.classList.add("active");
 
-            // Add click handlers
+            // Add click + touchstart handlers
+            // touchstart fires before blur, so on mobile we can capture the tap
+            // before the 300ms blur timeout hides the dropdown. preventDefault()
+            // stops the subsequent click event from double-firing on desktop.
             dropdown.querySelectorAll(".autocomplete-item").forEach((item) => {
-              item.addEventListener("click", function () {
+              const handleSelect = function (e) {
+                e.preventDefault();
                 const id = this.dataset.id;
                 const type = this.dataset.type;
                 dropdown.classList.remove("active");
                 document.getElementById("search-input").blur();
                 openDetailModal(id, type);
-              });
+              };
+              item.addEventListener("touchstart", handleSelect, { passive: false });
+              item.addEventListener("click", handleSelect);
             });
           } else {
             dropdown.innerHTML =
