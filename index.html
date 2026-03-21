@@ -1961,11 +1961,18 @@
       // DETAIL MODAL
       // ============================================
       async function openDetailModal(id, type) {
+        // Bridge to Phase 3 modular openDetail (rich detail page with ratings, streaming, videos)
+        const { openDetail } = window.LumiModules || {};
+        if (openDetail) {
+          openDetail(id, type);
+          return;
+        }
+        // Fallback: basic modal if modules not loaded yet
         const modal = document.getElementById("detail-modal");
         const modalBody = document.getElementById("modal-body");
 
-        // SCROLL LOCK
         document.body.style.overflow = "hidden";
+        document.body.classList.add("modal-open");
 
         modal.classList.add("active");
         modalBody.innerHTML =
