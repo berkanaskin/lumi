@@ -37,9 +37,10 @@ export const GROUP_MAP = {
  * @param {string} tmdbId - TMDB content ID
  * @param {string} imdbId - IMDb ID (tt-prefixed) for Streaming Availability API
  * @param {string} country - ISO 3166-1 alpha-2 country code (e.g. 'TR', 'US')
+ * @param {string} type - Content type: 'movie' or 'tv'
  * @returns {Promise<{ providers: Array, fallback?: boolean } | null>}
  */
-export async function getStreamingWithCache(tmdbId, imdbId, country) {
+export async function getStreamingWithCache(tmdbId, imdbId, country, type = 'movie') {
     const countryUpper = (country || 'TR').toUpperCase();
     const countryLower = countryUpper.toLowerCase();
     const docId = `${tmdbId}_${countryUpper}`;
@@ -49,7 +50,7 @@ export async function getStreamingWithCache(tmdbId, imdbId, country) {
         db = getFirestore();
     } catch (err) {
         console.warn('[StreamingCache] Firestore not available:', err.message);
-        return _fetchFromApiOrFallback(tmdbId, imdbId, countryLower, countryUpper, null, docId);
+        return _fetchFromApiOrFallback(tmdbId, imdbId, countryLower, countryUpper, null, docId, type);
     }
 
     // 1. Try Firestore cache
@@ -72,16 +73,16 @@ export async function getStreamingWithCache(tmdbId, imdbId, country) {
     }
 
     // 2. Cache miss or stale — fetch from API
-    return _fetchFromApiOrFallback(tmdbId, imdbId, countryLower, countryUpper, db, docId);
+    return _fetchFromApiOrFallback(tmdbId, imdbId, countryLower, countryUpper, db, docId, type);
 }
 
 /**
  * Internal: fetch from /api/streaming-availability, transform, cache, or fall back to TMDB.
  */
-async function _fetchFromApiOrFallback(tmdbId, imdbId, countryLower, countryUpper, db, docId) {
+async function _fetchFromApiOrFallback(tmdbId, imdbId, countryLower, countryUpper, db, docId, type = 'movie') {
     if (!imdbId) {
         // No IMDb ID — fall back to TMDB watch providers immediately
-        return _tmdbFallback(tmdbId, countryUpper);
+        return _tmdbFallback(tmdbId, countryUpper, type);
     }
 
     try {
@@ -105,6 +106,7 @@ async function _fetchFromApiOrFallback(tmdbId, imdbId, countryLower, countryUppe
             link: option.link || '',
             themeColor: option.service?.themeColorCode || null,
             quality: option.quality || null,
+            logoPath: option.service?.imageSet?.lightThemeImage || option.service?.imageSet?.darkThemeImage || null,
         }));
 
         // 3. Write to Firestore cache
@@ -128,16 +130,16 @@ async function _fetchFromApiOrFallback(tmdbId, imdbId, countryLower, countryUppe
         return { providers };
     } catch (err) {
         console.warn('[StreamingCache] API fetch failed, falling back to TMDB:', err.message);
-        return _tmdbFallback(tmdbId, countryUpper);
+        return _tmdbFallback(tmdbId, countryUpper, type);
     }
 }
 
 /**
  * Internal: fall back to TMDB watch providers on API failure.
  */
-async function _tmdbFallback(tmdbId, countryUpper) {
+async function _tmdbFallback(tmdbId, countryUpper, type = 'movie') {
     try {
-        const tmdbProviders = await TMDBService.getWatchProviders(tmdbId, 'movie', countryUpper);
+        const tmdbProviders = await TMDBService.getWatchProviders(tmdbId, type, countryUpper);
         if (!tmdbProviders) return { providers: [], fallback: true };
 
         // Map TMDB provider shapes to our normalized shape
@@ -157,6 +159,7 @@ async function _tmdbFallback(tmdbId, countryUpper) {
             link: tmdbProviders.link || '',
             themeColor: null,
             quality: null,
+            logoPath: p.logo_path || null,
         }));
 
         return { providers, fallback: true };

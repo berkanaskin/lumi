@@ -59,7 +59,7 @@ export async function openDetail(id, type, title, year, originalTitle) {
     const region = state.currentRegion || 'TR';
 
     try {
-        // Fetch TMDB data in parallel (except YouTube which needs title info)
+        // Phase 1: Fetch core TMDB data in parallel (fast — renders modal immediately)
         const [details, providers, credits, tmdbVideos] = await Promise.all([
             API.getDetails(id, type, state.currentLanguage),
             API.getWatchProviders(id, type, region),
@@ -72,33 +72,47 @@ export async function openDetail(id, type, title, year, originalTitle) {
             return;
         }
 
-        // Derive title/year/originalTitle from TMDB response when not passed
+        // Derive title/year/originalTitle from TMDB response
         const resolvedTitle = title || details.title || details.name || '';
         const resolvedYear = year || (details.release_date || details.first_air_date || '').substring(0, 4);
         const resolvedOriginal = originalTitle || details.original_title || details.original_name || '';
 
-        // Now fetch YouTube videos with resolved params
-        const youtubeVideos = await API.getMovieVideos(resolvedTitle, resolvedYear, resolvedOriginal);
+        // Save core state and render immediately (no waiting for slow APIs)
+        state.currentCredits = credits;
+        state.currentAllRatings = null;
+        state.currentStreamingData = null;
+        state.currentTurkishReleaseDate = null;
+        state.currentImdbData = null;
+        state.currentTrivia = [];
 
-        // Fetch additional data
-        const imdbData = null;
-        const triviaData = [];
-        let allRatings = null;
-        let turkishReleaseDate = null;
+        // Process TMDB videos (available immediately)
+        const trailers = tmdbVideos.filter(v => v.type === 'Trailer' || v.type === 'Teaser');
+        const btsVideos = tmdbVideos.filter(v => v.type === 'Behind the Scenes' || v.type === 'Featurette');
+        state.currentVideos = {
+            trailer: [...trailers],
+            behindTheScenes: [...btsVideos],
+            reviews: [],
+        };
+        state.currentVideoCategory = 'trailer';
+        state.currentTitle = resolvedTitle;
 
-        if (type === 'movie') {
-            turkishReleaseDate = await API.getReleaseDates(id, 'TR');
-        }
+        // RENDER MODAL NOW — user sees content instantly
+        renderDetail(details, providers, type, id, null);
 
-        const imdbId = await API.getIMDBId(id, type);
-        console.log('IMDB ID:', imdbId);
+        // Phase 2: Enrich with slow APIs in background (streaming, ratings, YouTube)
+        const imdbIdPromise = API.getIMDBId(id, type);
+        const youtubePromise = API.getMovieVideos(resolvedTitle, resolvedYear, resolvedOriginal).catch(() => ({ trailer: [], behindTheScenes: [], reviews: [], interview: [] }));
+        const releaseDatePromise = type === 'movie' ? API.getReleaseDates(id, 'TR').catch(() => null) : Promise.resolve(null);
 
-        // Fetch streaming availability and ratings in parallel
+        const imdbId = await imdbIdPromise;
+
+        // Fetch streaming + ratings in parallel (needs imdbId)
         let streamingData = null;
+        let allRatings = null;
         if (imdbId) {
             try {
                 [streamingData, allRatings] = await Promise.all([
-                    getStreamingWithCache(id, imdbId, state.currentRegion || 'TR'),
+                    getStreamingWithCache(id, imdbId, state.currentRegion || 'TR', type),
                     API.getAllRatings(imdbId),
                 ]);
             } catch (innerErr) {
@@ -106,28 +120,21 @@ export async function openDetail(id, type, title, year, originalTitle) {
             }
         }
 
-        // Save to state
-        state.currentImdbData = imdbData;
-        state.currentTrivia = triviaData;
-        state.currentCredits = credits;
+        const [youtubeVideos, turkishReleaseDate] = await Promise.all([youtubePromise, releaseDatePromise]);
+
+        // Update state with enriched data
         state.currentAllRatings = allRatings;
         state.currentStreamingData = streamingData;
         state.currentTurkishReleaseDate = turkishReleaseDate;
 
-        // Process videos
-        const trailers = tmdbVideos.filter(v => v.type === 'Trailer' || v.type === 'Teaser');
-        const btsVideos = tmdbVideos.filter(v => v.type === 'Behind the Scenes' || v.type === 'Featurette');
-
+        // Merge YouTube videos into existing TMDB videos
         state.currentVideos = {
             trailer: mergeVideos(trailers, youtubeVideos.trailer),
             behindTheScenes: mergeVideos(btsVideos, youtubeVideos.behindTheScenes),
             reviews: [...(youtubeVideos.reviews || []), ...(youtubeVideos.interview || [])],
         };
 
-        state.currentVideoCategory = 'trailer';
-        state.currentTitle = title;
-
-        // Render the detail view
+        // Re-render with full data (user already sees modal, this updates sections)
         renderDetail(details, providers, type, id, streamingData);
     } catch (error) {
         console.error('openDetail error:', error);
@@ -690,16 +697,22 @@ function buildStreamingHTML(streamingData, title) {
         if (list.length === 0) continue;
         const tiles = list.map(provider => {
             const deepLink = provider.link || getPlatformUrl(provider.serviceName, title);
-            const logoUrl = `https://img.streamingavailability.com/img/icons/${provider.serviceId}.png`;
+            // logoPath can be: full URL (RapidAPI), /path (TMDB), or null
+            const logoUrl = provider.logoPath
+                ? (provider.logoPath.startsWith('http') ? provider.logoPath : `https://image.tmdb.org/t/p/w92${provider.logoPath}`)
+                : '';
             const safeName = provider.serviceName.replace(/"/g, '&quot;');
+            const logoImg = logoUrl
+                ? `<img src="${logoUrl}" alt="${safeName}"
+                        onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+                        width="40" height="40" loading="lazy">
+                   <div class="streaming-tile__fallback" style="display:none">${provider.serviceName.charAt(0)}</div>`
+                : `<div class="streaming-tile__fallback" style="display:flex">${provider.serviceName.charAt(0)}</div>`;
             return `
                 <button class="streaming-tile" onclick="window.open('${deepLink}','_blank')"
                     title="${safeName}" aria-label="Watch on ${safeName}">
                     <div class="streaming-tile__logo-wrap">
-                        <img src="${logoUrl}" alt="${safeName}"
-                            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
-                            width="40" height="40" loading="lazy">
-                        <div class="streaming-tile__fallback" style="display:none">${provider.serviceName.charAt(0)}</div>
+                        ${logoImg}
                     </div>
                     <span class="label">${provider.serviceName}</span>
                 </button>`;
@@ -1105,6 +1118,8 @@ export function attachDetailEventListeners(details, type, itemId) {
             closeModal();
             if (window.loadPersonPage) {
                 window.loadPersonPage(parseInt(personId));
+            } else {
+                showToast('Kişi sayfası yüklenemedi');
             }
         });
         card.addEventListener('keydown', (e) => {
