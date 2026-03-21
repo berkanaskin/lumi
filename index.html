@@ -132,39 +132,6 @@
             >
           </div>
           <div class="header-actions">
-            <!-- Country Selector -->
-            <div style="position: relative">
-              <button
-                id="country-selector"
-                class="country-selector-btn header-btn"
-                aria-label="Change Country"
-                title="Change Country"
-              >
-                <span class="country-code">TR</span>
-              </button>
-              <div id="country-dropdown" class="country-dropdown hidden">
-                <div class="dropdown-header">
-                  <span class="dropdown-title">Country</span>
-                </div>
-                <div class="dropdown-list">
-                  <button class="country-item active" data-code="TR" data-name="Turkey">🇹🇷 Turkey</button>
-                  <button class="country-item" data-code="US" data-name="United States">🇺🇸 United States</button>
-                  <button class="country-item" data-code="GB" data-name="United Kingdom">🇬🇧 United Kingdom</button>
-                  <button class="country-item" data-code="DE" data-name="Germany">🇩🇪 Germany</button>
-                  <button class="country-item" data-code="FR" data-name="France">🇫🇷 France</button>
-                  <button class="country-item" data-code="ES" data-name="Spain">🇪🇸 Spain</button>
-                  <button class="country-item" data-code="IT" data-name="Italy">🇮🇹 Italy</button>
-                  <button class="country-item" data-code="NL" data-name="Netherlands">🇳🇱 Netherlands</button>
-                  <button class="country-item" data-code="BR" data-name="Brazil">🇧🇷 Brazil</button>
-                  <button class="country-item" data-code="IN" data-name="India">🇮🇳 India</button>
-                  <button class="country-item" data-code="JP" data-name="Japan">🇯🇵 Japan</button>
-                  <button class="country-item" data-code="KR" data-name="South Korea">🇰🇷 South Korea</button>
-                  <button class="country-item" data-code="AU" data-name="Australia">🇦🇺 Australia</button>
-                  <button class="country-item" data-code="CA" data-name="Canada">🇨🇦 Canada</button>
-                </div>
-              </div>
-            </div>
-
             <!-- Language Toggle -->
             <div style="position: relative">
               <button
@@ -668,6 +635,44 @@
                 />
                 <span class="toggle-slider"></span>
               </label>
+            </div>
+            <!-- Country Selector -->
+            <div class="settings-item">
+              <div class="settings-item-left">
+                <div class="settings-icon">
+                  <span class="material-symbols-outlined">public</span>
+                </div>
+                <span class="settings-label">Ülke</span>
+              </div>
+              <div style="position: relative">
+                <button
+                  id="country-selector"
+                  class="country-selector-btn"
+                  aria-label="Ülke Seç"
+                  title="Ülke Seç"
+                >
+                  <span class="country-code">TR</span>
+                  <span class="material-symbols-outlined" style="font-size:16px">expand_more</span>
+                </button>
+                <div id="country-dropdown" class="country-dropdown hidden">
+                  <div class="dropdown-list">
+                    <button class="country-item active" data-code="TR" data-name="Turkey">Türkiye</button>
+                    <button class="country-item" data-code="US" data-name="United States">ABD</button>
+                    <button class="country-item" data-code="GB" data-name="United Kingdom">Birleşik Krallık</button>
+                    <button class="country-item" data-code="DE" data-name="Germany">Almanya</button>
+                    <button class="country-item" data-code="FR" data-name="France">Fransa</button>
+                    <button class="country-item" data-code="ES" data-name="Spain">İspanya</button>
+                    <button class="country-item" data-code="IT" data-name="Italy">İtalya</button>
+                    <button class="country-item" data-code="NL" data-name="Netherlands">Hollanda</button>
+                    <button class="country-item" data-code="BR" data-name="Brazil">Brezilya</button>
+                    <button class="country-item" data-code="IN" data-name="India">Hindistan</button>
+                    <button class="country-item" data-code="JP" data-name="Japan">Japonya</button>
+                    <button class="country-item" data-code="KR" data-name="South Korea">Güney Kore</button>
+                    <button class="country-item" data-code="AU" data-name="Australia">Avustralya</button>
+                    <button class="country-item" data-code="CA" data-name="Canada">Kanada</button>
+                  </div>
+                </div>
+              </div>
             </div>
             <!-- Wi-Fi Download Toggle -->
             <div class="settings-item settings-item-last">
@@ -2282,6 +2287,10 @@
         const modal = document.getElementById("detail-modal");
         modal.classList.remove("active");
         document.body.style.overflow = "";
+        document.body.classList.remove("modal-open");
+        document.body.style.position = "";
+        document.body.style.width = "";
+        document.body.style.height = "";
 
         // Return to search if that's where user came from
         if (state.lastView === "search") {
