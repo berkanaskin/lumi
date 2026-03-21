@@ -1726,6 +1726,22 @@ body.discover-active .gradient-header {
 }
 
 /* ============================================
+   DESKTOP: HIDE MOBILE-ONLY ELEMENTS
+   ============================================ */
+
+/* Sidebar is not used — always hidden */
+aside.sidebar {
+    display: none !important;
+}
+
+/* Hide floating bottom nav on desktop */
+@media (min-width: 1024px) {
+    .bottom-nav {
+        display: none !important;
+    }
+}
+
+/* ============================================
    SPA VIEW SYSTEM
    ============================================ */
 .view {

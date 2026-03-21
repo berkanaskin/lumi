@@ -308,11 +308,11 @@ function updateCountrySelector() {
     const btn = document.getElementById('country-selector');
     if (!btn) return;
     const code = state.currentRegion || 'TR';
-    const flagEmoji = String.fromCodePoint(...[...code.toUpperCase()].map(c => 0x1F1E6 + c.charCodeAt(0) - 65));
-    const flagEl = btn.querySelector('.country-flag');
     const codeEl = btn.querySelector('.country-code');
-    if (flagEl) flagEl.textContent = flagEmoji;
     if (codeEl) codeEl.textContent = code.toUpperCase();
+    // Hide flag emoji span — Windows renders flag emojis as duplicate text codes
+    const flagEl = btn.querySelector('.country-flag');
+    if (flagEl) flagEl.style.display = 'none';
 }
 
 /**
