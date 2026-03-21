@@ -1102,7 +1102,16 @@
 
     <!-- Legacy Scripts (auth + i18n still needed - no ESM replacements yet) -->
     <script src="i18n.js"></script>
-    <script src="services/auth.js"></script>
+    <!-- Bridge: set FIREBASE_CONFIG globally before auth.js loads
+         Vite replaces import.meta.env.VITE_* at build time in module scripts,
+         but services/auth.js is a non-module legacy script that reads the global.
+         This inline module runs before auth.js and sets the global. -->
+    <script type="module">
+      import { FIREBASE_CONFIG, CONFIG } from '/src/config.js';
+      window.FIREBASE_CONFIG = FIREBASE_CONFIG;
+      window.CONFIG = CONFIG;
+    </script>
+    <script defer src="services/auth.js"></script>
     <script>
       // ============================================
       // LUMI SPA NAVIGATION v2.2.0
