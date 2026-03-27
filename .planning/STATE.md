@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: unknown
-stopped_at: "03-03-PLAN.md checkpoint:human-verify — Task 1 complete, awaiting visual verification"
-last_updated: "2026-03-21T11:09:46.815Z"
+status: Ready to execute
+stopped_at: Completed 03.1-01-PLAN.md — all 3 tasks done
+last_updated: "2026-03-27T07:40:24.733Z"
 progress:
-  total_phases: 4
+  total_phases: 5
   completed_phases: 3
-  total_plans: 9
-  completed_plans: 9
+  total_plans: 13
+  completed_plans: 10
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-19)
 
 **Core value:** When someone doesn't know what to watch, Lumi understands what they're in the mood for and finds it — instantly, accurately, and beautifully.
-**Current focus:** Phase 03 — content-enrichment
+**Current focus:** Phase 03.1 — mobile-qa-fixes
 
 ## Current Position
 
-Phase: 03 (content-enrichment) — EXECUTING
-Plan: 1 of 3
+Phase: 03.1 (mobile-qa-fixes) — EXECUTING
+Plan: 2 of 4
 
 ## Performance Metrics
 
@@ -50,6 +50,7 @@ Plan: 1 of 3
 | Phase 03 P01 | 5min | 2 tasks | 9 files |
 | Phase 03 P02 | 35min | 2 tasks | 8 files |
 | Phase 03 P03 | 5 | 1 tasks | 7 files |
+| Phase 03.1-mobile-qa-fixes P01 | 3m28s | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -72,6 +73,13 @@ Recent decisions affecting current work:
 - [Phase 03]: Ratings logos sourced from Wikimedia Commons SVG URLs, streaming tiles use streamingavailability.com CDN with letter fallback
 - [Phase 03]: Person page awards from OMDb displayed via external_ids->imdb_id chain on person page (not just detail trivia gate)
 - [Phase 03]: Collaborator algorithm: top 10 titles by vote_count (max 10 API calls), count >= 2 threshold, top 8 collaborators shown
+- [Phase 03.1-01]: Renamed window.showAutocomplete to window.showAutocompleteSuggestions in main.js and search.js to preserve inline autocomplete function
+- [Phase 03.1-01]: Added defensive documentElement.style.overflow and body.style.position resets to all three modal close code paths
+- [Phase 03.1-01]: Used conditional onclick routing on primary discover button — AI search when text present, wizard search when only chips selected
+
+### Roadmap Evolution
+
+- Phase 03.1 inserted after Phase 3: Mobile QA Fixes (URGENT) — 11 mobile bugs must be fixed before Phase 4
 
 ### Pending Todos
 
@@ -83,6 +91,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21T11:09:41.422Z
-Stopped at: 03-03-PLAN.md checkpoint:human-verify — Task 1 complete, awaiting visual verification
+Last session: 2026-03-27T07:40:24.729Z
+Stopped at: Completed 03.1-01-PLAN.md — all 3 tasks done
 Resume file: None
