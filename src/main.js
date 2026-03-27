@@ -408,7 +408,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const saved = localStorage.getItem('lumi_country');
         if (saved) {
             state.currentRegion = saved;
-            state.countryName = localStorage.getItem('lumi_country_name') || saved;
+            // Convert stored country code to locale-appropriate name (handles old 'Turkey' entries)
+            try {
+                const displayNames = new Intl.DisplayNames(['tr'], { type: 'region' });
+                state.countryName = displayNames.of(saved) || localStorage.getItem('lumi_country_name') || saved;
+            } catch {
+                state.countryName = localStorage.getItem('lumi_country_name') || saved;
+            }
             state.countryDetected = true;
             updateCountrySelector();
         } else {

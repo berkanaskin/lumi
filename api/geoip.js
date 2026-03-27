@@ -35,9 +35,9 @@ export default async function handler(request) {
         );
     } catch (error) {
         console.error('[GeoIP Proxy] Error:', error);
-        // Safe fallback — never fail, return Turkey as default
+        // Safe fallback — never fail, return Türkiye as default
         return new Response(
-            JSON.stringify({ countryCode: 'TR', countryName: 'Turkey' }),
+            JSON.stringify({ countryCode: 'TR', countryName: 'Türkiye' }),
             {
                 status: 200,
                 headers: {
