@@ -85,11 +85,11 @@ Plans:
   6. Notification UI is wired and functional (even if empty state)
   7. Zero test user code visible, login wall works, profile shows correct data
   8. Search overlay filter chips display in Turkish
-**Plans:** 1/4 plans executed
+**Plans:** 2/4 plans executed
 
 Plans:
 - [x] 03.1-01-PLAN.md — Critical bugs: scroll lock fix, autocomplete restore, discover screen repair
-- [ ] 03.1-02-PLAN.md — Detail page polish: stuck shimmer removal, modal top gap fix, country name localization
+- [x] 03.1-02-PLAN.md — Detail page polish: stuck shimmer removal, modal top gap fix, country name localization
 - [ ] 03.1-03-PLAN.md — Auth cleanup: test user removal, login wall fix, profile page bugfixes
 - [ ] 03.1-04-PLAN.md — Notification wiring + search overlay i18n
 
