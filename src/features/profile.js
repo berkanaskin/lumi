@@ -27,13 +27,30 @@ export function initAuth() {
         emailForm.addEventListener('submit', handleEmailLogin);
     }
 
-    // Listen for auth state changes
+    // Listen for auth state changes (fired by AuthService.onAuthStateChanged)
     window.addEventListener('authStateChanged', (event) => {
         const user = event.detail?.user;
         if (user) {
+            // Update single source of truth
+            state.currentUser = {
+                uid: user.id || user.uid,
+                name: user.name || user.displayName || user.email,
+                email: user.email,
+                photoURL: user.avatar || user.photoURL || null,
+                tier: user.tier || 'free',
+            };
+            state.userTier = user.tier || 'free';
             hideLoginWall();
+            updateAuthUI();
+            updateProfileAuthUI();
+            updateHeaderProfileDropdown();
         } else {
+            state.currentUser = null;
+            state.userTier = 'guest';
             showLoginWall();
+            updateAuthUI();
+            updateProfileAuthUI();
+            updateHeaderProfileDropdown();
         }
     });
 

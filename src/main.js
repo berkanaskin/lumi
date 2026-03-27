@@ -211,6 +211,7 @@ window.LumiModules = {
     clearSearchResults,
 
     // Profile Feature
+    initAuth,
     loadAuth,
     updateAuthUI,
     openLoginModal,

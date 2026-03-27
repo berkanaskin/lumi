@@ -1216,8 +1216,8 @@
               if (window.AuthService?.loginWithGoogle) {
                 await window.AuthService.loginWithGoogle();
                 loginModal?.classList.remove("active");
+                // Auth state update handled by onAuthStateChanged listener in initAuth()
                 if (typeof updateAuthUI === "function") updateAuthUI();
-                location.reload(); // Refresh to update UI
               } else {
                 alert("Firebase henüz yüklenmedi. Lütfen bekleyin.");
               }
@@ -1244,7 +1244,8 @@
               if (window.AuthService?.loginWithEmail) {
                 await window.AuthService.loginWithEmail(email, password);
                 loginModal?.classList.remove("active");
-                location.reload();
+                // Auth state update handled by onAuthStateChanged listener in initAuth()
+                if (typeof updateAuthUI === "function") updateAuthUI();
               }
             } catch (err) {
               console.error("Email login error:", err);
@@ -2181,9 +2182,9 @@
           }
         }
 
-        // Load stats
-        const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
-        document.getElementById("stat-movies").textContent = favorites.length;
+        // Load stats — liked_items is the correct key for liked/watched movies
+        const likedItems = JSON.parse(localStorage.getItem("liked_items") || "[]");
+        document.getElementById("stat-movies").textContent = likedItems.length;
 
         // Sync theme toggle with current theme
         const profileThemeToggle = document.getElementById(
