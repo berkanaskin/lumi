@@ -605,7 +605,7 @@ export function renderDetail(details, providers, type, itemId, streamingData) {
 // ============================================
 
 function buildRatingsHTML(tmdbScore, allRatings) {
-    if (!allRatings) return '<div class="ratings-skeleton"></div>';
+    if (!allRatings) return '';
 
     const items = [];
 
