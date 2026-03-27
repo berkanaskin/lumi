@@ -15,6 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Design Foundation** - Cinematic overhaul of all pages, polished design system, solid auth/watchlist UX (2/2 complete)
 - [x] **Phase 2: Hybrid AI Search** - Natural language discovery via embedding search + LLM fallback, personalization, diversity injection (4/4 complete)
 - [x] **Phase 3: Content Enrichment** - Streaming availability by country, aggregated ratings, comprehensive video/cast/trivia content (completed 2026-03-21)
+- [ ] **Phase 3.1: Mobile QA Fixes (INSERTED)** - Fix 11 mobile bugs: scroll lock, autocomplete, discover, shimmer, modal gap, country names, notifications, test removal, auth, search i18n, profile
 - [ ] **Phase 4: Premium Platform** - Community ratings, PWA install + offline, freemium subscription model
 
 ## Phase Details
@@ -70,6 +71,28 @@ Plans:
 - [x] 03-02-PLAN.md — Wave 2: Detail page UI overhaul: ratings bar, Where to Watch streaming section, video tabs, cinema badge, trivia Premium gate, country selector, i18n
 - [x] 03-03-PLAN.md — Wave 3: Person (actor/director) page: bio, awards, filmography grid with filters/sort, "Frequently Works With" collaborators, cast-click handlers, watchlist streaming data infrastructure
 
+### Phase 03.1: Mobile QA Fixes (INSERTED)
+
+**Goal:** All 11 mobile QA bugs are fixed — the app is stable, polished, and fully functional on mobile before Phase 4
+**Requirements**: BUG-01, BUG-02, BUG-03, BUG-04, BUG-05, BUG-06, BUG-07, BUG-08, BUG-09, BUG-10, BUG-11
+**Depends on:** Phase 3
+**Success Criteria** (what must be TRUE):
+  1. User can open and close detail modals without losing scroll ability
+  2. User sees autocomplete suggestions while typing in search
+  3. Discover mood/era chips produce search results, results title visible below header
+  4. No stuck shimmer on detail page, modal fills entire viewport
+  5. Country names display in Turkish endonyms
+  6. Notification UI is wired and functional (even if empty state)
+  7. Zero test user code visible, login wall works, profile shows correct data
+  8. Search overlay filter chips display in Turkish
+**Plans:** 4 plans in 3 waves
+
+Plans:
+- [ ] 03.1-01-PLAN.md — Critical bugs: scroll lock fix, autocomplete restore, discover screen repair
+- [ ] 03.1-02-PLAN.md — Detail page polish: stuck shimmer removal, modal top gap fix, country name localization
+- [ ] 03.1-03-PLAN.md — Auth cleanup: test user removal, login wall fix, profile page bugfixes
+- [ ] 03.1-04-PLAN.md — Notification wiring + search overlay i18n
+
 ### Phase 4: Premium Platform
 **Goal**: Lumi is an installable app users return to — with a sustainable freemium model, community ratings, and platform drop notifications
 **Depends on**: Phase 3
@@ -89,11 +112,12 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4
+Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Design Foundation | 2/2 | COMPLETE | 2026-03-19 |
 | 2. Hybrid AI Search | 4/4 | COMPLETE | 2026-03-19 |
 | 3. Content Enrichment | 3/3 | Complete   | 2026-03-21 |
+| 3.1 Mobile QA Fixes | 0/4 | Planning | - |
 | 4. Premium Platform | 0/2 | Pending | - |
