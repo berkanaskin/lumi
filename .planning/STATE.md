@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Ready to execute
-stopped_at: Completed 03.1-02-PLAN.md — all 2 tasks done
-last_updated: "2026-03-27T07:45:05.393Z"
+status: Executing Phase 03.1
+stopped_at: Completed 03.1-02 and 03.1-03 — Wave 2 done
+last_updated: "2026-03-27T07:50:00.000Z"
 progress:
   total_phases: 5
   completed_phases: 3
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-19)
 ## Current Position
 
 Phase: 03.1 (mobile-qa-fixes) — EXECUTING
-Plan: 3 of 4
+Plan: 3 of 4 (Wave 2 complete)
 
 ## Performance Metrics
 
@@ -52,6 +52,7 @@ Plan: 3 of 4
 | Phase 03 P03 | 5 | 1 tasks | 7 files |
 | Phase 03.1-mobile-qa-fixes P01 | 3m28s | 3 tasks | 5 files |
 | Phase 03.1-mobile-qa-fixes P02 | 2min | 2 tasks | 7 files |
+| Phase 03.1-mobile-qa-fixes P03 | 4min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -78,6 +79,9 @@ Recent decisions affecting current work:
 - [Phase 03.1-01]: Added defensive documentElement.style.overflow and body.style.position resets to all three modal close code paths
 - [Phase 03.1-01]: Used conditional onclick routing on primary discover button — AI search when text present, wizard search when only chips selected
 - [Phase 03.1-02]: Use Intl.DisplayNames(['tr']) to convert ISO country codes to Turkish locale names, with fallback map
+- [Phase 03.1-03]: Remove all tester login mechanisms entirely — production code has zero tester artifacts
+- [Phase 03.1-03]: Fix authStateChanged listener to update state.currentUser (single auth source of truth)
+- [Phase 03.1-03]: Remove location.reload() from login handlers — SPA auth state updates in-place via Firebase onAuthStateChanged
 
 ### Roadmap Evolution
 
@@ -93,6 +97,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-27T07:45:05.389Z
-Stopped at: Completed 03.1-02-PLAN.md — all 2 tasks done
+Last session: 2026-03-27T07:50:00.000Z
+Stopped at: Wave 2 complete — plans 02 and 03 merged
 Resume file: None

@@ -695,11 +695,11 @@
             id="profile-actions"
             style="margin-top: var(--space-lg)"
           >
-            <!-- Guest State: Only Test Login -->
+            <!-- Guest State: Login Button -->
             <div id="guest-buttons">
               <button
                 class="profile-action-btn"
-                onclick="handleTesterLoginFree()"
+                onclick="openLoginModal()"
                 style="
                   width: 100%;
                   padding: var(--space-md);
@@ -715,34 +715,12 @@
                   gap: var(--space-sm);
                 "
               >
-                <span class="material-symbols-outlined">person</span>
-                <span>Test Kullanıcı Girişi</span>
+                <span class="material-symbols-outlined">login</span>
+                <span>Giriş Yap</span>
               </button>
             </div>
-            <!-- Free User State: Premium Upgrade + Logout -->
+            <!-- Free User State: Logout -->
             <div id="free-user-buttons" style="display: none">
-              <button
-                class="profile-action-btn"
-                onclick="handleTesterLoginPremium()"
-                style="
-                  width: 100%;
-                  padding: var(--space-md);
-                  background: linear-gradient(135deg, var(--primary), #8b7cf7);
-                  border: none;
-                  border-radius: var(--radius-lg);
-                  color: white;
-                  font-weight: 600;
-                  cursor: pointer;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  gap: var(--space-sm);
-                  margin-bottom: var(--space-sm);
-                "
-              >
-                <span class="material-symbols-outlined">workspace_premium</span>
-                <span>Premium'a Yükselt</span>
-              </button>
               <button
                 class="profile-action-btn logout-btn"
                 onclick="handleLogout()"
@@ -1056,46 +1034,6 @@
           >
         </p>
 
-        <!-- Tester Login (Dev Mode) -->
-        <div
-          style="
-            margin-top: var(--space-lg);
-            padding-top: var(--space-md);
-            border-top: 1px dashed var(--glass-border);
-          "
-        >
-          <button
-            id="tester-login-btn"
-            style="
-              width: 100%;
-              padding: var(--space-md);
-              background: linear-gradient(135deg, #f59e0b, #ef4444);
-              border: none;
-              border-radius: var(--radius-md);
-              color: white;
-              font-weight: 600;
-              cursor: pointer;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: var(--space-sm);
-            "
-          >
-            <span>👑</span>
-            <span>Tester Premium ile Giriş</span>
-          </button>
-          <p
-            style="
-              margin-top: var(--space-xs);
-              text-align: center;
-              font-size: 0.75rem;
-              color: var(--text-muted);
-            "
-          >
-            Geliştirici modu - Tüm premium özelliklere erişim
-          </p>
-        </div>
-
         <button
           style="
             margin-top: var(--space-lg);
@@ -1278,8 +1216,8 @@
               if (window.AuthService?.loginWithGoogle) {
                 await window.AuthService.loginWithGoogle();
                 loginModal?.classList.remove("active");
+                // Auth state update handled by onAuthStateChanged listener in initAuth()
                 if (typeof updateAuthUI === "function") updateAuthUI();
-                location.reload(); // Refresh to update UI
               } else {
                 alert("Firebase henüz yüklenmedi. Lütfen bekleyin.");
               }
@@ -1306,7 +1244,8 @@
               if (window.AuthService?.loginWithEmail) {
                 await window.AuthService.loginWithEmail(email, password);
                 loginModal?.classList.remove("active");
-                location.reload();
+                // Auth state update handled by onAuthStateChanged listener in initAuth()
+                if (typeof updateAuthUI === "function") updateAuthUI();
               }
             } catch (err) {
               console.error("Email login error:", err);
@@ -1317,24 +1256,6 @@
               } else {
                 alert("Giriş başarısız: " + err.message);
               }
-            }
-          });
-
-        // Tester Premium Login
-        document
-          .getElementById("tester-login-btn")
-          ?.addEventListener("click", async () => {
-            try {
-              if (window.AuthService?.loginAsTester) {
-                await window.AuthService.loginAsTester();
-                loginModal?.classList.remove("active");
-                alert(
-                  "👑 Tester Premium olarak giriş yapıldı!\n\nTüm premium özelliklere erişebilirsiniz.",
-                );
-                location.reload();
-              }
-            } catch (err) {
-              console.error("Tester login error:", err);
             }
           });
 
@@ -2267,9 +2188,9 @@
           }
         }
 
-        // Load stats
-        const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
-        document.getElementById("stat-movies").textContent = favorites.length;
+        // Load stats — liked_items is the correct key for liked/watched movies
+        const likedItems = JSON.parse(localStorage.getItem("liked_items") || "[]");
+        document.getElementById("stat-movies").textContent = likedItems.length;
 
         // Sync theme toggle with current theme
         const profileThemeToggle = document.getElementById(
