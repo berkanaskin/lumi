@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: unknown
-stopped_at: "03-03-PLAN.md checkpoint:human-verify — Task 1 complete, awaiting visual verification"
-last_updated: "2026-03-21T11:09:46.815Z"
+status: Ready to execute
+stopped_at: Completed 03.1-03-PLAN.md — tester cleanup, auth flow fix, profile stats fix
+last_updated: "2026-03-27T07:48:13.492Z"
 progress:
   total_phases: 4
   completed_phases: 3
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-19)
 ## Current Position
 
 Phase: 03 (content-enrichment) — EXECUTING
-Plan: 1 of 3
+Plan: 2 of 3
 
 ## Performance Metrics
 
@@ -50,6 +50,7 @@ Plan: 1 of 3
 | Phase 03 P01 | 5min | 2 tasks | 9 files |
 | Phase 03 P02 | 35min | 2 tasks | 8 files |
 | Phase 03 P03 | 5 | 1 tasks | 7 files |
+| Phase 03.1-mobile-qa-fixes P03 | 4min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -72,6 +73,9 @@ Recent decisions affecting current work:
 - [Phase 03]: Ratings logos sourced from Wikimedia Commons SVG URLs, streaming tiles use streamingavailability.com CDN with letter fallback
 - [Phase 03]: Person page awards from OMDb displayed via external_ids->imdb_id chain on person page (not just detail trivia gate)
 - [Phase 03]: Collaborator algorithm: top 10 titles by vote_count (max 10 API calls), count >= 2 threshold, top 8 collaborators shown
+- [Phase 03.1-mobile-qa-fixes]: Remove all tester login mechanisms entirely — production code has zero tester artifacts
+- [Phase 03.1-mobile-qa-fixes]: Fix authStateChanged listener to update state.currentUser (single auth source of truth)
+- [Phase 03.1-mobile-qa-fixes]: Remove location.reload() from login handlers — SPA auth state updates in-place via Firebase onAuthStateChanged
 
 ### Pending Todos
 
@@ -83,6 +87,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21T11:09:41.422Z
-Stopped at: 03-03-PLAN.md checkpoint:human-verify — Task 1 complete, awaiting visual verification
+Last session: 2026-03-27T07:48:13.488Z
+Stopped at: Completed 03.1-03-PLAN.md — tester cleanup, auth flow fix, profile stats fix
 Resume file: None
