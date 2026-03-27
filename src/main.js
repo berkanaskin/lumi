@@ -291,7 +291,10 @@ window.LumiModules = {
 window.state = state;
 window.API = API;
 window.toggleTheme = toggleTheme;
-window.showAutocomplete = showAutocomplete;
+// Renamed to avoid overwriting the inline showAutocomplete(query) in index.html
+// The inline version handles the full query→fetch→render flow needed by the search input.
+// The module version (showAutocompleteSuggestions) accepts a pre-fetched results array.
+window.showAutocompleteSuggestions = showAutocomplete;
 window.openDetailModal = openDetailModal;
 window.loadHomePage = window.LumiModules?.loadHomePage; // defined in inline script
 window.updateAuthUI = updateAuthUI;

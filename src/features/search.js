@@ -449,7 +449,8 @@ export function clearSearch() {
 
 if (typeof window !== 'undefined') {
     window.handleAutocomplete = handleAutocomplete;
-    window.showAutocomplete = showAutocomplete;
+    // Renamed to avoid overwriting the inline showAutocomplete(query) in index.html
+    window.showAutocompleteSuggestions = showAutocomplete;
     window.hideAutocomplete = hideAutocomplete;
     window.handleSearch = handleSearch;
     window.createMovieCard = createMovieCard;
