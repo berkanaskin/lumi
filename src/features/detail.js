@@ -156,7 +156,10 @@ export function openDetailModal(id, type) {
  */
 export function closeModal() {
     elements.modal.classList.remove('active');
+    // Reset ALL scroll lock mechanisms defensively
     document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.documentElement.style.overflow = '';
     document.body.classList.remove('modal-open');
 
     // Restore bottom nav

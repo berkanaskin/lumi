@@ -1502,6 +1502,9 @@
             const modal = this.closest(".modal");
             modal.classList.remove("active");
             document.body.style.overflow = ""; // Unlock scroll
+            document.body.style.position = ""; // Defensive reset
+            document.documentElement.style.overflow = ""; // Defensive reset
+            document.body.classList.remove("modal-open"); // Remove CSS class lock
             // Restore search state when detail modal closes
             if (modal.id === "detail-modal") {
               restoreSearchStateOnModalClose();
@@ -1517,6 +1520,9 @@
             const modal = this.closest(".modal");
             modal.classList.remove("active");
             document.body.style.overflow = ""; // Unlock scroll
+            document.body.style.position = ""; // Defensive reset
+            document.documentElement.style.overflow = ""; // Defensive reset
+            document.body.classList.remove("modal-open"); // Remove CSS class lock
             // Restore search state when detail modal closes
             if (modal.id === "detail-modal") {
               restoreSearchStateOnModalClose();
@@ -2305,8 +2311,9 @@
         const modal = document.getElementById("detail-modal");
         modal.classList.remove("active");
         document.body.style.overflow = "";
-        document.body.classList.remove("modal-open");
         document.body.style.position = "";
+        document.documentElement.style.overflow = "";
+        document.body.classList.remove("modal-open");
         document.body.style.width = "";
         document.body.style.height = "";
 
