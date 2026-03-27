@@ -615,7 +615,7 @@ export const StreamingAvailabilityService = {
 
 /**
  * GeoIP Service - Auto-detect user's country via server-side proxy.
- * Falls back to Turkey (TR) on any error.
+ * Falls back to Türkiye (TR) on any error.
  */
 export const GeoIPService = {
     /**
@@ -625,10 +625,24 @@ export const GeoIPService = {
     async detectCountry() {
         try {
             const response = await fetch('/api/geoip');
-            if (!response.ok) return { countryCode: 'TR', countryName: 'Turkey' };
-            return response.json();
+            if (!response.ok) return { countryCode: 'TR', countryName: 'Türkiye' };
+            const data = await response.json();
+            // Convert English country name to locale-appropriate display name (Turkish UI)
+            try {
+                const displayNames = new Intl.DisplayNames(['tr'], { type: 'region' });
+                data.countryName = displayNames.of(data.countryCode) || data.countryName;
+            } catch {
+                // Fallback map for common countries
+                const fallback = {
+                    TR: 'Türkiye', US: 'ABD', GB: 'Birleşik Krallık', DE: 'Almanya',
+                    FR: 'Fransa', IT: 'İtalya', ES: 'İspanya', NL: 'Hollanda',
+                    JP: 'Japonya', KR: 'Güney Kore', BR: 'Brezilya', MX: 'Meksika',
+                };
+                data.countryName = fallback[data.countryCode] || data.countryName;
+            }
+            return data;
         } catch {
-            return { countryCode: 'TR', countryName: 'Turkey' };
+            return { countryCode: 'TR', countryName: 'Türkiye' };
         }
     },
 };
