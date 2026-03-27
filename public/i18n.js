@@ -172,6 +172,12 @@ const i18n = {
             changeAvatar: 'Avatar Değiştir',
             selectAvatar: 'Avatar Seç',
 
+            // Search Filter Chips
+            filter_all: 'Tümü',
+            filter_movies: 'Filmler',
+            filter_tv_shows: 'Diziler',
+            filter_people: 'Kişiler',
+
             // Time
             minutes: 'dk',
             movie: 'Film',
@@ -341,6 +347,12 @@ const i18n = {
             // Avatar
             changeAvatar: 'Change Avatar',
             selectAvatar: 'Select Avatar',
+
+            // Search Filter Chips
+            filter_all: 'All',
+            filter_movies: 'Movies',
+            filter_tv_shows: 'TV Shows',
+            filter_people: 'People',
 
             // Time
             minutes: 'min',

@@ -851,10 +851,10 @@
 
         <!-- Filter Chips -->
         <div class="filter-chips" id="search-filter-chips">
-          <button class="filter-chip active" data-filter="all">All</button>
-          <button class="filter-chip" data-filter="movie">Movies</button>
-          <button class="filter-chip" data-filter="tv">TV Shows</button>
-          <button class="filter-chip" data-filter="person">People</button>
+          <button class="filter-chip active" data-filter="all" data-i18n="filter_all">Tümü</button>
+          <button class="filter-chip" data-filter="movie" data-i18n="filter_movies">Filmler</button>
+          <button class="filter-chip" data-filter="tv" data-i18n="filter_tv_shows">Diziler</button>
+          <button class="filter-chip" data-filter="person" data-i18n="filter_people">Kişiler</button>
         </div>
       </div>
 
@@ -1112,6 +1112,32 @@
           closeAllDropdowns();
           if (!isOpen) notificationsDropdown.classList.add("active");
         });
+
+        // ============================================
+        // NOTIFICATION SYSTEM WIRING
+        // ============================================
+
+        // Mark all read button
+        document.getElementById("mark-all-read")?.addEventListener("click", () => {
+          const items = document.querySelectorAll("#notifications-list .notification-item");
+          items.forEach((item) => item.classList.remove("unread"));
+          // Hide the unread badge
+          const badge = document.querySelector("#notifications-btn .notification-badge");
+          if (badge) badge.style.display = "none";
+          // Persist read state
+          localStorage.setItem("lumi_notifications_read", Date.now().toString());
+        });
+
+        // Profile notifications toggle — persist preference to localStorage
+        const notifToggle = document.getElementById("profile-notifications-toggle");
+        if (notifToggle) {
+          // Load saved preference (default: enabled)
+          const savedPref = localStorage.getItem("lumi_notifications_enabled");
+          notifToggle.checked = savedPref !== "false";
+          notifToggle.addEventListener("change", (e) => {
+            localStorage.setItem("lumi_notifications_enabled", e.target.checked.toString());
+          });
+        }
 
         profileBtn?.addEventListener("click", (e) => {
           e.stopPropagation();
