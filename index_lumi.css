@@ -1437,7 +1437,7 @@ body.discover-active .gradient-header {
     z-index: 100;
     background: rgba(5, 5, 10, 0.98);
     backdrop-filter: blur(20px);
-    padding: calc(var(--safe-top) + var(--space-lg)) var(--space-md) calc(100px + var(--safe-bottom));
+    padding: calc(var(--safe-top, 0px) + 80px) var(--space-md) calc(100px + var(--safe-bottom));
     overflow-y: auto;
 }
 

@@ -479,7 +479,7 @@
 
           <!-- Action Buttons -->
           <div class="console-actions">
-            <button class="console-btn primary" onclick="handleAISearch()">
+            <button class="console-btn primary" onclick="document.getElementById('ai-movie-input').value.trim() ? handleAISearch() : handleWizardSearch()">
               <span class="material-symbols-outlined">auto_awesome</span>
               <span data-i18n="recommendBtn">Öner Bana</span>
             </button>
