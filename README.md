@@ -1,64 +1,76 @@
-# Lumi - Film Keşif Platformu 🎬
+# Lumi
 
-**v0.9.8** | Mobile-First Web App
+Film ve dizi kesfetmenizi kolaylastiran, AI destekli mobil web uygulamasi.
 
-Lumi, film ve dizi keşfetmenizi kolaylaştıran, AI destekli bir web uygulamasıdır.
+## Ozellikler
 
-## ✨ Özellikler
+- **Hybrid AI Arama** - Embedding tabanli semantik arama + Gemini LLM fallback ile dogal dilde film/dizi onerisi
+- **Streaming Bilgisi** - Ulke bazli hangi platformda mevcut (TMDB + Streaming Availability API)
+- **Detay Sayfasi** - IMDb, Rotten Tomatoes, Metacritic puanlari, fragmanlar, oyuncu kadrosu, trivia
+- **Kisi Sayfasi** - Filmografi, biyografi, isbirligi yapilan yonetmen/oyuncular, oduller
+- **Sinematik Tasarim** - Letterboxd ilhamli karanlik tema, poster agirlikli gorsel dil
+- **Turkce/Ingilizce** - Tam i18n destegi
+- **PWA Hazir** - Mobil oncelikli tasarim
 
-- 🎬 **TMDB Entegrasyonu** - Milyonlarca film ve dizi arama
-- 🤖 **Gemini AI** - Doğal dille akıllı film önerileri
-- 🌙 **Dark/Light Tema** - Void Dark tasarım sistemi
-- 🌍 **Çoklu Dil** - Türkçe ve İngilizce desteği
-- 📱 **Mobile-First** - PWA hazır tasarım
-- 💳 **Premium Features** - RevenueCat entegrasyonu (planlı)
-
-## 🚀 Kurulum
+## Kurulum
 
 ```bash
-# Repository'yi klonla
 git clone https://github.com/berkanaskin/lumi.git
 cd lumi
-
-# Geliştirme sunucusunu başlat
-npx serve -l 3000
+npm install
+npm run dev
 ```
 
-## ⚙️ Konfigürasyon
+## Konfigürasyon
 
-1. `.env.example` dosyasını `.env` olarak kopyalayın
-2. API anahtarlarınızı doldurun:
+`.env` dosyasi olusturun:
 
 ```env
-VITE_TMDB_API_KEY=your_tmdb_key
-VITE_YOUTUBE_API_KEY=your_youtube_key
-GEMINI_API_KEY=your_gemini_key
+VITE_TMDB_API_KEY=
+VITE_YOUTUBE_API_KEY=
+GEMINI_API_KEY=
+OPENAI_API_KEY=
+OMDB_API_KEY=
+STREAMING_API_KEY=
 ```
 
-> ⚠️ **Not:** Gemini API anahtarı backend'de saklanmalıdır (production).
+Tum harici API cagrilari Vercel Edge Functions uzerinden proxy edilir (`api/` dizini).
 
-## 📁 Proje Yapısı
+## Proje Yapisi
 
-```text
+```
 lumi/
-├── index.html          # Ana sayfa
-├── app.js              # Uygulama mantığı
-├── api.js              # TMDB/API entegrasyonu
-├── config.js           # Konfigürasyon
-├── i18n.js             # Çeviri sistemi
-├── index_lumi.css      # Stil dosyası
-├── services/
-│   ├── ai.js           # Gemini AI servisi
-│   ├── auth.js         # Firebase Auth
-│   ├── store.js        # RevenueCat
-│   └── notifications.js
-└── stitch/             # UI referansları
+├── index.html
+├── src/
+│   ├── main.js              # Uygulama giris noktasi
+│   ├── features/            # Detail, search, discover, profile modulleri
+│   ├── lib/                 # State, config, router
+│   ├── services/            # API servisleri
+│   ├── styles/              # CSS modulleri
+│   └── pages/               # Sayfa bileşenleri
+├── api/                     # Vercel Edge Functions
+│   ├── tmdb.js
+│   ├── gemini.js
+│   ├── embeddings.js
+│   ├── search.js
+│   ├── omdb.js
+│   ├── streaming-availability.js
+│   ├── youtube.js
+│   └── geoip.js
+├── public/
+│   ├── i18n.js              # Ceviri dosyalari
+│   └── services/auth.js     # Firebase Auth
+└── vercel.json
 ```
 
-## 🔗 Canlı Demo
+## Tech Stack
 
-👉 <https://berkanaskin.github.io/lumi>
+- **Frontend:** Vanilla JS + Vite
+- **Backend:** Vercel Edge Functions (Serverless)
+- **Auth:** Firebase Authentication
+- **APIs:** TMDB, OMDb, Streaming Availability, YouTube, OpenAI Embeddings, Gemini
+- **Deploy:** Vercel
 
-## 📝 Lisans
+## Lisans
 
-MIT License - Berkan Aşkın
+MIT - Berkan Askin
