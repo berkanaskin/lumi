@@ -1984,12 +1984,13 @@ aside.sidebar {
 
 .modal-content {
     position: absolute;
+    top: 0;
     bottom: 0;
     left: 0;
     right: 0;
-    max-height: 90vh;
+    max-height: 100vh;
     background: var(--bg-surface);
-    border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+    border-radius: 0;
     overflow: hidden;
     transform: translateY(100%);
     transition: transform var(--transition-smooth);
