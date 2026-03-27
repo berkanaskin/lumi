@@ -193,41 +193,7 @@ class AuthService {
         return mockUser;
     }
 
-    async loginAsTester() {
-        // Demo account for testing premium features
-        const testerUser = {
-            id: 'tester_001',
-            name: 'Tester Premium',
-            email: 'tester@lumi.app',
-            avatar: 'https://i.pravatar.cc/150?img=68',
-            tier: 'premium',
-            provider: 'tester',
-            joinedAt: new Date().toISOString(),
-            isTester: true
-        };
-
-        this.saveLocalUser(testerUser);
-        window.dispatchEvent(new CustomEvent('authStateChanged', { detail: { user: testerUser } }));
-        return testerUser;
-    }
-
-    async loginAsTesterFree() {
-        // Demo account for testing as regular free user
-        const testerUser = {
-            id: 'tester_free_001',
-            name: 'Test Kullanıcı',
-            email: 'free@lumi.app',
-            avatar: 'https://i.pravatar.cc/150?img=33',
-            tier: 'free',
-            provider: 'tester',
-            joinedAt: new Date().toISOString(),
-            isTester: true
-        };
-
-        this.saveLocalUser(testerUser);
-        window.dispatchEvent(new CustomEvent('authStateChanged', { detail: { user: testerUser } }));
-        return testerUser;
-    }
+    // REMOVED: tester login — Phase 4 will implement proper admin auth
 
     // ============================================
     // PREMIUM MANAGEMENT

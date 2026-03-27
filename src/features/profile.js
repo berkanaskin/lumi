@@ -426,58 +426,6 @@ export async function handleLogout() {
 }
 
 // ============================================
-// TESTER LOGIN
-// ============================================
-
-/**
- * Tester login as free user
- */
-export async function handleTesterLoginFree() {
-    try {
-        if (window.AuthService) {
-            await window.AuthService.loginAsTesterFree();
-            state.currentUser = window.AuthService.currentUser;
-        } else {
-            // Fallback: set state directly when AuthService is not available
-            state.currentUser = { name: 'Test Kullanıcı', email: 'test@lumi.app', photoURL: null };
-        }
-        state.userTier = 'free';
-        localStorage.setItem('userTier', 'free');
-        updateAuthUI();
-        updateProfileAuthUI();
-        updateHeaderProfileDropdown();
-        showToast('Test Kullanıcı olarak giriş yapıldı!');
-    } catch (error) {
-        console.error('Tester login error:', error);
-        showToast('Giriş yapılamadı.');
-    }
-}
-
-/**
- * Tester login as premium user
- */
-export async function handleTesterLoginPremium() {
-    try {
-        if (window.AuthService) {
-            await window.AuthService.loginAsTester();
-            state.currentUser = window.AuthService.currentUser;
-        } else {
-            // Fallback: set state directly when AuthService is not available
-            state.currentUser = { name: 'Premium Kullanıcı', email: 'premium@lumi.app', photoURL: null };
-        }
-        state.userTier = 'premium';
-        localStorage.setItem('userTier', 'premium');
-        updateAuthUI();
-        updateProfileAuthUI();
-        updateHeaderProfileDropdown();
-        showToast('Test Premium olarak giriş yapıldı!');
-    } catch (error) {
-        console.error('Tester premium login error:', error);
-        showToast('Giriş yapılamadı.');
-    }
-}
-
-// ============================================
 // PROFILE UI
 // ============================================
 
@@ -651,8 +599,6 @@ if (typeof window !== 'undefined') {
     window.closeLoginModal = closeLoginModal;
     window.handleSocialLogin = handleSocialLogin;
     window.handleLogout = handleLogout;
-    window.handleTesterLoginFree = handleTesterLoginFree;
-    window.handleTesterLoginPremium = handleTesterLoginPremium;
     window.updateProfileAuthUI = updateProfileAuthUI;
     window.updateHeaderProfileDropdown = updateHeaderProfileDropdown;
     window.getUserStats = getUserStats;
