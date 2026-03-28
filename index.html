@@ -2205,11 +2205,28 @@
 
         if (user) {
           profileName.textContent = user.name || "Kullanıcı";
-          if (user.photoURL) {
-            profileAvatar.src = user.photoURL;
+          if (user.photoURL || user.avatar) {
+            profileAvatar.src = user.photoURL || user.avatar;
+          } else {
+            // Show initial letter instead of placeholder
+            const initial = (user.name || user.email || "K").charAt(0).toUpperCase();
+            profileAvatar.style.display = "none";
+            const avatarContainer = document.getElementById("profile-avatar");
+            if (avatarContainer) {
+              avatarContainer.style.cssText = "display:flex;align-items:center;justify-content:center;font-size:48px;font-weight:700;color:var(--text-primary);background:var(--glass-bg);border-radius:50%;width:120px;height:120px;";
+              avatarContainer.textContent = initial;
+            }
           }
           if (user.tier === "premium") {
             profileBadge.style.display = "inline-flex";
+          }
+        } else {
+          profileName.textContent = "Misafir";
+          profileAvatar.style.display = "none";
+          const avatarContainer = document.getElementById("profile-avatar");
+          if (avatarContainer) {
+            avatarContainer.style.cssText = "display:flex;align-items:center;justify-content:center;font-size:48px;color:var(--text-muted);background:var(--glass-bg);border-radius:50%;width:120px;height:120px;";
+            avatarContainer.innerHTML = '<span class="material-symbols-outlined" style="font-size:48px">person</span>';
           }
         }
 

@@ -811,41 +811,17 @@ function buildCinemaBadgeHTML(type, details) {
  * Build trivia & awards section with Premium gate.
  */
 function buildTriviaGateHTML(allRatings) {
-    const t = (key, fallback) => window.i18n?.t(key) !== key ? window.i18n.t(key) : fallback;
-    const isPremium = state.isPremium || false;
-
-    const titleText = t('trivia.title', 'Trivia ve Ödüller');
-    const unlockTitle = t('trivia.unlockTitle', 'Trivia\'yı Aç');
-    const unlockBody = t('trivia.unlockBody', 'Tam trivia ve ödül detayları Lumi Premium ile kullanılabilir.');
-    const unlockCTA = t('trivia.unlockCTA', 'Premium ile Kilidi Aç');
-
-    // Awards teaser (free OMDb data — not premium-gated)
-    const awardsTeaserHTML = allRatings?.awards
-        ? `<p class="label" style="color:var(--text-muted);margin-bottom:var(--space-sm)">${allRatings.awards}</p>`
-        : '';
-
-    if (isPremium) {
-        return `
-            <div class="detail-section trivia-gate trivia-gate--unlocked">
-                <h4>${titleText}</h4>
-                ${awardsTeaserHTML}
-                <p class="body-text" style="color:var(--text-secondary)">Coming soon...</p>
-            </div>`;
-    }
+    // Awards from OMDb — show when available, hide "N/A" or empty
+    const awards = allRatings?.awards;
+    if (!awards || awards === 'N/A' || awards.trim() === '') return '';
 
     return `
-        <div class="detail-section trivia-gate">
-            <h4>${titleText}</h4>
-            ${awardsTeaserHTML}
-            <div class="trivia-gate__blur" aria-hidden="true"></div>
-            <div class="trivia-gate__overlay">
-                <span class="material-symbols-outlined" style="font-size:32px;color:var(--text-muted)">lock</span>
-                <h4 style="margin:var(--space-sm) 0">${unlockTitle}</h4>
-                <p class="body-text" style="color:var(--text-secondary);margin-bottom:var(--space-md)">${unlockBody}</p>
-                <button class="trivia-gate__cta" onclick="window.showPremiumModal && window.showPremiumModal()">
-                    ${unlockCTA}
-                </button>
-            </div>
+        <div class="detail-section">
+            <h3 class="detail-section-heading">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                Oduller
+            </h3>
+            <p style="color:var(--text-secondary);font-size:0.9375rem;line-height:1.6">${awards}</p>
         </div>`;
 }
 
