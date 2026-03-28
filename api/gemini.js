@@ -21,7 +21,7 @@ export default async function handler(request) {
 
     try {
         const body = await request.json();
-        const { prompt, model = 'gemini-2.0-flash' } = body;
+        const { prompt, model = 'gemini-2.5-flash' } = body;
 
         if (!prompt) {
             return new Response(
