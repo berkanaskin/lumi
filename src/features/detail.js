@@ -544,19 +544,13 @@ export function renderDetail(details, providers, type, itemId, streamingData) {
                     <div class="detail-meta">
                         ${runtimeDisplay ? `<span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${runtimeDisplay}</span>` : ''}
                     </div>
-                    ${tmdbScore ? `
-                    <div class="detail-score-badge">
-                        <span class="detail-star-icon">★</span>
-                        <span class="detail-score-value">${tmdbScore}</span>
-                        <span class="detail-score-max">/ 10</span>
-                    </div>` : ''}
+                    <div class="detail-hero-ratings" id="hero-ratings">
+                        ${tmdbScore ? `<span class="hero-rating-item"><span class="detail-star-icon">★</span> ${tmdbScore}</span>` : ''}
+                    </div>
                     ${genres ? `<div class="detail-genres">${genres}</div>` : ''}
                 </div>
             </div>
         </div>
-
-        <!-- Ratings Bar -->
-        ${ratingsHTML}
 
         <!-- Action Bar -->
         <div class="detail-actions-inline">
@@ -589,8 +583,19 @@ export function renderDetail(details, providers, type, itemId, streamingData) {
         <!-- Videos (with Trailers / BTS / Interviews tabs) -->
         ${videosHTML}
 
-        <!-- Trivia & Awards (Premium Gate) -->
+        <!-- Awards -->
         ${triviaGateHTML}
+
+        <!-- Trivia (loaded async from Gemini) -->
+        <div class="detail-section" id="trivia-section" style="display:none">
+            <h3 class="detail-section-heading">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Biliyor muydunuz?
+            </h3>
+            <div id="trivia-container">
+                <div class="ratings-skeleton" style="height:80px"></div>
+            </div>
+        </div>
 
         <!-- Video Player (hidden) -->
         <div id="video-player"></div>
@@ -601,6 +606,83 @@ export function renderDetail(details, providers, type, itemId, streamingData) {
 
     // Initialize video content
     renderVideoContent();
+
+    // Update hero ratings when allRatings is available
+    updateHeroRatings();
+
+    // Load trivia from Gemini (async, fills in after render)
+    loadTrivia(details, type);
+}
+
+/**
+ * Update hero area ratings with IMDb/RT/MC mini badges
+ */
+function updateHeroRatings() {
+    const el = document.getElementById('hero-ratings');
+    if (!el) return;
+    const allRatings = state.currentAllRatings;
+    if (!allRatings) return;
+
+    const items = [];
+    if (allRatings.imdb) {
+        items.push(`<span class="hero-rating-item"><img src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg" alt="IMDb" height="14" style="vertical-align:-2px"> ${allRatings.imdb}</span>`);
+    }
+    const rt = allRatings.rottenTomatoes?.tomatometer;
+    if (rt != null) {
+        items.push(`<span class="hero-rating-item">🍅 ${rt}%</span>`);
+    }
+    if (allRatings.metacritic) {
+        items.push(`<span class="hero-rating-item" style="background:${allRatings.metacritic >= 60 ? '#6c3' : allRatings.metacritic >= 40 ? '#fc3' : '#f00'};color:#000;padding:1px 5px;border-radius:3px;font-weight:700;font-size:11px">${allRatings.metacritic}</span>`);
+    }
+    if (items.length > 0) {
+        el.innerHTML = items.join('');
+    }
+}
+
+/**
+ * Load trivia from Gemini AI
+ */
+async function loadTrivia(details, type) {
+    const triviaSection = document.getElementById('trivia-section');
+    const triviaContainer = document.getElementById('trivia-container');
+    if (!triviaContainer || !triviaSection) return;
+    triviaSection.style.display = '';
+
+    const title = details.title || details.name;
+    const year = (details.release_date || details.first_air_date || '').substring(0, 4);
+    const mediaType = type === 'tv' ? 'dizi' : 'film';
+
+    try {
+        const res = await fetch('/api/gemini', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                prompt: `"${title}" (${year}) ${mediaType} hakkinda 5 ilginc trivia bilgisi yaz. Gercek, dogru ve ilginc bilgiler olsun. Set arkasi hikayeleri, gizli detaylar, oyuncu anektodlari gibi. Her birini 1-2 cumleyle yaz. Sadece bilgileri yaz, baslik veya numara koyma. Her bilgiyi yeni satirda yaz.`
+            }),
+        });
+
+        if (!res.ok) {
+            triviaContainer.innerHTML = '<p style="color:var(--text-muted);font-size:0.875rem">Trivia yuklenemedi.</p>';
+            return;
+        }
+
+        const data = await res.json();
+        const text = data.text || data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+        if (text) {
+            const facts = text.split('\n').filter(l => l.trim().length > 10).slice(0, 5);
+            triviaContainer.innerHTML = facts.map(fact =>
+                `<div style="display:flex;gap:8px;margin-bottom:var(--space-sm);align-items:flex-start">
+                    <span style="color:var(--primary);font-size:1.1rem;flex-shrink:0">•</span>
+                    <p style="color:var(--text-secondary);font-size:0.875rem;line-height:1.5;margin:0">${fact.trim()}</p>
+                </div>`
+            ).join('');
+        } else {
+            triviaContainer.innerHTML = '<p style="color:var(--text-muted);font-size:0.875rem">Trivia bulunamadi.</p>';
+        }
+    } catch {
+        triviaContainer.innerHTML = '<p style="color:var(--text-muted);font-size:0.875rem">Trivia yuklenemedi.</p>';
+    }
 }
 
 // ============================================

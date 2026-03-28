@@ -598,6 +598,24 @@
   color: rgba(255, 255, 255, 0.6);
 }
 
+.detail-hero-ratings {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: var(--space-xs);
+}
+
+.hero-rating-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
 .detail-genre-pill {
   display: inline-block;
   padding: 3px 10px;
