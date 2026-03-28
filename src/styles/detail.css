@@ -610,10 +610,16 @@
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  font-size: 0.8125rem;
+  font-size: 11px;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.9);
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  line-height: 1;
+}
+
+.hero-rating-item img {
+  height: 12px !important;
+  width: auto !important;
 }
 
 .detail-genre-pill {

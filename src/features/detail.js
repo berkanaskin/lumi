@@ -625,14 +625,15 @@ function updateHeroRatings() {
 
     const items = [];
     if (allRatings.imdb) {
-        items.push(`<span class="hero-rating-item"><img src="https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg" alt="IMDb" height="14" style="vertical-align:-2px"> ${allRatings.imdb}</span>`);
+        items.push(`<span class="hero-rating-item"><span style="background:#f5c518;color:#000;padding:0 3px;border-radius:2px;font-size:9px;font-weight:800;letter-spacing:-0.5px">IMDb</span> ${allRatings.imdb}</span>`);
     }
     const rt = allRatings.rottenTomatoes?.tomatometer;
     if (rt != null) {
-        items.push(`<span class="hero-rating-item">🍅 ${rt}%</span>`);
+        items.push(`<span class="hero-rating-item"><span style="font-size:11px">🍅</span> ${rt}%</span>`);
     }
     if (allRatings.metacritic) {
-        items.push(`<span class="hero-rating-item" style="background:${allRatings.metacritic >= 60 ? '#6c3' : allRatings.metacritic >= 40 ? '#fc3' : '#f00'};color:#000;padding:1px 5px;border-radius:3px;font-weight:700;font-size:11px">${allRatings.metacritic}</span>`);
+        const mcColor = allRatings.metacritic >= 60 ? '#6c3' : allRatings.metacritic >= 40 ? '#fc3' : '#f00';
+        items.push(`<span class="hero-rating-item"><span style="background:${mcColor};color:#000;padding:0 3px;border-radius:2px;font-size:9px;font-weight:800">MC</span> ${allRatings.metacritic}</span>`);
     }
     if (items.length > 0) {
         el.innerHTML = items.join('');
