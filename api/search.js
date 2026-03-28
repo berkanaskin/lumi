@@ -9,11 +9,18 @@
  * Cost tracking: All calls logged to api_metrics collection
  */
 
-import { embedMany, generateObject } from 'ai';
-import { openai } from '@ai-sdk/openai';
+import { embed, generateText, Output } from 'ai';
+import { google } from '@ai-sdk/google';
 import { z } from 'zod';
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
+
+// Free tier protection: in-memory rate limiter (per warm instance)
+const rateLimiter = new Map();
+const RATE_LIMIT_WINDOW = 60_000; // 1 minute
+const RATE_LIMIT_MAX = 5; // max 5 AI searches per user per minute
+const CACHE = new Map();
+const CACHE_TTL = 300_000; // 5 minute cache for identical queries
 
 export const config = {
     runtime: 'nodejs',
@@ -130,17 +137,38 @@ export default async function handler(request) {
         const db = initializeFirebase();
         const timestamp = new Date();
 
+        // Rate limit check
+        const now = Date.now();
+        const userKey = userId || 'anon';
+        const userHistory = rateLimiter.get(userKey) || [];
+        const recentCalls = userHistory.filter(t => now - t < RATE_LIMIT_WINDOW);
+        if (recentCalls.length >= RATE_LIMIT_MAX) {
+            return new Response(
+                JSON.stringify({ error: 'Cok fazla arama yaptiniz, lutfen biraz bekleyin' }),
+                { status: 429, headers: { 'Content-Type': 'application/json' } }
+            );
+        }
+        recentCalls.push(now);
+        rateLimiter.set(userKey, recentCalls);
+
+        // Cache check — identical queries return cached results
+        const cacheKey = query.toLowerCase().trim();
+        const cached = CACHE.get(cacheKey);
+        if (cached && now - cached.time < CACHE_TTL) {
+            return new Response(JSON.stringify(cached.data), {
+                status: 200, headers: { 'Content-Type': 'application/json' }
+            });
+        }
+
         // Step 1: Generate embedding for query
         let queryEmbedding;
         try {
-            const embeddingResult = await embedMany({
-                model: openai.embedding('text-embedding-3-small', {
-                    dimensions: 512,
-                }),
-                values: [query],
+            const embeddingResult = await embed({
+                model: google.textEmbeddingModel('text-embedding-004'),
+                value: query,
             });
 
-            queryEmbedding = embeddingResult.embeddings[0];
+            queryEmbedding = embeddingResult.embedding;
 
             // Log embedding generation
             await logMetric(db, {
@@ -218,30 +246,30 @@ export default async function handler(request) {
                 timestamp,
             });
 
-            return new Response(
-                JSON.stringify({
-                    results: results.slice(0, limit),
-                    source: 'embedding',
-                    confidence: avgScore,
-                    timestamp: timestamp.toISOString(),
-                }),
-                {
-                    status: 200,
-                    headers: { 'Content-Type': 'application/json' }
-                }
-            );
+            const responseData = {
+                results: results.slice(0, limit),
+                source: 'embedding',
+                confidence: avgScore,
+                timestamp: timestamp.toISOString(),
+            };
+            CACHE.set(cacheKey, { data: responseData, time: Date.now() });
+            return new Response(JSON.stringify(responseData), {
+                status: 200, headers: { 'Content-Type': 'application/json' }
+            });
         }
 
         // Step 4: LLM fallback for low confidence or no results
         console.log(`[Search] LLM fallback triggered for query: "${query}" (avgScore: ${avgScore})`);
 
         try {
-            const llmResult = await generateObject({
-                model: openai('gpt-4o-mini'),
+            const llmResult = await generateText({
+                model: google('gemini-2.5-flash'),
                 prompt: `User is searching for: "${query}". Suggest 10 movie or TV show TMDB IDs that match this request. Return only the IDs as numbers.`,
-                schema: z.object({
-                    tmdbIds: z.array(z.number()).describe('Array of TMDB IDs matching the query'),
-                    reasoning: z.string().describe('Brief explanation of why these were selected'),
+                output: Output.object({
+                    schema: z.object({
+                        tmdbIds: z.array(z.number()).describe('Array of TMDB IDs matching the query'),
+                        reasoning: z.string().describe('Brief explanation of why these were selected'),
+                    }),
                 }),
             });
 
@@ -265,18 +293,16 @@ export default async function handler(request) {
                 timestamp,
             });
 
-            return new Response(
-                JSON.stringify({
-                    results: llmResults,
-                    source: 'llm',
-                    confidence: 0.60,
-                    timestamp: timestamp.toISOString(),
-                }),
-                {
-                    status: 200,
-                    headers: { 'Content-Type': 'application/json' }
-                }
-            );
+            const llmResponseData = {
+                results: llmResults,
+                source: 'llm',
+                confidence: 0.60,
+                timestamp: timestamp.toISOString(),
+            };
+            CACHE.set(cacheKey, { data: llmResponseData, time: Date.now() });
+            return new Response(JSON.stringify(llmResponseData), {
+                status: 200, headers: { 'Content-Type': 'application/json' }
+            });
         } catch (error) {
             console.error('[Search] LLM fallback error:', error);
 
