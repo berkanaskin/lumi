@@ -899,31 +899,77 @@ function buildTriviaGateHTML(allRatings) {
 }
 
 function buildCastHTML(credits) {
-    if (!credits?.cast?.length) return '';
+    let html = '';
 
-    const castCards = credits.cast.slice(0, 15).map(person => {
-        const photoUrl = person.profile_path
-            ? `https://image.tmdb.org/t/p/w185${person.profile_path}`
-            : '';
-        return `
-            <div class="detail-cast-card" data-person-id="${person.id}"
-                role="button" tabindex="0" aria-label="${person.name}" style="cursor:pointer">
-                ${photoUrl
-                    ? `<img src="${photoUrl}" alt="${person.name}" class="detail-cast-photo">`
-                    : `<div class="detail-cast-photo-placeholder">👤</div>`
-                }
-                <span class="detail-cast-name">${person.name}</span>
-                <span class="detail-cast-character">${person.character || ''}</span>
+    // Crew — Director, Writer, Producer (compact list above cast)
+    if (credits?.crew?.length) {
+        const keyRoles = ['Director', 'Writer', 'Screenplay', 'Producer', 'Music', 'Director of Photography'];
+        const seen = new Set();
+        const crewItems = [];
+
+        for (const person of credits.crew) {
+            if (keyRoles.includes(person.job) && !seen.has(person.name + person.job)) {
+                seen.add(person.name + person.job);
+                const roleMap = {
+                    'Director': 'Yonetmen',
+                    'Writer': 'Senarist',
+                    'Screenplay': 'Senarist',
+                    'Producer': 'Yapimci',
+                    'Music': 'Muzik',
+                    'Director of Photography': 'Goruntu Yonetmeni',
+                };
+                crewItems.push({ name: person.name, role: roleMap[person.job] || person.job, id: person.id });
+            }
+        }
+
+        if (crewItems.length > 0) {
+            html += `
+                <div class="detail-section">
+                    <h3 class="detail-section-heading">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><path d="m15.2 8.4-2.1 2.1M22 2l-7.6 7.6"/><circle cx="12" cy="12" r="10"/><path d="M2 12h4"/><path d="M12 2v4"/></svg>
+                        Ekip
+                    </h3>
+                    <div style="display:flex;flex-wrap:wrap;gap:var(--space-sm)">
+                        ${crewItems.slice(0, 6).map(c => `
+                            <div class="detail-info-pill" data-person-id="${c.id}" role="button" tabindex="0" style="cursor:pointer">
+                                <span class="detail-info-label">${c.role}</span>
+                                <span class="detail-info-value">${c.name}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    // Cast — actor photos in horizontal scroll
+    if (credits?.cast?.length) {
+        const castCards = credits.cast.slice(0, 15).map(person => {
+            const photoUrl = person.profile_path
+                ? `https://image.tmdb.org/t/p/w185${person.profile_path}`
+                : '';
+            return `
+                <div class="detail-cast-card" data-person-id="${person.id}"
+                    role="button" tabindex="0" aria-label="${person.name}" style="cursor:pointer">
+                    ${photoUrl
+                        ? `<img src="${photoUrl}" alt="${person.name}" class="detail-cast-photo" loading="lazy">`
+                        : `<div class="detail-cast-photo-placeholder">👤</div>`
+                    }
+                    <span class="detail-cast-name">${person.name}</span>
+                    <span class="detail-cast-character">${person.character || ''}</span>
+                </div>
+            `;
+        }).join('');
+
+        html += `
+            <div class="detail-section">
+                <h3 class="detail-section-heading"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Oyuncular</h3>
+                <div class="detail-cast-scroll">${castCards}</div>
             </div>
         `;
-    }).join('');
+    }
 
-    return `
-        <div class="detail-section">
-            <h3 class="detail-section-heading"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Oyuncular</h3>
-            <div class="detail-cast-scroll">${castCards}</div>
-        </div>
-    `;
+    return html;
 }
 
 function buildProvidersHTML(providers) {
@@ -1159,8 +1205,8 @@ export function attachDetailEventListeners(details, type, itemId) {
         tab.onclick = () => switchVideoCategory(tab.dataset.category);
     });
 
-    // Cast card — navigate to person page
-    document.querySelectorAll('.detail-cast-card[data-person-id]').forEach(card => {
+    // Cast card + crew pill — navigate to person page
+    document.querySelectorAll('[data-person-id]').forEach(card => {
         card.addEventListener('click', () => {
             const personId = card.dataset.personId;
             if (!personId) return;
