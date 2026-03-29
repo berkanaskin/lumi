@@ -127,7 +127,7 @@ export default async function handler(request) {
         }
 
         const result = await generateText({
-            model: google('gemini-2.5-flash'),
+            model: google('gemini-2.5-flash-lite'),
             prompt: `Sen bir film ve dizi oneri uzmanisn. Kullanici su tarzi bir sey izlemek istiyor: "${query}"
 
 Bu isteğe en uygun ${limit} film veya dizi oner. TMDB (The Movie Database) ID'lerini don.

@@ -168,18 +168,12 @@ export function closeModal() {
         bottomNav.style.display = '';
     }
 
-    // Restore search state if came from search
-    if (state.cameFromSearch && state.searchQuery) {
-        if (elements.searchInput) {
-            elements.searchInput.value = state.searchQuery;
-        }
-        // Restore scroll position
-        if (state.searchScrollPosition) {
-            setTimeout(() => {
-                window.scrollTo(0, state.searchScrollPosition);
-            }, 100);
-        }
+    // Clear search input on modal close
+    if (elements.searchInput) {
+        elements.searchInput.value = '';
     }
+    state.cameFromSearch = false;
+    state.searchQuery = '';
 }
 
 // ============================================

@@ -21,7 +21,7 @@ export default async function handler(request) {
 
     try {
         const body = await request.json();
-        const { prompt, model = 'gemini-2.5-flash' } = body;
+        const { prompt } = body;
 
         if (!prompt) {
             return new Response(
@@ -33,45 +33,58 @@ export default async function handler(request) {
         const apiKey = process.env.GEMINI_API_KEY;
 
         if (!apiKey) {
-            console.error('[Gemini Proxy] GEMINI_API_KEY not configured');
             return new Response(
                 JSON.stringify({ error: 'API not configured' }),
                 { status: 500, headers: { 'Content-Type': 'application/json' } }
             );
         }
 
-        // Call Gemini API
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-
-        const response = await fetch(geminiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{ text: prompt }]
-                }],
-                generationConfig: {
-                    temperature: 0.9,
-                    topK: 40,
-                    topP: 0.95,
-                    maxOutputTokens: 2048,
-                },
-            }),
-        });
-
-        const data = await response.json();
-
-        return new Response(JSON.stringify(data), {
-            status: response.status,
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type',
+        // Model fallback chain — if one model's quota is exhausted, try next
+        const models = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-2.0-flash-lite'];
+        const reqBody = JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+                temperature: 0.9,
+                topP: 0.95,
+                maxOutputTokens: 2048,
             },
         });
+
+        for (const model of models) {
+            const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+            const response = await fetch(geminiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: reqBody,
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                return new Response(JSON.stringify(data), {
+                    status: 200,
+                    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+                });
+            }
+
+            // If 429 (quota), try next model
+            if (response.status === 429) {
+                console.warn(`[Gemini] ${model} quota exceeded, trying next...`);
+                continue;
+            }
+
+            // Other errors — return as-is
+            const errData = await response.json();
+            return new Response(JSON.stringify(errData), {
+                status: response.status,
+                headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+            });
+        }
+
+        // All models exhausted
+        return new Response(
+            JSON.stringify({ error: 'Tum AI modelleri su an mesgul, lutfen biraz sonra tekrar deneyin' }),
+            { status: 429, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } }
+        );
     } catch (error) {
         console.error('[Gemini Proxy] Error:', error);
         return new Response(
