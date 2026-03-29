@@ -40,7 +40,7 @@ export default async function handler(request) {
         }
 
         // Model fallback chain — if one model's quota is exhausted, try next
-        const models = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-2.0-flash-lite'];
+        const models = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-2.5-pro'];
         const reqBody = JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
             generationConfig: {
