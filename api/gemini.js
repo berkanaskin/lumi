@@ -39,7 +39,7 @@ export default async function handler(request) {
             );
         }
 
-        // Model fallback chain — if one model's quota is exhausted, try next
+        // Model fallback + retry: if rate limited, wait and retry or try next model
         const models = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-2.5-pro'];
         const reqBody = JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
@@ -50,40 +50,44 @@ export default async function handler(request) {
             },
         });
 
+        const headers = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' };
+
         for (const model of models) {
             const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-            const response = await fetch(geminiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: reqBody,
-            });
 
-            if (response.ok) {
-                const data = await response.json();
-                return new Response(JSON.stringify(data), {
-                    status: 200,
-                    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+            // Try up to 2 times per model (initial + 1 retry after wait)
+            for (let attempt = 0; attempt < 2; attempt++) {
+                const response = await fetch(geminiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: reqBody,
                 });
-            }
 
-            // If 429 (quota), try next model
-            if (response.status === 429) {
-                console.warn(`[Gemini] ${model} quota exceeded, trying next...`);
-                continue;
-            }
+                if (response.ok) {
+                    const data = await response.json();
+                    return new Response(JSON.stringify(data), { status: 200, headers });
+                }
 
-            // Other errors — return as-is
-            const errData = await response.json();
-            return new Response(JSON.stringify(errData), {
-                status: response.status,
-                headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-            });
+                if (response.status === 429) {
+                    if (attempt === 0) {
+                        // First 429: wait 5 seconds and retry same model
+                        await new Promise(r => setTimeout(r, 5000));
+                        continue;
+                    }
+                    // Second 429: move to next model
+                    console.warn(`[Gemini] ${model} rate limited after retry, trying next model...`);
+                    break;
+                }
+
+                // Other errors — return
+                const errData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                return new Response(JSON.stringify(errData), { status: response.status, headers });
+            }
         }
 
-        // All models exhausted
         return new Response(
-            JSON.stringify({ error: 'Tum AI modelleri su an mesgul, lutfen biraz sonra tekrar deneyin' }),
-            { status: 429, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } }
+            JSON.stringify({ error: 'AI su an yogun, lutfen 1 dakika sonra tekrar deneyin' }),
+            { status: 429, headers }
         );
     } catch (error) {
         console.error('[Gemini Proxy] Error:', error);
