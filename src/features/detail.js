@@ -544,9 +544,7 @@ export function renderDetail(details, providers, type, itemId, streamingData) {
                     <div class="detail-meta">
                         ${runtimeDisplay ? `<span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${runtimeDisplay}</span>` : ''}
                     </div>
-                    <div class="detail-hero-ratings" id="hero-ratings">
-                        ${tmdbScore ? `<span class="hero-rating-item" data-source="tmdb"><span style="background:#032541;color:#21d07a;padding:0 3px;border-radius:2px;font-size:9px;font-weight:800">TMDB</span> ${tmdbScore}</span>` : ''}
-                    </div>
+                    <div class="detail-hero-ratings" id="hero-ratings"></div>
                     ${genres ? `<div class="detail-genres">${genres}</div>` : ''}
                 </div>
             </div>
@@ -635,10 +633,7 @@ function updateHeroRatings() {
         const mcColor = allRatings.metacritic >= 60 ? '#6c3' : allRatings.metacritic >= 40 ? '#fc3' : '#f00';
         items.push(`<span class="hero-rating-item"><span style="background:${mcColor};color:#000;padding:0 3px;border-radius:2px;font-size:9px;font-weight:800">MC</span> ${allRatings.metacritic}</span>`);
     }
-    // Keep TMDB badge at the end
-    const existingTmdb = el.querySelector('[data-source="tmdb"]');
-    const tmdbHTML = existingTmdb ? existingTmdb.outerHTML : '';
-    el.innerHTML = items.join('') + tmdbHTML;
+    el.innerHTML = items.join('');
 }
 
 /**
