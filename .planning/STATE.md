@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Ready to execute
+status: Ready to plan
 stopped_at: Completed 03.1-04-PLAN.md — Wave 3 done, all plans complete
-last_updated: "2026-03-27T07:54:57.882Z"
+last_updated: "2026-03-27T08:11:35.905Z"
 progress:
   total_phases: 5
   completed_phases: 4
@@ -23,8 +23,8 @@ See: .planning/PROJECT.md (updated 2026-03-19)
 
 ## Current Position
 
-Phase: 03.1 (mobile-qa-fixes) — EXECUTING
-Plan: 4 of 4 (Wave 2 complete)
+Phase: 4
+Plan: Not started
 
 ## Performance Metrics
 
@@ -89,6 +89,7 @@ Recent decisions affecting current work:
 ### Roadmap Evolution
 
 - Phase 03.1 inserted after Phase 3: Mobile QA Fixes (URGENT) — 11 mobile bugs must be fixed before Phase 4
+- Phase 03.2 inserted after Phase 3: Polish & Platform Gaps (URGENT) — streaming providers, cinema badge redesign, search/discover redesign, favorites fix, profile customization
 
 ### Pending Todos
 

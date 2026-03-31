@@ -71,6 +71,16 @@ Plans:
 - [x] 03-02-PLAN.md — Wave 2: Detail page UI overhaul: ratings bar, Where to Watch streaming section, video tabs, cinema badge, trivia Premium gate, country selector, i18n
 - [x] 03-03-PLAN.md — Wave 3: Person (actor/director) page: bio, awards, filmography grid with filters/sort, "Frequently Works With" collaborators, cast-click handlers, watchlist streaming data infrastructure
 
+### Phase 03.2: Polish & Platform Gaps (INSERTED)
+
+**Goal:** [Urgent work - to be planned]
+**Requirements**: TBD
+**Depends on:** Phase 3
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 03.2 to break down)
+
 ### Phase 03.1: Mobile QA Fixes (INSERTED)
 
 **Goal:** All 11 mobile QA bugs are fixed — the app is stable, polished, and fully functional on mobile before Phase 4
