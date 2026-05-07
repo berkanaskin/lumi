@@ -199,6 +199,60 @@ class AuthService {
     // PREMIUM MANAGEMENT
     // ============================================
 
+    // ============================================
+    // PROFILE CUSTOMIZATION (Plan 03.2-03)
+    // ============================================
+
+    /**
+     * Update displayName and/or photoURL.
+     * Writes to Firebase Auth, mirrors to Firestore users/{uid}, then re-syncs local.
+     * Mitigates T-03.2-03-01 (HTTPS-only photoURL) and T-03.2-03-02 (name length cap).
+     */
+    async updateUserProfile(displayName, photoURL) {
+        const user = this.auth && this.auth.currentUser;
+        if (!user) {
+            throw new Error('Not logged in');
+        }
+
+        const authPayload = {};
+        const firestorePayload = {};
+
+        if (displayName !== undefined && displayName !== null) {
+            const cleaned = String(displayName).trim().slice(0, 40);
+            if (!cleaned) throw new Error('Display name cannot be empty');
+            authPayload.displayName = cleaned;
+            firestorePayload.displayName = cleaned;
+        }
+        if (photoURL !== undefined && photoURL !== null) {
+            if (!/^https:\/\//i.test(photoURL)) throw new Error('photoURL must use HTTPS');
+            authPayload.photoURL = photoURL;
+            firestorePayload.photoURL = photoURL;
+        }
+        if (Object.keys(authPayload).length === 0) return;
+
+        await user.updateProfile(authPayload);
+
+        if (this.db) {
+            try {
+                await this.db.collection('users').doc(user.uid).update(firestorePayload);
+            } catch (err) {
+                if (err && (err.code === 'not-found' || /no document/i.test(err.message || ''))) {
+                    try {
+                        await this.db.collection('users').doc(user.uid).set(firestorePayload, { merge: true });
+                    } catch (setErr) {
+                        console.warn('[updateUserProfile] Firestore set failed:', setErr);
+                    }
+                } else {
+                    console.warn('[updateUserProfile] Firestore update failed:', err);
+                }
+            }
+        }
+
+        // Re-sync local + dispatch authStateChanged so UI re-renders (Pitfall 3)
+        this.syncUserToLocal(this.auth.currentUser);
+        window.dispatchEvent(new CustomEvent('authStateChanged', { detail: { user: this.currentUser } }));
+    }
+
     async upgradeToPremium() {
         if (this.currentUser && this.db && this.firebaseUser) {
             await this.db.collection('users').doc(this.firebaseUser.uid).update({
