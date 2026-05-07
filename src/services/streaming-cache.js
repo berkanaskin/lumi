@@ -96,8 +96,13 @@ const TR_PRODUCER_PROVIDERS = {
  */
 export function injectTurkishProviders(providers, details) {
     if (!Array.isArray(providers) || !details) return providers || [];
-    const companies = details.production_companies || details.networks || [];
-    if (!Array.isArray(companies) || companies.length === 0) return providers;
+    // Check BOTH production_companies AND networks: TMDB lists Gain/Exxen/Tabii
+    // as NETWORKS for shows they stream (not production_companies). E.g. "Şahsiyet"
+    // has Gain in `networks`, but `production_companies` lists "Ay Yapım".
+    const pc = Array.isArray(details.production_companies) ? details.production_companies : [];
+    const nw = Array.isArray(details.networks) ? details.networks : [];
+    const companies = [...pc, ...nw];
+    if (companies.length === 0) return providers;
 
     const existingKeys = new Set(
         providers.map(p => String(p.serviceName || '').toLowerCase().trim()).filter(Boolean)
