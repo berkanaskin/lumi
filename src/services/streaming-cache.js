@@ -120,6 +120,31 @@ export function injectTurkishProviders(providers, details) {
             existingKeys.add(providerKey);
         }
     }
+
+    // Round 3 fallback: For Turkish-origin content (origin_country includes 'TR' OR
+    // any production_country is TR) with NO Turkish-platform provider yet, append
+    // Gain + Exxen + BluTV + TOD + Tabii as alternative options. Many Turkish series
+    // do not appear in TMDB networks (e.g. older content, network rebrands), so
+    // surfacing the platforms users CAN check is more useful than showing nothing.
+    const originCountries = Array.isArray(details.origin_country) ? details.origin_country : [];
+    const productionCountries = Array.isArray(details.production_countries) ? details.production_countries : [];
+    const isTurkish =
+        originCountries.includes('TR') ||
+        productionCountries.some(c => c?.iso_3166_1 === 'TR');
+
+    if (isTurkish) {
+        const haveAnyTurkishPlatform = Object.values(TR_PRODUCER_PROVIDERS)
+            .some(t => existingKeys.has(t.serviceName.toLowerCase()));
+        if (!haveAnyTurkishPlatform) {
+            for (const template of Object.values(TR_PRODUCER_PROVIDERS)) {
+                const providerKey = template.serviceName.toLowerCase();
+                if (existingKeys.has(providerKey)) continue;
+                result.push({ ...template, alternative: true });
+                existingKeys.add(providerKey);
+            }
+        }
+    }
+
     return result;
 }
 
@@ -238,7 +263,21 @@ export async function getStreamingWithCache(tmdbId, imdbId, country, type = 'mov
                 // Cache hit — apply Turkish producer injection on top (cheap, idempotent)
                 let providers = cached.providers || [];
                 if (countryUpper === 'TR' && details) {
+                    const before = providers.length;
                     providers = injectTurkishProviders(providers, details);
+                    // Round 3 fix: if cache was written before injection logic existed AND
+                    // we just added providers via injection, write the augmented list back
+                    // so the next reader sees the merged result without re-injecting.
+                    if (providers.length > before) {
+                        try {
+                            const ref2 = doc(db, 'streamingAvailability', docId);
+                            await setDoc(ref2, {
+                                ...cached,
+                                providers,
+                                fetchedAt: cached.fetchedAt, // keep original freshness
+                            }, { merge: true });
+                        } catch { /* non-critical */ }
+                    }
                 }
                 return { providers };
             }
