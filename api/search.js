@@ -6,7 +6,7 @@
  * No Firestore dependency — works without billing
  */
 
-import { generateText, Output } from 'ai';
+import { generateObject } from 'ai';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { z } from 'zod';
 
@@ -40,13 +40,17 @@ function cleanMaps() {
 
 async function getTMDBMovie(tmdbId, apiKey) {
     try {
+        // Per-call 4s timeout: a single slow TMDB lookup must not drag the whole function
+        // past the 60s wall. AbortSignal.timeout is supported on Vercel Node 18+.
         const res = await fetch(
-            `https://api.themoviedb.org/3/movie/${tmdbId}?api_key=${apiKey}&language=tr-TR`
+            `https://api.themoviedb.org/3/movie/${tmdbId}?api_key=${apiKey}&language=tr-TR`,
+            { signal: AbortSignal.timeout(4000) }
         );
         if (!res.ok) {
             // Try as TV show
             const tvRes = await fetch(
-                `https://api.themoviedb.org/3/tv/${tmdbId}?api_key=${apiKey}&language=tr-TR`
+                `https://api.themoviedb.org/3/tv/${tmdbId}?api_key=${apiKey}&language=tr-TR`,
+                { signal: AbortSignal.timeout(4000) }
             );
             if (!tvRes.ok) return null;
             const tv = await tvRes.json();
@@ -145,9 +149,22 @@ export default async function handler(request) {
             );
         }
 
-        const result = await generateText({
-            model: google('gemini-2.5-flash-lite'),
-            prompt: `Sen bir film ve dizi oneri uzmanisn. Kullanici su tarzi bir sey izlemek istiyor: "${query}"
+        // Round 4 fix: replace deprecated `generateText + Output.object` pattern with
+        // canonical `generateObject` (Vercel AI SDK 6). The previous pattern was looping
+        // internally and exceeding the 60s wall, causing the function to hang.
+        // Hard 25s ceiling via AbortSignal so we always have time left to return.
+        let result;
+        try {
+            result = await generateObject({
+                model: google('gemini-2.5-flash-lite'),
+                schema: z.object({
+                    suggestions: z.array(z.object({
+                        tmdbId: z.number().describe('TMDB ID'),
+                        title: z.string().describe('Film/dizi adi'),
+                        reason: z.string().describe('Neden onerildi — 1 cumle'),
+                    })).describe('Onerilen filmler/diziler'),
+                }),
+                prompt: `Sen bir film ve dizi oneri uzmanisn. Kullanici su tarzi bir sey izlemek istiyor: "${query}"
 
 Bu isteğe en uygun ${limit} film veya dizi oner. TMDB (The Movie Database) ID'lerini don.
 
@@ -157,16 +174,22 @@ Onemli kurallar:
 - Turkce ve yabanci yapimlar karisik olabilir
 - Populer ve az bilinen yapimlar karisik olsun
 - Kullanicinin ruh haline/tarifine en uygun olanlari sec`,
-            output: Output.object({
-                schema: z.object({
-                    suggestions: z.array(z.object({
-                        tmdbId: z.number().describe('TMDB ID'),
-                        title: z.string().describe('Film/dizi adi'),
-                        reason: z.string().describe('Neden onerildi — 1 cumle'),
-                    })).describe('Onerilen filmler/diziler'),
-                }),
-            }),
-        });
+                maxRetries: 1,
+                abortSignal: AbortSignal.timeout(25_000),
+            });
+        } catch (llmErr) {
+            // LLM call timed out or failed — return a structured empty response so the
+            // frontend can show a real message instead of hanging forever.
+            console.error('[Search] LLM call failed:', llmErr?.name, llmErr?.message);
+            return new Response(JSON.stringify({
+                results: [],
+                source: 'gemini',
+                empty: true,
+                reason: 'llm_timeout',
+                error: llmErr?.message || 'LLM call failed',
+                timestamp: new Date().toISOString(),
+            }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+        }
 
         // Enrich with TMDB data
         const suggestions = result.object?.suggestions || [];
