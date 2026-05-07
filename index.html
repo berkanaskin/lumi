@@ -29,6 +29,7 @@
     />
     <link rel="stylesheet" href="index_lumi.css?v=1.0.0" />
     <link rel="stylesheet" href="src/styles/person.css" />
+    <link rel="stylesheet" href="src/styles/profile.css" />
 
     <!-- Theme initialization (prevent flash of wrong theme) -->
     <script>
@@ -562,7 +563,13 @@
         aria-label="Profile"
       >
         <div class="profile-header">
-          <div class="profile-avatar-container">
+          <div
+            class="profile-avatar-container"
+            id="profile-avatar-container"
+            role="button"
+            tabindex="0"
+            aria-label="Avatarı değiştir"
+          >
             <div class="profile-avatar-glow"></div>
             <div class="profile-avatar" id="profile-avatar">
               <img
@@ -571,8 +578,17 @@
                 id="profile-avatar-img"
               />
             </div>
+            <span class="profile-avatar-edit-badge" aria-hidden="true">
+              <span class="material-symbols-outlined">edit</span>
+            </span>
           </div>
-          <h1 class="profile-name" id="profile-name">Misafir</h1>
+          <h1
+            class="profile-name"
+            id="profile-name"
+            role="button"
+            tabindex="0"
+            aria-label="İsmi düzenle"
+          >Misafir</h1>
           <div class="profile-badge" id="profile-badge" style="display: none">
             <span class="material-symbols-outlined" style="font-size: 16px"
               >verified</span
@@ -584,17 +600,17 @@
         <div class="profile-stats">
           <div class="stat-card">
             <div class="stat-icon">
-              <span class="material-symbols-outlined">movie</span>
+              <span class="material-symbols-outlined">favorite</span>
             </div>
-            <div class="stat-label">İzlenen Film</div>
-            <div class="stat-value" id="stat-movies">0</div>
+            <div class="stat-label">Beğenilen</div>
+            <div class="stat-value" id="stat-liked">0</div>
           </div>
           <div class="stat-card">
             <div class="stat-icon">
-              <span class="material-symbols-outlined">schedule</span>
+              <span class="material-symbols-outlined">bookmark</span>
             </div>
-            <div class="stat-label">Toplam Süre</div>
-            <div class="stat-value" id="stat-hours">0h</div>
+            <div class="stat-label">Listede Bekleyen</div>
+            <div class="stat-value" id="stat-watchlist">0</div>
           </div>
         </div>
 
@@ -1049,6 +1065,25 @@
 
     <!-- Vite Module Entry Point -->
     <script type="module" src="/src/main.js"></script>
+    <script type="module" src="/src/features/profile-edit.js"></script>
+
+    <!-- Avatar Picker Modal (Plan 03.2-03) -->
+    <div
+      class="avatar-picker-modal"
+      id="avatar-picker-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="avatar-picker-title"
+    >
+      <div class="avatar-picker-sheet">
+        <div class="avatar-picker-handle"></div>
+        <h3 class="avatar-picker-title" id="avatar-picker-title">
+          Avatar Seç
+        </h3>
+        <div class="avatar-picker-grid"></div>
+        <button type="button" class="avatar-picker-close">Kapat</button>
+      </div>
+    </div>
 
     <!-- Legacy Scripts (auth + i18n still needed - no ESM replacements yet) -->
     <script src="i18n.js"></script>
@@ -2233,9 +2268,13 @@
           }
         }
 
-        // Load stats — liked_items is the correct key for liked/watched movies
+        // Load stats — liked_items + watchlist_items (Plan 03.2-03)
         const likedItems = JSON.parse(localStorage.getItem("liked_items") || "[]");
-        document.getElementById("stat-movies").textContent = likedItems.length;
+        const watchlistItems = JSON.parse(localStorage.getItem("watchlist_items") || "[]");
+        const likedEl = document.getElementById("stat-liked");
+        const watchlistEl = document.getElementById("stat-watchlist");
+        if (likedEl) likedEl.textContent = String(likedItems.length);
+        if (watchlistEl) watchlistEl.textContent = String(watchlistItems.length);
 
         // Sync theme toggle with current theme
         const profileThemeToggle = document.getElementById(

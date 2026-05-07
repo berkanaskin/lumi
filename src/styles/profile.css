@@ -1,0 +1,164 @@
+/* ============================================
+   LUMI - Profile Customization Styles
+   Plan 03.2-03 / Track E (mobile-only)
+   ============================================ */
+
+/* Pencil edit overlay on avatar */
+.profile-avatar-container {
+    position: relative;
+    cursor: pointer;
+}
+
+.profile-avatar-edit-badge {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full, 50%);
+    background: var(--accent, #ff5252);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    border: 2px solid var(--bg-primary, #0a0a0a);
+    z-index: 2;
+    pointer-events: none;
+}
+
+.profile-avatar-edit-badge .material-symbols-outlined {
+    font-size: 18px;
+}
+
+/* Tap-to-edit name */
+.profile-name {
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: background 0.18s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.profile-name:active,
+.profile-name:focus-visible {
+    background: var(--glass-bg, rgba(255, 255, 255, 0.06));
+}
+
+.profile-name-input {
+    font-size: inherit;
+    font-weight: inherit;
+    font-family: inherit;
+    color: var(--text-primary, #fff);
+    background: var(--bg-elevated, rgba(255, 255, 255, 0.08));
+    border: 1px solid var(--accent, #ff5252);
+    border-radius: 10px;
+    padding: 6px 12px;
+    text-align: center;
+    outline: none;
+    max-width: 80vw;
+    width: auto;
+    min-width: 200px;
+}
+
+/* Avatar picker modal */
+.avatar-picker-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.avatar-picker-modal.visible {
+    display: flex;
+    animation: avatarPickerFadeIn 0.22s ease;
+}
+
+@keyframes avatarPickerFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.avatar-picker-sheet {
+    width: 100%;
+    max-width: 480px;
+    background: var(--bg-elevated, #1a1a1a);
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    padding: 20px 18px 32px;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
+    animation: avatarSheetSlideUp 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes avatarSheetSlideUp {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+}
+
+.avatar-picker-handle {
+    width: 40px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--text-muted, rgba(255, 255, 255, 0.25));
+    margin: 0 auto 14px;
+}
+
+.avatar-picker-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary, #fff);
+    margin: 0 0 16px;
+    text-align: center;
+}
+
+.avatar-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+
+.avatar-tile {
+    aspect-ratio: 1 / 1;
+    border-radius: var(--radius-full, 50%);
+    overflow: hidden;
+    background: var(--glass-bg, rgba(255, 255, 255, 0.06));
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+    padding: 0;
+    display: block;
+}
+
+.avatar-tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.avatar-tile:active {
+    transform: scale(0.92);
+}
+
+.avatar-tile.is-active {
+    border-color: var(--accent, #ff5252);
+    box-shadow: 0 0 0 2px rgba(255, 82, 82, 0.35);
+}
+
+.avatar-picker-close {
+    margin-top: 16px;
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    background: var(--glass-bg, rgba(255, 255, 255, 0.08));
+    color: var(--text-primary, #fff);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
