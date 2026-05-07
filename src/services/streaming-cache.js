@@ -121,29 +121,18 @@ export function injectTurkishProviders(providers, details) {
         }
     }
 
-    // Round 3 fallback: For Turkish-origin content (origin_country includes 'TR' OR
-    // any production_country is TR) with NO Turkish-platform provider yet, append
-    // Gain + Exxen + BluTV + TOD + Tabii as alternative options. Many Turkish series
-    // do not appear in TMDB networks (e.g. older content, network rebrands), so
-    // surfacing the platforms users CAN check is more useful than showing nothing.
-    const originCountries = Array.isArray(details.origin_country) ? details.origin_country : [];
-    const productionCountries = Array.isArray(details.production_countries) ? details.production_countries : [];
-    const isTurkish =
-        originCountries.includes('TR') ||
-        productionCountries.some(c => c?.iso_3166_1 === 'TR');
-
-    if (isTurkish) {
-        const haveAnyTurkishPlatform = Object.values(TR_PRODUCER_PROVIDERS)
-            .some(t => existingKeys.has(t.serviceName.toLowerCase()));
-        if (!haveAnyTurkishPlatform) {
-            for (const template of Object.values(TR_PRODUCER_PROVIDERS)) {
-                const providerKey = template.serviceName.toLowerCase();
-                if (existingKeys.has(providerKey)) continue;
-                result.push({ ...template, alternative: true });
-                existingKeys.add(providerKey);
-            }
-        }
-    }
+    // Round 4 fix: REMOVED the blanket origin_country fallback that injected all 5
+    // Turkish platforms (Gain, Exxen, BluTV, TOD, Tabii) for any content with
+    // origin_country=TR. That caused "Kulüp" (Netflix Turkey original) to spam all
+    // 5 platforms alongside Netflix, even though those platforms don't have it.
+    //
+    // Now we trust TMDB data: only inject providers when production_companies or
+    // networks explicitly name a Turkish platform (handled in the loop above).
+    // If TMDB has a data gap for a specific show, that's a TMDB issue — not ours
+    // to paper over with false-positive provider chips.
+    //
+    // Trade-off: some Turkish-origin content with TMDB networks gaps will show
+    // zero Turkish platforms. Acceptable: false negatives > false positives here.
 
     return result;
 }
