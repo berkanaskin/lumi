@@ -857,47 +857,45 @@ function buildStreamingHTML(streamingData, title) {
 function buildCinemaBadgeHTML(type, details) {
     if (type !== 'movie') return '';
 
-    const trRelease = state.currentTurkishReleaseDate;
-    if (!trRelease) return '';
-
-    const releaseType = trRelease.type; // 3 = theatrical, 4 = digital
-    const releaseDate = trRelease.date ? new Date(trRelease.date) : null;
-
-    if (!releaseDate) return '';
-
-    const now = new Date();
-    const diffMs = releaseDate - now;
-    const diffDays = diffMs / (1000 * 60 * 60 * 24);
-
     const t = (key, fallback) => window.i18n?.t(key) !== key ? window.i18n.t(key) : fallback;
     const locale = state.currentLanguage === 'tr' ? 'tr-TR' : 'en-US';
-    const formattedDate = releaseDate.toLocaleDateString(locale, { month: 'long', day: 'numeric' });
+    const now = new Date();
 
-    let badgeText = '';
-    let badgeClass = 'cinema-badge';
+    const trRelease = state.currentTurkishReleaseDate;
 
-    if (releaseType === 3) {
-        // Theatrical release
-        if (diffDays > 0) {
-            // Upcoming
-            badgeText = t('cinema.inCinemasDate', '{date} sinemalarda').replace('{date}', formattedDate);
-            badgeClass = 'cinema-badge';
-        } else if (diffDays > -60) {
-            // Now showing (within 60 days of release)
-            badgeText = t('cinema.nowInCinemas', 'Şu an sinemalarda');
-            badgeClass = 'cinema-badge cinema-badge--active';
-        } else {
-            return ''; // Too old, no badge
+    // Path 1: Turkish-specific release info available
+    if (trRelease && trRelease.date) {
+        const releaseType = trRelease.type; // 3 = theatrical, 4 = digital
+        const releaseDate = new Date(trRelease.date);
+        const diffDays = (releaseDate - now) / (1000 * 60 * 60 * 24);
+        const formattedDate = releaseDate.toLocaleDateString(locale, { month: 'long', day: 'numeric' });
+
+        if (releaseType === 3) {
+            if (diffDays > 0) {
+                return `<div class="cinema-badge">${t('cinema.inCinemasDate', '{date} sinemalarda').replace('{date}', formattedDate)}</div>`;
+            } else if (diffDays > -60) {
+                return `<div class="cinema-badge cinema-badge--active">${t('cinema.nowInCinemas', 'Şu an sinemalarda')}</div>`;
+            }
+            return '';
+        } else if (releaseType === 4) {
+            if (diffDays > 0) {
+                // Upcoming digital — red ribbon
+                return `<div class="cinema-badge">${t('cinema.streamingDate', '{date} yayına giriyor').replace('{date}', formattedDate)}</div>`;
+            }
+            return '';
         }
-    } else if (releaseType === 4) {
-        // Digital release
-        badgeText = t('cinema.streamingDate', '{date} yayına giriyor').replace('{date}', formattedDate);
-        badgeClass = 'cinema-badge';
-    } else {
-        return '';
     }
 
-    return `<div class="${badgeClass}">${badgeText}</div>`;
+    // Path 2: Fallback — generic upcoming based on details.release_date
+    if (details?.release_date) {
+        const releaseDate = new Date(details.release_date);
+        if (!isNaN(releaseDate.getTime()) && releaseDate > now) {
+            const formattedDate = releaseDate.toLocaleDateString(locale, { month: 'long', day: 'numeric' });
+            return `<div class="cinema-badge">${t('cinema.upcomingDate', '{date} vizyonda').replace('{date}', formattedDate)}</div>`;
+        }
+    }
+
+    return '';
 }
 
 /**
