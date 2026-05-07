@@ -21,6 +21,9 @@
 const KEY_MAP = {
     liked: { current: 'liked_items', legacy: 'favorites' },
     watched: { current: 'watchlist_items', legacy: 'watchlist' },
+    // Aliases — UI uses data-list="watchlist" / "favorites" in places.
+    watchlist: { current: 'watchlist_items', legacy: 'watchlist' },
+    favorites: { current: 'liked_items', legacy: 'favorites' },
 };
 
 function safeParseArray(raw) {
@@ -36,7 +39,7 @@ function safeParseArray(raw) {
 /**
  * Load favorites/watchlist items, migrating legacy keys on first read.
  *
- * @param {"liked" | "watched"} listType
+ * @param {"liked" | "watched" | "watchlist" | "favorites"} listType
  * @returns {Array<{id:number,media_type:string,poster_path:string,title:string,added_at?:number}>}
  */
 export function loadFavoritesItems(listType) {
