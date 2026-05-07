@@ -7,8 +7,14 @@
  */
 
 import { generateText, Output } from 'ai';
-import { google } from '@ai-sdk/google';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { z } from 'zod';
+
+// Build Google provider once. Prefer GOOGLE_GENERATIVE_AI_API_KEY (SDK default),
+// fall back to GEMINI_API_KEY (used elsewhere in this project).
+const google = createGoogleGenerativeAI({
+    apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY,
+});
 
 export const config = {
     runtime: 'nodejs',
@@ -81,8 +87,15 @@ export default async function handler(request) {
     }
 
     try {
-        const body = request.body || {};
-        let { query, userId, limit = 10 } = body;
+        // Robust body parsing — Vercel Node runtime auto-parses JSON when Content-Type is set,
+        // but fall back to manual parse if body is a string or stream.
+        let body = request.body;
+        if (typeof body === 'string') {
+            try { body = JSON.parse(body); } catch { body = {}; }
+        } else if (!body || typeof body !== 'object') {
+            try { body = await request.json(); } catch { body = {}; }
+        }
+        let { query, userId, limit = 10 } = body || {};
 
         if (!query || typeof query !== 'string' || query.trim().length < 3) {
             return new Response(

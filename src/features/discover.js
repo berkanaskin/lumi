@@ -167,17 +167,23 @@ export async function handleAISearch() {
 }
 
 /**
- * Single primary action handler — branches on textarea value.
- * Empty input → wizard search (uses active mood/era chips).
+ * Single primary action handler for "Öner Bana" button.
+ * Empty input → show hint toast (Sürpriz Yap is a separate button — don't conflate).
  * Non-empty input → AI hybrid search.
  */
 export async function handleConsoleSubmit() {
     const input = document.getElementById('ai-movie-input');
     const value = (input?.value || '').trim();
-    if (value.length > 0) {
-        return handleAISearch();
+    if (value.length === 0) {
+        const lang = (window.i18n?.getLanguage?.() || document.documentElement.lang || 'tr').toLowerCase();
+        const hint = lang.startsWith('en')
+            ? 'Type what you want or hit Surprise Me'
+            : "Önce ne aradığını yaz veya Sürpriz Yap'a bas";
+        showToast(hint);
+        input?.focus();
+        return;
     }
-    return handleWizardSearch();
+    return handleAISearch();
 }
 
 /**
