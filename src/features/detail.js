@@ -112,7 +112,7 @@ export async function openDetail(id, type, title, year, originalTitle) {
         let streamingData = null;
         let allRatings = null;
         try {
-            const streamingPromise = getStreamingWithCache(id, imdbId, state.currentRegion || 'TR', type);
+            const streamingPromise = getStreamingWithCache(id, imdbId, state.currentRegion || 'TR', type, details);
             const ratingsPromise = imdbId ? API.getAllRatings(imdbId) : Promise.resolve(null);
             [streamingData, allRatings] = await Promise.all([streamingPromise, ratingsPromise]);
         } catch (innerErr) {

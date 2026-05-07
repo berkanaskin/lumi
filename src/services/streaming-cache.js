@@ -27,6 +27,98 @@ export const GROUP_MAP = {
 const ISO_2_RE = /^[A-Z]{2}$/;
 
 /**
+ * Known Turkish streaming providers TMDB sometimes omits from /watch/providers
+ * for Turkish-original content. Keys are lowercased production-company name
+ * substrings; values are provider records to inject when the producer matches.
+ *
+ * Provider IDs use TMDB's actual IDs where known, with `tmdb_` prefix for stability.
+ */
+const TR_PRODUCER_PROVIDERS = {
+    'gain': {
+        serviceId: 'tmdb_gain',
+        serviceName: 'Gain',
+        type: 'subscription',
+        group: 'stream',
+        link: 'https://www.gain.tv/',
+        themeColor: null,
+        quality: null,
+        logoPath: null,
+    },
+    'exxen': {
+        serviceId: 'tmdb_exxen',
+        serviceName: 'Exxen',
+        type: 'subscription',
+        group: 'stream',
+        link: 'https://www.exxen.com/',
+        themeColor: null,
+        quality: null,
+        logoPath: null,
+    },
+    'blu tv': {
+        serviceId: 'tmdb_blutv',
+        serviceName: 'BluTV',
+        type: 'subscription',
+        group: 'stream',
+        link: 'https://www.blutv.com/',
+        themeColor: null,
+        quality: null,
+        logoPath: null,
+    },
+    'tabii': {
+        serviceId: 'tmdb_tabii',
+        serviceName: 'Tabii',
+        type: 'subscription',
+        group: 'stream',
+        link: 'https://www.tabii.com/',
+        themeColor: null,
+        quality: null,
+        logoPath: null,
+    },
+    'tod': {
+        serviceId: 'tmdb_tod',
+        serviceName: 'TOD',
+        type: 'subscription',
+        group: 'stream',
+        link: 'https://www.tod.tv/',
+        themeColor: null,
+        quality: null,
+        logoPath: null,
+    },
+};
+
+/**
+ * Inject Turkish providers when production_companies indicate a Turkish-original
+ * platform (e.g. Gain Medya → Gain). Idempotent: skips if provider already in list.
+ *
+ * @param {Array} providers - existing normalized providers
+ * @param {object} details - TMDB details object (production_companies, origin_country)
+ * @returns {Array} possibly augmented providers
+ */
+export function injectTurkishProviders(providers, details) {
+    if (!Array.isArray(providers) || !details) return providers || [];
+    const companies = details.production_companies || details.networks || [];
+    if (!Array.isArray(companies) || companies.length === 0) return providers;
+
+    const existingKeys = new Set(
+        providers.map(p => String(p.serviceName || '').toLowerCase().trim()).filter(Boolean)
+    );
+
+    const result = [...providers];
+    for (const company of companies) {
+        const name = String(company?.name || '').toLowerCase();
+        if (!name) continue;
+        for (const [keyword, providerTemplate] of Object.entries(TR_PRODUCER_PROVIDERS)) {
+            if (!name.includes(keyword)) continue;
+            const providerKey = providerTemplate.serviceName.toLowerCase();
+            if (existingKeys.has(providerKey)) continue;
+            result.push({ ...providerTemplate });
+            existingKeys.add(providerKey);
+        }
+    }
+    return result;
+}
+
+/**
  * Normalize TMDB watch-providers shape to our canonical provider shape.
  * @param {object} tmdbProviders - { flatrate?, free?, rent?, buy?, ads?, link? }
  * @returns {Array} normalized providers
@@ -114,7 +206,7 @@ export async function mergeWithTMDB(rapidApiProviders, tmdbId, type, countryUppe
  * @param {string} type - Content type: 'movie' or 'tv'
  * @returns {Promise<{ providers: Array, fallback?: boolean } | null>}
  */
-export async function getStreamingWithCache(tmdbId, imdbId, country, type = 'movie') {
+export async function getStreamingWithCache(tmdbId, imdbId, country, type = 'movie', details = null) {
     const countryUpper = (country || 'TR').toUpperCase();
     const countryLower = countryUpper.toLowerCase();
     const docId = `${tmdbId}_${countryUpper}`;
@@ -124,7 +216,7 @@ export async function getStreamingWithCache(tmdbId, imdbId, country, type = 'mov
         db = getFirestore();
     } catch (err) {
         console.warn('[StreamingCache] Firestore not available:', err.message);
-        return _fetchFromApiOrFallback(tmdbId, imdbId, countryLower, countryUpper, null, docId, type);
+        return _fetchFromApiOrFallback(tmdbId, imdbId, countryLower, countryUpper, null, docId, type, details);
     }
 
     // 1. Try Firestore cache
@@ -138,8 +230,12 @@ export async function getStreamingWithCache(tmdbId, imdbId, country, type = 'mov
             const age = Date.now() - fetchedAt;
 
             if (age < TTL_MS) {
-                // Cache hit — data is fresh
-                return { providers: cached.providers || [] };
+                // Cache hit — apply Turkish producer injection on top (cheap, idempotent)
+                let providers = cached.providers || [];
+                if (countryUpper === 'TR' && details) {
+                    providers = injectTurkishProviders(providers, details);
+                }
+                return { providers };
             }
         }
     } catch (err) {
@@ -147,16 +243,16 @@ export async function getStreamingWithCache(tmdbId, imdbId, country, type = 'mov
     }
 
     // 2. Cache miss or stale — fetch from API
-    return _fetchFromApiOrFallback(tmdbId, imdbId, countryLower, countryUpper, db, docId, type);
+    return _fetchFromApiOrFallback(tmdbId, imdbId, countryLower, countryUpper, db, docId, type, details);
 }
 
 /**
  * Internal: fetch from /api/streaming-availability, transform, cache, or fall back to TMDB.
  */
-async function _fetchFromApiOrFallback(tmdbId, imdbId, countryLower, countryUpper, db, docId, type = 'movie') {
+async function _fetchFromApiOrFallback(tmdbId, imdbId, countryLower, countryUpper, db, docId, type = 'movie', details = null) {
     if (!imdbId) {
         // No IMDb ID — fall back to TMDB watch providers immediately
-        return _tmdbFallback(tmdbId, countryUpper, type);
+        return _tmdbFallback(tmdbId, countryUpper, type, details);
     }
 
     try {
@@ -187,6 +283,11 @@ async function _fetchFromApiOrFallback(tmdbId, imdbId, countryLower, countryUppe
         //      Gain/Exxen/TOD/TV+/Tabii live in TMDB). Failure-safe: returns providers unchanged.
         if (countryUpper === 'TR') {
             providers = await mergeWithTMDB(providers, tmdbId, type, countryUpper);
+            // 2.6. Inject Turkish providers from production_companies (e.g. Gain Medya → Gain)
+            //      for Turkish-original content TMDB sometimes omits.
+            if (details) {
+                providers = injectTurkishProviders(providers, details);
+            }
         }
 
         // 3. Write to Firestore cache
@@ -210,14 +311,14 @@ async function _fetchFromApiOrFallback(tmdbId, imdbId, countryLower, countryUppe
         return { providers };
     } catch (err) {
         console.warn('[StreamingCache] API fetch failed, falling back to TMDB:', err.message);
-        return _tmdbFallback(tmdbId, countryUpper, type);
+        return _tmdbFallback(tmdbId, countryUpper, type, details);
     }
 }
 
 /**
  * Internal: fall back to TMDB watch providers on API failure.
  */
-async function _tmdbFallback(tmdbId, countryUpper, type = 'movie') {
+async function _tmdbFallback(tmdbId, countryUpper, type = 'movie', details = null) {
     try {
         const tmdbProviders = await TMDBService.getWatchProviders(tmdbId, type, countryUpper);
         if (!tmdbProviders) return { providers: [], fallback: true };
@@ -231,7 +332,7 @@ async function _tmdbFallback(tmdbId, countryUpper, type = 'movie') {
             ...(tmdbProviders.ads || []).map(p => ({ ...p, type: 'free' })),
         ];
 
-        const providers = flatList.map(p => ({
+        let providers = flatList.map(p => ({
             serviceId: String(p.provider_id || ''),
             serviceName: p.provider_name || '',
             type: p.type,
@@ -242,9 +343,19 @@ async function _tmdbFallback(tmdbId, countryUpper, type = 'movie') {
             logoPath: p.logo_path || null,
         }));
 
+        // Inject Turkish providers for TR when production_companies indicate one
+        if (countryUpper === 'TR' && details) {
+            providers = injectTurkishProviders(providers, details);
+        }
+
         return { providers, fallback: true };
     } catch (err) {
         console.warn('[StreamingCache] TMDB fallback failed:', err.message);
+        // Even on failure, attempt producer-based injection as last resort
+        if (countryUpper === 'TR' && details) {
+            const providers = injectTurkishProviders([], details);
+            return { providers, fallback: true };
+        }
         return { providers: [], fallback: true };
     }
 }
