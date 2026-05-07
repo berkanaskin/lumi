@@ -358,6 +358,9 @@ export const TMDBService = {
         }
 
         try {
+            // Round 4 fix: client-side 35s hard timeout. Backend has a 25s LLM ceiling
+            // + ~5s TMDB enrichment, so 35s gives a small grace margin. If exceeded,
+            // we throw a recognizable timeout error and the caller renders an empty-state.
             const response = await fetch('/api/search', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -366,6 +369,7 @@ export const TMDBService = {
                     userId: userId,
                     limit: 20,
                 }),
+                signal: AbortSignal.timeout(35_000),
             });
 
             if (!response.ok) {
@@ -380,6 +384,14 @@ export const TMDBService = {
 
             return await response.json();
         } catch (error) {
+            // Tag timeout/abort errors so the UI layer can show a specific message.
+            if (error?.name === 'TimeoutError' || error?.name === 'AbortError') {
+                const e = new Error('Search request timed out after 35s');
+                e.code = 'TIMEOUT';
+                e.cause = error;
+                console.error('[TMDB] Hybrid search timeout:', error.name);
+                throw e;
+            }
             console.error('[TMDB] Hybrid search error:', error);
             throw error;
         }

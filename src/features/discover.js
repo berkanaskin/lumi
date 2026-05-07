@@ -146,35 +146,53 @@ export async function handleAISearch() {
             EmbeddingService.logSearchQuery(query, userId, response.results.length).catch(() => {});
         } else {
             // Round 3 fix: differentiate empty-state reasons surfaced by /api/search.
-            // Backend now returns { empty:true, reason:'gemini_empty'|'tmdb_lookup_failed' }
-            // so users see a real explanation instead of the loading icon vanishing silently.
+            // Round 4: also handle 'llm_timeout' from new abort-signal protected backend.
             console.warn('[handleAISearch] empty response:', response);
             const reason = response?.reason;
-            let msg = 'Öneri bulunamadı, farklı bir şey dene.';
+            let title = 'Öneri bulunamadı';
+            let msg = 'Farklı bir şey dene.';
             if (reason === 'tmdb_lookup_failed') {
-                msg = 'AI öneri verdi ama TMDB\'de bulunamadı. Daha spesifik bir arama dene.';
+                title = 'TMDB\'de bulunamadı';
+                msg = 'AI öneri verdi ama TMDB\'de eşleşme yok. Daha spesifik bir arama dene.';
             } else if (reason === 'gemini_empty') {
-                msg = 'AI bu arama için öneri üretemedi. Farklı kelimelerle dene.';
+                title = 'AI öneri üretemedi';
+                msg = 'Bu arama için öneri çıkmadı. Farklı kelimelerle dene.';
+            } else if (reason === 'llm_timeout') {
+                title = 'AI servisi yanıt vermedi';
+                msg = 'Şu an AI servisi yanıt vermedi. Lütfen tekrar dene.';
             }
-            showToast(msg);
+            renderSearchEmptyState(title, msg, query);
+            showToast(title);
         }
     } catch (error) {
         console.error('[handleAISearch] Error:', error);
         hideLoading(spinner);
 
-        // Surface explicit error — no silent retry
+        // Round 4: classify error → render visible empty-state in results grid,
+        // not just a toast. Users said toast UX is bad and they don't open F12.
         const msg = String(error?.message || '');
-        if (/yapılandırma|not configured|GEMINI|GOOGLE_GENERATIVE/i.test(msg)) {
-            showToast('Yapılandırma eksik — sistem yöneticisine bildirin.');
+        const isTimeout = error?.code === 'TIMEOUT' || /timeout|timed out|abort/i.test(msg);
+        let title;
+        let body;
+        if (isTimeout) {
+            title = 'AI servisi yanıt vermedi';
+            body = 'Şu an AI servisi yanıt vermedi. Lütfen tekrar dene.';
+        } else if (/yapılandırma|not configured|GEMINI|GOOGLE_GENERATIVE/i.test(msg)) {
+            title = 'Yapılandırma eksik';
+            body = 'Yapılandırma eksik — sistem yöneticisine bildirin.';
         } else if (/404|not found|kullan/i.test(msg)) {
-            showToast('Servis kullanılamıyor. Lütfen biraz sonra tekrar deneyin.');
+            title = 'Servis kullanılamıyor';
+            body = 'Servis şu an kullanılamıyor. Lütfen biraz sonra tekrar dene.';
         } else if (/429|rate|fazla/i.test(msg)) {
-            showToast('Çok fazla arama. Bir dakika bekleyin.');
+            title = 'Çok fazla arama';
+            body = 'Bir dakika bekleyip tekrar dene.';
         } else {
-            // Surface raw server message for diagnostics — better than silent generic.
-            const short = msg.length > 80 ? msg.slice(0, 80) + '…' : msg;
-            showToast(short ? `Arama başarısız: ${short}` : 'Arama başarısız oldu. Tekrar deneyin.');
+            title = 'Arama başarısız';
+            const short = msg.length > 100 ? msg.slice(0, 100) + '…' : msg;
+            body = short || 'Arama başarısız oldu. Tekrar deneyin.';
         }
+        renderSearchEmptyState(title, body, query);
+        showToast(title);
     } finally {
         if (primaryBtn) {
             primaryBtn.disabled = false;
@@ -219,6 +237,63 @@ export async function handleConsoleSubmit() {
         return;
     }
     return handleAISearch();
+}
+
+/**
+ * Round 4 fix: render a visible empty-state card in the wizard-results grid
+ * when search fails or times out. Replaces toast-only feedback (users said
+ * they miss toasts and don't open the dev console).
+ *
+ * Activates the wizard-results panel so the message is visible even if the
+ * grid was previously hidden. Includes a retry button that re-runs the search.
+ */
+function renderSearchEmptyState(title, body, lastQuery = '') {
+    const resultsContainer = document.getElementById('wizard-results');
+    const resultsTitle = document.getElementById('wizard-results-title');
+    const resultsGrid = document.getElementById('wizard-results-grid');
+    if (!resultsContainer || !resultsGrid) return;
+
+    if (resultsTitle) resultsTitle.textContent = title || 'Sonuç yok';
+
+    const safeTitle = String(title || '').replace(/[<>&]/g, '');
+    const safeBody = String(body || '').replace(/[<>&]/g, '');
+    resultsGrid.innerHTML = `
+        <div class="search-empty-state" style="
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 48px 24px;
+            color: rgba(255,255,255,0.85);
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            max-width: 480px;
+            margin: 0 auto;
+        ">
+            <div style="font-size: 40px; margin-bottom: 12px;">🤖</div>
+            <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">${safeTitle}</div>
+            <div style="font-size: 14px; line-height: 1.5; opacity: 0.75; margin-bottom: 20px;">${safeBody}</div>
+            <button id="search-retry-btn" type="button" style="
+                padding: 10px 24px;
+                background: linear-gradient(135deg, #6366f1, #8b5cf6);
+                color: white;
+                border: none;
+                border-radius: 999px;
+                font-weight: 600;
+                font-size: 14px;
+                cursor: pointer;
+            ">Tekrar dene</button>
+        </div>
+    `;
+    resultsContainer.classList.add('active');
+
+    const retryBtn = document.getElementById('search-retry-btn');
+    if (retryBtn) {
+        retryBtn.addEventListener('click', () => {
+            const input = document.getElementById('ai-movie-input');
+            if (input && lastQuery) input.value = lastQuery;
+            handleAISearch();
+        }, { once: true });
+    }
 }
 
 /**
