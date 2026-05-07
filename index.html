@@ -407,9 +407,6 @@
               placeholder="Beni çocukluğuma götürecek sıcak bir aile filmi..."
               data-i18n-placeholder="aiInputPlaceholder"
             ></textarea>
-            <button class="console-ai-btn" onclick="handleAISearch()">
-              <span class="material-symbols-outlined">auto_awesome</span>
-            </button>
           </div>
 
           <!-- Mood/Genre Chips -->
@@ -476,9 +473,9 @@
 
           <!-- Action Buttons -->
           <div class="console-actions">
-            <button class="console-btn primary" onclick="document.getElementById('ai-movie-input').value.trim() ? handleAISearch() : handleWizardSearch()">
+            <button id="console-primary-btn" class="console-btn primary" onclick="handleConsoleSubmit()">
               <span class="material-symbols-outlined">auto_awesome</span>
-              <span data-i18n="recommendBtn">Öner Bana</span>
+              <span class="console-btn-label" data-i18n="recommendBtn">Öner Bana</span>
             </button>
             <button class="console-btn secondary" onclick="handleSurpriseMe()">
               <span class="material-symbols-outlined">shuffle</span>

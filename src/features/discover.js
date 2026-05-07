@@ -104,10 +104,17 @@ export function extractMovieKeywords(query) {
 export async function handleAISearch() {
     const input = document.getElementById('ai-movie-input');
     const query = input?.value?.trim();
+    const primaryBtn = document.getElementById('console-primary-btn');
 
     if (!query || query.length < 3) {
         showToast('Lütfen ne tür bir film izlemek istediğini yaz.');
         return;
+    }
+
+    // Loading state on primary button
+    if (primaryBtn) {
+        primaryBtn.disabled = true;
+        primaryBtn.classList.add('is-loading');
     }
 
     showToast('🤖 Aranıyor...');
@@ -117,7 +124,7 @@ export async function handleAISearch() {
         // Get userId for personalization
         const userId = window.AuthService?.currentUser?.uid || 'anonymous';
 
-        // Call hybrid search endpoint
+        // Call hybrid search endpoint (single attempt — no silent retry)
         const response = await SearchService.hybridSearch(query, userId);
 
         hideLoading(spinner);
@@ -126,7 +133,7 @@ export async function handleAISearch() {
             displayDiscoverResultsView(response.results, 'ai');
             showToast(`✨ ${response.results.length} film önerisi bulundu!`);
 
-            // Log metric
+            // Log metric (silent failure OK — non-critical telemetry)
             EmbeddingService.logMetric({
                 type: 'search',
                 query: query,
@@ -134,37 +141,43 @@ export async function handleAISearch() {
                 source: response.source || 'hybrid',
                 confidence: response.confidence || 0.8,
                 timestamp: new Date().toISOString(),
-            }).catch(() => {
-                // Silently fail
-            });
+            }).catch(() => {});
 
-            // Log search query for personalization
-            EmbeddingService.logSearchQuery(query, userId, response.results.length).catch(() => {
-                // Silently fail
-            });
+            EmbeddingService.logSearchQuery(query, userId, response.results.length).catch(() => {});
         } else {
-            hideLoading(spinner);
             showToast('Öneri bulunamadı, farklı bir şey deneyin.');
         }
     } catch (error) {
         console.error('[handleAISearch] Error:', error);
         hideLoading(spinner);
-        showToast('Bir hata oluştu: ' + (error.message || 'Bilinmeyen hata'));
 
-        // Optional: Retry after 3 seconds
-        setTimeout(async () => {
-            try {
-                const userId = window.AuthService?.currentUser?.uid || 'anonymous';
-                const response = await SearchService.hybridSearch(query, userId);
-                if (response && response.results && response.results.length > 0) {
-                    displayDiscoverResultsView(response.results, 'ai');
-                    showToast(`✨ ${response.results.length} film önerisi bulundu!`);
-                }
-            } catch (retryError) {
-                console.error('[handleAISearch] Retry failed:', retryError);
-            }
-        }, 3000);
+        // Surface explicit error — no silent retry
+        const msg = String(error?.message || '');
+        if (/404|not found|kullan/i.test(msg)) {
+            showToast('Servis kullanılamıyor. Lütfen biraz sonra tekrar deneyin.');
+        } else {
+            showToast('Arama başarısız oldu. Tekrar deneyin.');
+        }
+    } finally {
+        if (primaryBtn) {
+            primaryBtn.disabled = false;
+            primaryBtn.classList.remove('is-loading');
+        }
     }
+}
+
+/**
+ * Single primary action handler — branches on textarea value.
+ * Empty input → wizard search (uses active mood/era chips).
+ * Non-empty input → AI hybrid search.
+ */
+export async function handleConsoleSubmit() {
+    const input = document.getElementById('ai-movie-input');
+    const value = (input?.value || '').trim();
+    if (value.length > 0) {
+        return handleAISearch();
+    }
+    return handleWizardSearch();
 }
 
 /**
@@ -566,6 +579,7 @@ export function initDiscoverModule() {
 if (typeof window !== 'undefined') {
     window.handleAISearch = handleAISearch;
     window.handleWizardSearch = handleWizardSearch;
+    window.handleConsoleSubmit = handleConsoleSubmit;
     window.handleSurpriseMe = handleSurpriseMe;
     window.closeWizardResults = closeWizardResults;
     window.openDailyRecommendation = openDailyRecommendation;
