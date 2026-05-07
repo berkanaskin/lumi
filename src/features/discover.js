@@ -153,10 +153,16 @@ export async function handleAISearch() {
 
         // Surface explicit error — no silent retry
         const msg = String(error?.message || '');
-        if (/404|not found|kullan/i.test(msg)) {
+        if (/yapılandırma|not configured|GEMINI|GOOGLE_GENERATIVE/i.test(msg)) {
+            showToast('Yapılandırma eksik — sistem yöneticisine bildirin.');
+        } else if (/404|not found|kullan/i.test(msg)) {
             showToast('Servis kullanılamıyor. Lütfen biraz sonra tekrar deneyin.');
+        } else if (/429|rate|fazla/i.test(msg)) {
+            showToast('Çok fazla arama. Bir dakika bekleyin.');
         } else {
-            showToast('Arama başarısız oldu. Tekrar deneyin.');
+            // Surface raw server message for diagnostics — better than silent generic.
+            const short = msg.length > 80 ? msg.slice(0, 80) + '…' : msg;
+            showToast(short ? `Arama başarısız: ${short}` : 'Arama başarısız oldu. Tekrar deneyin.');
         }
     } finally {
         if (primaryBtn) {
@@ -175,12 +181,30 @@ export async function handleConsoleSubmit() {
     const input = document.getElementById('ai-movie-input');
     const value = (input?.value || '').trim();
     if (value.length === 0) {
+        // Inline feedback — flash the input red + show hint placeholder.
+        // Cleaner than a floating toast which appears in awkward positions.
         const lang = (window.i18n?.getLanguage?.() || document.documentElement.lang || 'tr').toLowerCase();
         const hint = lang.startsWith('en')
             ? 'Type what you want or hit Surprise Me'
             : "Önce ne aradığını yaz veya Sürpriz Yap'a bas";
-        showToast(hint);
-        input?.focus();
+        if (input) {
+            const originalPlaceholder = input.placeholder;
+            const originalBoxShadow = input.style.boxShadow;
+            const originalBorderColor = input.style.borderColor;
+            input.placeholder = hint;
+            input.style.borderColor = '#ef4444';
+            input.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.18)';
+            input.style.transition = 'border-color 200ms ease, box-shadow 200ms ease';
+            input.classList.add('shake');
+            // Remove shake class after animation; restore styles after 1.6s.
+            setTimeout(() => input.classList.remove('shake'), 450);
+            setTimeout(() => {
+                input.style.borderColor = originalBorderColor;
+                input.style.boxShadow = originalBoxShadow;
+                input.placeholder = originalPlaceholder;
+            }, 1800);
+            input.focus();
+        }
         return;
     }
     return handleAISearch();
