@@ -190,6 +190,30 @@ Onemli kurallar:
             }
         }
 
+        // Diagnostic logging — Round 3: silent failures were because Gemini returned
+        // suggestions but TMDB lookups returned null (bad/stale ID). Surface this.
+        console.log('[Search] query="%s" gemini=%d enriched=%d', query, suggestions.length, enriched.length);
+
+        // If Gemini returned 0 suggestions OR all TMDB lookups failed → return explicit
+        // empty-state response with diagnostic so frontend can surface a real message.
+        if (enriched.length === 0) {
+            const reason = suggestions.length === 0
+                ? 'gemini_empty'
+                : 'tmdb_lookup_failed';
+            const responseData = {
+                results: [],
+                source: 'gemini',
+                empty: true,
+                reason,
+                geminiSuggestionsCount: suggestions.length,
+                timestamp: new Date().toISOString(),
+            };
+            // Do NOT cache empty results — let next call retry.
+            return new Response(JSON.stringify(responseData), {
+                status: 200, headers: { 'Content-Type': 'application/json' }
+            });
+        }
+
         const responseData = {
             results: enriched,
             source: 'gemini',

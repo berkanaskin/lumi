@@ -145,7 +145,18 @@ export async function handleAISearch() {
 
             EmbeddingService.logSearchQuery(query, userId, response.results.length).catch(() => {});
         } else {
-            showToast('Öneri bulunamadı, farklı bir şey deneyin.');
+            // Round 3 fix: differentiate empty-state reasons surfaced by /api/search.
+            // Backend now returns { empty:true, reason:'gemini_empty'|'tmdb_lookup_failed' }
+            // so users see a real explanation instead of the loading icon vanishing silently.
+            console.warn('[handleAISearch] empty response:', response);
+            const reason = response?.reason;
+            let msg = 'Öneri bulunamadı, farklı bir şey dene.';
+            if (reason === 'tmdb_lookup_failed') {
+                msg = 'AI öneri verdi ama TMDB\'de bulunamadı. Daha spesifik bir arama dene.';
+            } else if (reason === 'gemini_empty') {
+                msg = 'AI bu arama için öneri üretemedi. Farklı kelimelerle dene.';
+            }
+            showToast(msg);
         }
     } catch (error) {
         console.error('[handleAISearch] Error:', error);
