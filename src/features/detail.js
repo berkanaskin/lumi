@@ -1192,7 +1192,8 @@ export function attachDetailEventListeners(details, type, itemId) {
                 details.release_date || details.first_air_date
             );
             likeBtn.classList.toggle('active', isLiked);
-            likeBtn.querySelector('span').textContent = isLiked ? '♥' : '♡';
+            const svgPath = likeBtn.querySelector('svg');
+            if (svgPath) svgPath.setAttribute('fill', isLiked ? 'currentColor' : 'none');
         };
     }
 
@@ -1209,7 +1210,11 @@ export function attachDetailEventListeners(details, type, itemId) {
                 details.release_date || details.first_air_date
             );
             watchlistBtn.classList.toggle('active', isInWatchlist);
-            watchlistBtn.querySelector('span').textContent = isInWatchlist ? '✓' : '+';
+            const svgPath = watchlistBtn.querySelector('svg');
+            if (svgPath) svgPath.setAttribute('fill', isInWatchlist ? 'currentColor' : 'none');
+            // Replace label text node ("Listeye Ekle" / "Listede ✓") preserving SVG
+            const textNode = Array.from(watchlistBtn.childNodes).find(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim());
+            if (textNode) textNode.textContent = isInWatchlist ? ' Listede ✓' : ' Listeye Ekle';
         };
     }
 
