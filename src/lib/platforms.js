@@ -31,6 +31,9 @@ export const PLATFORM_URLS = {
     'TOD': 'https://www.tod.tv/arama?query=',
     'TOD TV': 'https://www.tod.tv/arama?query=',
     'Tabii': 'https://www.tabii.com/tr/search?q=',
+    'TV+': 'https://www.tvplus.com.tr/search?q=',
+    'Turk Telekom TV+': 'https://www.tvplus.com.tr/search?q=',
+    'Türk Telekom TV+': 'https://www.tvplus.com.tr/search?q=',
     'beIN CONNECT': 'https://www.beinconnect.com.tr/arama?query=',
     'puhuTV': 'https://puhutv.com/arama?q=',
 
@@ -43,6 +46,26 @@ export const PLATFORM_URLS = {
     // Fallback
     'default': 'https://www.google.com/search?q='
 };
+
+/**
+ * Logo overrides for providers whose CDN-supplied logos are broken or missing.
+ * Lookup is case-sensitive against provider.serviceName from streaming-cache.js.
+ * URLs should resolve to a 40x40 (or larger) PNG.
+ */
+export const LOGO_OVERRIDES = {
+    'HBO Max': 'https://image.tmdb.org/t/p/original/aS2zvJWn9mwiCOeaaCkIh4wleZS.png',
+    'Max': 'https://image.tmdb.org/t/p/original/jDDC8aYsBwkRgPL7L1stVpRMB7n.png',
+};
+
+/**
+ * Get a logo URL override for a given provider name (or null if none set).
+ * @param {string} providerName
+ * @returns {string|null}
+ */
+export function getLogoOverride(providerName) {
+    if (!providerName) return null;
+    return LOGO_OVERRIDES[providerName] || null;
+}
 
 /**
  * Get platform URL for a movie/show title
@@ -61,7 +84,7 @@ export function getPlatformUrl(platformName, title) {
  * @returns {boolean}
  */
 export function isTurkishPlatform(platformName) {
-    const turkishPlatforms = ['GAIN', 'Gain', 'Exxen', 'BluTV', 'blutv', 'TOD', 'TOD TV', 'Tabii', 'beIN CONNECT', 'puhuTV'];
+    const turkishPlatforms = ['GAIN', 'Gain', 'Exxen', 'BluTV', 'blutv', 'TOD', 'TOD TV', 'Tabii', 'TV+', 'Turk Telekom TV+', 'Türk Telekom TV+', 'beIN CONNECT', 'puhuTV'];
     return turkishPlatforms.includes(platformName);
 }
 

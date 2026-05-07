@@ -8,7 +8,7 @@ import { state, elements } from '../lib/state.js';
 import { showToast } from '../ui/toast.js';
 import { API, GeoIPService } from '../services/api.js';
 import { getStreamingWithCache } from '../services/streaming-cache.js';
-import { getPlatformUrl } from '../lib/platforms.js';
+import { getPlatformUrl, getLogoOverride } from '../lib/platforms.js';
 
 // ============================================
 // MODAL STATE
@@ -740,7 +740,21 @@ function buildStreamingHTML(streamingData, title) {
             </div>`;
     }
 
-    const providers = streamingData.providers || [];
+    // Defensive dedup pass — Set on lowercased serviceId, fallback to serviceName
+    // (RESEARCH.md "Duplicate Results Fix"). Streaming-cache merges already dedup,
+    // but a second pass guards against legacy cached docs and TMDB fallback path.
+    const rawProviders = streamingData.providers || [];
+    const seenKeys = new Set();
+    const providers = [];
+    for (const p of rawProviders) {
+        const idKey = String(p.serviceId || '').toLowerCase().trim();
+        const nameKey = String(p.serviceName || '').toLowerCase().trim();
+        const key = idKey || nameKey;
+        if (!key || seenKeys.has(key) || (nameKey && seenKeys.has(nameKey))) continue;
+        seenKeys.add(key);
+        if (nameKey) seenKeys.add(nameKey);
+        providers.push(p);
+    }
 
     // No providers
     if (providers.length === 0) {
@@ -772,10 +786,16 @@ function buildStreamingHTML(streamingData, title) {
         if (list.length === 0) continue;
         const tiles = list.map(provider => {
             const deepLink = provider.link || getPlatformUrl(provider.serviceName, title);
-            // logoPath can be: full URL (RapidAPI), /path (TMDB), or null
-            const logoUrl = provider.logoPath
-                ? (provider.logoPath.startsWith('http') ? provider.logoPath : `https://image.tmdb.org/t/p/w92${provider.logoPath}`)
-                : '';
+            // Logo URL resolution order:
+            // 1. LOGO_OVERRIDES[serviceName] — manual override for broken CDN URLs (e.g. HBO Max)
+            // 2. provider.logoPath if full http URL
+            // 3. provider.logoPath prefixed with TMDB CDN
+            const overrideUrl = getLogoOverride(provider.serviceName);
+            const logoUrl = overrideUrl
+                ? overrideUrl
+                : (provider.logoPath
+                    ? (provider.logoPath.startsWith('http') ? provider.logoPath : `https://image.tmdb.org/t/p/w92${provider.logoPath}`)
+                    : '');
             const safeName = provider.serviceName.replace(/"/g, '&quot;');
             const logoImg = logoUrl
                 ? `<img src="${logoUrl}" alt="${safeName}"
