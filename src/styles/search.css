@@ -242,45 +242,6 @@
   padding: var(--space-lg);
 }
 
-.search-results-page {
-  display: none;
-  flex-direction: column;
-  height: 100vh;
-}
-
-.search-results-page.active {
-  display: flex;
-}
-
-/* ============================================
-   SEARCH RESULTS GRID
-   ============================================ */
-
-.result-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-md);
-  margin-bottom: var(--space-lg);
-}
-
-@media (min-width: 768px) {
-  .result-cards-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .result-cards-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media (min-width: 1440px) {
-  .result-cards-grid {
-    grid-template-columns: repeat(5, 1fr);
-  }
-}
-
 /* ============================================
    DIVERSITY SECTION
    ============================================ */
@@ -313,18 +274,6 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--space-md);
-}
-
-@media (min-width: 768px) {
-  .diversity-cards-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .diversity-cards-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
 }
 
 /* ============================================
