@@ -110,6 +110,11 @@ import {
     mergeVideos,
 } from './features/detail.js';
 
+import { loadFavoritesItems } from './features/favorites-storage.js';
+
+// Expose helper to legacy inline script in index.html (loadFavoritesList).
+window.loadFavoritesItems = loadFavoritesItems;
+
 import {
     handleAutocomplete,
     showAutocomplete,
@@ -120,12 +125,6 @@ import {
     addToSearchHistory,
     clearSearchHistory,
 } from './features/search.js';
-
-import {
-    initSearchResults,
-    handleSearchSubmit as submitSearch,
-    clearSearchResults,
-} from './pages/search-results.js';
 
 import {
     initAuth,
@@ -206,10 +205,6 @@ window.LumiModules = {
     getSearchHistory,
     addToSearchHistory,
     clearSearchHistory,
-    initSearchResults,
-    submitSearch,
-    clearSearchResults,
-
     // Profile Feature
     initAuth,
     loadAuth,
@@ -386,9 +381,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize discover module (loads daily recommendation + timer)
     initDiscoverModule();
-
-    // Initialize search results page
-    initSearchResults();
 
     // Load auth state
     loadAuth();
