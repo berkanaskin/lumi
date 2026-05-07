@@ -2158,9 +2158,16 @@
         const grid = document.getElementById("favorites-grid");
         const emptyMessage = document.getElementById("empty-list-message");
 
-        // Get from localStorage
-        const key = listType === "liked" ? "favorites" : "watchlist";
-        const items = JSON.parse(localStorage.getItem(key) || "[]");
+        // Read via shared helper — uses correct keys ("liked_items" / "watchlist_items")
+        // and performs a one-time migration from legacy "favorites" / "watchlist" keys.
+        // Helper exposed by src/main.js. Fallback inline if module not yet loaded.
+        let items = [];
+        if (typeof window.loadFavoritesItems === "function") {
+          items = window.loadFavoritesItems(listType);
+        } else {
+          const newKey = listType === "liked" ? "liked_items" : "watchlist_items";
+          items = JSON.parse(localStorage.getItem(newKey) || "[]");
+        }
 
         if (items.length === 0) {
           grid.innerHTML = "";
@@ -2172,8 +2179,8 @@
         grid.innerHTML = items
           .map(
             (item) => `
-                <div class="result-card" data-id="${item.id}" data-type="${item.type}">
-                    <div class="result-card-poster" style="background-image: url('https://image.tmdb.org/t/p/w342${item.poster}')"></div>
+                <div class="result-card" data-id="${item.id}" data-type="${item.media_type}">
+                    <div class="result-card-poster" style="background-image: url('https://image.tmdb.org/t/p/w342${item.poster_path}')"></div>
                     <div class="result-card-info">
                         <div class="result-card-title">${item.title}</div>
                     </div>
