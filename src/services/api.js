@@ -369,7 +369,13 @@ export const TMDBService = {
             });
 
             if (!response.ok) {
-                throw new Error(`Hybrid search failed: ${response.statusText}`);
+                // Try to surface server-side error message for better diagnostics.
+                let serverMsg = response.statusText;
+                try {
+                    const errBody = await response.json();
+                    if (errBody?.error) serverMsg = errBody.error + (errBody.details ? ` (${errBody.details})` : '');
+                } catch { /* non-JSON body — keep statusText */ }
+                throw new Error(`Hybrid search failed: ${serverMsg}`);
             }
 
             return await response.json();

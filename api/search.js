@@ -12,9 +12,8 @@ import { z } from 'zod';
 
 // Build Google provider once. Prefer GOOGLE_GENERATIVE_AI_API_KEY (SDK default),
 // fall back to GEMINI_API_KEY (used elsewhere in this project).
-const google = createGoogleGenerativeAI({
-    apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY,
-});
+const GEMINI_KEY = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
+const google = createGoogleGenerativeAI({ apiKey: GEMINI_KEY });
 
 export const config = {
     runtime: 'nodejs',
@@ -135,6 +134,15 @@ export default async function handler(request) {
         if (!apiKey) {
             return new Response(
                 JSON.stringify({ error: 'TMDB_API_KEY not configured' }),
+                { status: 500, headers: { 'Content-Type': 'application/json' } }
+            );
+        }
+        if (!GEMINI_KEY) {
+            return new Response(
+                JSON.stringify({
+                    error: 'AI yapılandırması eksik',
+                    details: 'GOOGLE_GENERATIVE_AI_API_KEY (or GEMINI_API_KEY) is not set on this deployment',
+                }),
                 { status: 500, headers: { 'Content-Type': 'application/json' } }
             );
         }
