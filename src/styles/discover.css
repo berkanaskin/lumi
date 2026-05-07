@@ -1,0 +1,162 @@
+/* ============================================
+   DISCOVER / WIZARD — PREMIUM CONSOLE
+   Phase 03.2-05 — Track C polish
+   Mobile-only. Honors prefers-reduced-motion.
+   ============================================ */
+
+/* --- Console panel: tighter padding, glass alignment --------- */
+.discover-console.glass-panel {
+  padding: clamp(14px, 4vw, 20px) clamp(14px, 4vw, 18px)
+    calc(clamp(14px, 4vw, 18px) + var(--safe-bottom, 0px));
+  gap: clamp(10px, 2.5vw, 14px);
+  background: linear-gradient(
+    180deg,
+    rgba(18, 18, 28, 0.72) 0%,
+    rgba(10, 10, 18, 0.82) 100%
+  );
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* --- Console label tightening --- */
+.console-label {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* --- Textarea: more contrast vs chips --- */
+.console-input-wrapper:has(.console-textarea) {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 14px;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+.console-input-wrapper:has(.console-textarea):focus-within {
+  border-color: rgba(139, 92, 246, 0.55);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* --- Mood / genre chips: premium pill --- */
+.console-chip {
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.78);
+  transition: transform 150ms ease, background 150ms ease,
+    border-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
+  position: relative;
+}
+
+.console-chip:active {
+  transform: scale(0.96);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.console-chip.active {
+  color: #fff;
+  background: linear-gradient(
+    135deg,
+    rgba(88, 88, 243, 0.28) 0%,
+    rgba(139, 92, 246, 0.28) 100%
+  );
+  border-color: transparent;
+  box-shadow:
+    0 0 0 1px rgba(139, 92, 246, 0.55),
+    0 4px 14px rgba(88, 88, 243, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.console-chip.active .material-symbols-outlined {
+  color: #c4b5fd;
+}
+
+/* --- Era chips: secondary, smaller, premium --- */
+.era-chip {
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.55);
+  transition: transform 150ms ease, background 150ms ease,
+    border-color 150ms ease, color 150ms ease;
+}
+
+.era-chip:active {
+  transform: scale(0.96);
+}
+
+.era-chip.active {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* --- Primary button: loading state --- */
+.console-btn.primary {
+  position: relative;
+  transition: transform 150ms ease, box-shadow 150ms ease, opacity 150ms ease;
+}
+.console-btn.primary:active {
+  transform: scale(0.98);
+}
+.console-btn.primary[disabled],
+.console-btn.primary.is-loading {
+  opacity: 0.75;
+  cursor: progress;
+}
+.console-btn.primary.is-loading .console-btn-label::after {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-left: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  vertical-align: -2px;
+  animation: console-spin 700ms linear infinite;
+}
+@keyframes console-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- Results grid: clearer hierarchy under console --- */
+#wizard-results-grid.discover-results-grid,
+.discover-results-grid {
+  margin-top: clamp(12px, 3vw, 18px);
+  gap: clamp(10px, 2.5vw, 14px);
+}
+
+/* --- Reduced motion: kill chip/btn animations + spinner anim --- */
+@media (prefers-reduced-motion: reduce) {
+  .console-chip,
+  .era-chip,
+  .console-btn.primary,
+  .console-input-wrapper:has(.console-textarea) {
+    transition: none;
+  }
+  .console-chip:active,
+  .era-chip:active,
+  .console-btn.primary:active {
+    transform: none;
+  }
+  .console-btn.primary.is-loading .console-btn-label::after {
+    animation: none;
+    border-top-color: rgba(255, 255, 255, 0.6);
+  }
+}
