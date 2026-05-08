@@ -10,7 +10,9 @@
  * Language API. `embeddings.js` still uses `ai` + `@ai-sdk/openai` — those deps stay.
  */
 
-export const runtime = 'edge';
+export const config = {
+    runtime: 'edge',
+};
 
 // Free tier protection
 const rateLimiter = new Map();
