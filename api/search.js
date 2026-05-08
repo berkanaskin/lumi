@@ -6,14 +6,12 @@
  * No Firestore dependency — works without billing
  */
 
-import { generateObject } from 'ai';
-import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { z } from 'zod';
 
-// Build Google provider once. Prefer GOOGLE_GENERATIVE_AI_API_KEY (SDK default),
-// fall back to GEMINI_API_KEY (used elsewhere in this project).
-const GEMINI_KEY = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
-const google = createGoogleGenerativeAI({ apiKey: GEMINI_KEY });
+// NOTE: AI SDK (`ai` + `@ai-sdk/google`) is intentionally lazy-loaded inside the handler.
+// Importing them at module top-level was hanging cold-start in Vercel Node 20 runtime,
+// causing /api/search to never respond (not even a 405 for GET). Keep `zod` here — it's
+// lightweight and required for schema construction.
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -79,7 +77,41 @@ async function getTMDBMovie(tmdbId, apiKey) {
     }
 }
 
+// Lazy-load AI SDK only when actually needed (POST request). Top-level import was
+// hanging cold-start in Vercel Node 20, blocking even GET → 405 from responding.
+async function callGemini(prompt, schema, abortSignal) {
+    const { generateObject } = await import('ai');
+    const { createGoogleGenerativeAI } = await import('@ai-sdk/google');
+    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
+    const google = createGoogleGenerativeAI({ apiKey });
+    return generateObject({
+        model: google('gemini-2.5-flash-lite'),
+        schema,
+        prompt,
+        maxRetries: 1,
+        abortSignal,
+    });
+}
+
 export default async function handler(request) {
+    // Fast health-check shortcut — runs BEFORE body parse / AI SDK load so we can
+    // verify the function is reachable at all and which env vars are configured.
+    if (request.method === 'GET') {
+        const url = new URL(request.url, 'http://localhost');
+        if (url.searchParams.has('healthcheck')) {
+            return new Response(JSON.stringify({
+                ok: true,
+                ts: Date.now(),
+                hasGeminiKey: Boolean(process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY),
+                hasTmdbKey: Boolean(process.env.TMDB_API_KEY),
+            }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+        }
+        return new Response(
+            JSON.stringify({ error: 'GET only allowed for ?healthcheck=1' }),
+            { status: 405, headers: { 'Content-Type': 'application/json' } }
+        );
+    }
+
     if (request.method !== 'POST') {
         return new Response(
             JSON.stringify({ error: 'Method not allowed' }),
@@ -139,7 +171,8 @@ export default async function handler(request) {
                 { status: 500, headers: { 'Content-Type': 'application/json' } }
             );
         }
-        if (!GEMINI_KEY) {
+        const geminiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
+        if (!geminiKey) {
             return new Response(
                 JSON.stringify({
                     error: 'AI yapılandırması eksik',
@@ -153,18 +186,14 @@ export default async function handler(request) {
         // canonical `generateObject` (Vercel AI SDK 6). The previous pattern was looping
         // internally and exceeding the 60s wall, causing the function to hang.
         // Hard 25s ceiling via AbortSignal so we always have time left to return.
-        let result;
-        try {
-            result = await generateObject({
-                model: google('gemini-2.5-flash-lite'),
-                schema: z.object({
-                    suggestions: z.array(z.object({
-                        tmdbId: z.number().describe('TMDB ID'),
-                        title: z.string().describe('Film/dizi adi'),
-                        reason: z.string().describe('Neden onerildi — 1 cumle'),
-                    })).describe('Onerilen filmler/diziler'),
-                }),
-                prompt: `Sen bir film ve dizi oneri uzmanisn. Kullanici su tarzi bir sey izlemek istiyor: "${query}"
+        const schema = z.object({
+            suggestions: z.array(z.object({
+                tmdbId: z.number().describe('TMDB ID'),
+                title: z.string().describe('Film/dizi adi'),
+                reason: z.string().describe('Neden onerildi — 1 cumle'),
+            })).describe('Onerilen filmler/diziler'),
+        });
+        const prompt = `Sen bir film ve dizi oneri uzmanisn. Kullanici su tarzi bir sey izlemek istiyor: "${query}"
 
 Bu isteğe en uygun ${limit} film veya dizi oner. TMDB (The Movie Database) ID'lerini don.
 
@@ -173,20 +202,21 @@ Onemli kurallar:
 - TMDB ID'leri dogru olmali
 - Turkce ve yabanci yapimlar karisik olabilir
 - Populer ve az bilinen yapimlar karisik olsun
-- Kullanicinin ruh haline/tarifine en uygun olanlari sec`,
-                maxRetries: 1,
-                abortSignal: AbortSignal.timeout(25_000),
-            });
+- Kullanicinin ruh haline/tarifine en uygun olanlari sec`;
+
+        let result;
+        try {
+            result = await callGemini(prompt, schema, AbortSignal.timeout(25_000));
         } catch (llmErr) {
-            // LLM call timed out or failed — return a structured empty response so the
-            // frontend can show a real message instead of hanging forever.
-            console.error('[Search] LLM call failed:', llmErr?.name, llmErr?.message);
+            const isAbort = llmErr?.name === 'AbortError' || llmErr?.name === 'TimeoutError';
+            console.error('[Search] LLM error:', llmErr?.name, llmErr?.message);
             return new Response(JSON.stringify({
                 results: [],
                 source: 'gemini',
                 empty: true,
-                reason: 'llm_timeout',
-                error: llmErr?.message || 'LLM call failed',
+                reason: isAbort ? 'llm_timeout' : 'llm_error',
+                errorName: llmErr?.name || 'Error',
+                errorMessage: llmErr?.message || 'LLM call failed',
                 timestamp: new Date().toISOString(),
             }), { status: 200, headers: { 'Content-Type': 'application/json' } });
         }
