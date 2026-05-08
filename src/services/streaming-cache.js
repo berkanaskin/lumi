@@ -121,18 +121,50 @@ export function injectTurkishProviders(providers, details) {
         }
     }
 
-    // Round 4 fix: REMOVED the blanket origin_country fallback that injected all 5
-    // Turkish platforms (Gain, Exxen, BluTV, TOD, Tabii) for any content with
-    // origin_country=TR. That caused "Kulüp" (Netflix Turkey original) to spam all
-    // 5 platforms alongside Netflix, even though those platforms don't have it.
+    // Round 10 fix: SMART fallback for Turkish-origin content TMDB has zero data on
+    // (e.g. Şahsiyet). Round 4 removed the blanket fallback because it spammed
+    // Netflix-only Turkish originals (Kulüp). The new gate avoids that:
     //
-    // Now we trust TMDB data: only inject providers when production_companies or
-    // networks explicitly name a Turkish platform (handled in the loop above).
-    // If TMDB has a data gap for a specific show, that's a TMDB issue — not ours
-    // to paper over with false-positive provider chips.
+    // Inject the 5 Turkish platforms ONLY when ALL three are true:
+    //   1. Content is Turkish-origin (origin_country includes 'TR' OR
+    //      production_countries has TR)
+    //   2. The current provider list has ZERO Turkish-platform entries
+    //      (no Gain/Exxen/BluTV/TOD/Tabii/Puhu/beIN by name keyword)
+    //   3. The current provider list has ZERO international subscription entries
+    //      (no Netflix/Prime/Disney/etc.) — so we don't add "also on Türk platforms"
+    //      to a Netflix-Turkey original where international platforms already cover it
     //
-    // Trade-off: some Turkish-origin content with TMDB networks gaps will show
-    // zero Turkish platforms. Acceptable: false negatives > false positives here.
+    // This means: TMDB returned NOTHING for this Turkish show → assume it's likely
+    // on the Turkish niche platforms and let user click through to search.
+    const originCountries = Array.isArray(details.origin_country) ? details.origin_country : [];
+    const productionCountries = Array.isArray(details.production_countries) ? details.production_countries : [];
+    const isTurkish =
+        originCountries.includes('TR') ||
+        productionCountries.some(c => c && (c.iso_3166_1 === 'TR' || c.name === 'Turkey'));
+
+    if (isTurkish) {
+        const TR_PLATFORM_NAMES = ['gain', 'exxen', 'blu tv', 'blutv', 'tod', 'tabii', 'puhu', 'bein'];
+        const INTL_PLATFORM_NAMES = [
+            'netflix', 'amazon', 'prime video', 'disney', 'hbo', 'max', 'apple tv',
+            'paramount', 'hulu', 'peacock', 'mubi', 'youtube',
+        ];
+        const lowerNames = result.map(p => String(p.serviceName || '').toLowerCase());
+        const hasTRPlatform = lowerNames.some(n => TR_PLATFORM_NAMES.some(k => n.includes(k)));
+        const hasIntlSub = result.some(p => {
+            const n = String(p.serviceName || '').toLowerCase();
+            const isSubLike = p.type === 'subscription' || p.type === 'free' || p.type === 'ads';
+            return isSubLike && INTL_PLATFORM_NAMES.some(k => n.includes(k));
+        });
+
+        if (!hasTRPlatform && !hasIntlSub) {
+            for (const tpl of Object.values(TR_PRODUCER_PROVIDERS)) {
+                const key = tpl.serviceName.toLowerCase();
+                if (existingKeys.has(key)) continue;
+                result.push({ ...tpl, alternative: true });
+                existingKeys.add(key);
+            }
+        }
+    }
 
     return result;
 }
