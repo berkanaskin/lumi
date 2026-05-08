@@ -164,14 +164,9 @@ export default async function handler(request) {
     }
 
     try {
-        // Robust body parsing — Vercel Node runtime auto-parses JSON when Content-Type is set,
-        // but fall back to manual parse if body is a string or stream.
-        let body = request.body;
-        if (typeof body === 'string') {
-            try { body = JSON.parse(body); } catch { body = {}; }
-        } else if (!body || typeof body !== 'object') {
-            try { body = await request.json(); } catch { body = {}; }
-        }
+        // Edge runtime: request.body is a ReadableStream — must use await request.json()
+        let body;
+        try { body = await request.json(); } catch { body = {}; }
         let { query, userId, limit = 10 } = body || {};
 
         if (!query || typeof query !== 'string' || query.trim().length < 3) {
