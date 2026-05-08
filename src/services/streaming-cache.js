@@ -121,50 +121,14 @@ export function injectTurkishProviders(providers, details) {
         }
     }
 
-    // Round 10 fix: SMART fallback for Turkish-origin content TMDB has zero data on
-    // (e.g. Şahsiyet). Round 4 removed the blanket fallback because it spammed
-    // Netflix-only Turkish originals (Kulüp). The new gate avoids that:
+    // Round 11: REMOVED the smart-fallback that injected the 5 Turkish platforms
+    // when TMDB returned nothing for a Turkish-origin title. Users reported it
+    // looked like fabricated/spam data (e.g. "Şahsiyet" rendered Gain+Exxen+
+    // BluTV+TOD+Tabii even though only Gain is the real platform).
     //
-    // Inject the 5 Turkish platforms ONLY when ALL three are true:
-    //   1. Content is Turkish-origin (origin_country includes 'TR' OR
-    //      production_countries has TR)
-    //   2. The current provider list has ZERO Turkish-platform entries
-    //      (no Gain/Exxen/BluTV/TOD/Tabii/Puhu/beIN by name keyword)
-    //   3. The current provider list has ZERO international subscription entries
-    //      (no Netflix/Prime/Disney/etc.) — so we don't add "also on Türk platforms"
-    //      to a Netflix-Turkey original where international platforms already cover it
-    //
-    // This means: TMDB returned NOTHING for this Turkish show → assume it's likely
-    // on the Turkish niche platforms and let user click through to search.
-    const originCountries = Array.isArray(details.origin_country) ? details.origin_country : [];
-    const productionCountries = Array.isArray(details.production_countries) ? details.production_countries : [];
-    const isTurkish =
-        originCountries.includes('TR') ||
-        productionCountries.some(c => c && (c.iso_3166_1 === 'TR' || c.name === 'Turkey'));
-
-    if (isTurkish) {
-        const TR_PLATFORM_NAMES = ['gain', 'exxen', 'blu tv', 'blutv', 'tod', 'tabii', 'puhu', 'bein'];
-        const INTL_PLATFORM_NAMES = [
-            'netflix', 'amazon', 'prime video', 'disney', 'hbo', 'max', 'apple tv',
-            'paramount', 'hulu', 'peacock', 'mubi', 'youtube',
-        ];
-        const lowerNames = result.map(p => String(p.serviceName || '').toLowerCase());
-        const hasTRPlatform = lowerNames.some(n => TR_PLATFORM_NAMES.some(k => n.includes(k)));
-        const hasIntlSub = result.some(p => {
-            const n = String(p.serviceName || '').toLowerCase();
-            const isSubLike = p.type === 'subscription' || p.type === 'free' || p.type === 'ads';
-            return isSubLike && INTL_PLATFORM_NAMES.some(k => n.includes(k));
-        });
-
-        if (!hasTRPlatform && !hasIntlSub) {
-            for (const tpl of Object.values(TR_PRODUCER_PROVIDERS)) {
-                const key = tpl.serviceName.toLowerCase();
-                if (existingKeys.has(key)) continue;
-                result.push({ ...tpl, alternative: true });
-                existingKeys.add(key);
-            }
-        }
-    }
+    // We now only trust the keyword-based network/production_companies scan
+    // above (Gain Medya → Gain etc., when TMDB has those entries). If TMDB has
+    // no provider data, we accept the empty state — better empty than fake.
 
     return result;
 }
