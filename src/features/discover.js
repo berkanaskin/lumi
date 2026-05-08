@@ -55,36 +55,76 @@ export const EXAMPLE_PROMPTS = [
 ];
 
 /**
- * Render the example-prompt list into #console-prompts.
- * Each item is a button that fills #ai-movie-input with the prompt text and
- * focuses it. We do NOT auto-submit — user might want to tweak the prompt first.
+ * Round 11: single rotating example-prompt hint inside the console.
+ *
+ * UX: when the textarea is empty, a thin bar below it shows ONE random
+ * example with two icon buttons (refresh = pick another, kullan = fill
+ * textarea). Once the user types anything, the bar hides. When the
+ * textarea is cleared again, a NEW random prompt is shown.
+ *
+ * Replaces the Round 10 7-card vertical list (rejected by user as too
+ * heavy and competing with the textarea for attention).
  */
+let _currentHintPrompt = '';
+
+function _pickRandomPrompt(exclude = '') {
+    const pool = EXAMPLE_PROMPTS.filter(p => p !== exclude);
+    const list = pool.length > 0 ? pool : EXAMPLE_PROMPTS;
+    return list[Math.floor(Math.random() * list.length)];
+}
+
+function _setHintPrompt(prompt) {
+    _currentHintPrompt = prompt;
+    const textEl = document.getElementById('console-prompt-hint-text');
+    if (textEl) textEl.textContent = `"${prompt}"`;
+}
+
+function _showHintBar() {
+    const bar = document.getElementById('console-prompt-hint');
+    if (bar) bar.classList.remove('is-hidden');
+}
+
+function _hideHintBar() {
+    const bar = document.getElementById('console-prompt-hint');
+    if (bar) bar.classList.add('is-hidden');
+}
+
 export function renderExamplePrompts() {
-    const container = document.getElementById('console-prompts');
-    if (!container) return;
-    container.innerHTML = '';
-    EXAMPLE_PROMPTS.forEach(prompt => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'console-prompt-card';
-        btn.setAttribute('role', 'listitem');
-        btn.innerHTML = `
-            <span class="console-prompt-text">${prompt}</span>
-            <span class="console-prompt-cta">
-                <span data-i18n="useThis">kullan</span>
-                <span class="material-symbols-outlined">arrow_forward</span>
-            </span>
-        `;
-        btn.addEventListener('click', () => {
-            const input = document.getElementById('ai-movie-input');
-            if (!input) return;
-            input.value = prompt;
-            input.focus();
-            // Move cursor to end so user can append/edit naturally
-            try { input.setSelectionRange(prompt.length, prompt.length); } catch { /* noop */ }
-        });
-        container.appendChild(btn);
+    const bar = document.getElementById('console-prompt-hint');
+    const input = document.getElementById('ai-movie-input');
+    if (!bar) return;
+
+    // Initial random prompt
+    _setHintPrompt(_pickRandomPrompt());
+
+    // Refresh button: pick a different random prompt
+    const refreshBtn = document.getElementById('console-prompt-hint-refresh');
+    refreshBtn?.addEventListener('click', () => {
+        _setHintPrompt(_pickRandomPrompt(_currentHintPrompt));
     });
+
+    // Use button: fill textarea, focus, cursor at end. Do NOT auto-submit.
+    const useBtn = document.getElementById('console-prompt-hint-use');
+    useBtn?.addEventListener('click', () => {
+        if (!input) return;
+        input.value = _currentHintPrompt;
+        input.focus();
+        try { input.setSelectionRange(input.value.length, input.value.length); } catch { /* noop */ }
+        _hideHintBar();
+    });
+
+    // Hide bar while user is typing; reappear with a NEW random when cleared.
+    if (input) {
+        input.addEventListener('input', () => {
+            const hasText = (input.value || '').trim().length > 0;
+            if (hasText) {
+                _hideHintBar();
+            } else {
+                _setHintPrompt(_pickRandomPrompt(_currentHintPrompt));
+                _showHintBar();
+            }
+        });
+    }
 }
 
 // ============================================
@@ -711,7 +751,7 @@ export function initDiscoverModule() {
     // Set random poetic placeholder
     setRandomPlaceholder();
 
-    // Round 10: render tappable example prompts (replaces mood/era chips entirely)
+    // Round 11: single rotating example-prompt hint (replaces Round 10 7-card list)
     renderExamplePrompts();
 
     // Platform button toggle

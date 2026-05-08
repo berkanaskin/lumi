@@ -146,14 +146,14 @@
 @media (prefers-reduced-motion: reduce) {
   .console-chip,
   .era-chip,
-  .console-prompt-card,
+  .console-prompt-hint-btn,
   .console-btn.primary,
   .console-input-wrapper:has(.console-textarea) {
     transition: none;
   }
   .console-chip:active,
   .era-chip:active,
-  .console-prompt-card:active,
+  .console-prompt-hint-btn:active,
   .console-btn.primary:active {
     transform: none;
   }
@@ -176,86 +176,95 @@
   resize: none;
 }
 
-.console-prompts {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 12px;
-  margin-bottom: 12px;
-  max-height: 220px;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding-right: 2px;
-}
-
-.console-prompts::-webkit-scrollbar {
-  width: 4px;
-}
-.console-prompts::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.18);
-  border-radius: 2px;
-}
-
-.console-prompt-card {
+/* Round 11: single rotating example-prompt hint bar (replaces the 7-card list).
+   Sits below the textarea, hides while user is typing, shows new random when
+   textarea is cleared. Mobile-only (375px+). */
+.console-prompt-hint {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  width: 100%;
-  padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  color: rgba(255, 255, 255, 0.88);
-  font-family: inherit;
-  font-size: 13px;
+  gap: 8px;
+  margin-top: 10px;
+  margin-bottom: 6px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  font-size: 12.5px;
   line-height: 1.35;
-  text-align: left;
-  cursor: pointer;
-  transition:
-    background 160ms ease,
-    border-color 160ms ease,
-    transform 100ms ease;
+  color: rgba(255, 255, 255, 0.62);
+  min-height: 36px;
+  transition: opacity 140ms ease;
 }
 
-.console-prompt-card:hover,
-.console-prompt-card:focus-visible {
-  background: rgba(99, 102, 241, 0.14);
-  border-color: rgba(139, 92, 246, 0.35);
-  outline: none;
+.console-prompt-hint.is-hidden {
+  display: none;
 }
 
-.console-prompt-card:active {
-  transform: scale(0.985);
+.console-prompt-hint-icon {
+  flex: 0 0 auto;
+  font-size: 14px;
+  line-height: 1;
+  opacity: 0.85;
 }
 
-.console-prompt-text {
+.console-prompt-hint-text {
   flex: 1 1 auto;
   min-width: 0;
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.console-prompt-cta {
+.console-prompt-hint-btn {
   flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 11px;
-  text-transform: lowercase;
-  color: rgba(167, 139, 250, 0.95);
+  justify-content: center;
+  min-width: 36px;
+  min-height: 36px;
+  padding: 0 8px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.78);
+  font-family: inherit;
+  font-size: 12px;
   font-weight: 600;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease, border-color 140ms ease, transform 80ms ease;
+}
+
+.console-prompt-hint-btn:hover,
+.console-prompt-hint-btn:focus-visible {
+  background: rgba(99, 102, 241, 0.14);
+  border-color: rgba(139, 92, 246, 0.32);
+  color: rgba(255, 255, 255, 0.95);
+  outline: none;
+}
+
+.console-prompt-hint-btn:active {
+  transform: scale(0.95);
+}
+
+.console-prompt-hint-btn .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.console-prompt-hint-use {
+  color: rgba(167, 139, 250, 0.98);
+  text-transform: lowercase;
   letter-spacing: 0.2px;
 }
 
-.console-prompt-cta .material-symbols-outlined {
-  font-size: 16px;
-}
-
 @media (max-width: 380px) {
-  .console-prompt-card {
-    padding: 9px 12px;
-    font-size: 12.5px;
+  .console-prompt-hint {
+    font-size: 12px;
+    padding: 7px 8px;
+    gap: 6px;
   }
-  .console-prompt-cta span:not(.material-symbols-outlined) {
-    display: none;
+  .console-prompt-hint-btn {
+    min-width: 36px;
+    padding: 0 6px;
   }
 }
