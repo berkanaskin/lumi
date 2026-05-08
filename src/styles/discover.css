@@ -146,17 +146,116 @@
 @media (prefers-reduced-motion: reduce) {
   .console-chip,
   .era-chip,
+  .console-prompt-card,
   .console-btn.primary,
   .console-input-wrapper:has(.console-textarea) {
     transition: none;
   }
   .console-chip:active,
   .era-chip:active,
+  .console-prompt-card:active,
   .console-btn.primary:active {
     transform: none;
   }
   .console-btn.primary.is-loading .console-btn-label::after {
     animation: none;
     border-top-color: rgba(255, 255, 255, 0.6);
+  }
+}
+
+/* ==========================================================================
+   Round 10 — Enlarged AI textarea + tappable example prompts
+   (replaces mood/era chips; mobile-only viewport, min target 375px)
+   ========================================================================== */
+
+.console-textarea.console-textarea-lg {
+  min-height: 120px;
+  padding: 14px 16px;
+  font-size: 15px;
+  line-height: 1.45;
+  resize: none;
+}
+
+.console-prompts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  max-height: 220px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-right: 2px;
+}
+
+.console-prompts::-webkit-scrollbar {
+  width: 4px;
+}
+.console-prompts::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 2px;
+}
+
+.console-prompt-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.88);
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    transform 100ms ease;
+}
+
+.console-prompt-card:hover,
+.console-prompt-card:focus-visible {
+  background: rgba(99, 102, 241, 0.14);
+  border-color: rgba(139, 92, 246, 0.35);
+  outline: none;
+}
+
+.console-prompt-card:active {
+  transform: scale(0.985);
+}
+
+.console-prompt-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.console-prompt-cta {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  text-transform: lowercase;
+  color: rgba(167, 139, 250, 0.95);
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.console-prompt-cta .material-symbols-outlined {
+  font-size: 16px;
+}
+
+@media (max-width: 380px) {
+  .console-prompt-card {
+    padding: 9px 12px;
+    font-size: 12.5px;
+  }
+  .console-prompt-cta span:not(.material-symbols-outlined) {
+    display: none;
   }
 }

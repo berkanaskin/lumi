@@ -398,78 +398,19 @@
             >Bugün nasıl hissediyorsun?</label
           >
 
-          <!-- AI Textarea (3 lines) -->
+          <!-- AI Textarea (enlarged for richer prompts) -->
           <div class="console-input-wrapper">
             <textarea
               id="ai-movie-input"
-              class="console-textarea"
-              rows="3"
+              class="console-textarea console-textarea-lg"
+              rows="4"
               placeholder="Beni çocukluğuma götürecek sıcak bir aile filmi..."
               data-i18n-placeholder="aiInputPlaceholder"
             ></textarea>
           </div>
 
-          <!-- Mood/Genre Chips -->
-          <div class="console-chips hide-scrollbar" id="mood-chips">
-            <button class="console-chip active" data-mood="chill">
-              <span class="material-symbols-outlined">mood</span
-              ><span data-i18n="moodChill">Rahat</span>
-            </button>
-            <button class="console-chip" data-mood="adrenaline">
-              <span class="material-symbols-outlined">bolt</span
-              ><span data-i18n="moodAdrenaline">Heyecan</span>
-            </button>
-            <button class="console-chip" data-mood="tearjerker">
-              <span class="material-symbols-outlined">water_drop</span
-              ><span data-i18n="moodTearjerker">Duygusal</span>
-            </button>
-            <button class="console-chip" data-mood="mindbending">
-              <span class="material-symbols-outlined">psychology</span
-              ><span data-i18n="moodMindbending">Beyin Yakan</span>
-            </button>
-            <button class="console-chip" data-genre="28">
-              <span class="material-symbols-outlined"
-                >local_fire_department</span
-              ><span data-i18n="action">Aksiyon</span>
-            </button>
-            <button class="console-chip" data-genre="27">
-              <span class="material-symbols-outlined">skull</span
-              ><span data-i18n="horror">Korku</span>
-            </button>
-            <button class="console-chip" data-genre="878">
-              <span class="material-symbols-outlined">rocket_launch</span
-              ><span data-i18n="scifi">Bilim Kurgu</span>
-            </button>
-            <button class="console-chip" data-genre="10749">
-              <span class="material-symbols-outlined">favorite</span
-              ><span data-i18n="romance">Romantik</span>
-            </button>
-          </div>
-
-          <!-- Era Chips -->
-          <div class="console-chips-secondary hide-scrollbar" id="era-chips">
-            <button class="era-chip active" data-era="" data-i18n="allEras">
-              Tüm Dönemler
-            </button>
-            <button class="era-chip" data-era="classic" data-i18n="eraClassic">
-              Klasik
-            </button>
-            <button class="era-chip" data-era="80s" data-i18n="era80s">
-              80'ler
-            </button>
-            <button class="era-chip" data-era="90s" data-i18n="era90s">
-              90'lar
-            </button>
-            <button class="era-chip" data-era="2000s" data-i18n="era2000s">
-              2000'ler
-            </button>
-            <button class="era-chip" data-era="2010s" data-i18n="era2010s">
-              2010'lar
-            </button>
-            <button class="era-chip" data-era="2020s" data-i18n="era2020s">
-              2020'ler
-            </button>
-          </div>
+          <!-- Tappable example prompts (replace mood/era chips) -->
+          <div class="console-prompts" id="console-prompts" role="list" aria-label="Örnek aramalar"></div>
 
           <!-- Action Buttons -->
           <div class="console-actions">

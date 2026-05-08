@@ -38,6 +38,56 @@ export function setRandomPlaceholder() {
 }
 
 // ============================================
+// EXAMPLE PROMPTS (Round 10 — replace mood/era chips)
+// ============================================
+//
+// Tappable list of varied example queries. Tap → fills textarea + focuses
+// (does NOT auto-submit — user can edit). Demonstrates the breadth of natural-
+// language requests the AI search supports (mood + era + media type + occasion).
+export const EXAMPLE_PROMPTS = [
+    'Pazar akşamı izlenecek nostaljik bir film',
+    'Beni gerçekten korkutacak modern bir korku dizisi',
+    "90'lar romantik komedileri, mutlu sonla bitenler",
+    'Aksiyon dolu, hızlı tempolu bir Kore dizisi',
+    'Bilim kurgu sevenlere düşündürücü bir film',
+    'Çocuklarla izlenecek macera filmi',
+    'Soğuk bir kış akşamı için sıcak bir hikaye',
+];
+
+/**
+ * Render the example-prompt list into #console-prompts.
+ * Each item is a button that fills #ai-movie-input with the prompt text and
+ * focuses it. We do NOT auto-submit — user might want to tweak the prompt first.
+ */
+export function renderExamplePrompts() {
+    const container = document.getElementById('console-prompts');
+    if (!container) return;
+    container.innerHTML = '';
+    EXAMPLE_PROMPTS.forEach(prompt => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'console-prompt-card';
+        btn.setAttribute('role', 'listitem');
+        btn.innerHTML = `
+            <span class="console-prompt-text">${prompt}</span>
+            <span class="console-prompt-cta">
+                <span data-i18n="useThis">kullan</span>
+                <span class="material-symbols-outlined">arrow_forward</span>
+            </span>
+        `;
+        btn.addEventListener('click', () => {
+            const input = document.getElementById('ai-movie-input');
+            if (!input) return;
+            input.value = prompt;
+            input.focus();
+            // Move cursor to end so user can append/edit naturally
+            try { input.setSelectionRange(prompt.length, prompt.length); } catch { /* noop */ }
+        });
+        container.appendChild(btn);
+    });
+}
+
+// ============================================
 // MOOD & ERA MAPPINGS
 // ============================================
 
@@ -639,25 +689,8 @@ export function initDiscoverModule() {
     // Set random poetic placeholder
     setRandomPlaceholder();
 
-    // Mood chips toggle
-    document.querySelectorAll('.mood-chip, .console-chip').forEach(chip => {
-        chip.addEventListener('click', function () {
-            document.querySelectorAll('.mood-chip, .console-chip').forEach(c => {
-                c.classList.remove('active');
-            });
-            this.classList.add('active');
-        });
-    });
-
-    // Era chips toggle
-    document.querySelectorAll('.era-chip').forEach(chip => {
-        chip.addEventListener('click', function () {
-            document.querySelectorAll('.era-chip').forEach(c => {
-                c.classList.remove('active');
-            });
-            this.classList.add('active');
-        });
-    });
+    // Round 10: render tappable example prompts (replaces mood/era chips entirely)
+    renderExamplePrompts();
 
     // Platform button toggle
     document.querySelectorAll('.platform-btn').forEach(btn => {
@@ -702,4 +735,5 @@ if (typeof window !== 'undefined') {
     window.initDiscoverModule = initDiscoverModule;
     window.loadDailyRecommendation = loadDailyRecommendation;
     window.setRandomPlaceholder = setRandomPlaceholder;
+    window.renderExamplePrompts = renderExamplePrompts;
 }
