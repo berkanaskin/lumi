@@ -1,17 +1,14 @@
 /**
- * AI Search — Gemini 2.5 Flash
+ * AI Search — Gemini 2.5 Flash (direct REST API)
  * Vercel Serverless Function (Node.js)
  *
- * Direct LLM search: User describes what they want → Gemini suggests TMDB IDs → enrich with TMDB data
- * No Firestore dependency — works without billing
+ * User describes what they want → Gemini suggests TMDB IDs → enrich with TMDB data.
+ * No Firestore dependency — works without billing.
+ *
+ * Round 6: AI SDK (`ai` + `@ai-sdk/google`) caused 4 rounds of cold-start hangs in
+ * Vercel Node 20. Replaced entirely with a direct fetch() to Google's Generative
+ * Language API. `embeddings.js` still uses `ai` + `@ai-sdk/openai` — those deps stay.
  */
-
-import { z } from 'zod';
-
-// NOTE: AI SDK (`ai` + `@ai-sdk/google`) is intentionally lazy-loaded inside the handler.
-// Importing them at module top-level was hanging cold-start in Vercel Node 20 runtime,
-// causing /api/search to never respond (not even a 405 for GET). Keep `zod` here — it's
-// lightweight and required for schema construction.
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -77,25 +74,71 @@ async function getTMDBMovie(tmdbId, apiKey) {
     }
 }
 
-// Lazy-load AI SDK only when actually needed (POST request). Top-level import was
-// hanging cold-start in Vercel Node 20, blocking even GET → 405 from responding.
-async function callGemini(prompt, schema, abortSignal) {
-    const { generateObject } = await import('ai');
-    const { createGoogleGenerativeAI } = await import('@ai-sdk/google');
-    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
-    const google = createGoogleGenerativeAI({ apiKey });
-    return generateObject({
-        model: google('gemini-2.5-flash-lite'),
-        schema,
-        prompt,
-        maxRetries: 1,
-        abortSignal,
+// Direct REST call to Google Generative Language API. No SDK, no dynamic imports.
+async function callGeminiREST(query, limit, apiKey, abortSignal) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    const prompt = `Sen bir film ve dizi öneri uzmanısın. Kullanıcı şu tarzı bir şey izlemek istiyor: "${query}"
+
+Bu isteğe en uygun ${limit} film veya dizi öner. TMDB (The Movie Database) ID'lerini dön.
+
+Kurallar:
+- Sadece gerçek, var olan filmleri/dizileri öner
+- TMDB ID'leri doğru olmalı
+- Türkçe ve yabancı yapımlar karışık olabilir
+- Popüler ve az bilinen yapımlar karışık olsun`;
+
+    const body = {
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+            response_mime_type: 'application/json',
+            response_schema: {
+                type: 'object',
+                properties: {
+                    suggestions: {
+                        type: 'array',
+                        items: {
+                            type: 'object',
+                            properties: {
+                                tmdbId: { type: 'integer' },
+                                title: { type: 'string' },
+                                reason: { type: 'string' },
+                            },
+                            required: ['tmdbId', 'title', 'reason'],
+                        },
+                    },
+                },
+                required: ['suggestions'],
+            },
+            temperature: 0.7,
+            maxOutputTokens: 2048,
+        },
+    };
+
+    const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        signal: abortSignal,
     });
+    if (!res.ok) {
+        const errText = await res.text().catch(() => '');
+        throw new Error(`Gemini ${res.status}: ${errText.slice(0, 200)}`);
+    }
+    const data = await res.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) throw new Error('Gemini returned no text');
+    let parsed;
+    try {
+        parsed = JSON.parse(text);
+    } catch {
+        throw new Error('Gemini returned invalid JSON: ' + text.slice(0, 200));
+    }
+    return parsed.suggestions || [];
 }
 
 export default async function handler(request) {
-    // Fast health-check shortcut — runs BEFORE body parse / AI SDK load so we can
-    // verify the function is reachable at all and which env vars are configured.
+    // Fast health-check shortcut — runs BEFORE body parse so we can verify the
+    // function is reachable at all and which env vars are configured.
     if (request.method === 'GET') {
         const url = new URL(request.url, 'http://localhost');
         if (url.searchParams.has('healthcheck')) {
@@ -163,9 +206,9 @@ export default async function handler(request) {
             });
         }
 
-        // Gemini LLM — suggest movies
-        const apiKey = process.env.TMDB_API_KEY;
-        if (!apiKey) {
+        // Env keys
+        const tmdbKey = process.env.TMDB_API_KEY;
+        if (!tmdbKey) {
             return new Response(
                 JSON.stringify({ error: 'TMDB_API_KEY not configured' }),
                 { status: 500, headers: { 'Content-Type': 'application/json' } }
@@ -182,55 +225,31 @@ export default async function handler(request) {
             );
         }
 
-        // Round 4 fix: replace deprecated `generateText + Output.object` pattern with
-        // canonical `generateObject` (Vercel AI SDK 6). The previous pattern was looping
-        // internally and exceeding the 60s wall, causing the function to hang.
-        // Hard 25s ceiling via AbortSignal so we always have time left to return.
-        const schema = z.object({
-            suggestions: z.array(z.object({
-                tmdbId: z.number().describe('TMDB ID'),
-                title: z.string().describe('Film/dizi adi'),
-                reason: z.string().describe('Neden onerildi — 1 cumle'),
-            })).describe('Onerilen filmler/diziler'),
-        });
-        const prompt = `Sen bir film ve dizi oneri uzmanisn. Kullanici su tarzi bir sey izlemek istiyor: "${query}"
-
-Bu isteğe en uygun ${limit} film veya dizi oner. TMDB (The Movie Database) ID'lerini don.
-
-Onemli kurallar:
-- Sadece gercek, var olan filmleri/dizileri oner
-- TMDB ID'leri dogru olmali
-- Turkce ve yabanci yapimlar karisik olabilir
-- Populer ve az bilinen yapimlar karisik olsun
-- Kullanicinin ruh haline/tarifine en uygun olanlari sec`;
-
-        let result;
+        // Direct Gemini REST call — 20s ceiling so we always have time left for TMDB enrichment.
+        let suggestions;
         try {
-            result = await callGemini(prompt, schema, AbortSignal.timeout(25_000));
-        } catch (llmErr) {
-            const isAbort = llmErr?.name === 'AbortError' || llmErr?.name === 'TimeoutError';
-            console.error('[Search] LLM error:', llmErr?.name, llmErr?.message);
+            suggestions = await callGeminiREST(query, limit, geminiKey, AbortSignal.timeout(20_000));
+        } catch (err) {
+            const isAbort = err?.name === 'AbortError' || err?.name === 'TimeoutError';
+            console.error('[Search] Gemini REST error:', err?.name, err?.message);
             return new Response(JSON.stringify({
                 results: [],
                 source: 'gemini',
                 empty: true,
                 reason: isAbort ? 'llm_timeout' : 'llm_error',
-                errorName: llmErr?.name || 'Error',
-                errorMessage: llmErr?.message || 'LLM call failed',
+                errorName: err?.name || 'Error',
+                errorMessage: err?.message || 'LLM call failed',
                 timestamp: new Date().toISOString(),
             }), { status: 200, headers: { 'Content-Type': 'application/json' } });
         }
 
-        // Enrich with TMDB data
-        const suggestions = result.object?.suggestions || [];
+        // Enrich with TMDB data — parallel batches of 5
         const enriched = [];
-
-        // Fetch TMDB data in parallel (max 5 concurrent)
         const batchSize = 5;
         for (let i = 0; i < suggestions.length; i += batchSize) {
             const batch = suggestions.slice(i, i + batchSize);
             const results = await Promise.all(
-                batch.map(s => getTMDBMovie(s.tmdbId, apiKey))
+                batch.map(s => getTMDBMovie(s.tmdbId, tmdbKey))
             );
             for (let j = 0; j < results.length; j++) {
                 const movie = results[j];
@@ -245,12 +264,9 @@ Onemli kurallar:
         // suggestions but TMDB lookups returned null (bad/stale ID). Surface this.
         console.log('[Search] query="%s" gemini=%d enriched=%d', query, suggestions.length, enriched.length);
 
-        // If Gemini returned 0 suggestions OR all TMDB lookups failed → return explicit
-        // empty-state response with diagnostic so frontend can surface a real message.
+        // Empty-state with diagnostic so frontend can surface a real message.
         if (enriched.length === 0) {
-            const reason = suggestions.length === 0
-                ? 'gemini_empty'
-                : 'tmdb_lookup_failed';
+            const reason = suggestions.length === 0 ? 'gemini_empty' : 'tmdb_lookup_failed';
             const responseData = {
                 results: [],
                 source: 'gemini',
