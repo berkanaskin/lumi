@@ -35,53 +35,63 @@ function cleanMaps() {
 }
 
 /**
- * Round 10 fix: Gemini hallucinates TMDB IDs (returns invalid/non-existent IDs).
- * Instead of trusting Gemini's IDs, look up real TMDB content by title + year + mediaType.
+ * Round 10 r2: Gemini hallucinates TMDB IDs. Replace ID lookup with title+year+mediaType
+ * search across BOTH movie and tv (when 'either'), then rank by year-proximity then popularity.
+ * This is much more robust than picking the first result of a single search.
  *
- * @param {string} title - movie/show title (any language)
- * @param {number|null} year - release year (optional but improves match accuracy)
- * @param {string} mediaType - 'movie' | 'tv' | 'either'
+ * @param {{title:string, year:number|null, mediaType:'movie'|'tv'|'either'}} suggestion
  * @param {string} apiKey - TMDB v3 API key
  * @returns {Promise<object|null>} normalized TMDB record or null
  */
-async function findTMDBByTitle(title, year, mediaType, apiKey) {
+async function resolveTMDB(suggestion, apiKey) {
+    const { title, year, mediaType } = suggestion || {};
     if (!title) return null;
-    const types = mediaType === 'either' || !mediaType ? ['movie', 'tv'] : [mediaType];
+    const types = (mediaType === 'either' || !mediaType) ? ['movie', 'tv'] : [mediaType];
+    const candidates = [];
     for (const type of types) {
         try {
-            const yearParam = year
-                ? `&${type === 'movie' ? 'primary_release_year' : 'first_air_date_year'}=${year}`
-                : '';
-            const url = `https://api.themoviedb.org/3/search/${type}?api_key=${apiKey}&query=${encodeURIComponent(title)}&language=tr-TR&include_adult=false${yearParam}`;
+            const params = new URLSearchParams({
+                api_key: apiKey,
+                query: title,
+                language: 'tr-TR',
+                include_adult: 'false',
+            });
+            // Use 'year' (movie) / 'first_air_date_year' (tv) as a soft bias — TMDB still
+            // returns matching titles even if year is off, because it's a hint, not filter.
+            if (year) {
+                if (type === 'movie') params.set('year', String(year));
+                else params.set('first_air_date_year', String(year));
+            }
+            const url = `https://api.themoviedb.org/3/search/${type}?${params.toString()}`;
             const res = await fetch(url, { signal: AbortSignal.timeout(4000) });
             if (!res.ok) continue;
             const data = await res.json();
-            const top = Array.isArray(data.results) && data.results[0];
-            if (!top) continue;
-            return type === 'movie'
-                ? {
-                    id: top.id,
-                    title: top.title,
-                    release_date: top.release_date || null,
-                    poster_path: top.poster_path || null,
-                    vote_average: top.vote_average || 0,
-                    overview: top.overview || '',
-                    media_type: 'movie',
-                }
-                : {
-                    id: top.id,
-                    title: top.name,
-                    release_date: top.first_air_date || null,
-                    poster_path: top.poster_path || null,
-                    vote_average: top.vote_average || 0,
-                    overview: top.overview || '',
-                    media_type: 'tv',
-                };
+            const top3 = Array.isArray(data.results) ? data.results.slice(0, 3) : [];
+            for (const r of top3) {
+                const dateStr = (r.release_date || r.first_air_date || '');
+                const rYear = dateStr ? Number(dateStr.slice(0, 4)) : null;
+                const yearDelta = (year && rYear) ? Math.abs(rYear - year) : 99;
+                candidates.push({ ...r, _type: type, _yearDelta: yearDelta });
+            }
         } catch {
             // try next type
         }
     }
-    return null;
+    if (!candidates.length) return null;
+    // Best: lowest year delta, then highest popularity
+    candidates.sort((a, b) =>
+        (a._yearDelta - b._yearDelta) || ((b.popularity || 0) - (a.popularity || 0))
+    );
+    const best = candidates[0];
+    return {
+        id: best.id,
+        title: best.title || best.name,
+        release_date: best.release_date || best.first_air_date || null,
+        poster_path: best.poster_path || null,
+        vote_average: best.vote_average || 0,
+        overview: best.overview || '',
+        media_type: best._type,
+    };
 }
 
 // Direct REST call to Google Generative Language API. No SDK, no dynamic imports.
@@ -92,11 +102,14 @@ async function callGeminiREST(query, limit, apiKey, abortSignal) {
 Bu isteğe en uygun ${limit} film veya dizi öner.
 
 Önemli kurallar:
-- Sadece gerçek, var olan filmleri/dizileri öner
-- Kullanıcı "film" veya "dizi" diye belirtmediyse hem film hem dizi karışık öner — mediaType'ı içeriğe göre seç
+- Sadece gerçek, var olan filmleri/dizileri öner (TMDB'de aranabilir olmalı)
+- Eğer kullanıcı açıkça "film" veya "dizi" diye belirtmediyse mediaType: 'either' döndür — biz hem filmlerde hem dizilerde arayacağız
+- Kullanıcı "film" dediyse mediaType: 'movie', "dizi" dediyse mediaType: 'tv'
 - Türkçe ve yabancı yapımlar karışık olabilir
 - Popüler ve az bilinen yapımlar karışık olsun
-- Her öneri için: title (tam başlık, orijinal dilde tercih edilir), year (çıkış yılı), mediaType ('movie' / 'tv' / 'either'), reason (1 cümle Türkçe)`;
+- title alanı: orijinal başlığı tercih et (Inception, Breaking Bad, Şahsiyet gibi). Türkçe başlık varsa o da olur, ama TMDB'de aranabilir olmalı.
+- year: çıkış yılı (4 haneli sayı). Yıl bilmiyorsan null döndür — uydurma.
+- reason: 1 cümle, Türkçe, neden bu öneri uygun`;
 
     const body = {
         contents: [{ parts: [{ text: prompt }] }],
@@ -111,11 +124,11 @@ Bu isteğe en uygun ${limit} film veya dizi öner.
                             type: 'object',
                             properties: {
                                 title: { type: 'string', description: 'Tam başlık (orijinal dil tercih)' },
-                                year: { type: 'integer', description: 'Çıkış yılı' },
+                                year: { type: 'integer', description: 'Çıkış yılı (bilmiyorsan 0 döndür)', nullable: true },
                                 mediaType: { type: 'string', enum: ['movie', 'tv', 'either'] },
                                 reason: { type: 'string', description: 'Neden önerildi — 1 cümle' },
                             },
-                            required: ['title', 'year', 'mediaType', 'reason'],
+                            required: ['title', 'mediaType', 'reason'],
                         },
                     },
                 },
@@ -250,16 +263,22 @@ export default async function handler(request) {
             }), { status: 200, headers: { 'Content-Type': 'application/json' } });
         }
 
-        // Enrich with TMDB data — parallel batches of 5.
-        // Round 10: Gemini hallucinates IDs, so we now do title-based TMDB SEARCH
-        // instead of ID-based lookup. Much more reliable.
+        // Normalize: Gemini sometimes emits year=0 when it doesn't know the year.
+        // Treat 0/falsy as null so resolveTMDB doesn't filter to year=0 (no results).
+        const normalized = suggestions.map(s => ({
+            title: s?.title || '',
+            year: (Number.isInteger(s?.year) && s.year > 1800) ? s.year : null,
+            mediaType: s?.mediaType || 'either',
+            reason: s?.reason || '',
+        })).filter(s => s.title);
+
+        // Enrich with TMDB via title+year+mediaType search (no ID trust).
+        // Parallel batches of 5 to avoid hammering TMDB.
         const enriched = [];
         const batchSize = 5;
-        for (let i = 0; i < suggestions.length; i += batchSize) {
-            const batch = suggestions.slice(i, i + batchSize);
-            const results = await Promise.all(
-                batch.map(s => findTMDBByTitle(s.title, s.year, s.mediaType, tmdbKey))
-            );
+        for (let i = 0; i < normalized.length; i += batchSize) {
+            const batch = normalized.slice(i, i + batchSize);
+            const results = await Promise.all(batch.map(s => resolveTMDB(s, tmdbKey)));
             for (let j = 0; j < results.length; j++) {
                 const movie = results[j];
                 if (movie) {
@@ -269,13 +288,13 @@ export default async function handler(request) {
             }
         }
 
-        // Diagnostic logging — Round 3: silent failures were because Gemini returned
-        // suggestions but TMDB lookups returned null (bad/stale ID). Surface this.
-        console.log('[Search] query="%s" gemini=%d enriched=%d', query, suggestions.length, enriched.length);
+        // Diagnostic logging
+        console.log('[Search] query="%s" gemini=%d normalized=%d enriched=%d',
+            query, suggestions.length, normalized.length, enriched.length);
 
         // Empty-state with diagnostic so frontend can surface a real message.
         if (enriched.length === 0) {
-            const reason = suggestions.length === 0 ? 'gemini_empty' : 'tmdb_lookup_failed';
+            const reason = normalized.length === 0 ? 'gemini_empty' : 'tmdb_lookup_failed';
             const responseData = {
                 results: [],
                 source: 'gemini',
