@@ -179,7 +179,11 @@ export async function handleAISearch() {
 
         hideLoading(spinner);
 
-        if (response && response.results && response.results.length > 0) {
+        // Round 11: ALWAYS log the response so we can diagnose "öneri bulunamadı"
+        // reports without users opening F12 mid-conversation. Cheap (one console line).
+        console.warn('[AI Search] response:', response);
+
+        if (response && Array.isArray(response.results) && response.results.length > 0) {
             displayDiscoverResultsView(response.results, 'ai');
             showToast(`✨ ${response.results.length} film önerisi bulundu!`);
 
@@ -195,21 +199,39 @@ export async function handleAISearch() {
 
             EmbeddingService.logSearchQuery(query, userId, response.results.length).catch(() => {});
         } else {
-            // Round 3 fix: differentiate empty-state reasons surfaced by /api/search.
-            // Round 4: also handle 'llm_timeout' from new abort-signal protected backend.
-            console.warn('[handleAISearch] empty response:', response);
+            // Round 11: hardened empty-state classification.
+            //   1. response missing entirely    → parse/network fail
+            //   2. response.results undefined   → backend shape mismatch
+            //   3. response.empty === true      → backend explicit empty (with reason)
+            //   4. response.results.length === 0 → no matches (no explicit reason)
             const reason = response?.reason;
             let title = 'Öneri bulunamadı';
             let msg = 'Farklı bir şey dene.';
-            if (reason === 'tmdb_lookup_failed') {
-                title = 'TMDB\'de bulunamadı';
-                msg = 'AI öneri verdi ama TMDB\'de eşleşme yok. Daha spesifik bir arama dene.';
-            } else if (reason === 'gemini_empty') {
-                title = 'AI öneri üretemedi';
-                msg = 'Bu arama için öneri çıkmadı. Farklı kelimelerle dene.';
-            } else if (reason === 'llm_timeout') {
-                title = 'AI servisi yanıt vermedi';
-                msg = 'Şu an AI servisi yanıt vermedi. Lütfen tekrar dene.';
+
+            if (!response) {
+                title = 'Beklenmeyen bir hata oluştu';
+                msg = 'Sunucudan boş yanıt geldi. Lütfen tekrar dene.';
+            } else if (!Array.isArray(response.results)) {
+                title = 'Beklenmeyen bir hata oluştu';
+                msg = 'Yanıt biçimi tanınmadı. Lütfen tekrar dene.';
+            } else if (response.empty === true) {
+                if (reason === 'tmdb_lookup_failed') {
+                    title = 'TMDB\'de bulunamadı';
+                    msg = 'AI öneri verdi ama TMDB\'de eşleşme yok. Daha spesifik bir arama dene.';
+                } else if (reason === 'gemini_empty') {
+                    title = 'AI öneri üretemedi';
+                    msg = 'Bu arama için öneri çıkmadı. Farklı kelimelerle dene.';
+                } else if (reason === 'llm_timeout') {
+                    title = 'AI servisi yanıt vermedi';
+                    msg = 'Şu an AI servisi yanıt vermedi. Lütfen tekrar dene.';
+                } else if (reason === 'llm_error') {
+                    title = 'AI servisi hata verdi';
+                    msg = 'AI servisinde geçici bir sorun var. Lütfen tekrar dene.';
+                }
+            } else {
+                // results is array with length 0, no empty flag
+                title = 'Sonuç bulunamadı';
+                msg = 'Bu arama için sonuç çıkmadı. Farklı kelimelerle dene.';
             }
             renderSearchEmptyState(title, msg, query);
             showToast(title);
