@@ -12,6 +12,8 @@
 
 import { getFirestore, doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { TMDBService } from './api.js';
+import { PLATFORM_DISPLAY_NAMES, PLATFORM_ID_URLS } from '../lib/platforms.js';
+import turkishCatalog from '../data/turkish-platform-catalog.json';
 
 const TTL_MS = 24 * 60 * 60 * 1000;    // 24 hours: app-level freshness check
 const EXPIRY_MS = 48 * 60 * 60 * 1000; // 48 hours: Firestore document expiry
@@ -144,6 +146,87 @@ export function injectTurkishProviders(providers, details) {
 }
 
 /**
+ * Round 13 (TASK B): apply curated Turkish-platform overlay.
+ *
+ * Lookup order:
+ *   1. byTmdbId[mediaType][tmdbId]
+ *   2. byNormalizedTitle[normalize(title)]
+ *
+ * Adds any platforms not already present (dedup against serviceId AND
+ * lowercased serviceName, since the keyword-scan injector uses tmdb_-prefixed
+ * IDs but full names like "Gain"). Only runs for country='TR'.
+ *
+ * @param {Array} providers
+ * @param {string|number} tmdbId
+ * @param {'movie'|'tv'} mediaType
+ * @param {string} title
+ * @param {string} countryUpper
+ * @returns {Array}
+ */
+export function applyTurkishCatalog(providers, tmdbId, mediaType, title, countryUpper) {
+    if (countryUpper !== 'TR') return providers;
+    if (!Array.isArray(providers)) providers = [];
+
+    const idMap = (turkishCatalog.byTmdbId && turkishCatalog.byTmdbId[mediaType]) || {};
+    const titleMap = turkishCatalog.byNormalizedTitle || {};
+
+    const normalize = (s) => (s || '')
+        .toLowerCase()
+        .replace(/[ıİ]/g, 'i')
+        .replace(/[şŞ]/g, 's')
+        .replace(/[çÇ]/g, 'c')
+        .replace(/[ğĞ]/g, 'g')
+        .replace(/[üÜ]/g, 'u')
+        .replace(/[öÖ]/g, 'o')
+        .replace(/[^a-z0-9]/g, '');
+
+    const idHits = idMap[String(tmdbId)] || null;
+    const titleHits = titleMap[normalize(title)] || null;
+    const platforms = idHits || titleHits || [];
+    if (!platforms.length) return providers;
+
+    // Dedup keys: lowercase serviceId AND lowercase serviceName.
+    const existing = new Set();
+    for (const p of providers) {
+        const sid = String(p.serviceId || '').toLowerCase();
+        const sname = String(p.serviceName || '').toLowerCase();
+        if (sid) existing.add(sid);
+        if (sname) existing.add(sname);
+        // Also dedup the tmdb_-prefixed shape from TR_PRODUCER_PROVIDERS
+        if (sid.startsWith('tmdb_')) existing.add(sid.slice(5));
+    }
+
+    const additions = [];
+    for (const plat of platforms) {
+        const key = String(plat).toLowerCase();
+        const displayName = PLATFORM_DISPLAY_NAMES[key] || plat;
+        if (existing.has(key)) continue;
+        if (existing.has(displayName.toLowerCase())) continue;
+        const baseUrl = PLATFORM_ID_URLS[key] || '';
+        additions.push({
+            serviceId: `curated_${key}`,
+            serviceName: displayName,
+            type: 'subscription',
+            group: 'stream',
+            link: baseUrl ? baseUrl + encodeURIComponent(title || '') : '',
+            logoPath: null,
+            themeColor: null,
+            quality: null,
+            source: 'curated-tr-catalog',
+        });
+        existing.add(key);
+        existing.add(displayName.toLowerCase());
+    }
+    if (additions.length > 0) {
+        try {
+            console.log('[StreamCache] curated TR catalog injected',
+                additions.map(a => a.serviceName), 'for', mediaType, tmdbId, title);
+        } catch { /* ignore */ }
+    }
+    return [...providers, ...additions];
+}
+
+/**
  * Normalize TMDB watch-providers shape to our canonical provider shape.
  * @param {object} tmdbProviders - { flatrate?, free?, rent?, buy?, ads?, link? }
  * @returns {Array} normalized providers
@@ -262,9 +345,12 @@ export async function getStreamingWithCache(tmdbId, imdbId, country, type = 'mov
             if (age < TTL_MS) {
                 // Cache hit — apply Turkish producer injection on top (cheap, idempotent)
                 let providers = cached.providers || [];
-                if (countryUpper === 'TR' && details) {
+                if (countryUpper === 'TR') {
                     const before = providers.length;
-                    providers = injectTurkishProviders(providers, details);
+                    if (details) providers = injectTurkishProviders(providers, details);
+                    // Round 13: also apply curated TR catalog overlay (works without details).
+                    const titleForCatalog = details?.title || details?.name || cached.title || '';
+                    providers = applyTurkishCatalog(providers, tmdbId, type, titleForCatalog, countryUpper);
                     // Round 3 fix: if cache was written before injection logic existed AND
                     // we just added providers via injection, write the augmented list back
                     // so the next reader sees the merged result without re-injecting.
@@ -338,6 +424,10 @@ async function _fetchFromApiOrFallback(tmdbId, imdbId, countryLower, countryUppe
             if (details) {
                 providers = injectTurkishProviders(providers, details);
             }
+            // 2.7. Round 13: curated TR catalog overlay — last-line-of-defense for
+            //      titles like Şahsiyet that aren't reliably in any of the upstream feeds.
+            const titleForCatalog = details?.title || details?.name || '';
+            providers = applyTurkishCatalog(providers, tmdbId, type, titleForCatalog, countryUpper);
         }
 
         // 3. Write to Firestore cache
@@ -394,16 +484,20 @@ async function _tmdbFallback(tmdbId, countryUpper, type = 'movie', details = nul
         }));
 
         // Inject Turkish providers for TR when production_companies indicate one
-        if (countryUpper === 'TR' && details) {
-            providers = injectTurkishProviders(providers, details);
+        if (countryUpper === 'TR') {
+            if (details) providers = injectTurkishProviders(providers, details);
+            const titleForCatalog = details?.title || details?.name || '';
+            providers = applyTurkishCatalog(providers, tmdbId, type, titleForCatalog, countryUpper);
         }
 
         return { providers, fallback: true };
     } catch (err) {
         console.warn('[StreamingCache] TMDB fallback failed:', err.message);
-        // Even on failure, attempt producer-based injection as last resort
-        if (countryUpper === 'TR' && details) {
-            const providers = injectTurkishProviders([], details);
+        // Even on failure, attempt producer-based injection + curated catalog as last resort
+        if (countryUpper === 'TR') {
+            let providers = details ? injectTurkishProviders([], details) : [];
+            const titleForCatalog = details?.title || details?.name || '';
+            providers = applyTurkishCatalog(providers, tmdbId, type, titleForCatalog, countryUpper);
             return { providers, fallback: true };
         }
         return { providers: [], fallback: true };

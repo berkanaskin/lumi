@@ -48,6 +48,42 @@ export const PLATFORM_URLS = {
 };
 
 /**
+ * Display-name map for short platform IDs used in the curated TR catalog
+ * (src/data/turkish-platform-catalog.json). Keys are lowercase IDs.
+ */
+export const PLATFORM_DISPLAY_NAMES = {
+    gain: 'Gain',
+    exxen: 'Exxen',
+    tabii: 'Tabii',
+    tod: 'TOD',
+    blutv: 'BluTV',
+    puhutv: 'Puhu TV',
+    netflix: 'Netflix',
+    atv: 'ATV',
+    trt: 'TRT',
+    startv: 'Star TV',
+    showtv: 'Show TV',
+};
+
+/**
+ * URL templates for short platform IDs (paired with PLATFORM_DISPLAY_NAMES).
+ * Search query suffix is appended by callers.
+ */
+export const PLATFORM_ID_URLS = {
+    gain: 'https://www.gain.tv/search?q=',
+    exxen: 'https://www.exxen.com/tr/arama?q=',
+    tabii: 'https://www.tabii.com/tr/search?q=',
+    tod: 'https://www.tod.tv/arama?query=',
+    blutv: 'https://www.blutv.com/ara?q=',
+    puhutv: 'https://puhutv.com/arama?q=',
+    netflix: 'https://www.netflix.com/search?q=',
+    atv: 'https://www.atv.com.tr/arama?q=',
+    trt: 'https://www.trtizle.com/arama?q=',
+    startv: 'https://www.startv.com.tr/arama?q=',
+    showtv: 'https://www.showtv.com.tr/arama?q=',
+};
+
+/**
  * Logo overrides for providers whose CDN-supplied logos are broken or missing.
  * Lookup is case-sensitive against provider.serviceName from streaming-cache.js.
  * URLs should resolve to a 40x40 (or larger) PNG.
