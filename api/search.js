@@ -109,7 +109,7 @@ Bu isteğe en uygun ${limit} film veya dizi öner.
 - Popüler ve az bilinen yapımlar karışık olsun
 - title alanı: orijinal başlığı tercih et (Inception, Breaking Bad, Şahsiyet gibi). Türkçe başlık varsa o da olur, ama TMDB'de aranabilir olmalı.
 - year: çıkış yılı (4 haneli sayı). Yıl bilmiyorsan null döndür — uydurma.
-- reason: 1 cümle, Türkçe, neden bu öneri uygun`;
+- reason: 1 SHORT cümle, MAKSIMUM 80 karakter, Türkçe, neden bu öneri uygun`;
 
     const body = {
         contents: [{ parts: [{ text: prompt }] }],
@@ -134,8 +134,8 @@ Bu isteğe en uygun ${limit} film veya dizi öner.
                 },
                 required: ['suggestions'],
             },
-            temperature: 0.7,
-            maxOutputTokens: 2048,
+            temperature: 0.6,
+            maxOutputTokens: 4096,
         },
     };
 
@@ -156,7 +156,51 @@ Bu isteğe en uygun ${limit} film veya dizi öner.
     try {
         parsed = JSON.parse(text);
     } catch {
-        throw new Error('Gemini returned invalid JSON: ' + text.slice(0, 200));
+        // Defensive partial-JSON recovery: if Gemini truncated mid-array, try to
+        // clip to the last complete suggestion object and close the structure.
+        // Better to return 7 of 10 suggestions than fail the whole request.
+        let recovered = null;
+        try {
+            // Find the start of the suggestions array
+            const arrStart = text.indexOf('"suggestions"');
+            if (arrStart >= 0) {
+                const bracketStart = text.indexOf('[', arrStart);
+                if (bracketStart >= 0) {
+                    // Walk forward and remember the last position where a complete
+                    // object closed at depth 1 (i.e., a complete suggestion item).
+                    let depth = 0;
+                    let inString = false;
+                    let escape = false;
+                    let lastGoodEnd = -1;
+                    for (let i = bracketStart; i < text.length; i++) {
+                        const ch = text[i];
+                        if (escape) { escape = false; continue; }
+                        if (ch === '\\') { escape = true; continue; }
+                        if (ch === '"') { inString = !inString; continue; }
+                        if (inString) continue;
+                        if (ch === '{') depth++;
+                        else if (ch === '}') {
+                            depth--;
+                            if (depth === 1) lastGoodEnd = i; // closed an item; depth back to array level (1 = inside array)
+                        } else if (ch === '[') depth++;
+                        else if (ch === ']') depth--;
+                    }
+                    if (lastGoodEnd > bracketStart) {
+                        const clipped = text.slice(0, lastGoodEnd + 1) + ']}';
+                        try {
+                            recovered = JSON.parse(clipped);
+                        } catch { /* recovery failed */ }
+                    }
+                }
+            }
+        } catch { /* recovery threw — fall through */ }
+        if (recovered) {
+            console.warn('[Search] Gemini JSON truncated, recovered partial suggestions:',
+                (recovered.suggestions || []).length);
+            parsed = recovered;
+        } else {
+            throw new Error('Gemini returned invalid JSON: ' + text.slice(0, 200));
+        }
     }
     return parsed.suggestions || [];
 }
