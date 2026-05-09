@@ -594,12 +594,29 @@ export function displayDiscoverResultsView(movies, source) {
 }
 
 /**
- * Close wizard results
+ * Close wizard results.
+ *
+ * Round 13 (TASK A): also reset the AI search input state so reopening
+ * "Öner Bana" feels fresh — empty textarea, rotating placeholder, ⏎ icon
+ * back. Previously the textarea retained the last query.
  */
 export function closeWizardResults() {
     const resultsContainer = document.getElementById('wizard-results');
     if (resultsContainer) {
         resultsContainer.classList.remove('active');
+    }
+
+    // Reset Öner Bana input state
+    const input = document.getElementById('ai-movie-input');
+    if (input) {
+        input.value = '';
+        input.blur();
+    }
+    // Restart placeholder rotation + show ⏎ icon. Same path used on first mount.
+    _showFillBtn();
+    if (input) {
+        _setPlaceholder(input, _pickRandomPrompt(_currentPlaceholder));
+        _startRotation(input);
     }
 }
 
