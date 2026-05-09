@@ -56,10 +56,6 @@ export const PLATFORM_DISPLAY_NAMES = {
     tod: 'TOD',
     puhutv: 'Puhu TV',
     netflix: 'Netflix',
-    atv: 'ATV',
-    trt: 'TRT',
-    startv: 'Star TV',
-    showtv: 'Show TV',
 };
 
 /**
@@ -73,10 +69,6 @@ export const PLATFORM_ID_URLS = {
     tod: 'https://www.tod.tv/arama?query=',
     puhutv: 'https://puhutv.com/arama?q=',
     netflix: 'https://www.netflix.com/search?q=',
-    atv: 'https://www.atv.com.tr/arama?q=',
-    trt: 'https://www.trtizle.com/arama?q=',
-    startv: 'https://www.startv.com.tr/arama?q=',
-    showtv: 'https://www.showtv.com.tr/arama?q=',
 };
 
 /**

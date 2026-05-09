@@ -1,7 +1,7 @@
 {
-  "version": 2,
+  "version": 3,
   "updated": "2026-05-10",
-  "_doc": "Curated overlay of confirmed Turkish-original titles → platform IDs. Used when RapidAPI/TMDB are missing TR-specific platform data (Gain, Exxen, Tabii, TOD, Puhu TV). Lookup is byTmdbId first, then byNormalizedTitle as fallback. BluTV removed in v2 — platform fully consolidated under HBO Max which TMDB/RapidAPI already serve.",
+  "_doc": "Curated overlay of confirmed Turkish-original titles → STREAMING platform IDs. Used when RapidAPI/TMDB are missing TR-specific platform data. Lookup is byTmdbId first, then byNormalizedTitle as fallback. v3: removed broadcast/free-to-air channels (Show TV, ATV, TRT, Star TV) — those are airing networks, not streaming services. v2: removed BluTV (consolidated under HBO Max which TMDB/RapidAPI already serve). Streaming-only IDs: gain, exxen, tabii, tod, puhutv, netflix.",
   "byTmdbId": {
     "tv": {
       "79552": ["gain"],
@@ -17,20 +17,15 @@
       "218174": ["exxen"],
       "197679": ["netflix"],
       "120812": ["tabii"],
-      "302658": ["atv", "tabii"],
-      "95603": ["atv", "tabii"],
+      "302658": ["tabii"],
+      "95603": ["tabii"],
       "246621": ["tabii"],
-      "132752": ["trt", "tabii"],
+      "132752": ["tabii"],
       "119806": ["tabii"],
       "69786": ["puhutv"],
       "112745": ["netflix"],
       "96348": ["netflix"],
-      "133490": ["showtv"],
-      "213194": ["showtv"],
-      "74823": ["showtv"],
-      "60929": ["startv"],
-      "71036": ["puhutv"],
-      "68388": ["startv"]
+      "71036": ["puhutv"]
     },
     "movie": {}
   },
@@ -51,26 +46,19 @@
     "ersankuneri": ["netflix"],
     "kibriszaferedogru": ["tabii"],
     "birzamanlarkibris": ["tabii"],
-    "kurulusorhan": ["atv", "tabii"],
-    "kurulusosman": ["atv", "tabii"],
+    "kurulusorhan": ["tabii"],
+    "kurulusosman": ["tabii"],
     "mehmedfetihlersultani": ["tabii"],
-    "barbaroslar": ["trt", "tabii"],
-    "barbaroslarakdenizinkilici": ["trt", "tabii"],
+    "barbaroslar": ["tabii"],
+    "barbaroslarakdenizinkilici": ["tabii"],
     "teskilat": ["tabii"],
     "masum": ["puhutv"],
     "kulup": ["netflix"],
     "birbaskadir": ["netflix"],
     "atiye": ["netflix"],
-    "icerde": ["startv"],
-    "cukur": ["showtv"],
-    "karaparaask": ["startv"],
     "fi": ["puhutv"],
-    "yargi": ["showtv"],
-    "aile": ["showtv"],
-    "kizilcikserbeti": ["showtv"],
     "yedikapiaskincekirdegi": ["exxen"],
-    "kuruluszafere": ["exxen"],
-    "esrefruya": ["showtv"]
+    "kuruluszafere": ["exxen"]
   },
   "_unverified": [
     "Maçostar (Gain) — TMDB search returned no result",
@@ -79,8 +67,7 @@
     "Hayata Tutun (TOD) — TMDB search returned no result",
     "Yedi Kapı: Aşkın Çekirdeği (Exxen movie) — TMDB search returned no result",
     "Kıbrıs Zafere Doğru (Exxen movie) — TMDB search returned no result; note 'Bir Zamanlar Kıbrıs' (Tabii TV series) IS verified id 120812",
-    "Eşref Rüya (Show TV) — TMDB search returned no result",
-    "Şahsiyet id 79552 — used per prior research notes (TMDB lookup did not echo it in this session)",
-    "Saygı id 84958 — used per planner-supplied hint (not independently verified this round)"
+    "Şahsiyet id 79552 — used per prior research notes",
+    "Saygı id 84958 — used per planner-supplied hint"
   ]
 }
