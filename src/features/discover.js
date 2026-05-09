@@ -55,17 +55,23 @@ export const EXAMPLE_PROMPTS = [
 ];
 
 /**
- * Round 11: single rotating example-prompt hint inside the console.
+ * Round 12: rotating placeholder INSIDE the textarea + a small "use this"
+ * icon at top-right. No external bar/list anymore.
  *
- * UX: when the textarea is empty, a thin bar below it shows ONE random
- * example with two icon buttons (refresh = pick another, kullan = fill
- * textarea). Once the user types anything, the bar hides. When the
- * textarea is cleared again, a NEW random prompt is shown.
+ * Behavior:
+ * - When textarea is empty AND unfocused, the `placeholder` attribute rotates
+ *   through EXAMPLE_PROMPTS every 4 seconds.
+ * - Rotation pauses on focus or any input.
+ * - A small ⏎ icon (top-right corner of the textarea) is visible only while
+ *   empty. Click → fills textarea with the current placeholder, focuses,
+ *   places cursor at end, hides icon. Same effect on Tab key while empty.
+ * - When textarea is cleared, icon reappears and rotation resumes.
  *
- * Replaces the Round 10 7-card vertical list (rejected by user as too
- * heavy and competing with the textarea for attention).
+ * Replaces the Round 11 hint bar (rejected: user wanted the placeholder
+ * itself to be usable, not a separate UI element).
  */
-let _currentHintPrompt = '';
+let _currentPlaceholder = '';
+let _rotationTimer = null;
 
 function _pickRandomPrompt(exclude = '') {
     const pool = EXAMPLE_PROMPTS.filter(p => p !== exclude);
@@ -73,57 +79,98 @@ function _pickRandomPrompt(exclude = '') {
     return list[Math.floor(Math.random() * list.length)];
 }
 
-function _setHintPrompt(prompt) {
-    _currentHintPrompt = prompt;
-    const textEl = document.getElementById('console-prompt-hint-text');
-    if (textEl) textEl.textContent = `"${prompt}"`;
+function _setPlaceholder(input, prompt) {
+    _currentPlaceholder = prompt;
+    if (input) input.setAttribute('placeholder', prompt);
 }
 
-function _showHintBar() {
-    const bar = document.getElementById('console-prompt-hint');
-    if (bar) bar.classList.remove('is-hidden');
+function _startRotation(input) {
+    _stopRotation();
+    _rotationTimer = setInterval(() => {
+        // Guard: only rotate while empty AND unfocused
+        if (!input) return;
+        const isEmpty = (input.value || '').length === 0;
+        const isFocused = document.activeElement === input;
+        if (!isEmpty || isFocused) return;
+        _setPlaceholder(input, _pickRandomPrompt(_currentPlaceholder));
+    }, 4000);
 }
 
-function _hideHintBar() {
-    const bar = document.getElementById('console-prompt-hint');
-    if (bar) bar.classList.add('is-hidden');
+function _stopRotation() {
+    if (_rotationTimer) {
+        clearInterval(_rotationTimer);
+        _rotationTimer = null;
+    }
+}
+
+function _showFillBtn() {
+    const btn = document.getElementById('console-prompt-fill-btn');
+    if (btn) btn.classList.remove('is-hidden');
+}
+
+function _hideFillBtn() {
+    const btn = document.getElementById('console-prompt-fill-btn');
+    if (btn) btn.classList.add('is-hidden');
+}
+
+function _fillFromPlaceholder(input) {
+    if (!input || !_currentPlaceholder) return;
+    input.value = _currentPlaceholder;
+    input.focus();
+    try { input.setSelectionRange(input.value.length, input.value.length); } catch { /* noop */ }
+    _hideFillBtn();
+    _stopRotation();
 }
 
 export function renderExamplePrompts() {
-    const bar = document.getElementById('console-prompt-hint');
     const input = document.getElementById('ai-movie-input');
-    if (!bar) return;
+    const fillBtn = document.getElementById('console-prompt-fill-btn');
+    if (!input) return;
 
-    // Initial random prompt
-    _setHintPrompt(_pickRandomPrompt());
+    // Initial random placeholder
+    _setPlaceholder(input, _pickRandomPrompt());
+    _showFillBtn();
+    _startRotation(input);
 
-    // Refresh button: pick a different random prompt
-    const refreshBtn = document.getElementById('console-prompt-hint-refresh');
-    refreshBtn?.addEventListener('click', () => {
-        _setHintPrompt(_pickRandomPrompt(_currentHintPrompt));
+    // Click the in-textarea icon → fill textarea with current placeholder
+    fillBtn?.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        _fillFromPlaceholder(input);
     });
 
-    // Use button: fill textarea, focus, cursor at end. Do NOT auto-submit.
-    const useBtn = document.getElementById('console-prompt-hint-use');
-    useBtn?.addEventListener('click', () => {
-        if (!input) return;
-        input.value = _currentHintPrompt;
-        input.focus();
-        try { input.setSelectionRange(input.value.length, input.value.length); } catch { /* noop */ }
-        _hideHintBar();
+    // Tab key while focused on empty textarea → fill (prevents tab navigation)
+    input.addEventListener('keydown', (ev) => {
+        if (ev.key !== 'Tab' || ev.shiftKey) return;
+        if ((input.value || '').length > 0) return;
+        ev.preventDefault();
+        _fillFromPlaceholder(input);
     });
 
-    // Hide bar while user is typing; reappear with a NEW random when cleared.
-    if (input) {
-        input.addEventListener('input', () => {
-            const hasText = (input.value || '').trim().length > 0;
-            if (hasText) {
-                _hideHintBar();
-            } else {
-                _setHintPrompt(_pickRandomPrompt(_currentHintPrompt));
-                _showHintBar();
-            }
-        });
+    // Resume rotation + show icon when textarea is cleared; hide when typing.
+    input.addEventListener('input', () => {
+        const hasText = (input.value || '').length > 0;
+        if (hasText) {
+            _hideFillBtn();
+            _stopRotation();
+        } else {
+            _showFillBtn();
+            _setPlaceholder(input, _pickRandomPrompt(_currentPlaceholder));
+            _startRotation(input);
+        }
+    });
+
+    // Pause rotation on focus (so the placeholder doesn't change under the user).
+    input.addEventListener('focus', () => {
+        _stopRotation();
+    });
+    input.addEventListener('blur', () => {
+        if ((input.value || '').length === 0) _startRotation(input);
+    });
+
+    // Cleanup hook: clear interval when discover view unmounts/hides to avoid leaks.
+    if (typeof window !== 'undefined') {
+        window.addEventListener('beforeunload', _stopRotation, { once: true });
     }
 }
 

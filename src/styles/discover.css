@@ -33,6 +33,7 @@
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 14px;
   transition: border-color 150ms ease, background 150ms ease;
+  position: relative; /* anchor for in-textarea fill button */
 }
 .console-input-wrapper:has(.console-textarea):focus-within {
   border-color: rgba(139, 92, 246, 0.55);
@@ -146,14 +147,14 @@
 @media (prefers-reduced-motion: reduce) {
   .console-chip,
   .era-chip,
-  .console-prompt-hint-btn,
+  .console-prompt-fill-btn,
   .console-btn.primary,
   .console-input-wrapper:has(.console-textarea) {
     transition: none;
   }
   .console-chip:active,
   .era-chip:active,
-  .console-prompt-hint-btn:active,
+  .console-prompt-fill-btn:active,
   .console-btn.primary:active {
     transform: none;
   }
@@ -171,100 +172,63 @@
 .console-textarea.console-textarea-lg {
   min-height: 120px;
   padding: 14px 16px;
+  padding-right: 40px; /* Round 12: leave room for in-textarea fill button */
   font-size: 15px;
   line-height: 1.45;
   resize: none;
 }
 
-/* Round 11: single rotating example-prompt hint bar (replaces the 7-card list).
-   Sits below the textarea, hides while user is typing, shows new random when
-   textarea is cleared. Mobile-only (375px+). */
-.console-prompt-hint {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 10px;
-  margin-bottom: 6px;
-  padding: 8px 10px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 10px;
-  font-size: 12.5px;
-  line-height: 1.35;
-  color: rgba(255, 255, 255, 0.62);
-  min-height: 36px;
-  transition: opacity 140ms ease;
-}
-
-.console-prompt-hint.is-hidden {
-  display: none;
-}
-
-.console-prompt-hint-icon {
-  flex: 0 0 auto;
-  font-size: 14px;
-  line-height: 1;
-  opacity: 0.85;
-}
-
-.console-prompt-hint-text {
-  flex: 1 1 auto;
-  min-width: 0;
-  font-style: italic;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.console-prompt-hint-btn {
-  flex: 0 0 auto;
+/* Round 12: small "use this suggestion" icon button INSIDE the textarea
+   (top-right corner). Visible only when the textarea is empty. Tapping
+   it (or pressing Tab while focused on empty textarea) fills the textarea
+   with the current rotating placeholder. */
+.console-prompt-fill-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 36px;
-  min-height: 36px;
-  padding: 0 8px;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
-  color: rgba(255, 255, 255, 0.78);
+  color: rgba(255, 255, 255, 0.55);
   font-family: inherit;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 14px;
+  line-height: 1;
   cursor: pointer;
-  transition: background 140ms ease, color 140ms ease, border-color 140ms ease, transform 80ms ease;
+  z-index: 2;
+  transition: background 140ms ease, color 140ms ease, border-color 140ms ease, transform 80ms ease, opacity 140ms ease;
 }
 
-.console-prompt-hint-btn:hover,
-.console-prompt-hint-btn:focus-visible {
-  background: rgba(99, 102, 241, 0.14);
-  border-color: rgba(139, 92, 246, 0.32);
+.console-prompt-fill-btn:hover,
+.console-prompt-fill-btn:focus-visible {
+  background: rgba(99, 102, 241, 0.18);
+  border-color: rgba(139, 92, 246, 0.4);
   color: rgba(255, 255, 255, 0.95);
   outline: none;
 }
 
-.console-prompt-hint-btn:active {
-  transform: scale(0.95);
+.console-prompt-fill-btn:active {
+  transform: scale(0.92);
 }
 
-.console-prompt-hint-btn .material-symbols-outlined {
-  font-size: 18px;
-}
-
-.console-prompt-hint-use {
-  color: rgba(167, 139, 250, 0.98);
-  text-transform: lowercase;
-  letter-spacing: 0.2px;
+.console-prompt-fill-btn.is-hidden {
+  display: none;
 }
 
 @media (max-width: 380px) {
-  .console-prompt-hint {
-    font-size: 12px;
-    padding: 7px 8px;
-    gap: 6px;
+  .console-prompt-fill-btn {
+    top: 6px;
+    right: 6px;
+    width: 26px;
+    height: 26px;
+    font-size: 13px;
   }
-  .console-prompt-hint-btn {
-    min-width: 36px;
-    padding: 0 6px;
+  .console-textarea.console-textarea-lg {
+    padding-right: 36px;
   }
 }

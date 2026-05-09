@@ -399,6 +399,7 @@
           >
 
           <!-- AI Textarea (enlarged for richer prompts) -->
+          <!-- Round 12: rotating placeholder + in-textarea "use suggestion" icon -->
           <div class="console-input-wrapper">
             <textarea
               id="ai-movie-input"
@@ -407,29 +408,14 @@
               placeholder="Beni çocukluğuma götürecek sıcak bir aile filmi..."
               data-i18n-placeholder="aiInputPlaceholder"
             ></textarea>
-          </div>
-
-          <!-- Round 11: single rotating example prompt (replaces 7-card list) -->
-          <div class="console-prompt-hint" id="console-prompt-hint" aria-live="polite">
-            <span class="console-prompt-hint-icon" aria-hidden="true">💡</span>
-            <span class="console-prompt-hint-text" id="console-prompt-hint-text"></span>
             <button
               type="button"
-              class="console-prompt-hint-btn"
-              id="console-prompt-hint-refresh"
-              aria-label="Başka bir örnek göster"
-              title="Başka bir örnek göster"
+              class="console-prompt-fill-btn"
+              id="console-prompt-fill-btn"
+              aria-label="Bu öneriyi kullan"
+              title="Bu öneriyi kullan (Tab)"
             >
-              <span class="material-symbols-outlined">refresh</span>
-            </button>
-            <button
-              type="button"
-              class="console-prompt-hint-btn console-prompt-hint-use"
-              id="console-prompt-hint-use"
-              aria-label="Bu örneği kullan"
-              title="Bu örneği kullan"
-            >
-              <span data-i18n="useThis">kullan</span>
+              <span aria-hidden="true">⏎</span>
             </button>
           </div>
 
