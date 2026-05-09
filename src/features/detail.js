@@ -789,12 +789,17 @@ function buildStreamingHTML(streamingData, title) {
             // Logo URL resolution order:
             // 1. LOGO_OVERRIDES[serviceName] — manual override for broken CDN URLs (e.g. HBO Max)
             // 2. provider.logoPath if full http URL
-            // 3. provider.logoPath prefixed with TMDB CDN
+            // 3. provider.logoPath if local /img/ asset (curated TR catalog) — used as-is
+            // 4. provider.logoPath prefixed with TMDB CDN
             const overrideUrl = getLogoOverride(provider.serviceName);
             const logoUrl = overrideUrl
                 ? overrideUrl
                 : (provider.logoPath
-                    ? (provider.logoPath.startsWith('http') ? provider.logoPath : `https://image.tmdb.org/t/p/w92${provider.logoPath}`)
+                    ? (provider.logoPath.startsWith('http')
+                        ? provider.logoPath
+                        : (provider.logoPath.startsWith('/img/')
+                            ? provider.logoPath
+                            : `https://image.tmdb.org/t/p/w92${provider.logoPath}`))
                     : '');
             const safeName = provider.serviceName.replace(/"/g, '&quot;');
             const logoImg = logoUrl

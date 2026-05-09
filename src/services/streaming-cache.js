@@ -12,7 +12,7 @@
 
 import { getFirestore, doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { TMDBService } from './api.js';
-import { PLATFORM_DISPLAY_NAMES, PLATFORM_ID_URLS } from '../lib/platforms.js';
+import { PLATFORM_DISPLAY_NAMES, PLATFORM_ID_URLS, PLATFORM_LOGO_PATHS } from '../lib/platforms.js';
 import turkishCatalog from '../data/turkish-platform-catalog.json';
 
 const TTL_MS = 24 * 60 * 60 * 1000;    // 24 hours: app-level freshness check
@@ -209,7 +209,7 @@ export function applyTurkishCatalog(providers, tmdbId, mediaType, title, country
             type: 'subscription',
             group: 'stream',
             link: baseUrl ? baseUrl + encodeURIComponent(title || '') : '',
-            logoPath: null,
+            logoPath: PLATFORM_LOGO_PATHS[key] || null,
             themeColor: null,
             quality: null,
             source: 'curated-tr-catalog',

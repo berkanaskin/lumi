@@ -84,6 +84,20 @@ export const PLATFORM_ID_URLS = {
 };
 
 /**
+ * Local logo paths for short platform IDs used in the curated TR catalog.
+ * These resolve to /public/img/platforms/*.png assets shipped with the app.
+ * Use a leading "/img/" so the renderer can detect and skip the TMDB CDN prefix.
+ */
+export const PLATFORM_LOGO_PATHS = {
+    gain: '/img/platforms/gain.png',
+    exxen: '/img/platforms/exxen.png',
+    tabii: '/img/platforms/tabii.png',
+    tod: '/img/platforms/tod.png',
+    blutv: '/img/platforms/blutv.png',
+    puhutv: '/img/platforms/puhutv.png',
+};
+
+/**
  * Logo overrides for providers whose CDN-supplied logos are broken or missing.
  * Lookup is case-sensitive against provider.serviceName from streaming-cache.js.
  * URLs should resolve to a 40x40 (or larger) PNG.
