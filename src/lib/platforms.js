@@ -26,8 +26,6 @@ export const PLATFORM_URLS = {
     'GAIN': 'https://www.gain.tv/search?q=',
     'Gain': 'https://www.gain.tv/search?q=',
     'Exxen': 'https://www.exxen.com/tr/arama?q=',
-    'BluTV': 'https://www.blutv.com/ara?q=',
-    'blutv': 'https://www.blutv.com/ara?q=',
     'TOD': 'https://www.tod.tv/arama?query=',
     'TOD TV': 'https://www.tod.tv/arama?query=',
     'Tabii': 'https://www.tabii.com/tr/search?q=',
@@ -56,7 +54,6 @@ export const PLATFORM_DISPLAY_NAMES = {
     exxen: 'Exxen',
     tabii: 'Tabii',
     tod: 'TOD',
-    blutv: 'BluTV',
     puhutv: 'Puhu TV',
     netflix: 'Netflix',
     atv: 'ATV',
@@ -74,7 +71,6 @@ export const PLATFORM_ID_URLS = {
     exxen: 'https://www.exxen.com/tr/arama?q=',
     tabii: 'https://www.tabii.com/tr/search?q=',
     tod: 'https://www.tod.tv/arama?query=',
-    blutv: 'https://www.blutv.com/ara?q=',
     puhutv: 'https://puhutv.com/arama?q=',
     netflix: 'https://www.netflix.com/search?q=',
     atv: 'https://www.atv.com.tr/arama?q=',
@@ -93,7 +89,6 @@ export const PLATFORM_LOGO_PATHS = {
     exxen: '/img/platforms/exxen.png',
     tabii: '/img/platforms/tabii.png',
     tod: '/img/platforms/tod.png',
-    blutv: '/img/platforms/blutv.png',
     puhutv: '/img/platforms/puhutv.png',
 };
 
@@ -134,7 +129,7 @@ export function getPlatformUrl(platformName, title) {
  * @returns {boolean}
  */
 export function isTurkishPlatform(platformName) {
-    const turkishPlatforms = ['GAIN', 'Gain', 'Exxen', 'BluTV', 'blutv', 'TOD', 'TOD TV', 'Tabii', 'TV+', 'Turk Telekom TV+', 'Türk Telekom TV+', 'beIN CONNECT', 'puhuTV'];
+    const turkishPlatforms = ['GAIN', 'Gain', 'Exxen', 'TOD', 'TOD TV', 'Tabii', 'TV+', 'Turk Telekom TV+', 'Türk Telekom TV+', 'beIN CONNECT', 'puhuTV'];
     return turkishPlatforms.includes(platformName);
 }
 

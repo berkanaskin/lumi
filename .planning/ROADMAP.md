@@ -73,13 +73,18 @@ Plans:
 
 ### Phase 03.2: Polish & Platform Gaps (INSERTED)
 
-**Goal:** [Urgent work - to be planned]
-**Requirements**: TBD
+**Goal:** App feels complete and polished for Turkish users — Turkish streaming providers visible, working favorites/watchlist, customizable profile, redesigned cinema badge + discover screen, and dead-code cleanup before Phase 4
+**Requirements**: TRACK-A, TRACK-B, TRACK-C, TRACK-D, TRACK-E, TRACK-F
 **Depends on:** Phase 3
-**Plans:** 0 plans
+**Plans:** 6 plans in 3 waves
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 03.2 to break down)
+- [ ] 03.2-01-PLAN.md — Favorites/Watchlist localStorage key fix + legacy migration (Track D)
+- [ ] 03.2-02-PLAN.md — Turkish streaming providers two-layer TMDB merge + HBO Max logo + missing URLs (Track A)
+- [ ] 03.2-03-PLAN.md — Profile customization: editable name + preset avatars + meaningful stats (Track E)
+- [ ] 03.2-04-PLAN.md — Cinema badge ribbon redesign + pulse animation (Track B)
+- [ ] 03.2-05-PLAN.md — Discover/Search screen restyle + AI button consolidation (Track C)
+- [ ] 03.2-06-PLAN.md — Code cleanup: dead JS, desktop CSS, stale worktrees (Track F)
 
 ### Phase 03.1: Mobile QA Fixes (INSERTED)
 
@@ -130,4 +135,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 4
 | 2. Hybrid AI Search | 4/4 | COMPLETE | 2026-03-19 |
 | 3. Content Enrichment | 3/3 | Complete   | 2026-03-21 |
 | 3.1 Mobile QA Fixes | 0/4 | Planning | - |
+| 03.2 Polish & Platform Gaps | 0/6 | Planning | - |
 | 4. Premium Platform | 0/2 | Pending | - |

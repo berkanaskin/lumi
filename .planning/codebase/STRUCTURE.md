@@ -1,265 +1,244 @@
 # Codebase Structure
 
-**Analysis Date:** 2026-03-18
+**Analysis Date:** 2026-05-07
 
 ## Directory Layout
 
 ```
 lumi/
-├── index.html                    # Root HTML entry point with inline scripts
-├── index_lumi.css               # Main stylesheet (86KB, v0.9.5)
+├── index.html                    # Mobile-only HTML entry point with inline scripts
+├── index_lumi.css               # Main stylesheet (mobile-first, single file)
 ├── package.json                 # NPM dependencies and scripts
 ├── vite.config.js               # Vite build configuration
-├── vitest.config.js             # Vitest configuration
-├── eslint.config.js             # ESLint rules
-├── vercel.json                  # Vercel deployment config
-├── i18n.js                      # Internationalization strings (33KB)
+├── vitest.config.js             # Vitest unit-test configuration
+├── eslint.config.js             # ESLint flat config
+├── vercel.json                  # Vercel deployment + serverless function config
+├── firebase.json                # Firestore + Auth provider config (eur3 region)
+├── .firebaserc                  # Firebase project alias pin
+├── firestore.rules              # Firestore security rules (auth + ownership)
+├── firestore.indexes.json       # Firestore composite-index definitions (currently empty)
+├── i18n.js                      # Turkish UI strings (hardcoded)
+├── CLAUDE.md                    # Project guidance (Vercel best practices)
 │
 ├── .github/
 │   └── workflows/               # CI/CD GitHub Actions
 │
 ├── .planning/
-│   └── codebase/                # GSD codebase analysis documents
+│   ├── codebase/                # GSD codebase analysis docs
+│   └── phases/                  # GSD phase plans
+│       └── 03.2-polish-platform-gaps/   # Active polish phase
 │
-├── src/                         # Source code (main application)
-│   ├── main.js                  # App entry point and module orchestration
-│   ├── config.js                # Environment configuration
+├── src/                         # Source code (frontend application)
+│   ├── main.js                  # App entry point + module orchestration
+│   ├── config.js                # Environment configuration (Vite env vars)
 │   │
-│   ├── features/                # Feature modules (domain logic)
-│   │   ├── discover.js          # "Ne İzlesem?" (AI search, wizard, daily rec)
-│   │   ├── search.js            # Search and autocomplete handling
-│   │   ├── detail.js            # Movie/TV detail modal and actions
-│   │   └── profile.js           # Auth and user profile management
+│   ├── features/                # Domain feature modules
+│   │   ├── discover.js          # AI search ("Ne İzlesem?"), wizard, daily rec
+│   │   ├── search.js            # Autocomplete + search history
+│   │   ├── detail.js            # Movie/TV detail modal (incl. crew section)
+│   │   ├── profile.js           # Firebase auth, user tier, viewing stats
+│   │   └── person.js            # Actor/director page with bio + filmography
+│   │
+│   ├── pages/                   # Full-screen page views (newer pattern)
+│   │   └── search-results.js    # Infinite-scroll personalized search results
 │   │
 │   ├── services/                # External API integration layer
-│   │   └── api.js               # Aggregated API services (TMDB, YouTube, OMDB, Ratings)
+│   │   ├── api.js               # Aggregated API (TMDB, YouTube, OMDB, Ratings, GeoIP, Search, Embedding)
+│   │   └── streaming-cache.js   # Firestore-backed streaming-availability cache (24h/48h TTL)
 │   │
 │   ├── ui/                      # UI rendering components
-│   │   ├── movie-card.js        # Movie/TV card factory and renderer
-│   │   ├── theme.js             # Theme toggle and persistence
-│   │   ├── toast.js             # Toast notification component
-│   │   └── loading.js           # Loading states and visual indicators
+│   │   ├── movie-card.js        # Movie/TV card factory
+│   │   ├── theme.js             # Theme toggle + persistence
+│   │   ├── toast.js             # Toast notifications
+│   │   ├── loading.js           # Loading states + skeletons
+│   │   ├── autocomplete-dropdown.js  # Search autocomplete UI
+│   │   └── diversity-section.js # Diversity-injected results block
 │   │
-│   ├── lib/                     # Core library utilities
-│   │   ├── state.js             # Global state and DOM element cache
-│   │   ├── navigation.js        # Page routing and nav state
-│   │   ├── constants.js         # Genres, image URLs, placeholders
-│   │   ├── helpers.js           # Utility functions (debounce, formatDate, etc.)
-│   │   └── platforms.js         # Streaming platform URLs and lookup
-│   │
-│   ├── utils/                   # Additional utilities (may be deprecated/empty)
-│   └── views/                   # View definitions (may be deprecated/empty)
+│   └── lib/                     # Core utilities
+│       ├── state.js             # Global state, elements cache, mutators
+│       ├── navigation.js        # Page routing + bottom-nav state
+│       ├── constants.js         # Genres, image URLs, AI placeholders
+│       ├── helpers.js           # debounce, throttle, formatDate, escapeHtml
+│       ├── platforms.js         # Streaming platform URLs and lookup
+│       └── embeddings.js        # Client-side embedding version cache + metrics
 │
-├── api/                         # Backend proxy endpoints (server-side logic)
-│   ├── gemini.js                # Gemini AI API proxy
+├── api/                         # Vercel serverless functions (backend proxies)
+│   ├── gemini.js                # Gemini AI proxy (billing-enabled, no fallback)
 │   ├── tmdb.js                  # TMDB API proxy
-│   └── youtube.js               # YouTube API proxy
+│   ├── youtube.js               # YouTube Data API proxy
+│   ├── omdb.js                  # OMDB ratings proxy
+│   ├── streaming-availability.js  # RapidAPI streaming-availability proxy
+│   ├── embeddings.js            # Embedding generation/lookup endpoint
+│   ├── geoip.js                 # GeoIP region detection
+│   ├── search.js                # Server-side search (personalization-aware)
+│   └── cost-dashboard.js        # API cost tracking dashboard endpoint
 │
-├── services/                    # Legacy service definitions
-│   └── auth.js                  # Firebase auth service (8.8KB)
+├── services/                    # Top-level services (HTML inline-script accessible)
+│   └── auth.js                  # Firebase auth bootstrap
 │
 ├── public/                      # Static assets served as-is
-│   └── services/                # Public endpoints (rate limiting, CORS handling)
-│
 ├── assets/                      # Image and media assets
 ├── docs/                        # Documentation files
-├── legal/                       # Legal documents (privacy, terms)
+├── legal/                       # Privacy policy, terms of service
 ├── stitch/                      # Figma design exports (UI mockups)
-└── tests/                       # Test files
-    ├── api.test.js              # API service tests
-    ├── constants.test.js        # Constants validation tests
-    ├── detail.test.js           # Detail modal tests
-    ├── discover.test.js         # Discover feature tests
-    ├── helpers.test.js          # Utility function tests
-    ├── platforms.test.js        # Platform URL tests
-    ├── profile.test.js          # Auth/profile tests
-    ├── search.test.js           # Search and autocomplete tests
-    └── setup.js                 # Test environment setup (JSDOM)
-
-dist/                           # Build output (generated, committed)
-node_modules/                   # Dependencies (not committed)
+└── tests/                       # Vitest unit tests
+    ├── api.test.js
+    ├── constants.test.js
+    ├── detail.test.js
+    ├── discover.test.js
+    ├── helpers.test.js
+    ├── platforms.test.js
+    ├── profile.test.js
+    ├── search.test.js
+    └── setup.js                 # JSDOM test-environment setup
 ```
 
 ## Directory Purposes
 
-**src/:**
-- Purpose: All source code for the application
-- Contains: Feature modules, services, UI components, utilities
-- Key pattern: Everything is ES Module-based; relies on Vite for bundling and module resolution
+**src/:** All frontend source. ES Module-based, bundled by Vite. Mobile-only (no responsive desktop split).
 
-**src/features/:**
-- Purpose: Domain-specific feature implementations
-- Contains: discover.js (AI search, wizard, daily recommendations), search.js (autocomplete, history), detail.js (modal, favorites, videos), profile.js (auth, user management)
-- Key pattern: Each feature exports multiple functions; modules share state via import from state.js
-- When adding: Create new file for feature, import dependencies (API, state, helpers), export public functions, re-export in main.js
+**src/features/:** Domain feature modules. Each exports multiple named functions; share global `state`. New module added: `person.js` (Phase 03.x crew/actor work).
+- When adding: create `src/features/{name}.js`, import from `../services/api.js` + `../lib/state.js`, register init handler in `src/main.js`, re-export on `window.LumiModules` if HTML inline scripts need it.
 
-**src/services/:**
-- Purpose: External API abstraction layer
-- Contains: Unified API object combining TMDBService, YouTubeService, RatingsService
-- Key pattern: Service objects export methods; errors handled gracefully with fallback values
-- When adding: Define new service in api.js, add fetch wrapper, export via API aggregate object
+**src/pages/:** Full-screen page views (richer than modal). Pages keep module-local state alongside global `state`.
+- When adding: place under `src/pages/`, follow `search-results.js` pattern (module state + init export).
 
-**src/ui/:**
-- Purpose: Reusable rendering components and theme/state UI
-- Contains: movie-card (grid item factory), theme (toggle + localStorage), toast (notifications), loading (spinners and empty states)
-- Key pattern: Functions return DOM elements or render directly to existing containers
-- When adding: Export factory function that creates/returns DOM element or mutates DOM, handle options object for configuration
+**src/services/:** External API abstraction. `api.js` is the aggregate; `streaming-cache.js` is a Firestore-backed cache layer.
+- When adding: define service object in `api.js` and add to the `API` aggregate, OR create new file under `src/services/` for stateful adapters (caching, batching).
 
-**src/lib/:**
-- Purpose: Core utilities, constants, and cross-cutting concerns
-- Contains: state (centralized mutable state object), navigation (page routing), constants (genres, URLs), helpers (debounce, format functions), platforms (streaming URLs)
-- Key pattern: Pure functions and immutable exports; no side effects except in state.js
-- When adding: Place utility functions in helpers.js, shared constants in constants.js, or new focused file
+**src/ui/:** Reusable rendering components. Pure DOM factories or render-into-container functions.
+- When adding: export factory `createX(options)` that returns DOM element OR `renderX(container, data)` that mutates DOM.
 
-**api/:**
-- Purpose: Vercel serverless backend proxy endpoints
-- Contains: Handlers for Gemini, TMDB, YouTube calls (server-side API keys)
-- Used by: Feature modules call `/api/{service}` endpoints instead of client-side keys
-- When adding: Create new route file with request handler, configure in vercel.json
+**src/lib/:** Cross-cutting utilities, constants, state. Pure functions except `state.js` (the only sanctioned mutation site).
 
-**services/:**
-- Purpose: Legacy service layer (mostly replaced by src/services/)
-- Contains: auth.js for Firebase initialization
-- Status: Deprecated in favor of modular approach; still loaded for backwards compatibility
+**api/:** Vercel serverless functions. One file = one HTTP endpoint. Server-side secrets via `process.env`.
+- When adding: create `api/{name}.js` exporting default async `(req, res) => {...}` handler. Tune `maxDuration`, region in `vercel.json` if I/O-heavy.
 
-**tests/:**
-- Purpose: Vitest unit tests organized by module
-- Contains: One test file per major module (api.test.js, detail.test.js, etc.)
-- Key pattern: Each file tests one feature/service; setup.js configures JSDOM environment
+**services/ (top-level):** Bootstrap for Firebase auth — kept here so `index.html` inline scripts can import without going through Vite.
 
-**stitch/:**
-- Purpose: Figma design exports and UI mockups
-- Status: Design reference only; not part of build
+**tests/:** Vitest specs (one file per module). JSDOM environment via `tests/setup.js`.
+
+**.planning/codebase/:** GSD-maintained codebase intelligence (this directory).
+
+**.planning/phases/03.2-polish-platform-gaps/:** Active "Polish & Platform Gaps" phase — research + plan + tasks for cross-cutting polish (search relevance, streaming-cache cold start, profile polish, etc.).
 
 ## Key File Locations
 
 **Entry Points:**
-- `index.html`: Root HTML document with DOM structure, inline event handlers, inline script tags
-- `src/main.js`: ES Module entry point; imports all modules, initializes app on DOMContentLoaded
-- `vite.config.js`: Vite build configuration; defines alias paths (@, @services, @utils), output dir, dev server
+- `index.html` — DOM skeleton (sections, bottom nav, modals); loads Firebase SDK + `src/main.js` module
+- `src/main.js` — ES module entry; imports all features and exposes `window.LumiModules`
+- `vite.config.js` — bundler config (aliases `@`, `@services`, `@utils`)
 
 **Configuration:**
-- `src/config.js`: API keys, endpoints, Firebase config loaded from import.meta.env
-- `package.json`: Dependencies (Firebase, Vite, Vitest, ESLint), scripts (dev, build, test, lint)
-- `i18n.js`: Turkish language strings (hardcoded, 33KB)
-- `vercel.json`: Deployment configuration for Vercel platform
+- `src/config.js` — `CONFIG`, `FIREBASE_CONFIG`, `API_URLS`, `isDevelopment` (Vite `import.meta.env`)
+- `package.json` — npm scripts: `dev`, `build`, `test`, `lint`, `preview`
+- `vercel.json` — Vercel function regions, headers, rewrites
+- `firebase.json` — Firestore database (`(default)`, `eur3`), Auth providers (Email/Password + Google with brand "Lumi")
+- `.firebaserc` — pinned Firebase project alias
+- `firestore.rules` — ownership rules: `users/{uid}/{favorites|watchlist|notifications}` private, `ratings` author-write, `streamingCache` server-write only, profanity blocklist on `displayName`
+- `firestore.indexes.json` — empty scaffold (no composite indexes deployed yet)
+- `i18n.js` — Turkish UI strings
 
 **Core Logic:**
-- `src/lib/state.js`: Global state object, element cache, state mutation helpers
-- `src/services/api.js`: All external API calls (1900+ lines); TMDBService, YouTubeService, RatingsService
-- `src/features/discover.js`: AI recommendations, daily surprise, mood/era wizard
-- `src/features/search.js`: Text search, autocomplete, search history
-- `src/features/detail.js`: Movie/TV detail modal, favorites, ratings, watch providers
-- `src/features/profile.js`: Firebase auth, user tier, viewing stats, ratings
-- `src/lib/navigation.js`: Page routing (home, discover, favorites, profile)
+- `src/lib/state.js` — global state object, `elements` cache, `updateState`, `loadFavorites`, `APP_VERSION`
+- `src/services/api.js` — TMDBService, YouTubeService, RatingsService, GeoIPService, SearchService, EmbeddingService, `API` aggregate
+- `src/services/streaming-cache.js` — Firestore streaming-cache wrapper with TTL fallback to TMDB
+- `src/lib/embeddings.js` — embedding version cache, retraining detection, client metrics
+- `src/features/discover.js` — AI/wizard/daily recommendation
+- `src/features/search.js` — autocomplete + search history
+- `src/features/detail.js` — detail modal (now includes Director/Writer/Producer crew section)
+- `src/features/profile.js` — Firebase Auth, user tier, settings
+- `src/features/person.js` — actor/director page (bio, filmography, collaborators, awards)
+- `src/pages/search-results.js` — infinite-scroll search results with personalization + diversity
+- `src/lib/navigation.js` — page routing (Home, Discover, Search Results, Favorites, Profile, Person)
 
 **UI Components:**
-- `src/ui/movie-card.js`: Factory for movie/TV card elements; used in grids and sliders
-- `src/ui/theme.js`: Dark/light mode toggle; persists to localStorage
-- `src/ui/toast.js`: Toast notification overlay; auto-dismisses after 3 seconds
-- `src/ui/loading.js`: Loading spinner states, no-results message, arrow visibility
+- `src/ui/movie-card.js`, `theme.js`, `toast.js`, `loading.js`, `autocomplete-dropdown.js`, `diversity-section.js`
 
-**Utilities:**
-- `src/lib/helpers.js`: debounce(), throttle(), formatDate(), formatRuntime(), truncate(), escapeHtml(), getYear(), isMobile()
-- `src/lib/constants.js`: Genre IDs and names, image URL builder, AI placeholders, daily rec categories
-- `src/lib/platforms.js`: Streaming platform URLs (Netflix, Prime, Disney+, etc.), platform-specific logic
+**Backend Endpoints:** `api/gemini.js`, `tmdb.js`, `youtube.js`, `omdb.js`, `streaming-availability.js`, `embeddings.js`, `geoip.js`, `search.js`, `cost-dashboard.js`
 
-**Styling:**
-- `index_lumi.css`: All CSS (86KB); includes global styles, components, responsive design
-- No CSS-in-JS; no preprocessors (no Sass/LESS)
+**Auth:** `services/auth.js` (top-level Firebase bootstrap), `src/features/profile.js` (auth UI bridge)
 
-**Testing:**
-- `vitest.config.js`: Vitest configuration; test environment (jsdom), coverage settings
-- `tests/setup.js`: JSDOM environment setup; mock globals
-- `tests/*.test.js`: Unit tests for each module
+**Styling:** `index_lumi.css` — single mobile-first stylesheet, class-based, no preprocessor
+
+**Testing:** `vitest.config.js`, `tests/setup.js`, `tests/*.test.js`
 
 ## Naming Conventions
 
 **Files:**
-- camelCase for JS files: `movieCard.js`, `apiService.js`
-- CSS file: snake_case or index name: `index_lumi.css`
-- Test files: `{module}.test.js` (e.g., `api.test.js`)
-- No file extensions in imports (ES Module)
+- camelCase / kebab-case for JS files: `movie-card.js`, `streaming-cache.js`, `search-results.js`
+- CSS: `index_lumi.css` (single file, snake-mix preserved)
+- Tests: `{module}.test.js`
+- No file extensions in import statements
 
 **Directories:**
-- kebab-case for multi-word directories: `src/services/`, `src/features/`, `src/lib/`
-- Single-word lowercase: `src/ui/`, `src/utils/`, `src/views/`
+- All lowercase: `src/`, `api/`, `tests/`, `public/`, `assets/`
+- Multi-word: kebab-case (`.planning/codebase/`)
 
 **JavaScript:**
-- Variables/functions: camelCase: `currentPage`, `handleSearch()`, `debounce()`
-- Constants: UPPER_CASE: `GENRES`, `API_URLS`, `PAGES`
-- DOM elements: camelCase with 'Element'/'Elements' suffix: `modalElement`, `navItems`
-- Event handlers: `on{EventName}` or `handle{Action}`: `onclick`, `handleSearch`, `handleAutocomplete`
+- Variables/functions: camelCase (`handleSearch`, `currentPage`)
+- Constants: UPPER_SNAKE_CASE (`GENRES`, `API_URLS`, `PAGES`, `APP_VERSION`, `TTL_MS`, `GROUP_MAP`)
+- Service objects: PascalCase (`TMDBService`, `YouTubeService`, `EmbeddingService`)
+- Event handlers: `handle{Action}` or `on{Event}` (`handleAutocomplete`, `onclick`)
 
 **HTML/CSS:**
-- HTML IDs: kebab-case: `#search-input`, `#detail-modal`, `#home-section`
-- CSS classes: kebab-case with semantic naming: `.movie-card`, `.active`, `.loading-state`, `.bottom-nav`
-- Data attributes: kebab-case: `data-id`, `data-type`, `data-title`
+- IDs: kebab-case (`#detail-modal`, `#view-person`, `#search-input`)
+- Classes: kebab-case semantic (`.movie-card`, `.bottom-nav`, `.active`)
+- Data attributes: kebab-case (`data-id`, `data-type`)
 
 **Modules:**
-- Export named functions: `export function handleSearch() {}`
-- Export objects: `export const API = { search() {}, getDetails() {} }`
-- Default exports: None in this codebase (all named exports)
+- Named exports only (no default exports in app code; serverless handlers use `export default`)
+- Re-exports collected on `window.LumiModules` in `main.js` for inline-script callers
 
 ## Where to Add New Code
 
-**New Feature:**
-- Primary code: `src/features/{featureName}.js`
-- State: Add properties to `state` object in `src/lib/state.js`
-- Tests: `tests/{featureName}.test.js`
-- Export in: `src/main.js` (add to window.LumiModules)
-- HTML: Add section/elements to `index.html`
+**New Feature (full-screen view or modal):**
+- Code: `src/features/{name}.js` (modal/inline) or `src/pages/{name}.js` (full-screen)
+- State: extend `state` object in `src/lib/state.js`
+- Tests: `tests/{name}.test.js`
+- Wire-up: import + init in `src/main.js`, expose on `window.LumiModules` if HTML inline scripts need it
+- HTML: add `<section id="..."` block in `index.html`
+- Routing: add entry to `PAGES` in `src/lib/navigation.js`
 
 **New API Integration:**
-- Service method: Add method to appropriate service (TMDBService, YouTubeService) in `src/services/api.js`, or create new service
-- Expose via: API aggregate object (e.g., `API.newMethod()`)
-- Backend proxy: Create file in `api/{service}.js` if server-side key required
-- Call from: Feature modules via `API.method()`
+- Client service method: extend an existing service in `src/services/api.js` or create a new service object and merge into `API`
+- Server proxy: add `api/{name}.js` Vercel function exporting default handler; configure `maxDuration`/region in `vercel.json` if needed
+- Secrets: store in Vercel Env Variables (never `NEXT_PUBLIC_*`, never commit)
 
-**New Component/Module:**
-- Implementation: `src/ui/{componentName}.js` if reusable UI, or `src/lib/{moduleName}.js` if utility
-- Export: Named export of function or object
-- Use: Import in feature module, call as needed
+**New Firestore Collection:**
+- Add rules block to `firestore.rules` (auth-gate + ownership)
+- Add composite index entries to `firestore.indexes.json` if queried with multi-field where/orderBy
+- Deploy via `firebase deploy --only firestore:rules,firestore:indexes`
+- Wrap reads/writes in a service under `src/services/` (mirror `streaming-cache.js`)
+
+**New UI Component:**
+- Implementation: `src/ui/{component}.js`
+- Pattern: factory `createX(options)` returning DOM element, OR `renderX(container, data)` mutating DOM
+- Style: append to `index_lumi.css` (mobile-first; no media-query desktop branches)
 
 **Utilities:**
-- Shared helpers: `src/lib/helpers.js`
-- Shared constants: `src/lib/constants.js`
-- Domain-specific constants: In relevant feature file (e.g., MOOD_GENRES in discover.js)
-
-**Styling:**
-- Add to: `index_lumi.css` (single stylesheet)
-- Pattern: Class-based; use descriptive names (`.{feature}-{element}`)
-- Mobile-first: Use media queries for larger breakpoints
+- Generic helpers → `src/lib/helpers.js`
+- Shared constants → `src/lib/constants.js`
+- Domain constants → keep beside the feature that owns them
 
 **Tests:**
-- Location: `tests/{module}.test.js` (co-located naming pattern)
-- Pattern: Vitest with JSDOM; use describe/it blocks, mock API calls
+- Location: `tests/{module}.test.js`
+- Pattern: Vitest + JSDOM; mock `fetch` and Firebase as needed; use `describe/it`
 
 ## Special Directories
 
-**dist/:**
-- Purpose: Production build output
-- Generated: Yes (via `npm run build`)
-- Committed: Yes (optimized for Vercel)
-- Contains: Bundled JS, CSS, static assets
+**dist/:** Vite production build output. Generated via `npm run build`. Deployed by Vercel.
 
-**node_modules/:**
-- Purpose: NPM dependencies
-- Generated: Yes (via `npm install`)
-- Committed: No (.gitignore)
+**node_modules/:** Dependencies. Generated; not committed.
 
-**.planning/codebase/:**
-- Purpose: GSD codebase analysis documents
-- Generated: Yes (by agent)
-- Committed: Yes
-- Contains: ARCHITECTURE.md, STRUCTURE.md, CONVENTIONS.md, TESTING.md, STACK.md, INTEGRATIONS.md, CONCERNS.md
+**.planning/codebase/:** GSD-managed codebase docs (ARCHITECTURE, STRUCTURE, STACK, INTEGRATIONS, CONVENTIONS, TESTING, CONCERNS).
 
-**stitch/:**
-- Purpose: Figma UI design exports
-- Generated: Yes (from Figma)
-- Committed: Yes
-- Contains: Design files and mockups; reference only
+**.planning/phases/:** GSD phase plans. Active: `03.2-polish-platform-gaps/` (research file + forthcoming plan/tasks for polish work — crew section already shipped per recent commits).
+
+**stitch/:** Figma design exports. Reference only — not part of build.
+
+**legal/:** Privacy policy and terms of service (linked from Profile section).
 
 ---
 
-*Structure analysis: 2026-03-18*
+*Structure analysis: 2026-05-07*

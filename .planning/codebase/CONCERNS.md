@@ -1,6 +1,7 @@
 # Codebase Concerns
 
-**Analysis Date:** 2026-03-18
+**Analysis Date:** 2026-05-07
+**Project:** Lumi (mobile-only)
 
 ## Tech Debt
 
@@ -10,256 +11,250 @@
   - `src/features/detail.js` (lines 128, 239, 258, 795)
   - `src/ui/movie-card.js` (line 87)
   - `src/features/discover.js` (multiple instances)
-- Impact: Difficult to test, maintain, and refactor; violates separation of concerns; potential security vector for XSS if input escaping fails
-- Fix approach: Replace inline handlers with addEventListener-based approach. Create reusable functions that attach event listeners after DOM insertion.
+- Impact: Difficult to test, maintain, refactor; potential XSS vector if escaping fails
+- Fix approach: Replace inline handlers with addEventListener after DOM insertion
 
-**Unhandled promise rejections:**
-- Issue: Multiple async functions lack comprehensive error handling for all promise chains
+**Unhandled promise rejections / silent failures:**
+- Issue: Async functions lack comprehensive error handling
 - Files:
-  - `src/features/detail.js` (lines 24-127): `openDetail()` has try-catch but nested Promise.all() and subsequent awaits don't all reject properly
-  - `src/features/discover.js`: `handleAISearch()` and `handleWizardSearch()` lack comprehensive error boundaries
-  - `src/services/api.js`: Generic fetch error handling returns empty results `{ results: [] }` silently instead of throwing
-- Impact: Silent failures; user receives no feedback when APIs fail; state becomes inconsistent
-- Fix approach: Wrap all promise chains in try-catch. Implement proper error event emission. Show user-facing error toasts on API failures.
+  - `src/features/detail.js` (`openDetail()` lines 24-127)
+  - `src/features/discover.js`: `handleAISearch()`, `handleWizardSearch()` lack error boundaries
+  - `src/services/api.js`: returns `{ results: [] }` silently on fetch errors
+- Impact: Users get no feedback when APIs fail; state becomes inconsistent
+- Fix approach: Wrap promise chains in try-catch; emit error events; show toast on failure
 
 **Missing removeEventListener cleanup:**
-- Issue: Event listeners added via `addEventListener()` are never removed, causing memory leaks when modals open/close repeatedly
+- Issue: Event listeners added without removal — memory leaks on long sessions
 - Files:
-  - `src/features/detail.js`: Modal lifecycle doesn't clean up keyboard handlers, scroll handlers
-  - `src/features/search.js`: Autocomplete dropdown handlers (line ~93-114)
-  - `src/features/profile.js`: User menu handlers added without cleanup (line ~99)
-- Impact: Memory leaks on long sessions; event handlers accumulate; multiple handlers fire for same event
-- Fix approach: Store listener references and remove them in closeModal()/cleanup functions. Use AbortController for fetch cancellation.
+  - `src/features/detail.js`: modal lifecycle keyboard/scroll handlers
+  - `src/features/search.js`: autocomplete handlers (~line 93-114)
+  - `src/features/profile.js`: user menu handlers added in `updateAuthUI()` (~line 99) without dedup
+- Fix approach: Store listener refs; clean up in close/cleanup; use AbortController
 
-**Global state mutations:**
-- Issue: State object is mutated directly throughout codebase without clear ownership or validation
-- Files:
-  - `src/lib/state.js`: 64-element state object with no mutation guards
-  - `src/features/detail.js`: Directly mutates state fields (line 41-42, 165, 208-214)
-  - `src/features/discover.js`: Multiple direct state mutations
-- Impact: Difficult to debug state changes; no audit trail of mutations; potential race conditions
-- Fix approach: Implement updateState() function as single mutation point. Add logging for state changes in development.
+**Global state mutations without ownership:**
+- Files: `src/lib/state.js` (64-element state, no guards); `src/features/detail.js` (lines 41-42, 165, 208-214)
+- Fix approach: Single `updateState()` mutation point; dev-mode mutation logging
+
+**Dead code / cleanup pending (Phase 03.2 scope):**
+- `src/pages/search-results.js` — flagged for removal (unused after redesign)
+- Desktop CSS rules in `src/styles/*.css` — desktop variant cancelled, mobile-only
+- `.claude/worktrees/` — stale worktree directories
+- Legacy `toggleFavorite()` in detail.js — never called from UI; writes to obsolete `"favorites"` key
 
 ## Known Bugs
 
-**Modal class name mismatch (recently fixed but verify):**
-- Symptoms: Modal visibility toggled with inconsistent class names
-- Files: `src/features/detail.js` (line 45 uses 'active' class)
-- Trigger: Opening/closing modal rapidly
-- Status: Recent commit (bbed9b9) claims fix, verify CSS aligns with 'active' class in `index_lumi.css`
+**Favorites/Watchlist localStorage key mismatch (HIGH severity, Phase 03.2):**
+- Symptoms: "Beğendiklerim" and "İzlediklerim" tabs always appear empty even when items added
+- Root cause: Write/read key mismatch
+  - Writes (`detail.js:toggleLike`): `"liked_items"`
+  - Writes (`detail.js:toggleWatchlist`): `"watchlist_items"`
+  - Reads (`index.html:loadFavoritesList`): `"favorites"` and `"watchlist"`
+- Files: `index.html` (lines 2157-2191), `src/features/detail.js` (lines 310-382)
+- Additional bug: render template reads `item.poster` and `item.type` but writes store `item.poster_path` and `item.media_type`
+- Fix: Update `loadFavoritesList()` keys; migrate legacy `"favorites"`/`"watchlist"` items into new keys; fix property names
 
-**Phantom API calls on detail page close:**
-- Symptoms: Network tab shows API requests after modal closes
-- Files: `src/features/detail.js` (YouTube/TMDB requests at lines 61-66, 78-79)
-- Trigger: Open detail modal then close before data loads
-- Status: Partially fixed in commit 5fbd596, but no request cancellation implemented
-- Workaround: AbortController not used; requests complete in background
+**Turkish streaming providers missing (HIGH severity, Phase 03.2):**
+- Symptoms: Gain, Exxen, TV+, TOD, Apple TV, Google Play do not appear for Turkish content
+- Root cause: RapidAPI Streaming Availability dataset only covers BluTV for Turkey
+- Files: `src/services/streaming-cache.js` (`_fetchFromApiOrFallback`)
+- Fix approach: Add two-layer merge — always call TMDB `/watch/providers` for TR after RapidAPI succeeds; dedupe by `serviceId`
+- Also missing in `src/lib/platforms.js`: `TV+` (Turk Telekom), `Tabii` (TRT) URL entries
+
+**HBO Max logo broken / duplicate provider rows (Phase 03.2):**
+- Symptoms: HBO Max logo fails to load; same provider appears twice
+- Files: `src/features/detail.js` (`buildStreamingHTML`)
+- Cause: themeColorCode null for TMDB items; no dedup between RapidAPI + TMDB sources
+- Fix: Local logo lookup map in platforms.js; dedup with `Set` on `serviceId.toLowerCase()`
+
+**Profile customization missing (Phase 03.2):**
+- Symptoms: User cannot change displayName or avatar after registration
+- Files: `public/services/auth.js`, `src/features/profile.js`, `index.html` profile section
+- Fix: Add `updateUserProfile(displayName, photoURL)` using Firebase compat v8 `currentUser.updateProfile()`; sync to Firestore `users/{uid}`; preset avatar picker grid
+
+**Phantom API calls on detail close:**
+- Symptoms: Network requests continue after modal closes (YouTube/TMDB)
+- Files: `src/features/detail.js` (lines 61-66, 78-79)
+- Status: No request cancellation; AbortController not used anywhere
+- Fix: Wire AbortController into `openDetail()`; abort on `closeModal()`
 
 **Missing null checks for DOM elements:**
-- Symptoms: "Cannot read property 'innerHTML' of null" errors
-- Files:
-  - `src/features/detail.js` (line 226-228: container check exists but not all paths verified)
-  - `src/features/search.js` (line 145-147: searchResultsSection may be null)
-  - `src/ui/loading.js`: Multiple querySelector calls without null checks
-- Trigger: Browser feature detection disabled or elements load with timing issues
-- Workaround: Optional chaining used inconsistently
+- Symptoms: "Cannot read property 'innerHTML' of null"
+- Files: `src/features/detail.js` (line 226-228), `src/features/search.js` (line 145-147), `src/ui/loading.js`
+- Fix: Apply optional chaining consistently; guard querySelector results
 
 ## Security Considerations
 
-**XSS vulnerability risk in innerHTML usage:**
-- Risk: 23 instances of innerHTML with string interpolation across codebase
+**XSS risk in innerHTML interpolation:**
+- Risk: 23+ instances of innerHTML with template strings
 - Files:
-  - `src/ui/movie-card.js`: Uses `escapeHtml()` for titles (lines 53, 98) but posterUrl is unescaped
-  - `src/features/detail.js`: Video titles at line 245 use unescaped `v.snippet?.title`
-  - `src/features/search.js`: Autocomplete items escape data-attributes but not all dynamic content
-- Current mitigation: escapeHtml() helper exists in `src/lib/helpers.js` but not applied consistently
-- Recommendations:
-  - Audit all innerHTML usages
-  - Use textContent for user data instead of innerHTML where possible
-  - Apply escapeHtml() to ALL user-facing dynamic content
-  - Consider DOM API (createElement) instead of string templates
+  - `src/ui/movie-card.js`: titles escaped (lines 53, 98); posterUrl unescaped
+  - `src/features/detail.js`: video titles unescaped (line 245, `v.snippet?.title`)
+  - `src/features/search.js`: autocomplete escapes data-attrs but not all dynamic content
+- Mitigation: `escapeHtml()` exists in `src/lib/helpers.js` but inconsistently applied
+- Fix: Audit all innerHTML; use textContent where possible; apply escapeHtml() universally
 
-**API key exposure:**
-- Risk: TMDB_API_KEY embedded in client-side code (CONFIG object)
+**Client-side TMDB API key exposure:**
+- Risk: `TMDB_API_KEY` embedded in CONFIG object
 - Files: `src/config.js` (line 14)
-- Current mitigation: Keys read from .env via build process
-- Recommendations:
-  - Implement backend proxy for TMDB requests
-  - Rotate API key regularly
-  - Monitor for key leakage in git history
+- Fix: Backend proxy for TMDB requests (similar to existing Gemini proxy pattern)
 
-**localStorage usage without validation:**
-- Risk: User tier and preferences stored in localStorage without signature/encryption
-- Files:
-  - `src/features/profile.js` (line 26: `localStorage.getItem('userTier')`)
-  - `src/lib/state.js`: localStorage used for favorites/watchlist
-- Current mitigation: None
-- Recommendations:
-  - Add integrity check (HMAC signature) for sensitive data
-  - Implement server-side validation for user tier claims
-  - Clear sensitive data on logout
+**localStorage user tier without integrity:**
+- Risk: User can spoof premium tier locally
+- Files: `src/features/profile.js` (line 26 `localStorage.getItem('userTier')`)
+- Mitigation: None
+- Fix: Server-side tier validation via Firebase claims; treat localStorage as cache only
+
+**Avatar photoURL trust:**
+- Risk: User-supplied photoURL may be `javascript:`, blob:, or external tracking URL
+- Files: planned `auth.js:updateUserProfile()`
+- Fix: Allowlist preset CDN URLs; reject non-https; validate before write
 
 ## Performance Bottlenecks
 
-**Synchronous document.querySelectorAll in loops:**
-- Problem: Video grid rendering scans DOM for multiple selectors
-- Files: `src/features/detail.js` (line 214: querySelectorAll in switchVideoCategory)
-- Cause: Query selector reflow triggered each time
-- Improvement path: Cache element references after rendering; use single query then filter
-
-**Unoptimized image loading:**
-- Problem: TMDB poster URLs loaded at multiple resolutions without responsive sizing
-- Files: `src/ui/movie-card.js` (line 31: w92 size hardcoded)
-- Cause: All cards load same resolution regardless of viewport
-- Improvement path: Implement srcset with responsive sizes; use WebP with JPEG fallback
-
-**Promise.all() waits for slowest API:**
-- Problem: Detail modal blocks on slowest of 4 parallel requests
-- Files: `src/features/detail.js` (lines 61-66: Promise.all with TMDB + YouTube + credits + providers)
-- Cause: YouTube API slower than TMDB; blocks entire render
-- Improvement path: Load critical data first (title, poster, rating), then load supplements asynchronously
+**Promise.all blocks on slowest API:**
+- Files: `src/features/detail.js` (lines 61-66 — TMDB + YouTube + credits + providers)
+- Fix: Load critical data first (poster, title, rating); supplement async
 
 **No request caching/deduplication:**
-- Problem: Same movie details fetched multiple times in same session
-- Files: `src/services/api.js`: No cache layer for getDetails(), getCredits()
-- Cause: No memoization or request-level caching
-- Improvement path: Implement simple Map-based cache with TTL; deduplicate in-flight requests
+- Files: `src/services/api.js` — no memoization for getDetails/getCredits
+- Fix: Map-based cache with TTL; dedupe in-flight requests
+
+**Unoptimized image loading:**
+- Files: `src/ui/movie-card.js` (line 31, w92 hardcoded)
+- Fix: srcset with responsive sizes; prefer WebP
+
+**Synchronous querySelectorAll in loops:**
+- Files: `src/features/detail.js` (line 214 `switchVideoCategory`)
+- Fix: Cache element refs after render
+
+**Gemini retry path adds latency:**
+- Files: AI search → /api/search proxy retries on rate limit (5s wait per recent commit a12439f)
+- Impact: Slow user feedback when Gemini rate-limits
+- Fix: Show interim status; consider streaming response
 
 ## Fragile Areas
 
-**Detail page HTML generation:**
-- Files: `src/features/detail.js` (entire module, especially lines 500-800)
-- Why fragile:
-  - 867 lines of HTML string manipulation
-  - Complex nested ternary operators
-  - Multiple API responses merged into single HTML blob
-  - No validation that all required fields exist
-- Safe modification: Add unit tests for each buildXXXHTML function with missing fields
-- Test coverage: No tests for detail rendering logic
-- Risk: Single API response format change breaks entire detail view
+**Detail page HTML generation (highest risk):**
+- Files: `src/features/detail.js` (entire module ~867 lines, especially 500-800)
+- Why fragile: huge string templates, nested ternaries, no field-existence validation
+- Test coverage: None for buildXXXHTML functions
+- Risk: Single API response shape change breaks entire detail view
 
 **Modal state management:**
-- Files: `src/features/detail.js` (openDetail/closeModal functions)
-- Why fragile:
-  - Global `currentVideoCategory` variable at top of module
-  - Modal state scattered across `state` object, DOM classes, and local variables
-  - No clear state machine; multiple functions mutate modal state
-- Safe modification: Refactor into dedicated ModalState class with clear transitions
-- Test coverage: Modal state transitions not tested
+- Files: `src/features/detail.js` (openDetail/closeModal)
+- Why fragile: state scattered across `state` object, DOM classes, module globals (`currentVideoCategory`)
+- Fix: Dedicated ModalState with explicit transitions
 
 **Search autocomplete race condition:**
-- Files: `src/features/search.js` (handleAutocomplete function, lines 24-50)
-- Why fragile:
-  - Single timeout cleared but multiple requests may be in-flight
-  - User types "foo" → request A; types "foobar" → request B; request A resolves after B
-  - No request cancellation or comparison of request timing
-- Safe modification: Use AbortController to cancel previous request on new input
-- Test coverage: Race condition not covered
+- Files: `src/features/search.js` (handleAutocomplete lines 24-50)
+- Why fragile: timeout cleared but in-flight requests not cancelled — older response can overwrite newer
+- Fix: AbortController per keystroke
 
-**Event listener accumulation:**
-- Files: `src/features/profile.js` (setupUserMenuHandlers function)
-- Why fragile:
-  - User menu dropdown listeners added every time updateAuthUI() called
-  - No deduplication; clicking menu can attach handlers multiple times
-  - Logout flow may not clean up all listeners
-- Safe modification: Check if handlers already attached before adding
-- Test coverage: Handler accumulation not tested
+**Profile menu handler accumulation:**
+- Files: `src/features/profile.js` (`setupUserMenuHandlers`)
+- Why fragile: handlers re-attached on every `updateAuthUI()` call; no dedup
+- Fix: Idempotency flag or removal-before-add
+
+**Crew/Director section (recent addition):**
+- Files: `src/features/detail.js` (per commit c2b947c)
+- Why fragile: New code path with limited test coverage; depends on TMDB credits shape
+- Fix: Add unit test for missing director/writer/producer cases
 
 ## Scaling Limits
 
-**API rate limiting (no backoff):**
-- Current capacity: TMDB allows ~40 requests/second
-- Limit: App fires 4 parallel requests per detail view + autocomplete + discover
-- Scaling path:
-  - Implement exponential backoff for rate limit 429 responses
-  - Queue requests instead of firing immediately
-  - Cache aggressively to reduce total requests
+**TMDB rate limiting:**
+- Capacity: ~40 req/sec
+- Limit: 4 parallel requests per detail view + autocomplete + discover
+- Fix: Exponential backoff on 429; aggressive caching
 
-**Modal HTML generation memory:**
-- Current: Single 50KB+ detail HTML blob built before render
-- Limit: Large detail pages with many cast/credits may exceed memory on low-end devices
-- Scaling path:
-  - Lazy-load cast/credits sections
-  - Stream HTML generation instead of single blob
-  - Pagination for long lists
+**Modal HTML size:**
+- Current: 50KB+ single HTML blob per detail
+- Limit: Low-end devices may stutter
+- Fix: Lazy-load cast/credits; paginate long lists
 
-**Search result grid rendering:**
-- Current: All search results rendered to innerHTML at once
-- Limit: 100+ results cause jank on low-end devices
-- Scaling path:
-  - Virtual scrolling for result grid
-  - Pagination (show 20, load more on scroll)
-  - Use document.createDocumentFragment() for batch DOM inserts
+**Search result grid:**
+- Current: All results rendered to innerHTML at once
+- Limit: 100+ results jank on low-end mobile
+- Fix: Virtual scroll or "load more" pagination; document.createDocumentFragment
 
 ## Dependencies at Risk
 
-**Firebase v12.7.0 (auth integration):**
-- Risk: Firebase imported but no actual auth implementation visible in source
-- Files: `src/config.js` (FIREBASE_CONFIG), but features/profile.js uses window.AuthService (not Firebase)
-- Impact: Unused dependency adds ~1MB to bundle; potential security liability if keys exposed
-- Migration plan: Remove Firebase import if using custom auth, or properly integrate Firebase Auth in profile.js
+**Firebase v12.7.0 vs compat v8 SDK loaded in HTML:**
+- Risk: Modular v12 imported via npm; HTML loads compat v8 CDN; potential dual-SDK confusion
+- Files: `src/config.js` (FIREBASE_CONFIG), `public/services/auth.js` (uses `firebase.auth()` compat global)
+- Impact: Bundle bloat; behavior drift between two SDK styles
+- Fix: Pick one (compat v8 currently working); remove unused npm Firebase
 
-**Outdated ESLint config:**
-- Risk: eslint v9.39.2 with max-warnings 200 (too permissive)
+**ESLint max-warnings 200:**
 - Files: `eslint.config.js`
-- Impact: Technical debt accumulating; no enforcement of code quality rules
-- Migration plan: Reduce max-warnings to 0; enable additional rules; add pre-commit hooks
+- Impact: Quality erosion silent
+- Fix: Tighten to 0; add pre-commit hook
+
+**Gemini model availability:**
+- Risk: Recent commits removed all Gemini 2.0 models (deprecated by Google — e6952ee)
+- Impact: Model name drift; needs monitoring of Google deprecation announcements
+- Fix: Periodic check of `/v1/models` listing; pin only models with stable lifecycle
 
 ## Missing Critical Features
 
-**Request cancellation:**
-- Problem: No AbortController used anywhere; long-running requests can't be cancelled
-- Blocks: Cannot implement proper cleanup on modal close; memory leaks from dangling requests
-- Impact: App continues background API calls even after user navigates away
+**Request cancellation (AbortController):**
+- Problem: Not used anywhere
+- Impact: Cleanup impossible; phantom requests; memory leaks
 
 **Error boundaries:**
-- Problem: No top-level error handler; single parsing error crashes entire app
-- Blocks: Cannot gracefully degrade when API returns malformed data
-- Impact: Single bad API response breaks entire detail view
+- Problem: No top-level error handler
+- Impact: Single parsing error crashes the view
 
-**Loading state for modals:**
-- Problem: Modal shows spinner during fetch but doesn't prevent user interaction
-- Blocks: User can close modal, reopen modal, open another modal while one is loading
-- Impact: Race conditions in modal state
+**Modal loading guards:**
+- Problem: User can open another modal while one is loading
+- Impact: Race conditions, state leaks
+
+**Profile name/avatar editing (Phase 03.2):**
+- Problem: No UI to edit displayName or pick avatar
+- Impact: User stuck with Google photo or anonymous avatar; cannot personalize
+
+**Cinema badge visibility (Phase 03.2):**
+- Problem: Current pill badge with subtle glass background is easy to miss on posters
+- Files: `src/styles/detail.css` (lines 187-207)
+- Impact: Theatrical-release indicator invisible on most posters
+- Fix: Corner ribbon redesign with red gradient (upcoming) / green pulse (now showing)
 
 ## Test Coverage Gaps
 
-**Detail page rendering logic:**
-- What's not tested: buildDetailHTML(), buildCastHTML(), buildVideoHTML() functions
-- Files: `src/features/detail.js` (functions at lines 500-800)
-- Risk: HTML generation bugs undetected; easy to break on API response changes
-- Priority: High (affects core user experience)
+**Detail page rendering logic — HIGH priority:**
+- Untested: `buildDetailHTML()`, `buildCastHTML()`, `buildVideoHTML()`, crew section
+- Files: `src/features/detail.js` (lines 500-800)
+- Risk: HTML bugs undetected; API shape changes break silently
 
-**API error handling:**
-- What's not tested: Behavior when TMDB returns 500, when YouTube timeout, when OMDB returns empty
-- Files: `src/services/api.js` (all fetch methods)
-- Risk: Silent failures; users see broken/incomplete detail views
-- Priority: High (affects reliability)
+**API error handling — HIGH priority:**
+- Untested: TMDB 500, YouTube timeout, OMDB empty response
+- Files: `src/services/api.js`
 
-**Modal state transitions:**
-- What's not tested: Open modal → close → reopen; open detail A → open detail B without closing A
-- Files: `src/features/detail.js` (openDetail, closeModal)
-- Risk: State leaks between modals; event handlers accumulate
-- Priority: Medium (affects UX but not core data)
+**Streaming merge logic (Phase 03.2 new) — HIGH priority:**
+- Untested: TMDB providers appended to RapidAPI; dedup behavior
+- Files: `src/services/streaming-cache.js`
+- Note: No `tests/streaming-cache.test.js` exists — needs creation
 
-**Event listener cleanup:**
-- What's not tested: Opening/closing modal 10 times then checking DOM listeners
-- Files: All modules that use addEventListener
-- Risk: Memory leaks on long sessions; performance degradation
-- Priority: Medium (doesn't break immediately but accumulates)
+**Profile update method (Phase 03.2 new) — HIGH priority:**
+- Untested: `updateUserProfile` Firebase + Firestore sync
+- Files: `public/services/auth.js`, `src/features/profile.js`
 
-**XSS payloads:**
-- What's not tested: Movie titles with `<img onerror=alert()>`, user input in innerHTML paths
+**XSS payloads — HIGH priority:**
+- Untested: titles with `<img onerror=...>`, injection through providers/credits
 - Files: `src/ui/movie-card.js`, `src/features/detail.js`
-- Risk: Potential code injection if escapeHtml() has edge cases
-- Priority: High (security vulnerability)
 
-**Search autocomplete race conditions:**
-- What's not tested: Rapid typing (foo→foob→foobar) before requests complete
-- Files: `src/features/search.js` (handleAutocomplete)
-- Risk: Stale results shown after newer request; wrong movie selected
-- Priority: Medium (edge case but real scenario)
+**Modal state transitions — MEDIUM priority:**
+- Untested: open A → open B without close; rapid open/close cycles
+- Risk: Listener accumulation, state leaks
+
+**Search autocomplete race — MEDIUM priority:**
+- Untested: rapid typing before request completes
+- Risk: Stale results
+
+**Favorites localStorage migration (Phase 03.2 new) — MEDIUM priority:**
+- Untested: legacy key merge into new key without data loss
+- Files: `index.html` `loadFavoritesList`
 
 ---
 
-*Concerns audit: 2026-03-18*
+*Concerns audit: 2026-05-07*

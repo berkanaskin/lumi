@@ -1,101 +1,114 @@
 # Technology Stack
 
-**Analysis Date:** 2026-03-18
+**Analysis Date:** 2026-05-07
 
 ## Languages
 
 **Primary:**
-- JavaScript (ES6+/ES2024) - Browser and Node.js environments
-- HTML5 - Page structure and markup
-- CSS3 - Styling with custom properties and flexbox/grid layouts
+- JavaScript (ES2024, ESM) - All client + serverless function code
+- HTML5 - Single-page entry (`index.html`), mobile-first viewport
+- CSS3 - Mobile-only styling (custom properties, flexbox, grid, safe-area insets)
 
 **Secondary:**
-- JSON - Configuration and data formats
+- JSON - Config (`package.json`, `firebase.json`, `firestore.indexes.json`, `vercel.json`)
+- Firestore Security Rules DSL - `firestore.rules`
 
 ## Runtime
 
 **Environment:**
-- Node.js (development and build)
-- Browser (runtime) - ES Modules
+- Node.js (build/dev + Vercel `nodejs` runtime functions)
+- Browser (mobile-only target) - ES Modules
+- Vercel Edge runtime - thin proxy functions (TMDB, YouTube, OMDb, Gemini, geoip, streaming-availability)
 
 **Package Manager:**
-- npm (Node Package Manager)
-- Lockfile: `package-lock.json` (present and committed)
+- npm
+- Lockfile: `package-lock.json` (committed)
 
 ## Frameworks
 
 **Core:**
-- Vite 7.3.1 - Build tool and dev server
-- Firebase 12.7.0 - Authentication and Firestore database
+- Vite 7.3.1 - Dev server + build (`vite.config.js`)
+- Firebase 12.7.0 - Auth + Firestore (modular SDK)
+- firebase-admin 13.7.0 - Server-side admin SDK (used in Node.js API routes)
+- Vercel AI SDK (`ai` 6.0.116) - LLM orchestration in `api/search.js`, `api/embeddings.js`
+- `@ai-sdk/google` 3.0.53 - Gemini provider for AI SDK
+- `@ai-sdk/openai` 3.0.41 - OpenAI provider for embeddings
 
 **Testing:**
-- Vitest 4.0.17 - Unit test runner
-- JSDOM 27.4.0 - DOM simulation for testing
+- Vitest 4.0.17 - Unit test runner (`vitest.config.js`)
 - @vitest/ui 4.0.17 - Test UI dashboard
+- jsdom 27.4.0 - DOM simulation
 
 **Build/Dev:**
-- ESLint 9.39.2 - Code linting
-- @eslint/js 9.39.2 - ESLint JavaScript ruleset
-- globals 17.0.0 - Global variable definitions for ESLint
+- ESLint 9.39.2 (flat config: `eslint.config.js`)
+- @eslint/js 9.39.2 - JS ruleset
+- globals 17.0.0
 
 ## Key Dependencies
 
-**Critical:**
-- Firebase 12.7.0 - Authentication (Google, Email/Password), Firestore database, Cloud Storage
-  - Loaded via CDN: firebase-app-compat, firebase-auth-compat, firebase-firestore-compat (versions 10.7.1)
-  - Client-side configuration from environment variables
+**Critical (production):**
+- `firebase` 12.7.0 - Client-side Auth (Google, Email/Password) + Firestore
+- `firebase-admin` 13.7.0 - Server-side Firestore access in `api/search.js`, `api/embeddings.js`, `api/cost-dashboard.js`
+- `ai` 6.0.116 - Streaming/non-streaming LLM calls via Vercel AI Gateway
+- `@ai-sdk/google` 3.0.53 - `gemini-2.5-flash-lite` for semantic search
+- `@ai-sdk/openai` 3.0.41 - `text-embedding-3-small` for vector embeddings
 
 **Infrastructure:**
-- None identified as build-time infrastructure beyond Vite
+- Vite (build), Vitest (test), ESLint (lint) — no other build/infra deps
 
 ## Configuration
 
 **Environment:**
-- Environment variables use Vite `VITE_` prefix for client-side exposure
-- Configuration file: `src/config.js` - loads environment variables at build time
-- Development vs. production modes handled via `import.meta.env.DEV` and `import.meta.env.PROD`
+- Vite `VITE_` prefix for client-side env vars
+- Loader: `src/config.js` reads `import.meta.env`
+- Mode flags: `import.meta.env.DEV`, `import.meta.env.PROD`
 
 **Key Environment Variables:**
-- Client-side (public): `VITE_TMDB_API_KEY`, `VITE_YOUTUBE_API_KEY`, `VITE_OMDB_API_KEY`
-- Firebase configuration: `VITE_FIREBASE_*` (7 env vars for project setup)
-- Server-side only: `GEMINI_API_KEY`, `RAPIDAPI_KEY`, `REVENUECAT_API_KEY`
+- Client (public): `VITE_TMDB_API_KEY`, `VITE_YOUTUBE_API_KEY`, `VITE_OMDB_API_KEY`, `VITE_FIREBASE_*` (7 vars)
+- Server-only: `GEMINI_API_KEY`, `OPENAI_API_KEY`, `RAPIDAPI_KEY`, `AI_GATEWAY_API_KEY`, `FIREBASE_ADMIN_*` (service account), `REVENUECAT_API_KEY` (optional)
 
 **Build:**
-- Vite config: `vite.config.js` (1265 bytes)
-- ESLint config: `eslint.config.js` - ES modules, relaxed for legacy code migration
-- Vitest config: `vitest.config.js` - JSDOM environment, test pattern: `tests/**/*.{test,spec}.{js,ts}`
-- Package.json scripts: dev, build, preview, lint, lint:fix, test, test:watch, test:ui, test:coverage
+- `vite.config.js` - root config, base `/`, esbuild minification
+- `eslint.config.js` - flat ESLint v9 config
+- `vitest.config.js` - jsdom env, tests under `tests/**/*.{test,spec}.{js,ts}`
+- `vercel.json` - function routing + headers
+- Firebase: `firebase.json`, `firestore.rules`, `firestore.indexes.json`, `.firebaserc`
+- Scripts: `dev`, `build`, `preview`, `lint`, `lint:fix`, `test`, `test:watch`, `test:ui`, `test:coverage`
 
 ## Platform Requirements
 
 **Development:**
-- Node.js (LTS recommended)
-- npm or yarn
-- Git for version control
-- Browser with ES6+ support
+- Node.js 20+ (LTS)
+- npm
+- Modern browser DevTools with mobile device emulation (project is mobile-only)
 
 **Production:**
-- Deployment target: Vercel (indicated by `/api/` serverless function structure and `.vercel/` directory)
-- Static hosting with serverless functions for API proxies
-- Edge runtime for API functions (`export const config = { runtime: 'edge' }`)
+- Vercel hosting (static + Edge + Node serverless functions)
+- Firebase project (Auth + Firestore)
+- Mobile-only target — no desktop layout exists
 
 ## Build Output
 
-**Output Directory:** `dist/` (contains compiled and minified assets)
+**Output Directory:** `dist/`
 
 **Build Configuration:**
-- Source maps: enabled in development
-- Minification: esbuild
-- Base path: `/` (root path for Vercel)
-- Entry point: `index.html`
+- Minifier: esbuild
+- Source maps: dev only
+- Base path: `/`
+- Entry: `index.html`
 
 ## Module System
 
-**Module Type:** ES Modules (ESM)
-- `"type": "module"` in package.json
-- All source files use `import`/`export` syntax
-- Legacy compatibility: window global exports for non-module scripts in HTML
+**Module Type:** ES Modules (`"type": "module"` in package.json)
+- All `src/**/*.js` and `api/**/*.js` use `import`/`export`
+- API routes export default async handler (Vercel) and a `config` object for runtime
+
+## Project Application Type
+
+- Mobile-only web app (Lumi - Film Keşif Platformu) v0.13.0
+- Single-page architecture (`index.html` + `src/main.js`)
+- No desktop or tablet variant — all CSS targets mobile viewport widths
 
 ---
 
-*Stack analysis: 2026-03-18*
+*Stack analysis: 2026-05-07*

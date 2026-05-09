@@ -1,178 +1,183 @@
 # External Integrations
 
-**Analysis Date:** 2026-03-18
+**Analysis Date:** 2026-05-07
 
 ## APIs & External Services
 
 **Movie/TV Data:**
-- TMDB (The Movie Database) - Primary data source for movie/TV show information
-  - SDK/Client: Direct API calls via fetch in `src/services/api.js` (TMDBService)
-  - Auth: API key via `VITE_TMDB_API_KEY` (public, rate-limited)
-  - Endpoints: https://api.themoviedb.org/3
-  - Image CDN: https://image.tmdb.org/t/p
-  - Features: search, discover, trending, details, collections, genres, ratings
+- TMDB (The Movie Database) - Primary movie/TV metadata source
+  - Client: `src/services/api.js` (TMDBService) → proxy `/api/tmdb`
+  - Auth: `VITE_TMDB_API_KEY` (also injected server-side by proxy)
+  - Endpoints: https://api.themoviedb.org/3, image CDN https://image.tmdb.org/t/p
+  - Features: search, discover, trending, movie/TV details, collections, genres, credits (used for new crew section: Director, Writer, Producer in `src/features/detail.js`)
 
-- OMDb (Open Movie Database) - IMDb ratings, Rotten Tomatoes, Metacritic scores
-  - SDK/Client: Direct API calls (planned for ratings service)
-  - Auth: API key via `VITE_OMDB_API_KEY`
-  - Endpoints: https://www.omdbapi.com
-  - Integrated in: `src/services/api.js` (RatingsService - stub implementation)
+- OMDb - IMDb / Rotten Tomatoes / Metacritic ratings
+  - Client: proxy `/api/omdb` (Edge runtime)
+  - Auth: `VITE_OMDB_API_KEY` server-injected
+  - Used by: `src/services/api.js` (RatingsService)
 
 **Video Content:**
-- YouTube Data API - Movie trailers and related videos
-  - SDK/Client: Direct API calls via fetch in `src/services/api.js` (YouTubeService)
-  - Auth: API key via `VITE_YOUTUBE_API_KEY` (public, rate-limited)
-  - Endpoints: https://www.googleapis.com/youtube/v3
-  - Features: search videos, get video details
-
-- YouTube Embed - Video player integration
-  - Method: Embedded iframe player in detail page modal
-  - Implementation: `src/features/detail.js` (playVideo function)
-  - No API key required for player
+- YouTube Data API v3 - Trailers, related videos
+  - Client: `src/services/api.js` (YouTubeService) → proxy `/api/youtube` (Edge)
+  - Auth: `VITE_YOUTUBE_API_KEY`
+  - Features: video search, video details
+- YouTube Embed - in-app trailer playback (iframe), no API key needed
 
 **AI & Recommendations:**
-- Google Gemini AI - AI-powered movie discovery and recommendations
-  - SDK/Client: Server-side proxy at `/api/gemini` (Vercel serverless function)
-  - Auth: `GEMINI_API_KEY` (server-side only, never exposed to client)
-  - Endpoints: https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent
-  - Model: `gemini-2.0-flash` (default)
-  - Features: generating movie recommendations based on user preferences/prompts
-  - Implementation: `api/gemini.js` (Edge runtime, POST only)
-  - Generation Config: temperature=0.9, topK=40, topP=0.95, maxOutputTokens=2048
-  - Usage: `src/features/discover.js` (handleAISearch function)
+- Google Gemini AI - generative recommendations
+  - Proxy: `api/gemini.js` (Edge runtime, POST only)
+  - Model: `gemini-2.5-flash` (hardcoded URL: `v1beta/models/gemini-2.5-flash:generateContent`)
+  - Auth: `GEMINI_API_KEY` (server-only)
+  - Recent work: simplified — Gemini billing enabled, no fallback path; retry-on-rate-limit (5s wait, then retry once)
+  - Used by: `src/features/discover.js` (handleAISearch)
 
-**External Services (Planned/Infrastructure):**
-- RapidAPI - Potential multi-API aggregation service
-  - Auth: `RAPIDAPI_KEY` (server-side proxy: `/api/rapidapi`)
-  - Status: Infrastructure in place but not actively used
+- Vercel AI SDK + AI Gateway - structured LLM calls
+  - Function: `api/search.js` (Node.js runtime, `maxDuration: 30`)
+  - Model: `gemini-2.5-flash-lite` via `@ai-sdk/google`
+  - Auth: `AI_GATEWAY_API_KEY` (Vercel AI Gateway routing)
+  - Used by: `src/pages/search-results.js` semantic search
 
-- RevenueCat - In-app subscription management
-  - Auth: `REVENUECAT_API_KEY` (server-side proxy: `/api/revenuecat`)
-  - Status: Infrastructure in place but not actively used
+- OpenAI Embeddings - vector search backbone
+  - Function: `api/embeddings.js` (Node.js runtime)
+  - Model: `text-embedding-3-small`
+  - Auth: `OPENAI_API_KEY`
+  - Storage: Firestore (admin SDK writes embedding vectors + metadata)
+
+**Streaming Availability:**
+- RapidAPI - Streaming Availability service
+  - Function: `api/streaming-availability.js` (Edge runtime)
+  - Endpoint: `https://streaming-availability.p.rapidapi.com/shows/{imdbId}?country=...&series_granularity=show`
+  - Auth: `RAPIDAPI_KEY` (server-only), `X-RapidAPI-Host: streaming-availability.p.rapidapi.com`
+  - Cache layer: `src/services/streaming-cache.js`
+
+**Geolocation:**
+- Vercel Geo (Edge) - country detection for streaming providers
+  - Function: `api/geoip.js` (Edge runtime, reads `request.geo`)
+  - Used to default `country` param for streaming-availability calls
+
+**Cost / Ops:**
+- `api/cost-dashboard.js` (Node.js runtime) - aggregates per-feature LLM/API spend, reads from Firestore admin
+
+**Subscriptions (planned, infra in place):**
+- RevenueCat - mobile in-app subscription management
+  - Auth: `REVENUECAT_API_KEY` (server-only)
+  - Status: env var slot reserved; no active proxy file in `api/`
 
 ## Data Storage
 
 **Databases:**
-- Firebase Firestore - Primary user data and preferences
-  - Connection: Initialized via Firebase SDK in `services/auth.js`
-  - Client: Firebase SDK (firebase-firestore-compat v10.7.1)
-  - Collections: `users` (user profiles, tier status, preferences)
-  - Usage: Store user tier (free/premium), favorites, watchlist, user ratings
-  - Implementation: `services/auth.js` (fetchUserTier, upgradeToPremium), `src/features/profile.js` (saveUserRating, getUserRating)
+- Firebase Firestore - primary user data + LLM caches
+  - Client SDK: `firebase` 12.7.0 (modular)
+  - Admin SDK: `firebase-admin` 13.7.0 (server-side, in `api/search.js`, `api/embeddings.js`, `api/cost-dashboard.js`)
+  - Collections (observed): `users` (tier, favorites, watchlist, ratings), embedding/cache collections (per `api/embeddings.js`), cost tracking docs
+  - Rules: `firestore.rules` (committed)
+  - Indexes: `firestore.indexes.json` (committed)
+  - Project config: `.firebaserc`, `firebase.json`
 
 **File Storage:**
-- Local filesystem only for client-side (localStorage and sessionStorage)
-  - localStorage key: `lumi_user` - persists user session and preferences
-  - No external file storage detected (S3, GCS, etc.)
+- Browser localStorage (`lumi_user`) - session/profile cache
+- sessionStorage - transient UI state
+- No external blob storage (no S3, no Vercel Blob, no Firebase Storage in active use)
 
 **Caching:**
-- HTTP caching via Cache-Control headers in Vercel Functions
-  - TMDB requests: `s-maxage=3600, stale-while-revalidate=86400` (1 hour fresh, 24 hour stale)
-  - YouTube requests: Same caching policy
-  - Browser caching: Standard HTTP headers, no service worker detected
+- Vercel Edge Cache via `Cache-Control` headers on Edge proxies
+  - TMDB / YouTube / OMDb: `s-maxage=3600, stale-while-revalidate=86400`
+- Streaming-availability: in-memory + Firestore-backed cache (`src/services/streaming-cache.js`)
+- No service worker, no Vercel Runtime Cache yet
 
 ## Authentication & Identity
 
 **Auth Provider:**
-- Firebase Authentication - Primary user identity system
-  - Implementation: `services/auth.js` (AuthService class singleton)
-  - Providers supported:
-    - Google (OAuth2 with popup flow)
-    - Email/Password (Firebase native)
-    - Mock/Demo accounts for testing (local-only)
-  - Features: Registration, login, logout, profile sync, Firestore user documents
-  - State persistence: localStorage backup (`lumi_user`) with Firebase as source of truth
-
-**Session Management:**
-- Firebase auth state change listeners in `services/auth.js`
-- Custom event dispatch: `authStateChanged` event fired on auth state changes
-- Fallback: Local storage for offline/mock mode
+- Firebase Authentication
+  - Implementation: `services/auth.js` (AuthService singleton)
+  - Methods: Google OAuth (popup), Email/Password, Mock/Demo (offline dev)
+  - Profile sync: Firestore `users/{uid}` document
+  - Local cache: `localStorage.lumi_user`
+  - Event bus: `authStateChanged` custom event
 
 **Tester Accounts:**
-- Mock login (local development when Firebase unavailable)
-- Tester Premium account (testing premium features)
-- Tester Free account (testing free tier limits)
+- Mock login (no Firebase)
+- Tester Premium / Tester Free (toggle premium-gated features)
 
 ## Monitoring & Observability
 
 **Error Tracking:**
-- Not detected - No Sentry, LogRocket, or similar service integrated
-- Console logging only: `console.error()` and `console.warn()` throughout codebase
+- None integrated (no Sentry / LogRocket)
+- Console-only with prefixed tags: `[Lumi]`, `[TMDB]`, `[YouTube]`, `[Gemini Proxy]`, `[Firebase]`, `[Search]`, `[Embeddings]`
 
-**Logs:**
-- Browser console logging with service prefixes: `[Lumi]`, `[TMDB]`, `[YouTube]`, `[Gemini Proxy]`, `[Firebase]`
-- Development mode: Enhanced logging with version and initialization details
-- No centralized logging service detected
+**Analytics:**
+- Firebase `measurementId` slot present (`VITE_FIREBASE_MEASUREMENT_ID`); no explicit Analytics calls observed
+- No Vercel Web Analytics / Speed Insights wired up yet
 
 ## CI/CD & Deployment
 
 **Hosting:**
-- Vercel (indicated by `.vercel/` directory and serverless function pattern)
-- Static site hosting with Edge Functions for API proxies
-- Edge runtime configuration in `/api/` functions for low-latency global distribution
+- Vercel (`.vercel/` present, `vercel.json` committed)
+- Static `dist/` + 9 serverless functions under `api/`
+  - Edge runtime: `gemini`, `tmdb`, `youtube`, `omdb`, `geoip`, `streaming-availability`
+  - Node.js runtime: `search` (maxDuration 30), `embeddings`, `cost-dashboard`
+
+**Firebase:**
+- Firestore rules + indexes deployed via `firebase` CLI
+- `firebase.json` defines deployment targets
 
 **CI Pipeline:**
-- GitHub Actions (infrastructure in place in `.github/` directory)
-- Status: Build/test automation likely configured, details not examined
-
-**Deployment Configuration:**
-- Vercel project config: `.vercel/project.json`
-- Build command: `npm run build` (Vite build)
-- Output directory: `dist/`
+- `.github/` directory present (workflows not deeply inspected)
 
 ## Environment Configuration
 
-**Required env vars (Client-Side):**
-- `VITE_TMDB_API_KEY` - The Movie Database API access
-- `VITE_YOUTUBE_API_KEY` - YouTube Data API access
-- `VITE_FIREBASE_API_KEY` - Firebase project API key
-- `VITE_FIREBASE_AUTH_DOMAIN` - Firebase authentication domain
-- `VITE_FIREBASE_PROJECT_ID` - Firebase project identifier
-- `VITE_FIREBASE_STORAGE_BUCKET` - Firebase Cloud Storage bucket
-- `VITE_FIREBASE_MESSAGING_SENDER_ID` - Firebase Cloud Messaging identifier
-- `VITE_FIREBASE_APP_ID` - Firebase application identifier
-- `VITE_FIREBASE_MEASUREMENT_ID` - Google Analytics measurement ID
+**Client (public, `VITE_`):**
+- `VITE_TMDB_API_KEY`, `VITE_YOUTUBE_API_KEY`, `VITE_OMDB_API_KEY`
+- `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`,
+  `VITE_FIREBASE_STORAGE_BUCKET`, `VITE_FIREBASE_MESSAGING_SENDER_ID`,
+  `VITE_FIREBASE_APP_ID`, `VITE_FIREBASE_MEASUREMENT_ID`
 
-**Server-Side Only (Vercel Functions):**
-- `GEMINI_API_KEY` - Google Gemini AI API access (CRITICAL: never client-side)
-- `RAPIDAPI_KEY` - RapidAPI platform authentication (optional)
-- `REVENUECAT_API_KEY` - RevenueCat subscription management (optional)
+**Server-only (Vercel Functions):**
+- `GEMINI_API_KEY` - Gemini direct REST proxy
+- `AI_GATEWAY_API_KEY` - Vercel AI Gateway (used by `ai` SDK calls)
+- `OPENAI_API_KEY` - embeddings
+- `RAPIDAPI_KEY` - streaming-availability
+- `FIREBASE_ADMIN_*` (service account JSON or split fields) - admin SDK
+- `REVENUECAT_API_KEY` - reserved (not active)
 
 **Secrets Location:**
-- Development: `.env` and `.env.local` (git-ignored)
+- Local: `.env.local` (git-ignored)
 - Production: Vercel Environment Variables dashboard
-- Never committed: All secret files in `.gitignore`
+- Never committed (verified by `.gitignore`)
 
 ## Webhooks & Callbacks
 
-**Incoming:**
-- None detected - No webhook endpoints configured for external services
+**Incoming:** None configured.
 
-**Outgoing:**
-- CORS enabled on all API proxy functions:
-  - `Access-Control-Allow-Origin: *`
-  - `Access-Control-Allow-Methods: POST, OPTIONS` (Gemini proxy)
-  - `Access-Control-Allow-Headers: Content-Type`
-  - Indicates browser-based client consumption
+**Outgoing (CORS on proxies):**
+- `Access-Control-Allow-Origin: *`
+- `Access-Control-Allow-Methods: POST, OPTIONS` (Gemini, search, embeddings)
+- `Access-Control-Allow-Methods: GET, OPTIONS` (TMDB, YouTube, OMDb, geoip, streaming-availability)
+- `Access-Control-Allow-Headers: Content-Type`
 
 ## API Proxy Architecture
 
 **Purpose:**
-- Hide server-side keys (Gemini)
-- Add caching layer for rate-limited public APIs (TMDB, YouTube)
-- Centralize API orchestration
+- Hide server-only secrets (Gemini, OpenAI, RapidAPI, AI Gateway, Firebase admin)
+- Add Vercel Edge cache layer for rate-limited public APIs
+- Centralize geolocation, cost tracking, semantic search
 
-**Proxy Functions:**
-- `api/gemini.js` - Gemini AI requests (POST only, Edge runtime)
-- `api/tmdb.js` - TMDB requests (transparent passthrough with caching, Edge runtime)
-- `api/youtube.js` - YouTube requests (transparent passthrough with caching, Edge runtime)
+**Proxy / Function Map:**
+| File | Runtime | Purpose |
+|---|---|---|
+| `api/gemini.js` | edge | Direct Gemini REST passthrough (gemini-2.5-flash) |
+| `api/tmdb.js` | edge | TMDB cached passthrough |
+| `api/youtube.js` | edge | YouTube cached passthrough |
+| `api/omdb.js` | edge | OMDb cached passthrough |
+| `api/streaming-availability.js` | edge | RapidAPI streaming-availability |
+| `api/geoip.js` | edge | Country detection from request.geo |
+| `api/search.js` | nodejs (maxDuration 30) | Semantic search via AI SDK + gemini-2.5-flash-lite |
+| `api/embeddings.js` | nodejs | OpenAI embeddings + Firestore writes |
+| `api/cost-dashboard.js` | nodejs | LLM/API spend aggregation from Firestore |
 
-**Proxy Pattern:**
-- Client sends request to `/api/{service}?endpoint=/v3/...&...params`
-- Proxy appends API key and forwards to external service
-- Proxy adds caching headers and CORS headers
-- Response returned to client as JSON
+**Pattern:**
+- Client → `/api/{service}?endpoint=...` → proxy injects key → external API → cached response
 
 ---
 
-*Integration audit: 2026-03-18*
+*Integration audit: 2026-05-07*

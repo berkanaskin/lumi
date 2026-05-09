@@ -1,0 +1,51 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users collection — auth-gated with email verification
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null
+        && request.auth.uid == userId
+        && (
+          request.auth.token.firebase.sign_in_provider == 'google.com'
+          || request.auth.token.email_verified == true
+        )
+        && (!('displayName' in request.resource.data) || !request.resource.data.displayName.matches('.*(?i)(admin|moderator|lumi|fuck|shit|ass|dick|pussy|siktir|amk|orospu|yarrak|piç|sikik|göt|bok|pezevenk).*'));
+    }
+
+    // Watchlist — private per user
+    match /users/{userId}/watchlist/{itemId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Favorites — private per user
+    match /users/{userId}/favorites/{itemId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Ratings — authenticated users only
+    match /ratings/{ratingId} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if request.auth != null
+        && resource.data.userId == request.auth.uid;
+    }
+
+    // Streaming cache — server-written, public read
+    match /streamingCache/{cacheId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Notifications — private per user
+    match /users/{userId}/notifications/{notifId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Deny everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

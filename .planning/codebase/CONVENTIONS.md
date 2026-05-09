@@ -1,94 +1,100 @@
 # Coding Conventions
 
-**Analysis Date:** 2026-03-18
+**Analysis Date:** 2026-05-07
+
+## Project Context
+
+Lumi is a **mobile-only** ES module web app (Vite + vanilla JS) with Firebase backend and Vercel-hosted AI proxy functions. No TypeScript, no framework. Code is organized into modular `src/` folders with legacy compatibility shims for older `window.*` usage.
 
 ## Naming Patterns
 
 **Files:**
-- Feature modules: camelCase (e.g., `search.js`, `discover.js`, `detail.js`)
-- Library/utility modules: camelCase (e.g., `helpers.js`, `state.js`, `constants.js`)
-- Test files: descriptive name + `.test.js` suffix (e.g., `helpers.test.js`, `api.test.js`)
-- UI components: kebab-case with descriptive names (e.g., `movie-card.js`, `loading.js`)
+- Feature modules: camelCase (e.g., `src/features/search.js`, `src/features/discover.js`, `src/features/detail.js`, `src/features/person.js`, `src/features/trivia.js`)
+- Library/utility modules: camelCase (`src/lib/helpers.js`, `src/lib/state.js`, `src/lib/constants.js`)
+- Service modules: camelCase (`src/services/api.js`, `src/services/auth.js`, `src/services/ai.js`, `src/services/store.js`)
+- Page modules: camelCase (`src/pages/`)
+- View modules: camelCase (`src/views/`)
+- API proxies: camelCase under `api/` (Vercel serverless functions)
+- Test files: `{feature}.test.js` in `tests/` directory
 
 **Functions:**
-- camelCase for all function declarations
-- Public exports are descriptive and action-oriented: `handleAutocomplete()`, `toggleTheme()`, `renderDetail()`
-- Internal/helper functions use same convention
-- Example: `debounce()`, `throttle()`, `formatDate()`, `isMobile()`
+- camelCase, action-oriented for public exports: `handleAutocomplete()`, `toggleTheme()`, `renderDetail()`, `loadPersonPage()`
+- Private helpers same convention; prefix with `_` only when also unused (allowed by ESLint)
+- Async functions named for what they do, not the async-ness: `searchMovies()` not `searchMoviesAsync()`
 
 **Variables:**
-- camelCase for constants and variables
-- UPPERCASE_SNAKE_CASE for module-level constants (e.g., `APP_VERSION`, `LANGUAGE_REGIONS`, `MOOD_GENRES`)
-- Boolean variables prefixed with `is` or use imperative verb (e.g., `isMobile()`, `isInWatchlist()`, `modalOpen`)
-- State objects use camelCase (e.g., `searchQuery`, `currentPage`, `currentUser`)
+- camelCase for locals and state keys: `searchQuery`, `currentPage`, `currentUser`, `modalOpen`
+- UPPER_SNAKE_CASE for module-level constants: `APP_VERSION`, `LANGUAGE_REGIONS`, `MOOD_GENRES`, `ERA_RANGES`, `POETIC_PLACEHOLDERS`
+- Booleans: `is*` prefix or imperative (`isMobile()`, `isInWatchlist()`, `modalOpen`)
 
-**Types & Objects:**
-- Service objects capitalized: `TMDBService`, `YouTubeService`, `RatingsService`, `API`
-- State objects lowercase: `state`, `elements`
-- Configuration constants: `CONFIG`, `API_URLS`, `FIREBASE_CONFIG`
+**Service / Singleton Objects:**
+- PascalCase service objects exported as `const`: `TMDBService`, `YouTubeService`, `RatingsService`, `AuthService`, `AIService`, `StoreService`, `NotificationService`, `API`
+- Configuration objects UPPER: `CONFIG`, `API_URLS`, `FIREBASE_CONFIG`
+- Mutable singletons lowercase: `state`, `elements`, `i18n`
 
 ## Code Style
 
-**Formatting:**
-- ESLint enforced (see `eslint.config.js`)
-- Indentation: 4 spaces (configured in ESLint: `'indent': ['warn', 4, { SwitchCase: 1 }]`)
-- Line length: No hard limit enforced, but wrapped as needed
-- Semicolons: Always required (`'semi': ['error', 'always']`)
-- Quotes: Single quotes preferred, double quotes allowed to avoid escaping (`'quotes': ['warn', 'single', { avoidEscape: true }]`)
+**Formatting (ESLint enforced):**
+- Indentation: **4 spaces** (`indent: ['warn', 4, { SwitchCase: 1 }]`)
+- Semicolons: **required** (`semi: ['error', 'always']`)
+- Quotes: **single** preferred, double allowed to avoid escaping
+- Equality: `eqeqeq: ['warn', 'smart']` — prefer `===`/`!==`, `==` allowed for null check
+- Curly braces: required except for single-line statements (`curly: 'multi-line'`)
+- `prefer-const` and `no-var` are warnings — use `const`/`let` only
 
 **Linting:**
-- Tool: ESLint 9.39.2 with @eslint/js recommended config
-- Configuration: `eslint.config.js` at project root
-- No-unused-vars: `warn` for legacy code, `error` for new modular code in `src/`
-- No-undef: `warn` for legacy code, `error` for strict `src/` files
-- Console: Not restricted (`'no-console': 'off'`)
-- Unused params: Pattern `^_` prefix allows unused parameters (e.g., `function(_unused) {}`)
-
-**Run commands:**
-```bash
-npm run lint              # Run ESLint check
-npm run lint:fix         # Auto-fix ESLint issues
-```
+- Tool: ESLint 9.39.2 with `@eslint/js` recommended
+- Config: `eslint.config.js` (flat config) at project root
+- **Strict zone:** `src/**/*.js` — `no-unused-vars: 'error'`, `no-undef: 'error'`
+- **Relaxed zone:** legacy roots (`app.js`, `api.js`, `config.js`, `i18n.js`, `services/**`) — most rules off
+- **Ignored:** `dist/`, `node_modules/`, `stitch/`, `assets/`, `*.min.js`, `vite.config.js`, `vitest.config.js`, `eslint.config.js`, `tests/**`
+- Unused params allowed via `^_` prefix (`argsIgnorePattern: '^_'`)
+- Console output not restricted (`no-console: 'off'`)
+- API folder (`api/**`) gets Node globals (`process` etc.)
+- Lint command: `npm run lint` (max-warnings 200, slowly tightening)
+- Auto-fix: `npm run lint:fix`
 
 ## Import Organization
 
-**Order:**
-1. Standard library imports (`import { fileURLToPath } from 'url'`)
-2. Third-party packages (`import { defineConfig } from 'vite'`)
-3. Local modules (`import { CONFIG } from '../config.js'`)
-4. Test utilities (`import { describe, it, expect, vi } from 'vitest'`)
+**Order (observed convention):**
+1. Node/standard library (`url`, `path`)
+2. Third-party (`firebase/*`, `ai`, `@ai-sdk/google`, `vite`)
+3. Internal modules via path alias (`@/`, `@lib/`, `@ui/`)
+4. Relative imports for siblings (`./helpers.js`)
+5. Vitest utilities (test files only)
 
 **Path Aliases:**
-- `@` → `src/` (e.g., `import from '@/main.js'`)
-- `@lib` → `src/lib/` (e.g., `import { state } from '@lib/state.js'`)
-- `@ui` → `src/ui/` (e.g., `import { loadTheme } from '@ui/theme.js'`)
-- Configured in both `vite.config.js` and `vitest.config.js`
+- `@` → `src/`
+- `@lib` → `src/lib/`
+- `@ui` → `src/ui/`
+- Defined in both `vite.config.js` and `vitest.config.js`
 
 **Module pattern:**
-- ES6 modules exclusively (`type: "module"` in `package.json`)
-- Named exports preferred for public APIs
-- Default exports only for service objects or standalone modules
-- Example service export pattern:
+- ES6 modules exclusively (`"type": "module"` in `package.json`)
+- Named exports preferred for utilities and services
+- File extensions **required** in import paths (`./helpers.js` not `./helpers`)
+- No barrel files — always import from the specific module
+
 ```javascript
 export const TMDBService = {
     async fetch(endpoint, options = {}) { },
-    async search(query, type = 'multi', language = 'tr-TR') { }
+    async search(query, type = 'multi', language = 'tr-TR') { },
+    async discover(type = 'movie', options = {}) { },
 };
 ```
 
 ## Error Handling
 
 **Patterns:**
-- Try-catch blocks used for async operations and risky operations
-- Error caught and logged with context prefix: `console.error('[module] Error:', error)`
-- Fallback values returned on error (not re-thrown)
-- Example from `src/services/api.js`:
+- Try/catch around async I/O (fetch, Firebase, localStorage)
+- Errors logged with bracketed module context, then a graceful fallback returned
+- No custom error classes — generic `Error` only
+- Never re-throw from service layer; UI layer treats `null`/`[]` as "no data"
+
 ```javascript
 try {
     const response = await fetch(url, options);
-    if (!response.ok) {
-        throw new Error(`TMDB API error: ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`TMDB API error: ${response.status}`);
     return await response.json();
 } catch (error) {
     console.error('[TMDB] Fetch error:', error);
@@ -96,46 +102,46 @@ try {
 }
 ```
 
-**State persistence errors:**
-- localStorage operations wrapped in try-catch
-- Errors logged with module context: `console.error('[State] Failed to load favorites:', e)`
-- Application continues with empty state rather than crashing
+**Firebase / network errors:**
+- Auth failures surfaced via `NotificationService` toast
+- Firestore writes wrapped in try/catch, errors logged with `[Firestore]` prefix
+- AI proxy (Gemini) has retry-on-rate-limit (5s wait) before fallback (see commit a12439f, d0a6d5b)
 
-**No explicit error classes:**
-- Generic Error objects used
-- Errors described in console messages rather than custom error types
+**localStorage:**
+- All reads/writes wrapped in try/catch
+- Failure logged: `console.error('[State] Failed to load favorites:', e)`
+- App continues with empty defaults rather than crashing
 
 ## Logging
 
-**Framework:** `console` object (no logging library)
+**Framework:** native `console` only (no winston/pino).
 
-**Patterns:**
-- `console.error('[ModuleName] Description:', error)` for errors
-- `console.warn('[ModuleName] Description')` for warnings
-- `console.log('Message:', value)` for debug/info (no prefix required)
-- Module context always included in brackets: `[TMDB]`, `[handleAutocomplete]`, `[State]`
-- Error messages are descriptive: "TMDB API error: 404", "Failed to load favorites"
+**Conventions:**
+- `console.error('[Module] Description:', error)` — errors
+- `console.warn('[Module] Description')` — warnings
+- `console.log('Message:', value)` — debug/info, prefix optional
+- Module tag in brackets is required for errors/warnings: `[TMDB]`, `[Auth]`, `[Gemini]`, `[Firestore]`, `[State]`, `[handleAutocomplete]`
 
-**Examples:**
 ```javascript
 console.error('[TMDB] Fetch error:', error);
 console.warn('[loadAuth] AuthService not available');
 console.log('User loaded:', state.currentUser?.name);
 ```
 
-## Comments
+**Production note:** No log shipping; rely on browser devtools and Vercel function logs.
 
-**When to Comment:**
-- Block-level comments for major sections (functions, logical groupings)
-- Inline comments for non-obvious logic
-- No comments for self-documenting code
+## Comments & JSDoc
 
-**JSDoc/TSDoc:**
-- Block comments at function level with `/**` format
-- Documents purpose, parameters, and return type
-- Required for all exported functions
-- Optional for internal functions
-- Example:
+- Block JSDoc (`/** */`) **required for exported helpers/services** documenting purpose, `@param`, `@returns`
+- Inline `//` comments for non-obvious logic only — avoid restating code
+- Visual section headers used in long modules:
+
+```javascript
+// ============================================
+// APP VERSION
+// ============================================
+```
+
 ```javascript
 /**
  * Debounce a function call
@@ -143,30 +149,16 @@ console.log('User loaded:', state.currentUser?.name);
  * @param {number} wait - Wait time in milliseconds
  * @returns {Function} Debounced function
  */
-export function debounce(func, wait) {
-    // Implementation
-}
-```
-
-**Section headers:**
-- Major sections separated by visual headers:
-```javascript
-// ============================================
-// APP VERSION
-// ============================================
+export function debounce(func, wait) { /* ... */ }
 ```
 
 ## Function Design
 
-**Size:** No explicit limit, but functions average 20-50 lines
-- Large functions like `sortByRelevance()` (60+ lines) acceptable when warranted by complexity
-- Helper functions kept minimal (5-15 lines)
+- No hard length limit; helpers stay 5–15 lines, feature handlers 20–60 lines
+- Positional params for required args, **destructured options object** for the rest
+- Defaults declared in the destructure, not via `||`
+- Return data or `void`; use `null`/`[]`/`{}` as empty sentinels — never throw to UI
 
-**Parameters:**
-- Positional parameters for required arguments
-- Object parameters for optional/multiple configs
-- Default parameters used extensively: `language = 'tr-TR'`, `page = 1`
-- Destructuring for option objects:
 ```javascript
 async discover(type = 'movie', options = {}) {
     const {
@@ -177,74 +169,80 @@ async discover(type = 'movie', options = {}) {
         minVoteCount = 100,
         page = 1,
     } = options;
+    // ...
 }
 ```
 
-**Return Values:**
-- Functions either return data or void
-- Promise-returning async functions always awaited by caller
-- Null returned for "no data" cases
-- Empty arrays/objects returned as fallback on error
+**Async patterns:**
+- `async`/`await` exclusively (no raw `.then()` chains)
+- `Promise.all([...])` for parallel independent fetches
+- Optional chaining + nullish coalescing standard: `data.results?.length ?? 0`
 
 ## Module Design
 
 **Exports:**
-- Service objects exported as `export const ServiceName = { ... }`
-- Utility functions exported as `export function functionName() { ... }`
-- Constants exported as `export const CONSTANT_NAME = ...`
+- Service objects: `export const ServiceName = { ... }`
+- Utilities: `export function name() { ... }`
+- Constants: `export const CONSTANT_NAME = ...`
 
-**Barrel Files:**
-- Not used; imports always from specific module files
+**Legacy / Window Compatibility:**
+Many `src/` modules attach exports to `window` so older non-module scripts still work:
 
-**Legacy Compatibility:**
-- Many modules expose functions to `window` global for backward compatibility
-- Example from `src/lib/helpers.js`:
 ```javascript
 if (typeof window !== 'undefined') {
     window.debounce = debounce;
     window.formatDate = formatDate;
 }
 ```
-- Same pattern in `src/lib/state.js`, `src/ui/theme.js`, `src/services/api.js`
-- This enables both modern (`import { debounce }`) and legacy (`window.debounce()`) usage
 
-**Async patterns:**
-- Async functions return Promises
-- Destructuring with optional chaining common: `data.results?.length > 0`
-- Promise.all() used for parallel requests: `await Promise.all([fetch1, fetch2])`
+Seen in `src/lib/helpers.js`, `src/lib/state.js`, `src/ui/theme.js`, `src/services/api.js`. New code should still attach to `window` if the symbol exists in the ESLint legacy globals list (`API`, `state`, `i18n`, `AuthService`, etc.).
+
+**Barrel files:** not used — always import the specific module.
+
+## Mobile-Only Constraints
+
+- No desktop-specific code paths; viewport assumes ≤ 768px
+- Touch event handlers preferred over hover-only interactions
+- Use `pointerdown`/`touchstart` for taps; never rely on `:hover` for critical UX
+- Bottom sheet / modal patterns over multi-pane desktop layouts
+- Test new UI in mobile viewport (Chrome DevTools device mode) before shipping
+
+## Vercel / Serverless Conventions
+
+- API routes live in `api/*.js` and run as **stateless** Vercel Functions
+- Never persist to local FS or in-memory across requests
+- Secrets read from `process.env.*` only — never `NEXT_PUBLIC_*`
+- AI provider calls go through `api/gemini.js` proxy (server-side key)
+- Use `waitUntil` for fire-and-forget post-response work
 
 ## Code Examples by Pattern
 
-**Service method structure:**
-Located in `src/services/api.js`:
+**Service method:**
 ```javascript
+// src/services/api.js
 async search(query, type = 'multi', language = 'tr-TR') {
     const endpoint = type === 'multi' ? '/search/multi' : `/search/${type}`;
     const data = await this.fetch(
         `${endpoint}?language=${language}&query=${encodeURIComponent(query)}`
     );
-
     if (type === 'multi' && data.results) {
         data.results = data.results.filter(
             item => item.media_type === 'movie' || item.media_type === 'tv'
         );
     }
-
     return data;
 }
 ```
 
-**Feature module structure:**
-Located in `src/features/search.js`:
+**Feature module handler:**
 ```javascript
+// src/features/search.js
 export async function handleAutocomplete() {
     const query = elements.searchInput?.value?.trim();
-
     if (!query || query.length < 2) {
         hideAutocomplete();
         return;
     }
-
     state.autocompleteTimeout = setTimeout(async () => {
         try {
             const data = await API.search(query);
@@ -260,4 +258,4 @@ export async function handleAutocomplete() {
 
 ---
 
-*Convention analysis: 2026-03-18*
+*Convention analysis: 2026-05-07*

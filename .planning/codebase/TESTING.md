@@ -1,62 +1,83 @@
 # Testing Patterns
 
-**Analysis Date:** 2026-03-18
+**Analysis Date:** 2026-05-07
 
 ## Test Framework
 
 **Runner:**
-- Vitest 4.0.17 - Fast unit test framework
-- Configuration: `vitest.config.js` at project root
-- Test environment: jsdom (browser-like environment)
-- Global test utilities enabled
+- **Vitest 4.0.17** — fast unit/integration test runner
+- Config: `vitest.config.js` at project root
+- Environment: **jsdom 27.4.0** (browser-like DOM in Node)
+- Globals enabled (`describe`, `it`, `expect` available without import in some files; most files import explicitly)
 
 **Assertion Library:**
-- Vitest built-in expect API (no additional assertion library)
-- Chai-style assertions: `expect(value).toBe()`, `expect(value).toEqual()`, etc.
+- Built-in Vitest `expect` (Chai-style): `toBe`, `toEqual`, `toContain`, `toHaveProperty`, `toBeGreaterThanOrEqual`, `toBeNull`, `toHaveBeenCalledWith`, etc.
 
 **Run Commands:**
 ```bash
-npm run test              # Run all tests once
-npm run test:watch       # Watch mode - re-run on file changes
-npm run test:ui          # Vitest UI dashboard
-npm run test:coverage    # Run tests and generate coverage report
+npm run test              # Run all tests once (vitest run)
+npm run test:watch        # Watch mode (vitest)
+npm run test:ui           # Vitest UI dashboard (@vitest/ui)
+npm run test:coverage     # Coverage report
 ```
 
 **Coverage Setup:**
-- Provider: v8 (Node's native coverage)
-- Reporters: text (console), json, html (in coverage/ directory)
-- Only `src/**/*.js` measured (excludes `src/main.js` entry point)
-- Target: Not enforced, coverage reports available for inspection
+- Provider: **v8** (Node native)
+- Reporters: text (console), json, html → `coverage/`
+- Scope: `src/**/*.js` measured, `src/main.js` excluded
+- **No threshold enforced** — coverage is informational only
 
 ## Test File Organization
 
 **Location:**
-- Tests co-located in `tests/` directory at project root
-- NOT co-located with source files (separate from `src/`)
-- Separate setup file: `tests/setup.js`
+- All tests in `tests/` at project root (NOT co-located with source)
+- Global setup: `tests/setup.js` (loaded by Vitest before suites)
 
-**Naming:**
-- Pattern: `{feature-name}.test.js`
-- Examples: `helpers.test.js`, `api.test.js`, `search.test.js`, `discover.test.js`
+**Naming:** `{feature}.test.js`
 
-**Current test files:**
+**Current test files (13 suites):**
 ```
 tests/
-├── setup.js              # Global mocks and setup
-├── api.test.js           # API services (TMDB, YouTube, Ratings)
-├── constants.test.js     # Constants
+├── setup.js              # Global mocks (localStorage, fetch, document, window)
+├── api.test.js           # TMDB / YouTube / Ratings service tests
+├── constants.test.js     # Constants & config integrity
 ├── detail.test.js        # Detail page feature
-├── discover.test.js      # Discover/wizard feature
-├── helpers.test.js       # Helper utilities
-├── platforms.test.js     # Platform mappings
-├── profile.test.js       # Profile/auth feature
-└── search.test.js        # Search feature
+├── discover.test.js      # Discover / mood wizard
+├── helpers.test.js       # Utility functions (debounce, throttle, formatDate, etc.)
+├── person.test.js        # Person/cast detail page
+├── platforms.test.js     # Streaming platform mappings
+├── profile.test.js       # Profile / auth feature
+├── ratings.test.js       # External ratings (IMDb / RT) aggregation
+├── search.test.js        # Search feature + autocomplete
+├── streaming.test.js     # Streaming provider resolution
+└── trivia.test.js        # Movie trivia / facts feature
 ```
+
+## What Is Tested
+
+**Well covered:**
+- Pure utility helpers (`formatDate`, `formatRuntime`, `truncate`, `debounce`, `throttle`)
+- TMDB service: fetch URL building, error fallback, `sortByRelevance`, search filtering
+- Constants/config integrity (presence checks for `ERA_RANGES`, `POETIC_PLACEHOLDERS`, mood genre maps)
+- Platform → provider ID mapping (Netflix, Disney+, etc.)
+- Streaming resolution logic (region fallback, dedup)
+- Search relevance / autocomplete flow with mocked fetch
+- Discover wizard era/mood logic
+- Ratings aggregation (multi-source merge)
+- Person page data transforms
+- Trivia formatting
+
+**Not tested (gaps):**
+- **Firebase Auth flows** — no integration test for sign-in/sign-out, password reset
+- **Firestore reads/writes** — favorites, watchlist persistence untested
+- **AI proxy (`api/gemini.js`)** — Vercel function not unit-tested
+- **UI rendering / DOM mutation** — modules that touch `document` only smoke-tested via mock DOM
+- **i18n** — translation file integrity untested
+- **Service Worker / PWA install** — no test coverage
+- **End-to-end flows** — no Playwright/Cypress
 
 ## Test Structure
 
-**Suite Organization:**
-From `tests/helpers.test.js`:
 ```javascript
 import { describe, it, expect } from 'vitest';
 import { debounce, formatDate, truncate } from '../src/lib/helpers.js';
@@ -64,71 +85,50 @@ import { debounce, formatDate, truncate } from '../src/lib/helpers.js';
 describe('helpers', () => {
     describe('formatDate', () => {
         it('should format date correctly for TR locale', () => {
-            const result = formatDate('2024-05-15', 'tr-TR');
-            expect(result).toContain('2024');
+            expect(formatDate('2024-05-15', 'tr-TR')).toContain('2024');
         });
-
         it('should return empty string for null date', () => {
             expect(formatDate(null)).toBe('');
-        });
-    });
-
-    describe('formatRuntime', () => {
-        it('should format runtime in Turkish', () => {
-            expect(formatRuntime(90, 'tr')).toBe('1 sa 30 dk');
         });
     });
 });
 ```
 
-**Patterns:**
-- `describe(name, callback)` - Test suite grouping
-- `it(description, callback)` or `test(description, callback)` - Individual test case
-- Nested `describe()` blocks for logical grouping (by function/feature)
-- Test names read as sentences: "should format date correctly"
-- One assertion focus per test (or related assertions for one behavior)
+**Conventions:**
+- `describe('module')` outer, `describe('functionName')` inner
+- `it('should ...')` reads as a behavior requirement
+- One behavior per test; multiple `expect` allowed if they verify the same behavior
+- Inline test data — no shared fixtures directory
 
 ## Mocking
 
-**Framework:** Vitest's `vi` mock utilities
+**Framework:** Vitest's `vi` utilities (`vi.fn()`, `vi.mockResolvedValueOnce()`, `vi.clearAllMocks()`).
 
-**Global Mocks (tests/setup.js):**
-- `localStorage`: Complete mock with store object
-- `window`: Extended with custom Event support
-- `document`: Mock DOM API (getElementById, querySelector, createElement, etc.)
-- `fetch`: Global mock returning `{ ok: true, json: () => {} }`
+**Global mocks in `tests/setup.js`:**
 
-**Setup file pattern:**
-From `tests/setup.js`:
 ```javascript
 import { vi } from 'vitest';
 
 const localStorageMock = {
     store: {},
     getItem: vi.fn((key) => localStorageMock.store[key] || null),
-    setItem: vi.fn((key, value) => {
-        localStorageMock.store[key] = String(value);
-    }),
-    removeItem: vi.fn((key) => {
-        delete localStorageMock.store[key];
-    }),
-    clear: vi.fn(() => {
-        localStorageMock.store = {};
-    }),
+    setItem: vi.fn((key, value) => { localStorageMock.store[key] = String(value); }),
+    removeItem: vi.fn((key) => { delete localStorageMock.store[key]; }),
+    clear: vi.fn(() => { localStorageMock.store = {}; }),
 };
 
 global.localStorage = localStorageMock;
 global.window = { ...global.window, localStorage: localStorageMock };
+global.fetch = vi.fn(() => Promise.resolve({ ok: true, json: () => ({}) }));
 
-// Reset mocks before each test
 beforeEach(() => {
     vi.clearAllMocks();
     localStorageMock.store = {};
 });
 ```
 
-**Test-level mocking:**
-From `tests/api.test.js`:
+**Per-suite mocking pattern (`tests/api.test.js`):**
+
 ```javascript
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TMDBService } from '../src/services/api.js';
@@ -137,222 +137,123 @@ const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
 describe('API Services', () => {
-    beforeEach(() => {
-        mockFetch.mockReset();
+    beforeEach(() => mockFetch.mockReset());
+
+    it('should make API request with correct URL', async () => {
+        mockFetch.mockResolvedValueOnce({
+            ok: true,
+            json: () => Promise.resolve({ results: [] }),
+        });
+        await TMDBService.fetch('/movie/popular');
+        expect(mockFetch).toHaveBeenCalledWith(
+            expect.stringContaining('/movie/popular'),
+            expect.any(Object)
+        );
     });
 
-    describe('fetch', () => {
-        it('should make API request with correct URL', async () => {
-            mockFetch.mockResolvedValueOnce({
-                ok: true,
-                json: () => Promise.resolve({ results: [] }),
-            });
-
-            await TMDBService.fetch('/movie/popular');
-
-            expect(mockFetch).toHaveBeenCalledWith(
-                expect.stringContaining('/movie/popular'),
-                expect.any(Object)
-            );
-        });
-
-        it('should return empty results on error', async () => {
-            mockFetch.mockRejectedValueOnce(new Error('Network error'));
-
-            const result = await TMDBService.fetch('/movie/popular');
-            expect(result.results).toEqual([]);
-        });
+    it('should return empty results on error', async () => {
+        mockFetch.mockRejectedValueOnce(new Error('Network error'));
+        const result = await TMDBService.fetch('/movie/popular');
+        expect(result.results).toEqual([]);
     });
 });
 ```
 
-**What to Mock:**
-- External APIs (fetch calls)
-- Browser APIs (localStorage, document, window)
-- Time-dependent code (setTimeout, setInterval - not directly shown but testable)
-- Service dependencies (in feature tests)
+**What to mock:**
+- External APIs (`fetch`, TMDB, Gemini, Firebase)
+- Browser APIs (`localStorage`, `document`, `window`)
+- Time-sensitive code (use `vi.useFakeTimers()` or real `setTimeout` waits for debounce/throttle)
 
-**What NOT to Mock:**
-- Pure utility functions (helpers, formatters)
-- Internal module functions
-- Constants and configuration
-- State management for unit tests (test the state module itself)
+**What NOT to mock:**
+- Pure functions (helpers, formatters) — test directly
+- Constants and config
+- Internal collaborators inside the unit under test
 
 ## Fixtures and Factories
 
-**Test Data:**
-From `tests/api.test.js`:
+- **No factory functions or shared fixture files** currently
+- Test data inlined per test, with only the fields needed:
+
 ```javascript
-describe('sortByRelevance', () => {
-    it('should prioritize exact title matches', () => {
-        const results = [
-            { title: 'The Matrix Reloaded', popularity: 100 },
-            { title: 'Matrix', popularity: 50 },
-            { title: 'The Matrix', popularity: 80 },
-        ];
-
-        const sorted = TMDBService.sortByRelevance(results, 'The Matrix');
-        expect(sorted[0].title).toBe('The Matrix');
-    });
-});
+const results = [
+    { title: 'The Matrix Reloaded', popularity: 100 },
+    { title: 'Matrix', popularity: 50 },
+    { title: 'The Matrix', popularity: 80 },
+];
+const sorted = TMDBService.sortByRelevance(results, 'The Matrix');
+expect(sorted[0].title).toBe('The Matrix');
 ```
 
-**Location:**
-- Inline test data within test cases (no separate fixtures file)
-- Simple objects created directly: `{ title: 'X', popularity: 100 }`
-- No factory functions currently used
-- Data is minimal and specific to test needs
-
-**Pattern:** Create objects with only required properties for each test
-
-## Coverage
-
-**Requirements:** None enforced
-- Coverage report generated but not gated
-- Executable: `npm run test:coverage`
-- Reports saved to `coverage/` directory (HTML and JSON formats)
-
-**View Coverage:**
-```bash
-npm run test:coverage    # Generate coverage report
-# Then open coverage/index.html in browser
-```
-
-## Test Types
-
-**Unit Tests:**
-- Scope: Individual functions/methods
-- Approach: Test pure functions with various inputs
-- Examples: `formatDate()`, `debounce()`, `normalizeTitle()`
-- Majority of current tests are unit tests
-- Located in `tests/helpers.test.js`, `tests/constants.test.js`, `tests/platforms.test.js`
-
-**Integration Tests:**
-- Scope: Multiple components working together
-- Approach: Mock external APIs, test feature workflows
-- Examples: API service tests with mocked fetch, search feature with mocked API responses
-- Located in `tests/api.test.js`, `tests/search.test.js`, `tests/discover.test.js`
-
-**E2E Tests:**
-- Status: Not used
-- Would require: Playwright or Cypress
-- Not currently configured
+If a feature grows to need shared fixtures, place them in `tests/fixtures/{name}.js` and export plain objects.
 
 ## Common Patterns
 
-**Async Testing:**
-From `tests/helpers.test.js`:
+**Async timing (debounce/throttle):**
 ```javascript
 it('should debounce function calls', async () => {
     let counter = 0;
     const fn = debounce(() => counter++, 50);
-
-    fn();
-    fn();
-    fn();
-
-    expect(counter).toBe(0);  // Not called yet
-
-    await new Promise(r => setTimeout(r, 100));  // Wait for debounce
-    expect(counter).toBe(1);   // Now called once
-});
-
-it('should throttle function calls', async () => {
-    let counter = 0;
-    const fn = throttle(() => counter++, 50);
-
-    fn();
-    fn();
-    fn();
-
-    expect(counter).toBe(1);   // Called immediately
-
+    fn(); fn(); fn();
+    expect(counter).toBe(0);
     await new Promise(r => setTimeout(r, 100));
-    fn();
-    expect(counter).toBe(2);   // Called again after throttle period
+    expect(counter).toBe(1);
 });
 ```
 
-**Async API Testing:**
-From `tests/api.test.js`:
-```javascript
-it('should make API request with correct URL', async () => {
-    mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({ results: [] }),
-    });
-
-    await TMDBService.fetch('/movie/popular');
-
-    expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('/movie/popular'),
-        expect.any(Object)
-    );
-});
-```
-
-**Error Testing:**
-From `tests/api.test.js`:
+**Error path coverage:**
 ```javascript
 it('should return empty results on error', async () => {
     mockFetch.mockRejectedValueOnce(new Error('Network error'));
-
     const result = await TMDBService.fetch('/movie/popular');
     expect(result.results).toEqual([]);
 });
 ```
 
-**Null/Edge Cases:**
-From `tests/helpers.test.js`:
+**Null / edge cases:**
 ```javascript
-it('should return empty string for null date', () => {
-    expect(formatDate(null)).toBe('');
-    expect(formatDate('')).toBe('');
-});
-
-it('should handle null', () => {
-    expect(truncate(null, 10)).toBeNull();
-});
+expect(formatDate(null)).toBe('');
+expect(formatDate('')).toBe('');
+expect(truncate(null, 10)).toBeNull();
 ```
 
-**Array/Object Assertions:**
-From `tests/discover.test.js`:
+**Existence assertions for constants:**
 ```javascript
-it('should have known eras', () => {
-    expect(ERA_RANGES).toHaveProperty('classic');
-    expect(ERA_RANGES).toHaveProperty('80s');
-});
-
-it('should have at least 5 placeholders', () => {
-    expect(POETIC_PLACEHOLDERS.length).toBeGreaterThanOrEqual(5);
-});
+expect(ERA_RANGES).toHaveProperty('classic');
+expect(ERA_RANGES).toHaveProperty('80s');
+expect(POETIC_PLACEHOLDERS.length).toBeGreaterThanOrEqual(5);
 ```
 
 ## Test Execution Flow
 
-1. Vitest loads `vitest.config.js`
-2. Vitest loads `tests/setup.js` globally (all mocks initialized)
-3. Test files imported: `tests/**/*.{test,spec}.{js,ts}`
-4. Each test file uses mocks from setup
-5. `beforeEach()` hooks reset mocks for each test
-6. Tests run in isolation with clean mock state
+1. Vitest reads `vitest.config.js` (jsdom env, path aliases match Vite)
+2. `tests/setup.js` runs once globally — installs `localStorage`, `fetch`, `document`, `window` mocks
+3. `beforeEach` resets all mocks and clears localStorage store
+4. Each `tests/*.test.js` file imports source under test from `../src/...`
+5. Tests run in isolation; no shared state between files
 
-## Important Testing Guidelines
+## Guidelines
 
 **Do:**
-- Use descriptive test names that read as requirements
-- Mock external dependencies (fetch, APIs, localStorage)
-- Test both happy path and error cases
-- Keep tests focused on one behavior
-- Reset mocks between tests (handled by beforeEach in setup.js)
+- Mock external boundaries (`fetch`, Firebase SDK, browser storage)
+- Test behavior (inputs → outputs / observable side effects), not implementation details
+- Cover both happy path and at least one error path per service method
+- Keep one assertion focus per test
+- Use descriptive `it('should ...')` names that read as requirements
 
 **Don't:**
-- Test implementation details (test behavior, not how it works)
-- Create complex test fixtures (use inline data)
-- Mock things that should be tested (internal functions)
-- Leave tests interdependent (each test should be independent)
-- Test multiple behaviors in one test
+- Test private/internal helpers in isolation if they're already covered through the public API
+- Build elaborate fixture hierarchies — inline data is preferred
+- Leave shared mutable state across tests (always reset in `beforeEach`)
+- Combine multiple unrelated behaviors in one test
+- Add E2E-style tests in Vitest — wait until Playwright is set up
+
+## Future Improvements
+
+- Add **Playwright** for mobile-viewport E2E (auth flow, search → detail → favorite)
+- Add Firebase Auth/Firestore integration tests using `@firebase/rules-unit-testing` emulator
+- Unit-test Vercel API functions (`api/gemini.js`) by importing the handler and mocking `req`/`res`
+- Set a coverage floor in `vitest.config.js` (`coverage.thresholds`) once gaps in CONCERNS.md are filled
 
 ---
 
-*Testing analysis: 2026-03-18*
+*Testing analysis: 2026-05-07*
