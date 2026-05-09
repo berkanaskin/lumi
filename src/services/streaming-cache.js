@@ -109,6 +109,7 @@ export function injectTurkishProviders(providers, details) {
     );
 
     const result = [...providers];
+    const addedNames = [];
     for (const company of companies) {
         const name = String(company?.name || '').toLowerCase();
         if (!name) continue;
@@ -118,7 +119,16 @@ export function injectTurkishProviders(providers, details) {
             if (existingKeys.has(providerKey)) continue;
             result.push({ ...providerTemplate });
             existingKeys.add(providerKey);
+            addedNames.push(providerTemplate.serviceName);
         }
+    }
+    // Round 12 instrumentation: log keyword-scan injections so we can diagnose
+    // why specific titles (e.g. Şahsiyet) aren't getting their TR provider.
+    if (addedNames.length > 0) {
+        try {
+            console.log('[StreamCache] keyword-scan injected', addedNames,
+                'from companies:', companies.map(c => c?.name).filter(Boolean));
+        } catch { /* ignore log failures */ }
     }
 
     // Round 11: REMOVED the smart-fallback that injected the 5 Turkish platforms
@@ -186,6 +196,11 @@ export async function mergeWithTMDB(rapidApiProviders, tmdbId, type, countryUppe
         console.warn('[StreamingCache] TMDB merge failed:', err?.message || err);
         return list;
     }
+    // Round 12 instrumentation: log raw TMDB providers payload for diagnostics
+    try {
+        console.log('[StreamCache] TMDB providers for', tmdbId, countryUpper,
+            '->', JSON.stringify(tmdbProviders || 'NONE'));
+    } catch { /* ignore log failures */ }
     if (!tmdbProviders) return list;
 
     const normalized = _normalizeTMDBProviders(tmdbProviders);
@@ -295,6 +310,12 @@ async function _fetchFromApiOrFallback(tmdbId, imdbId, countryLower, countryUppe
 
         const json = await response.json();
         const rawOptions = json.options || [];
+
+        // Round 12 instrumentation: log RapidAPI providers count
+        try {
+            console.log('[StreamCache] RapidAPI providers for', tmdbId, countryUpper,
+                '->', rawOptions?.length || 0);
+        } catch { /* ignore log failures */ }
 
         // Transform each option to normalized provider shape
         let providers = rawOptions.map(option => ({
