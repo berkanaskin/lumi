@@ -58,6 +58,9 @@ import {
 // `window.requireAuth` and `window._onAuthResolved` for inline callers.
 import './features/auth-modal.js';
 
+// Phase 04-04: first-launch onboarding wizard (3-step lang/country/platforms)
+import { shouldShowOnboarding, startOnboarding } from './features/onboarding.js';
+
 // UI Components
 import { showToast } from './ui/toast.js';
 import { loadTheme, toggleTheme } from './ui/theme.js';
@@ -369,9 +372,49 @@ function initCountrySelector() {
     });
 }
 
+// Phase 04-04: boot-time onboarding trigger.
+//
+// Runs in parallel with the main DOMContentLoaded boot. Awaits Firebase auth
+// state restore (one-shot onAuthStateChanged → currentUser is null at boot
+// until the first event fires). For guests, both fields are null/undefined and
+// shouldShowOnboarding still works against localStorage flags only. For auth
+// users, the Firestore prefs check runs and hydrates LS if found.
+//
+// Does NOT block DOMContentLoaded — the wizard mounts on top of the rendered
+// app and is dismissed by the user (or auto-dismissed if cross-device prefs
+// already exist).
+async function bootOnboardingCheck() {
+    try {
+        let user = null;
+        let db = null;
+        if (typeof window !== 'undefined' && window.firebase) {
+            try {
+                const auth = window.firebase.auth?.();
+                if (auth) {
+                    user = await new Promise((resolve) => {
+                        const unsub = auth.onAuthStateChanged((u) => {
+                            try { unsub(); } catch {}
+                            resolve(u);
+                        });
+                    });
+                }
+                if (window.firebase.firestore) db = window.firebase.firestore();
+            } catch {}
+        }
+        if (await shouldShowOnboarding({ user, db })) {
+            startOnboarding({ user, db });
+        }
+    } catch (err) {
+        console.error('[main] onboarding boot check failed:', err);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize login wall with Firebase
     initAuth();
+
+    // Phase 04-04: fire-and-forget onboarding check (does not block boot).
+    bootOnboardingCheck();
 
     // Initialize DOM element references
     initElements();

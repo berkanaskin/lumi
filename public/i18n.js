@@ -193,7 +193,20 @@ const i18n = {
             'authGate.editProfile': 'Profilini kişiselleştirmek için giriş yapın.',
             'profile.guestCta': 'Profilini kişiselleştirmek için giriş yap.',
             'profile.guestCtaButton': 'Giriş Yap',
-            'common.comingSoon': 'Yakında'
+            'common.comingSoon': 'Yakında',
+
+            // Phase 04-04: Onboarding wizard
+            'onboarding.skip': 'Atla',
+            'onboarding.step1.title': 'Doğru dil mi?',
+            'onboarding.step1.confirm': 'Evet, devam',
+            'onboarding.step1.chooseOther': 'Başka bir dil seç',
+            'onboarding.step2.title': 'Ülken hangisi?',
+            'onboarding.step2.confirm': 'Evet, devam',
+            'onboarding.step2.chooseOther': 'Başka bir ülke seç',
+            'onboarding.step3.title': 'Hangi platformları kullanıyorsun?',
+            'onboarding.step3.done': 'Bitir',
+            'onboarding.step3.skip': 'Sonra eklerim',
+            'onboarding.providers.loadError': 'Şu an yükleyemedik. Sonra eklersin.'
         },
 
         en: {
@@ -383,7 +396,20 @@ const i18n = {
             'authGate.editProfile': 'Sign in to customize your profile.',
             'profile.guestCta': 'Sign in to customize your profile.',
             'profile.guestCtaButton': 'Sign In',
-            'common.comingSoon': 'Coming soon'
+            'common.comingSoon': 'Coming soon',
+
+            // Phase 04-04: Onboarding wizard
+            'onboarding.skip': 'Skip',
+            'onboarding.step1.title': 'Right language?',
+            'onboarding.step1.confirm': 'Yes, continue',
+            'onboarding.step1.chooseOther': 'Choose another language',
+            'onboarding.step2.title': 'Your country?',
+            'onboarding.step2.confirm': 'Yes, continue',
+            'onboarding.step2.chooseOther': 'Choose another country',
+            'onboarding.step3.title': 'Which platforms do you use?',
+            'onboarding.step3.done': 'Done',
+            'onboarding.step3.skip': 'Add later',
+            'onboarding.providers.loadError': "Couldn't load providers. Add later."
         },
 
         de: {

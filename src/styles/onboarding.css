@@ -1,0 +1,187 @@
+/**
+ * Phase 04-04 — Onboarding wizard (full-screen, mobile-first).
+ * Uses theme tokens from tokens.css where available; falls back to safe defaults.
+ */
+
+.onboarding-root {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: var(--bg-primary, #0b0b10);
+    color: var(--text-primary, #f5f5f7);
+    font-family: var(--font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+}
+
+.onboarding-root .onb-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+}
+
+.onboarding-root .onb-skip-all {
+    position: absolute;
+    top: calc(env(safe-area-inset-top, 0) + 14px);
+    right: 16px;
+    background: transparent;
+    border: 0;
+    color: var(--text-secondary, #b3b3b8);
+    font-size: 14px;
+    padding: 8px 12px;
+    cursor: pointer;
+    z-index: 2;
+}
+.onboarding-root .onb-skip-all:hover { color: var(--text-primary, #fff); }
+
+.onboarding-root .onb-track {
+    flex: 1;
+    display: flex;
+    width: 300%;
+    transition: transform 0.3s ease;
+    will-change: transform;
+}
+
+.onboarding-root .onb-step {
+    flex: 0 0 33.3333%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 48px 24px 24px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.onboarding-root .onb-title {
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    margin: 0 0 24px;
+    line-height: 1.2;
+}
+
+.onboarding-root .onb-bigchoice {
+    font-size: 48px;
+    font-weight: 800;
+    text-align: center;
+    margin: 16px 0 32px;
+    letter-spacing: -0.02em;
+}
+
+.onboarding-root .onb-cta {
+    width: 100%;
+    max-width: 340px;
+    padding: 14px 20px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--accent-primary, #ff3b30);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 8px 0;
+}
+.onboarding-root .onb-cta:hover { filter: brightness(1.08); }
+
+.onboarding-root .onb-link {
+    background: transparent;
+    border: 0;
+    color: var(--text-secondary, #b3b3b8);
+    font-size: 14px;
+    padding: 8px 12px;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.onboarding-root .onb-lang-grid,
+.onboarding-root .onb-country-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 16px;
+    width: 100%;
+    max-width: 340px;
+}
+.onboarding-root .onb-country-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.onboarding-root .onb-lang-grid.hidden,
+.onboarding-root .onb-country-grid.hidden { display: none; }
+
+.onboarding-root .onb-lang-chip,
+.onboarding-root .onb-country-chip {
+    padding: 10px 8px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color, #2a2a32);
+    background: var(--bg-secondary, #16161c);
+    color: var(--text-primary, #f5f5f7);
+    cursor: pointer;
+    font-size: 14px;
+}
+.onboarding-root .onb-lang-chip:hover,
+.onboarding-root .onb-country-chip:hover {
+    border-color: var(--accent-primary, #ff3b30);
+}
+
+.onboarding-root .onb-provider-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+    width: 100%;
+    max-width: 360px;
+}
+
+.onboarding-root .onb-provider {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 4px;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    background: var(--bg-secondary, #16161c);
+    color: var(--text-primary, #f5f5f7);
+    cursor: pointer;
+    font-size: 12px;
+}
+.onboarding-root .onb-provider img {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    object-fit: cover;
+}
+.onboarding-root .onb-provider.selected {
+    border-color: var(--accent-primary, #ff3b30);
+    box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.18);
+}
+
+.onboarding-root .onb-loading,
+.onboarding-root .onb-fail {
+    padding: 24px;
+    text-align: center;
+    color: var(--text-secondary, #b3b3b8);
+}
+
+.onboarding-root .onb-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 0 24px;
+}
+.onboarding-root .onb-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border-color, #2a2a32);
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+.onboarding-root .onb-dot.active {
+    background: var(--accent-primary, #ff3b30);
+    transform: scale(1.25);
+}
+
+@media (min-width: 600px) {
+    .onboarding-root .onb-step { padding: 80px 32px 32px; }
+    .onboarding-root .onb-title { font-size: 32px; }
+}
