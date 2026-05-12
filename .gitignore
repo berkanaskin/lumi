@@ -25,3 +25,4 @@ build/
 # Agent & Design Tools
 .agent/
 stitch/
+.tmp/

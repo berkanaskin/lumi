@@ -3,7 +3,7 @@
 // ============================================
 
 const i18n = {
-    currentLang: 'tr',
+    currentLang: 'en',
 
     translations: {
         tr: {
@@ -214,6 +214,7 @@ const i18n = {
             wizardTypeAll: 'Both are fine',
             wizardTypeMovie: 'Movie',
             wizardTypeTv: 'TV Show',
+            mainCategory: 'Main Category',
             moodLabel: 'What\'s your mood?',
             moodTrend: 'Trending',
             moodRandom: 'Random',
@@ -225,6 +226,7 @@ const i18n = {
             genreLabel: 'Genre',
             genreOptional: 'skip to include all',
             platformLabel: 'Where will you watch?',
+            anyPlatform: 'Any',
             generateBtn: 'Surprise Me!',
             resultsTitle: 'Picked for You',
             resetFilters: 'Try Again',
@@ -968,12 +970,19 @@ const i18n = {
             movie: '영화',
             tvShow: '드라마'
         }
+        // NOTE: es/fr/de/ja/ko blocks defined above. Missing keys per language
+        // fall through to EN via the t() chain — see public/i18n/{lang}.json
+        // for full keyset scaffolds that future translators will fill.
     },
 
-    // Get translation
+    // Get translation with EN fallback chain.
+    // 1. currentLang dict has the key → return it
+    // 2. EN dict has the key → return EN value
+    // 3. otherwise → return the raw key (last-resort marker)
     t(key) {
-        const lang = this.translations[this.currentLang] || this.translations.tr;
-        return lang[key] || key;
+        return this.translations[this.currentLang]?.[key]
+            ?? this.translations.en?.[key]
+            ?? key;
     },
 
     // Set language and update UI
