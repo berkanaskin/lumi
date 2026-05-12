@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: In progress — Phase 4 Wave 3 complete; awaiting checkpoint before Wave 4
-stopped_at: Phase 04 complete through Wave 3 — 04-01 (i18n EN-first), 04-02 (locale layer), 04-03 (optional auth + Firestore migration). 04-05 (TR broadcast, Wave 2) is being executed on a parallel worktree branch (not yet merged here). Next: 04-04 (onboarding, Wave 4, checkpoint:human-action) — DO NOT start without explicit user approval. Pre-existing 8 test failures in api.test.js/detail.test.js/platforms.test.js remain stale Phase-03.2 cleanup debt, NOT caused by Phase 04.
-last_updated: "2026-05-12T18:55:00.000Z"
+status: Phase 4 COMPLETE — all 5 plans merged (04-04 awaits manual QA checkpoint only)
+stopped_at: Phase 04 (Global Foundation) code-complete on worktree — 04-01 (i18n EN-first), 04-02 (locale layer), 04-03 (optional auth + Firestore migration), 04-04 (onboarding wizard), 04-05 (TR broadcast) all shipped. 04-04 has a blocking `checkpoint:human-verify` (5 manual mobile scenarios A-E) — code + unit tests are green (19/19 onboarding tests; 228/258 full suite, 8 fails = pre-existing 03.2 debt). Worktree cleanup pending. Next: run `/gsd-verify-work 04` after manual QA approval, then plan Phase 5 (Premium Agent — RevenueCat + 4 proactive features).
+last_updated: "2026-05-12T19:55:00.000Z"
 progress:
   total_phases: 8
   completed_phases: 5
   total_plans: 25
-  completed_plans: 22
+  completed_plans: 24
 ---
 
 # Project State
@@ -23,10 +23,10 @@ See: .planning/PROJECT.md (updated 2026-03-19)
 
 ## Current Position
 
-Phase: 4 — Global Foundation
-Plans complete: 04-01 (i18n EN-first), 04-02 (locale layer), 04-03 (optional auth + guest mode + Firestore migration)
-Next plan: 04-04 (onboarding, Wave 4) — gated by checkpoint, awaiting user approval
-Resume command: `/gsd-execute-phase 04` (orchestrator skips plans with SUMMARY.md)
+Phase: 4 — Global Foundation (CODE COMPLETE)
+Plans complete: 04-01 (i18n EN-first), 04-02 (locale layer), 04-03 (optional auth + guest mode + Firestore migration), 04-04 (onboarding wizard), 04-05 (TR broadcast channels)
+Next plan: Phase 5 (Premium Agent) — needs planning via `/gsd-plan-phase 5`
+Resume command: `/gsd-verify-work 04` after manual QA approval of 04-04 scenarios A-E.
 
 ## Performance Metrics
 
@@ -106,6 +106,6 @@ None yet for Phase 4. Phase 03.2 left no carryover items.
 
 ## Session Continuity
 
-Last session: 2026-05-10T22:00:00.000Z
-Stopped at: Phase 03.2 complete + roadmap revised to 8 phases. User onboarded to new Phase 4-5-6 structure (Global Foundation → Premium Agent → iOS Launch).
-Resume file: None — next session should start Phase 4.1 i18n EN-first refactor planning (run /gsd-plan-phase 4 or equivalent).
+Last session: 2026-05-12T19:55:00.000Z
+Stopped at: Phase 04 Global Foundation code-complete — 04-04 onboarding wizard implemented + tested (19/19 green), boot-time trigger wired in main.js, CSS + i18n shipped. Worktree branch carries commits aebd59a/a573323/65f003e. Awaiting manual QA on Task 3 (5 scenarios: first-launch guest, skip, re-launch, provider-fetch-failure, cross-device hydration).
+Resume file: None — once QA approved, merge worktree → main → run `/gsd-verify-work 04` → plan Phase 5 Premium Agent.
