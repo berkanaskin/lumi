@@ -1,0 +1,86 @@
+/* Phase 04-03 - Optional-auth modal (action-triggered).
+ * Mobile-first (>=375px). Uses theme tokens from tokens.css.
+ */
+
+.auth-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-md, 16px);
+}
+
+.auth-modal.open {
+    display: flex;
+}
+
+.auth-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+.auth-modal-card {
+    position: relative;
+    width: 100%;
+    max-width: 360px;
+    background: var(--surface-1, #15161a);
+    color: var(--text-primary, #f5f5f7);
+    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+    border-radius: 16px;
+    padding: 24px 20px;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.auth-modal-title {
+    margin: 0 0 8px;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.auth-modal-context {
+    margin: 0 0 20px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+}
+
+.auth-modal-google,
+.auth-modal-cancel {
+    display: block;
+    width: 100%;
+    border: 0;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.auth-modal-google {
+    background: #fff;
+    color: #1f1f1f;
+}
+
+.auth-modal-cancel {
+    background: transparent;
+    color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+}
+
+.auth-modal-google:hover,
+.auth-modal-cancel:hover {
+    opacity: 0.9;
+}
+
+.auth-modal-google:active,
+.auth-modal-cancel:active {
+    transform: scale(0.98);
+}

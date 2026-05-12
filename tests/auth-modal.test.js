@@ -10,12 +10,19 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { JSDOM } from 'jsdom';
+
+let dom;
 
 beforeEach(() => {
-    document.body.innerHTML = '';
-    // Reset module so internal pending-promise refs don't leak across tests.
-    vi.resetModules();
-    delete window.firebase;
+    // The global tests/setup.js installs stub `document`/`window` objects that
+    // don't include a real `body`. For DOM-heavy auth-modal tests we need a
+    // fresh jsdom instance per test.
+    dom = new JSDOM('<!doctype html><html><body></body></html>', { url: 'http://localhost/' });
+    global.document = dom.window.document;
+    global.window = dom.window;
+    global.DOMException = dom.window.DOMException;
+
     window.i18n = {
         t: (key) => {
             const map = {
@@ -23,9 +30,17 @@ beforeEach(() => {
                 'authGate.rateMovie': 'Sign in to rate',
                 'authGate.shareList': 'Sign in to share',
             };
-            return map[key] || null;
+            // Mirror i18n.js fallback: return raw key when not found.
+            return map[key] != null ? map[key] : key;
         },
     };
+
+    // Reset module so internal pending-promise refs don't leak across tests.
+    vi.resetModules();
+});
+
+afterEach(() => {
+    if (dom) dom.window.close();
 });
 
 describe('requireAuth', () => {

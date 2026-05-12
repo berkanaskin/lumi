@@ -181,7 +181,18 @@ const i18n = {
             // Time
             minutes: 'dk',
             movie: 'Film',
-            tvShow: 'Dizi'
+            tvShow: 'Dizi',
+
+            // Phase 04-03: Action-triggered auth gate
+            'authGate.title': 'Giriş yap',
+            'authGate.default': 'Devam etmek için giriş yapın.',
+            'authGate.rateMovie': 'Puan vermek için giriş yapın.',
+            'authGate.shareList': 'Paylaşmak için giriş yapın.',
+            'authGate.commentPost': 'Yorum yapmak için giriş yapın.',
+            'authGate.editProfile': 'Profilini kişiselleştirmek için giriş yapın.',
+            'profile.guestCta': 'Profilini kişiselleştirmek için giriş yap.',
+            'profile.guestCtaButton': 'Giriş Yap',
+            'common.comingSoon': 'Yakında'
         },
 
         en: {
@@ -359,7 +370,18 @@ const i18n = {
             // Time
             minutes: 'min',
             movie: 'Movie',
-            tvShow: 'TV Show'
+            tvShow: 'TV Show',
+
+            // Phase 04-03: Action-triggered auth gate
+            'authGate.title': 'Sign in',
+            'authGate.default': 'Sign in to continue.',
+            'authGate.rateMovie': 'Sign in to rate movies.',
+            'authGate.shareList': 'Sign in to share your list.',
+            'authGate.commentPost': 'Sign in to comment.',
+            'authGate.editProfile': 'Sign in to customize your profile.',
+            'profile.guestCta': 'Sign in to customize your profile.',
+            'profile.guestCtaButton': 'Sign In',
+            'common.comingSoon': 'Coming soon'
         },
 
         de: {
