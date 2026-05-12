@@ -1092,3 +1092,70 @@
   background: rgba(0, 0, 0, 0.04);
   border-color: rgba(0, 0, 0, 0.1);
 }
+
+/* ============================================
+   AIRING ON (Broadcast — Phase 04-05)
+   TV-only, actively-airing series.
+   ============================================ */
+
+.detail-airing-info {
+  border-left: 3px solid #f4a261;
+  padding-left: var(--space-md);
+  margin: var(--space-md) var(--space-lg);
+}
+
+.detail-airing-info__row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.detail-airing-info__logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  flex: 0 0 auto;
+}
+
+.detail-airing-info__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.detail-airing-info__name {
+  font-weight: 600;
+  font-size: 15px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.detail-airing-info__name:hover {
+  text-decoration: underline;
+}
+
+.detail-airing-info__next {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.detail-airing-info__se {
+  font-weight: 600;
+  color: #f4a261;
+}
+
+.detail-airing-info__rel,
+.detail-airing-info__abs {
+  color: inherit;
+}
+
+[data-theme="light"] .detail-airing-info__logo {
+  background: rgba(0, 0, 0, 0.04);
+}

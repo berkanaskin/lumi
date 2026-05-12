@@ -89,6 +89,7 @@ const i18n = {
 
             // Detail Modal
             watchOn: 'Nerede İzlenir',
+            airingOn: 'Yayın Kanalı',
             cast: 'Oyuncular',
             videos: 'Videolar',
             trailer: 'Fragman',
@@ -265,6 +266,7 @@ const i18n = {
 
             // Detail Modal
             watchOn: 'Where to Watch',
+            airingOn: 'Airing on',
             cast: 'Cast',
             videos: 'Videos',
             trailer: 'Trailer',
