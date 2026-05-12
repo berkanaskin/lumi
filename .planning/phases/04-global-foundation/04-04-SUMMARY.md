@@ -1,0 +1,204 @@
+---
+phase: 04-global-foundation
+plan: 04
+subsystem: onboarding
+tags: [onboarding, first-launch, wizard, i18n, region, providers, cross-device, firestore]
+status: COMPLETE (code) — manual QA (Task 3 checkpoint) pending user verification
+completed_date: 2026-05-12
+requires:
+  - 04-01 (i18n EN-first; t() lookup pattern via window.i18n)
+  - 04-02 (locale layer — getLocale/setLocale pre-fills steps 1 & 2)
+  - 04-03 (optional-auth; auth is optional, onboarding does NOT re-block guests)
+provides:
+  - "shouldShowOnboarding({user, db}): first-launch detection with cross-device hydration"
+  - "startOnboarding({user, db}): full-screen 3-step wizard mount"
+  - "completeStep(n, data, {user, db}): per-step persistence (localStorage + optional Firestore)"
+  - "skipOnboarding({user, db}): one-tap exit with defaults"
+  - "fetchProviders(country): TMDB watch/providers/tv with sort+cap"
+  - "COUNTRY_SHORTLIST (31 codes): hardcoded v1 list"
+affects:
+  - src/main.js (boot-time bootOnboardingCheck — fire-and-forget, awaits onAuthStateChanged)
+  - index.html (loads src/styles/onboarding.css)
+  - public/i18n.js (TR + EN: 11 onboarding.* keys)
+tech_stack:
+  added:
+    - "Unicode regional-indicator flag emoji helper (String.fromCodePoint over 0x1F1A5 + ASCII offset)"
+    - "Vanilla DOM-built full-screen wizard with CSS transform-based slide transitions (no framework)"
+  patterns:
+    - "Two-flag pattern: lumi_onboarding_seen (rendered once) + lumi_onboarding_completed (step 3 submitted OR skipped)"
+    - "Versioned preferences schema: localStorage.lumi_onboarding + Firestore users/{uid}.preferences.version=1"
+    - "Fire-and-forget Firestore writes via .catch?.(...) — never block UI on remote sync"
+    - "Fail-open shouldShowOnboarding(): Firestore errors → return true so user can configure rather than be silently blocked"
+    - "One-shot onAuthStateChanged Promise at boot (avoids currentUser-is-null race)"
+key_files:
+  created:
+    - src/features/onboarding.js
+    - src/styles/onboarding.css
+    - tests/onboarding.test.js
+    - tests/onboarding-cross-device.test.js
+    - tests/fixtures/tmdb-watch-providers-tr.json
+  modified:
+    - src/main.js
+    - public/i18n.js
+    - index.html
+decisions:
+  - "api/tmdb.js proxy uses ?endpoint= (not ?path= as the plan hinted) — the plan's path= would have 404'd. fetchProviders constructs /api/tmdb?endpoint=/watch/providers/tv&watch_region={CC} to match the actual proxy contract. No allowlist change in api/tmdb.js needed: proxy passes any TMDB endpoint through."
+  - "shouldShowOnboarding fails open (returns true) on Firestore read error — UX preferred over silently blocking config flow."
+  - "Cross-device hydration also calls setLocale(prefs) so language switches immediately, not just on next reload."
+  - "All step-2/step-3 flag-flip writes use try/catch — onboarding never throws into the boot path."
+  - "Boot wiring is fire-and-forget (does not block DOMContentLoaded) — the wizard mounts as an overlay on top of the rendered app."
+metrics:
+  duration: "~22 min implementation + verification"
+  tasks: "2/3 (Task 1 + Task 2 implemented; Task 3 = manual QA checkpoint, awaiting user)"
+  files_touched: 8
+---
+
+# Phase 04 Plan 04: Onboarding Wizard Summary
+
+One-liner: 3-step full-screen first-launch wizard (lang → country → owned platforms) with TMDB provider fetch, two-flag persistence, and Firestore-backed cross-device hydration — never blocks guests.
+
+## Scope
+
+Greets first-launch users with a wizard that captures the minimum profile needed for region-aware UX and Phase-5 AI recommendations: language, country, and owned streaming platforms. Pre-fills steps 1 and 2 from the locale layer shipped in 04-02 (`getLocale()`). Step 3 lazy-fetches `/watch/providers/tv?watch_region={CC}` and lets the user toggle the top 20 providers by `display_priority`. Every step is skippable; skipping flips both flags so the wizard never reappears. Authenticated users sync to Firestore `users/{uid}.preferences` (versioned schema). Authenticated users with existing prefs on a new device get the wizard auto-dismissed and their locale hydrated.
+
+Honors the optional-auth posture from 04-03: **anonymous users can complete the entire flow without signing in**. The wizard never invokes `requireAuth()`.
+
+## State machine + persistence schema
+
+```
+shouldShowOnboarding({ user, db })
+   ├── lumi_onboarding_completed='true' → false
+   ├── lumi_onboarding_seen='true'      → false  (abandoned-but-seen: do not pester)
+   ├── user + db + Firestore prefs.version>=1 → false (hydrate LS + setLocale, set both flags)
+   └── otherwise                        → true
+```
+
+**localStorage shape** (`lumi_onboarding`):
+```json
+{
+  "lang": "tr",
+  "country": "TR",
+  "ownedPlatforms": [8, 337],
+  "completedAt": 1715600000000,
+  "skipped": ["step1","step2","step3"]   // only present if skipOnboarding() called
+}
+```
+
+**Firestore shape** (`users/{uid}.preferences`, written with `merge:true`):
+```json
+{
+  "lang": "tr", "country": "TR", "ownedPlatforms": [8, 337],
+  "completedAt": 1715600000000, "version": 1
+}
+```
+
+**Flags:**
+- `lumi_onboarding_seen` — set on `startOnboarding()` (wizard rendered)
+- `lumi_onboarding_completed` — set on step-3 submit OR `skipOnboarding()`
+
+Both unset → wizard appears. Either set → wizard suppressed.
+
+## Country shortlist (31 codes)
+
+`TR, US, GB, DE, FR, ES, IT, NL, BE, SE, NO, DK, FI, PL, RU, JP, KR, CN, TW, HK, AU, NZ, CA, MX, BR, AR, CL, AE, SA, IN, ZA` — hardcoded `COUNTRY_SHORTLIST` in `src/features/onboarding.js`. TMDB `/configuration/countries` (full ~250 entries) deferred to a future phase.
+
+## Provider fetch pattern + failure handling
+
+```js
+fetchProviders('TR')
+   → GET /api/tmdb?endpoint=/watch/providers/tv&watch_region=TR
+   → results.sort(asc display_priority).slice(0, 20)
+   → on !ok OR throw → []
+```
+
+Step 3 renders a loading state, then either the provider grid or the "Sonra eklersin" copy + skip CTA from `onboarding.providers.loadError`. Wizard never blocks on the network — fetch failure does not prevent flag persistence.
+
+## Cross-device hydration mechanism
+
+When the user signs in on a new device:
+1. Firebase auth restores → `onAuthStateChanged` fires (one-shot Promise wraps this).
+2. `bootOnboardingCheck` calls `shouldShowOnboarding({user, db})`.
+3. If `users/{uid}.preferences.version >= 1` exists:
+   - Write the same shape to `localStorage.lumi_onboarding`.
+   - Set both flags to `'true'`.
+   - Call `setLocale({lang, country})` so the i18n layer + locale state catch up immediately.
+   - Return `false` → wizard never mounts.
+4. Otherwise → wizard mounts normally.
+
+If the Firestore read errors, the function fails **open** (returns `true`) — the user can still configure rather than be silently blocked on a transient network error.
+
+## Boot wiring (src/main.js)
+
+The plan flagged a race risk against `firebase.auth().currentUser` at boot. Implementation uses the mandated one-shot `onAuthStateChanged` Promise pattern:
+
+```js
+async function bootOnboardingCheck() {
+    let user = null, db = null;
+    const auth = window.firebase?.auth?.();
+    if (auth) {
+        user = await new Promise(resolve => {
+            const unsub = auth.onAuthStateChanged(u => { unsub(); resolve(u); });
+        });
+    }
+    if (window.firebase?.firestore) db = window.firebase.firestore();
+    if (await shouldShowOnboarding({ user, db })) startOnboarding({ user, db });
+}
+```
+
+Invoked fire-and-forget from `DOMContentLoaded` so it never blocks main boot. Wraps everything in `try/catch` so a broken Firebase init can't break the rest of `main.js`.
+
+## Resolved A6 (TMDB providers per region)
+
+The plan's A6 (provider count per region) is **accepted with graceful degradation**: the UI renders whatever count TMDB returns, sorted by `display_priority`, capped at the top 20. For TR (the test fixture) ~21 entries are typical (Netflix, Disney+, Prime Video, Max, Apple TV+, BluTV, Gain, Exxen, TOD, Tabii, SkyShowtime, Paramount+, HBO Max, Apple TV, Google Play, Fandango at Home, Rakuten Viki, puhutv, Crunchyroll, etc.). For niche regions returning <5, the "Sonra eklersin" skip CTA is offered prominently. No region was observed to return zero in spot-checks.
+
+## i18n keys added (TR + EN)
+
+`onboarding.skip`, `onboarding.step1.{title,confirm,chooseOther}`, `onboarding.step2.{title,confirm,chooseOther}`, `onboarding.step3.{title,done,skip}`, `onboarding.providers.loadError` — 11 keys total per language. ES/FR/DE/JA/KO stubs deferred (locale layer falls back to EN per 04-01 EN-first).
+
+## Tests
+
+`npx vitest run tests/onboarding.test.js tests/onboarding-cross-device.test.js` → **19/19 green** (16 in onboarding.test.js + 3 in onboarding-cross-device.test.js).
+
+Full suite: 228 pass / 22 todo / 2 skipped / 8 fail. The 8 failures are pre-existing Phase-03.2 cleanup debt in `tests/api.test.js`, `tests/detail.test.js`, `tests/platforms.test.js` and were untouched per executor instructions.
+
+Commits:
+- `aebd59a` — test(04-04): RED tests + TMDB fixture
+- `a573323` — feat(04-04): state machine + provider fetch + DOM wizard
+- `65f003e` — feat(04-04): wizard CSS, i18n TR/EN keys, boot-time onboarding trigger
+
+## Deviations
+
+**[Rule 3 — Blocking issue] API contract mismatch.** Plan specifies `/api/tmdb?path=/watch/providers/tv` but the actual proxy at `api/tmdb.js` reads `?endpoint=` (see lines 51-56). Using `?path=` would yield a 400 ("Missing endpoint parameter"). `fetchProviders` calls `?endpoint=/watch/providers/tv&watch_region={CC}` to match the real proxy contract. The proxy is open-path (no allowlist — it passes any TMDB endpoint), so no api/tmdb.js change was needed (the plan's task 1.3 was a no-op in practice — recorded here so a future reader knows api/tmdb.js was intentionally left unmodified despite the plan listing it under files_modified).
+
+**[Rule 2 — Auto-add missing critical functionality]** Added `try/catch` around every localStorage write in onboarding.js so a SecurityError in private-browsing mode never throws into the boot path. The plan's pseudocode used bare `localStorage.setItem`.
+
+**[Rule 2 — Auto-add missing critical functionality]** Added fail-open behavior to `shouldShowOnboarding` when Firestore read rejects — without it, a transient Firebase outage would block guests with completed-flag=false forever (race with `requireAuth`). Plan said `try {} catch {}` but didn't define what to return; chose `true` so the user can configure rather than be invisibly blocked.
+
+**[Scope]** Task 3 (manual mobile QA — 5 scenarios A-E) is a `checkpoint:human-verify` gate. Code is shipped and unit-tested; manual scenarios require a live browser and (for scenario E) a seeded Firestore doc. **Awaiting user verification.** Pause/resume signal: type "approved" or describe failures.
+
+## Phase 04 Close-Out
+
+All 5 plans complete (code-wise):
+
+| Plan | Subsystem | Status |
+|------|-----------|--------|
+| 04-01 | i18n EN-first | COMPLETE |
+| 04-02 | Locale layer + geo | COMPLETE |
+| 04-03 | Optional auth + Firestore migration | COMPLETE |
+| 04-04 | Onboarding wizard | COMPLETE (code) — manual QA pending |
+| 04-05 | TR broadcast channels | COMPLETE |
+
+**Posture:** Ready for `/gsd-verify-work 04` once Task 3 manual QA is approved. After that, Phase 5 (Premium Agent) is the next planning target.
+
+## Self-Check: PASSED
+
+- `src/features/onboarding.js`: FOUND
+- `src/styles/onboarding.css`: FOUND
+- `tests/onboarding.test.js`: FOUND
+- `tests/onboarding-cross-device.test.js`: FOUND
+- `tests/fixtures/tmdb-watch-providers-tr.json`: FOUND
+- `src/main.js` contains `shouldShowOnboarding` + `bootOnboardingCheck`: VERIFIED
+- `index.html` loads `onboarding.css`: VERIFIED
+- `public/i18n.js` contains `'onboarding.step1.title'` in TR + EN blocks: VERIFIED
+- Commits `aebd59a`, `a573323`, `65f003e`: FOUND
+- 19/19 onboarding tests green; 228/258 full suite (8 fails = pre-existing 03.2 debt): VERIFIED
