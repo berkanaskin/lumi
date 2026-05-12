@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Ready to plan
-stopped_at: Phase 03.2 complete (6 plans + 14 polish rounds). Roadmap revised to 8 phases — Phase 4 reframed as Global Foundation. Ready to plan Phase 4.1 (i18n EN-first refactor).
-last_updated: "2026-05-10T22:00:00.000Z"
+status: In progress — Phase 4 Wave 2 partial
+stopped_at: Phase 04 Wave 1 (04-01 i18n EN-first) and Wave 2 plan 04-02 (locale layer) complete. Pending in Phase 04: 04-05 (TR broadcast, Wave 2), 04-03 (auth, Wave 3, checkpoint), 04-04 (onboarding, Wave 4, checkpoint). Stale gsd-executor worktree agent-a765d645f3092d302 left in place (pid 12944 still alive) — its commits were cherry-picked. Pre-existing test failures (8) in api.test.js/detail.test.js/platforms.test.js are stale Phase-03.2 cleanup debt, NOT caused by Phase 04.
+last_updated: "2026-05-12T15:25:00.000Z"
 progress:
   total_phases: 8
   completed_phases: 5
   total_plans: 25
-  completed_plans: 19
+  completed_plans: 21
 ---
 
 # Project State
@@ -23,8 +23,10 @@ See: .planning/PROJECT.md (updated 2026-03-19)
 
 ## Current Position
 
-Phase: 4
-Plan: Not started (next: 04-01 i18n EN-first refactor)
+Phase: 4 — Global Foundation
+Plans complete: 04-01 (i18n EN-first), 04-02 (locale layer)
+Next plan: 04-05 (TR broadcast info, Wave 2) — then 04-03 (auth, checkpoint), 04-04 (onboarding, checkpoint)
+Resume command: `/gsd-execute-phase 04` (orchestrator skips plans with SUMMARY.md)
 
 ## Performance Metrics
 
