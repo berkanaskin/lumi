@@ -54,6 +54,10 @@ import {
     PAGES
 } from './lib/navigation.js';
 
+// Phase 04-03: optional-auth modules — side-effect import installs
+// `window.requireAuth` and `window._onAuthResolved` for inline callers.
+import './features/auth-modal.js';
+
 // UI Components
 import { showToast } from './ui/toast.js';
 import { loadTheme, toggleTheme } from './ui/theme.js';

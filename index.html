@@ -30,6 +30,7 @@
     <link rel="stylesheet" href="index_lumi.css?v=1.0.0" />
     <link rel="stylesheet" href="src/styles/person.css" />
     <link rel="stylesheet" href="src/styles/profile.css" />
+    <link rel="stylesheet" href="src/styles/auth-modal.css" />
 
     <!-- Theme initialization (prevent flash of wrong theme) -->
     <script>
@@ -57,7 +58,8 @@
     <!-- ============================================
          LOGIN WALL (Full Screen, Blocks Access)
          ============================================ -->
-    <div id="login-wall" class="login-wall active">
+    <!-- Phase 04-03: optional auth — wall starts inactive; only opened on demand via requireAuth() -->
+    <div id="login-wall" class="login-wall" style="display: none">
       <div class="login-backdrop" id="login-backdrop"></div>
       <div class="login-backdrop-overlay"></div>
 
