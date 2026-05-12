@@ -1,0 +1,26 @@
+{
+  "id": 0,
+  "results": [
+    { "provider_id": 8, "provider_name": "Netflix", "display_priority": 0, "logo_path": "/t2yyOv40HZeVlLjYsCsPHnWLk4W.jpg" },
+    { "provider_id": 337, "provider_name": "Disney Plus", "display_priority": 1, "logo_path": "/97yvRBw1GzX7fXprcF80er19ot.jpg" },
+    { "provider_id": 119, "provider_name": "Amazon Prime Video", "display_priority": 2, "logo_path": "/68MNrwlkpF7WnmNPXLah69CR5cb.jpg" },
+    { "provider_id": 1899, "provider_name": "Max", "display_priority": 3, "logo_path": "/jbe4gVSfRlbPTdESXhEKpornsfu.jpg" },
+    { "provider_id": 350, "provider_name": "Apple TV Plus", "display_priority": 4, "logo_path": "/6uhKBfmtzFqOcLousHwZuzcrScK.jpg" },
+    { "provider_id": 341, "provider_name": "BluTV", "display_priority": 5, "logo_path": "/k86biAisbA22u8sktwAdJX6X3Rj.jpg" },
+    { "provider_id": 1796, "provider_name": "Netflix basic with Ads", "display_priority": 6, "logo_path": "/eRNCsmpVeOhgGOmXJWXEgYDPkR5.jpg" },
+    { "provider_id": 1968, "provider_name": "Gain", "display_priority": 7, "logo_path": "/3sJfizPV7lOiBM5kFW5pAFvX3uV.jpg" },
+    { "provider_id": 1888, "provider_name": "Exxen", "display_priority": 8, "logo_path": "/dkPEAEoFLNpQrPMu3IbY29Sevtv.jpg" },
+    { "provider_id": 2895, "provider_name": "TOD", "display_priority": 9, "logo_path": "/i0OOFiztAQ2sNTdHRVy1y0HiwxR.jpg" },
+    { "provider_id": 1773, "provider_name": "SkyShowtime", "display_priority": 10, "logo_path": "/9D7OvjUbeS2Qhqz1OouB8XS5pcS.jpg" },
+    { "provider_id": 531, "provider_name": "Paramount Plus", "display_priority": 11, "logo_path": "/fi83B1oztoS47xxcemFdPMhIzK.jpg" },
+    { "provider_id": 384, "provider_name": "HBO Max", "display_priority": 12, "logo_path": "/aS2zvJWn9mwiCOeaaCkIh4wleZS.jpg" },
+    { "provider_id": 2, "provider_name": "Apple TV", "display_priority": 13, "logo_path": "/peURlLlr8jggOwK53fJ5wdQl05y.jpg" },
+    { "provider_id": 3, "provider_name": "Google Play Movies", "display_priority": 14, "logo_path": "/tbEdFQDwx5LEVr8WpSeXQSIirVq.jpg" },
+    { "provider_id": 7, "provider_name": "Fandango At Home", "display_priority": 15, "logo_path": "/peURlLlr8jggOwK53fJ5wdQl05y.jpg" },
+    { "provider_id": 2300, "provider_name": "Rakuten Viki", "display_priority": 16, "logo_path": "/cb2DTLPjpPaJDjuU2nyIDLN3oct.jpg" },
+    { "provider_id": 2864, "provider_name": "puhutv", "display_priority": 17, "logo_path": "/abc.jpg" },
+    { "provider_id": 1715, "provider_name": "Crunchyroll", "display_priority": 18, "logo_path": "/cdef.jpg" },
+    { "provider_id": 3000, "provider_name": "Tabii", "display_priority": 19, "logo_path": "/tabii.jpg" },
+    { "provider_id": 9999, "provider_name": "ExtraTest", "display_priority": 99, "logo_path": "/x.jpg" }
+  ]
+}
