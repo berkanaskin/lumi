@@ -1,0 +1,24 @@
+{
+  "_doc": "TR broadcast network overlay. Primary key: TMDB network ID. Fallback: byNormalizedName. Wrong IDs degrade to TMDB default (graceful).",
+  "byId": {
+    "1280": { "slug": "showtv", "name": "Show TV", "logo": "/img/networks/showtv.png", "url": "https://www.showtv.com.tr", "_todo": "verify ID" },
+    "1330": { "slug": "atv", "name": "ATV", "logo": "/img/networks/atv.png", "url": "https://www.atv.com.tr", "_todo": "verify ID" },
+    "1268": { "slug": "startv", "name": "Star TV", "logo": "/img/networks/startv.png", "url": "https://www.startv.com.tr", "_todo": "verify ID" },
+    "1283": { "slug": "kanald", "name": "Kanal D", "logo": "/img/networks/kanald.png", "url": "https://www.kanald.com.tr", "_todo": "verify ID" }
+  },
+  "byNormalizedName": {
+    "show tv": "1280",
+    "showtv": "1280",
+    "atv": "1330",
+    "trt 1": "trt",
+    "trt 2": "trt",
+    "trt": "trt",
+    "star tv": "1268",
+    "startv": "1268",
+    "kanal d": "1283",
+    "kanald": "1283"
+  },
+  "specialEntries": {
+    "trt": { "slug": "trt", "name": "TRT", "logo": "/img/networks/trt.png", "url": "https://www.trtizle.com" }
+  }
+}

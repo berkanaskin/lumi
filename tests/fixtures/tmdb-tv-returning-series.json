@@ -1,0 +1,15 @@
+{
+  "id": 12345,
+  "media_type": "tv",
+  "name": "Yargı",
+  "status": "Returning Series",
+  "next_episode_to_air": {
+    "air_date": "2026-05-15",
+    "season_number": 5,
+    "episode_number": 12,
+    "name": "Yeni Bölüm"
+  },
+  "networks": [
+    { "id": 1280, "name": "Show TV", "logo_path": "/abc.png", "origin_country": "TR" }
+  ]
+}

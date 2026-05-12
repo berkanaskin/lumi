@@ -9,6 +9,7 @@ import { showToast } from '../ui/toast.js';
 import { API, GeoIPService } from '../services/api.js';
 import { getStreamingWithCache } from '../services/streaming-cache.js';
 import { getPlatformUrl, getLogoOverride } from '../lib/platforms.js';
+import { isActivelyAiring, getNetworkLogoPath, getNetworkCatalogEntry, formatNextEpisode } from '../lib/broadcast.js';
 
 // ============================================
 // MODAL STATE
@@ -496,6 +497,9 @@ export function renderDetail(details, providers, type, itemId, streamingData) {
     const effectiveStreamingData = streamingData || state.currentStreamingData;
     const streamingHTML = buildStreamingHTML(effectiveStreamingData, title);
 
+    // Broadcast (TV-only, actively airing) — Phase 04-05
+    const broadcastHTML = buildBroadcastHTML(details, type);
+
     // Cinema badge (overlaid on poster)
     const cinemaBadgeHTML = buildCinemaBadgeHTML(type, details);
 
@@ -556,6 +560,9 @@ export function renderDetail(details, providers, type, itemId, streamingData) {
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Puan Ver
             </button>
         </div>
+
+        <!-- Airing on (Broadcast — TV active series only) -->
+        ${broadcastHTML}
 
         <!-- Where to Watch (Streaming) -->
         ${streamingHTML}
@@ -724,6 +731,70 @@ function buildRatingsHTML(tmdbScore, allRatings) {
     if (items.length === 0) return '';
 
     return `<div class="ratings-bar">${items.join('')}</div>`;
+}
+
+/**
+ * Build the "Airing on" broadcast section for actively-airing TV series.
+ * (Phase 04-05)
+ *
+ * - Returns '' for movies, ended shows with no next episode, or missing networks.
+ * - Picks the network matching the user's locale country, else networks[0].
+ * - Logo: local PNG via TR overlay, else TMDB URL, with onerror fallback to TMDB.
+ */
+function buildBroadcastHTML(details, type) {
+    if (type !== 'tv') return '';
+    if (!details || !isActivelyAiring(details)) return '';
+    const networks = Array.isArray(details.networks) ? details.networks : [];
+    if (networks.length === 0) return '';
+
+    const t = (key, fallback) => window.i18n?.t(key) !== key ? window.i18n.t(key) : fallback;
+    const sectionLabel = t('airingOn', 'Yayın Kanalı');
+
+    let userCountry;
+    try {
+        userCountry = JSON.parse(localStorage.getItem('lumi_locale') || '{}').country;
+    } catch (_) { userCountry = undefined; }
+    const primary = (userCountry && networks.find(n => n.origin_country === userCountry)) || networks[0];
+
+    const logo = getNetworkLogoPath(primary);
+    const tmdbFallback = primary?.logo_path ? `https://image.tmdb.org/t/p/w92${primary.logo_path}` : '';
+    const entry = getNetworkCatalogEntry(primary);
+    const deepLink = entry?.url || '';
+    const displayName = entry?.name || primary?.name || '';
+
+    const lang = window.i18n?.currentLang || 'tr';
+    const nextEp = details.next_episode_to_air
+        ? formatNextEpisode(details.next_episode_to_air, lang)
+        : null;
+
+    const nextLine = nextEp && (nextEp.relative || nextEp.absolute)
+        ? `<div class="detail-airing-info__next">
+                ${nextEp.label ? `<span class="detail-airing-info__se">${nextEp.label}</span>` : ''}
+                ${nextEp.relative ? `<span class="detail-airing-info__rel">${nextEp.relative}</span>` : ''}
+                ${nextEp.absolute ? `<span class="detail-airing-info__abs">${nextEp.absolute}</span>` : ''}
+           </div>`
+        : '';
+
+    const logoImg = logo
+        ? `<img class="detail-airing-info__logo" src="${logo}" alt="${displayName}" loading="lazy"
+                ${tmdbFallback && tmdbFallback !== logo ? `onerror="this.onerror=null;this.src='${tmdbFallback}';"` : ''}>`
+        : '';
+
+    const nameNode = deepLink
+        ? `<a class="detail-airing-info__name" href="${deepLink}" target="_blank" rel="noopener noreferrer">${displayName}</a>`
+        : `<span class="detail-airing-info__name">${displayName}</span>`;
+
+    return `
+        <section class="detail-section detail-airing-info" data-network-id="${primary?.id ?? ''}">
+            <h3 class="detail-section-heading">${sectionLabel}</h3>
+            <div class="detail-airing-info__row">
+                ${logoImg}
+                <div class="detail-airing-info__meta">
+                    ${nameNode}
+                    ${nextLine}
+                </div>
+            </div>
+        </section>`;
 }
 
 /**
