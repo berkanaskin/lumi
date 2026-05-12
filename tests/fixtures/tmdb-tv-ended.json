@@ -1,0 +1,10 @@
+{
+  "id": 1396,
+  "media_type": "tv",
+  "name": "Breaking Bad",
+  "status": "Ended",
+  "next_episode_to_air": null,
+  "networks": [
+    { "id": 174, "name": "AMC", "logo_path": "/amc.png", "origin_country": "US" }
+  ]
+}
