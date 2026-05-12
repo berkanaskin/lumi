@@ -10,6 +10,18 @@ export const config = {
     runtime: 'edge',
 };
 
+// Language allow-list + human-readable names for the "Respond in X." prompt prefix.
+// Mirrors api/search.js BCP_47/LANG_NAME (Edge functions are file-scoped).
+const LANG_NAME = {
+    tr: 'Türkçe', en: 'English', de: 'Deutsch', fr: 'Français',
+    es: 'Español', ja: '日本語', ko: '한국어', zh: '中文',
+};
+function resolveLang(raw) {
+    if (typeof raw !== 'string') return 'en';
+    const norm = raw.includes('-') ? raw.split('-')[0].toLowerCase() : raw.toLowerCase();
+    return LANG_NAME[norm] ? norm : 'en';
+}
+
 export default async function handler(request) {
     // Only allow POST requests
     if (request.method !== 'POST') {
@@ -21,7 +33,7 @@ export default async function handler(request) {
 
     try {
         const body = await request.json();
-        const { prompt } = body;
+        const { prompt, lang } = body;
 
         if (!prompt) {
             return new Response(
@@ -29,6 +41,10 @@ export default async function handler(request) {
                 { status: 400, headers: { 'Content-Type': 'application/json' } }
             );
         }
+
+        // Prepend "Respond in {LanguageName}." so Gemini emits the right locale.
+        const resolvedLang = resolveLang(lang);
+        const localizedPrompt = `Respond in ${LANG_NAME[resolvedLang]}.\n\n${prompt}`;
 
         const apiKey = process.env.GEMINI_API_KEY;
 
@@ -46,7 +62,7 @@ export default async function handler(request) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }],
+                contents: [{ parts: [{ text: localizedPrompt }] }],
                 generationConfig: {
                     temperature: 0.9,
                     topP: 0.95,

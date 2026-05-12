@@ -648,7 +648,8 @@ async function loadTrivia(details, type) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                prompt: `"${title}" (${year}) ${mediaType} hakkinda 5 ilginc trivia bilgisi yaz. Gercek, dogru ve ilginc bilgiler olsun. Set arkasi hikayeleri, gizli detaylar, oyuncu anektodlari gibi. Her birini 1-2 cumleyle yaz. Sadece bilgileri yaz, baslik veya numara koyma. Her bilgiyi yeni satirda yaz.`
+                prompt: `"${title}" (${year}) ${mediaType} hakkinda 5 ilginc trivia bilgisi yaz. Gercek, dogru ve ilginc bilgiler olsun. Set arkasi hikayeleri, gizli detaylar, oyuncu anektodlari gibi. Her birini 1-2 cumleyle yaz. Sadece bilgileri yaz, baslik veya numara koyma. Her bilgiyi yeni satirda yaz.`,
+                lang: window.i18n?.currentLang || 'en',
             }),
         });
 

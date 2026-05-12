@@ -28,6 +28,15 @@ export const TMDBService = {
             proxyUrl.searchParams.set(key, value);
         }
 
+        // Plumb current i18n language so TMDB returns localized titles/overviews.
+        // Backend maps 2-letter codes to BCP 47 (en -> en-US, etc.) and defaults
+        // to 'en-US' if absent. Callers that pre-set `language=xx-XX` still win
+        // (legacy compat), since backend prefers explicit `language` when `lang`
+        // is not provided.
+        if (typeof window !== 'undefined' && window.i18n?.currentLang && !proxyUrl.searchParams.has('lang')) {
+            proxyUrl.searchParams.set('lang', window.i18n.currentLang);
+        }
+
         try {
             const response = await fetch(proxyUrl.toString(), options);
             if (!response.ok) {
@@ -368,6 +377,7 @@ export const TMDBService = {
                     query: query.trim(),
                     userId: userId,
                     limit: 20,
+                    lang: window.i18n?.currentLang || 'en',
                 }),
                 signal: AbortSignal.timeout(35_000),
             });

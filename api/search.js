@@ -14,6 +14,38 @@ export const config = {
     runtime: 'edge',
 };
 
+// BCP 47 language mapping for TMDB API (which requires xx-XX, not bare xx).
+// Exported for test consumption (api-search-lang.test.js).
+export const BCP_47 = {
+    tr: 'tr-TR',
+    en: 'en-US',
+    de: 'de-DE',
+    fr: 'fr-FR',
+    es: 'es-ES',
+    ja: 'ja-JP',
+    ko: 'ko-KR',
+    zh: 'zh-CN',
+};
+
+// Human-readable language name (for Gemini "Respond in X." prompt prefix).
+export const LANG_NAME = {
+    tr: 'Türkçe',
+    en: 'English',
+    de: 'Deutsch',
+    fr: 'Français',
+    es: 'Español',
+    ja: '日本語',
+    ko: '한국어',
+    zh: '中文',
+};
+
+// Resolve raw lang input to an allow-listed 2-letter code. Defaults to 'en'.
+export function resolveLang(raw) {
+    if (typeof raw !== 'string') return 'en';
+    const norm = raw.includes('-') ? raw.split('-')[0].toLowerCase() : raw.toLowerCase();
+    return BCP_47[norm] ? norm : 'en';
+}
+
 // Free tier protection
 const rateLimiter = new Map();
 const RATE_LIMIT_WINDOW = 60_000;
@@ -43,17 +75,18 @@ function cleanMaps() {
  * @param {string} apiKey - TMDB v3 API key
  * @returns {Promise<object|null>} normalized TMDB record or null
  */
-async function resolveTMDB(suggestion, apiKey) {
+async function resolveTMDB(suggestion, apiKey, lang = 'en') {
     const { title, year, mediaType } = suggestion || {};
     if (!title) return null;
     const types = (mediaType === 'either' || !mediaType) ? ['movie', 'tv'] : [mediaType];
+    const tmdbLang = BCP_47[resolveLang(lang)];
     const candidates = [];
     for (const type of types) {
         try {
             const params = new URLSearchParams({
                 api_key: apiKey,
                 query: title,
-                language: 'tr-TR',
+                language: tmdbLang,
                 include_adult: 'false',
             });
             // Use 'year' (movie) / 'first_air_date_year' (tv) as a soft bias — TMDB still
@@ -95,9 +128,12 @@ async function resolveTMDB(suggestion, apiKey) {
 }
 
 // Direct REST call to Google Generative Language API. No SDK, no dynamic imports.
-async function callGeminiREST(query, limit, apiKey, abortSignal) {
+async function callGeminiREST(query, limit, apiKey, abortSignal, lang = 'en') {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-    const prompt = `Sen bir film ve dizi öneri uzmanısın. Kullanıcı şu tarzı bir şey izlemek istiyor: "${query}"
+    const langName = LANG_NAME[resolveLang(lang)];
+    const prompt = `Respond in ${langName}.
+
+Sen bir film ve dizi öneri uzmanısın. Kullanıcı şu tarzı bir şey izlemek istiyor: "${query}"
 
 Bu isteğe en uygun ${limit} film veya dizi öner.
 
@@ -235,7 +271,8 @@ export default async function handler(request) {
         // Edge runtime: request.body is a ReadableStream — must use await request.json()
         let body;
         try { body = await request.json(); } catch { body = {}; }
-        let { query, userId, limit = 10 } = body || {};
+        let { query, userId, limit = 10, lang } = body || {};
+        const resolvedLang = resolveLang(lang);
 
         if (!query || typeof query !== 'string' || query.trim().length < 3) {
             return new Response(
@@ -292,7 +329,7 @@ export default async function handler(request) {
         // Direct Gemini REST call — 20s ceiling so we always have time left for TMDB enrichment.
         let suggestions;
         try {
-            suggestions = await callGeminiREST(query, limit, geminiKey, AbortSignal.timeout(20_000));
+            suggestions = await callGeminiREST(query, limit, geminiKey, AbortSignal.timeout(20_000), resolvedLang);
         } catch (err) {
             const isAbort = err?.name === 'AbortError' || err?.name === 'TimeoutError';
             console.error('[Search] Gemini REST error:', err?.name, err?.message);
@@ -322,7 +359,7 @@ export default async function handler(request) {
         const batchSize = 5;
         for (let i = 0; i < normalized.length; i += batchSize) {
             const batch = normalized.slice(i, i + batchSize);
-            const results = await Promise.all(batch.map(s => resolveTMDB(s, tmdbKey)));
+            const results = await Promise.all(batch.map(s => resolveTMDB(s, tmdbKey, resolvedLang)));
             for (let j = 0; j < results.length; j++) {
                 const movie = results[j];
                 if (movie) {

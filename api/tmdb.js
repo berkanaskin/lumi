@@ -10,6 +10,17 @@ export const config = {
     runtime: 'edge',
 };
 
+// BCP 47 mapping mirrors api/search.js (Edge functions are file-scoped).
+const BCP_47 = {
+    tr: 'tr-TR', en: 'en-US', de: 'de-DE', fr: 'fr-FR',
+    es: 'es-ES', ja: 'ja-JP', ko: 'ko-KR', zh: 'zh-CN',
+};
+function resolveLang(raw) {
+    if (typeof raw !== 'string') return 'en';
+    const norm = raw.includes('-') ? raw.split('-')[0].toLowerCase() : raw.toLowerCase();
+    return BCP_47[norm] ? norm : 'en';
+}
+
 export default async function handler(request) {
     try {
         const { searchParams } = new URL(request.url);
@@ -27,11 +38,21 @@ export default async function handler(request) {
         const tmdbUrl = new URL(`https://api.themoviedb.org/3${endpoint}`);
         tmdbUrl.searchParams.set('api_key', apiKey);
 
-        // Forward other query params
+        // Language resolution precedence:
+        //   1. explicit `lang` (2-letter) → map to BCP 47 (preferred new contract)
+        //   2. legacy `language` (already BCP 47) → pass through unchanged
+        //   3. neither → default to 'en-US' (NOT 'tr-TR') per i18n EN-first
+        const rawLang = searchParams.get('lang');
+        const legacyLanguage = searchParams.get('language');
+        const tmdbLanguage = rawLang
+            ? BCP_47[resolveLang(rawLang)]
+            : (legacyLanguage || 'en-US');
+        tmdbUrl.searchParams.set('language', tmdbLanguage);
+
+        // Forward other query params (skip lang/language — handled above).
         for (const [key, value] of searchParams.entries()) {
-            if (key !== 'endpoint') {
-                tmdbUrl.searchParams.set(key, value);
-            }
+            if (key === 'endpoint' || key === 'lang' || key === 'language') continue;
+            tmdbUrl.searchParams.set(key, value);
         }
 
         const response = await fetch(tmdbUrl.toString());
