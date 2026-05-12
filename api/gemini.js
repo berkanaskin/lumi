@@ -22,6 +22,32 @@ function resolveLang(raw) {
     return LANG_NAME[norm] ? norm : 'en';
 }
 
+// Phase 04-02: Accept-Language fallback for callers without explicit body.lang.
+function parseAcceptLanguage(header) {
+    if (!header || typeof header !== 'string') return [];
+    return header.split(',').map((s) => {
+        const trimmed = s.trim();
+        if (!trimmed) return null;
+        const [tag, qPart] = trimmed.split(';q=');
+        if (!tag) return null;
+        let q = qPart === undefined ? 1 : parseFloat(qPart);
+        if (!Number.isFinite(q)) q = 0;
+        return { tag: tag.trim(), q };
+    }).filter(Boolean).sort((a, b) => b.q - a.q);
+}
+
+function pickLang(body, request) {
+    if (body?.lang) return resolveLang(body.lang);
+    const prefs = parseAcceptLanguage(request.headers.get('accept-language'));
+    for (const { tag } of prefs) {
+        try {
+            const code = new Intl.Locale(tag).language;
+            if (LANG_NAME[code]) return code;
+        } catch {}
+    }
+    return 'en';
+}
+
 export default async function handler(request) {
     // Only allow POST requests
     if (request.method !== 'POST') {
@@ -33,7 +59,7 @@ export default async function handler(request) {
 
     try {
         const body = await request.json();
-        const { prompt, lang } = body;
+        const { prompt } = body;
 
         if (!prompt) {
             return new Response(
@@ -42,8 +68,8 @@ export default async function handler(request) {
             );
         }
 
-        // Prepend "Respond in {LanguageName}." so Gemini emits the right locale.
-        const resolvedLang = resolveLang(lang);
+        // Phase 04-02: body.lang wins, else Accept-Language, else 'en'.
+        const resolvedLang = pickLang(body, request);
         const localizedPrompt = `Respond in ${LANG_NAME[resolvedLang]}.\n\n${prompt}`;
 
         const apiKey = process.env.GEMINI_API_KEY;

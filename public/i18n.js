@@ -1004,12 +1004,21 @@ const i18n = {
         return false;
     },
 
-    // Load saved language
+    // Load saved language. Phase 04-02 added lumi_locale as the new source of
+    // truth; legacy appLanguage is kept as a fallback so existing users keep
+    // their language without forcing a re-detect.
     loadLanguage() {
-        const saved = localStorage.getItem('appLanguage');
-        if (saved && this.translations[saved]) {
-            this.currentLang = saved;
+        let resolved = null;
+        try {
+            const raw = localStorage.getItem('lumi_locale');
+            const parsed = raw ? JSON.parse(raw) : null;
+            if (parsed?.lang && this.translations[parsed.lang]) resolved = parsed.lang;
+        } catch {}
+        if (!resolved) {
+            const legacy = localStorage.getItem('appLanguage');
+            if (legacy && this.translations[legacy]) resolved = legacy;
         }
+        if (resolved) this.currentLang = resolved;
     },
 
     // Update all translatable elements in DOM

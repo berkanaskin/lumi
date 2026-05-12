@@ -46,6 +46,35 @@ export function resolveLang(raw) {
     return BCP_47[norm] ? norm : 'en';
 }
 
+// Phase 04-02: Accept-Language fallback so browsers without an explicit body.lang
+// still get correct locale (e.g., curl, server-side fetches, missing onboarding).
+// Inline duplicate of src/lib/locale.js#parseAcceptLanguage — Edge functions are
+// file-scoped, can't import from src/.
+function parseAcceptLanguage(header) {
+    if (!header || typeof header !== 'string') return [];
+    return header.split(',').map((s) => {
+        const trimmed = s.trim();
+        if (!trimmed) return null;
+        const [tag, qPart] = trimmed.split(';q=');
+        if (!tag) return null;
+        let q = qPart === undefined ? 1 : parseFloat(qPart);
+        if (!Number.isFinite(q)) q = 0;
+        return { tag: tag.trim(), q };
+    }).filter(Boolean).sort((a, b) => b.q - a.q);
+}
+
+function pickLang(body, request) {
+    if (body?.lang) return resolveLang(body.lang);
+    const prefs = parseAcceptLanguage(request.headers.get('accept-language'));
+    for (const { tag } of prefs) {
+        try {
+            const code = new Intl.Locale(tag).language;
+            if (BCP_47[code]) return code;
+        } catch {}
+    }
+    return 'en';
+}
+
 // Free tier protection
 const rateLimiter = new Map();
 const RATE_LIMIT_WINDOW = 60_000;
@@ -271,8 +300,9 @@ export default async function handler(request) {
         // Edge runtime: request.body is a ReadableStream — must use await request.json()
         let body;
         try { body = await request.json(); } catch { body = {}; }
-        let { query, userId, limit = 10, lang } = body || {};
-        const resolvedLang = resolveLang(lang);
+        let { query, userId, limit = 10 } = body || {};
+        // Phase 04-02: body.lang wins, else Accept-Language header, else 'en'.
+        const resolvedLang = pickLang(body, request);
 
         if (!query || typeof query !== 'string' || query.trim().length < 3) {
             return new Response(

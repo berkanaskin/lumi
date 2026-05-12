@@ -21,6 +21,31 @@ function resolveLang(raw) {
     return BCP_47[norm] ? norm : 'en';
 }
 
+// Phase 04-02: Accept-Language fallback for callers without explicit ?lang.
+function parseAcceptLanguage(header) {
+    if (!header || typeof header !== 'string') return [];
+    return header.split(',').map((s) => {
+        const trimmed = s.trim();
+        if (!trimmed) return null;
+        const [tag, qPart] = trimmed.split(';q=');
+        if (!tag) return null;
+        let q = qPart === undefined ? 1 : parseFloat(qPart);
+        if (!Number.isFinite(q)) q = 0;
+        return { tag: tag.trim(), q };
+    }).filter(Boolean).sort((a, b) => b.q - a.q);
+}
+
+function pickAcceptLangBCP47(request) {
+    const prefs = parseAcceptLanguage(request.headers.get('accept-language'));
+    for (const { tag } of prefs) {
+        try {
+            const code = new Intl.Locale(tag).language;
+            if (BCP_47[code]) return BCP_47[code];
+        } catch {}
+    }
+    return null;
+}
+
 export default async function handler(request) {
     try {
         const { searchParams } = new URL(request.url);
@@ -38,15 +63,16 @@ export default async function handler(request) {
         const tmdbUrl = new URL(`https://api.themoviedb.org/3${endpoint}`);
         tmdbUrl.searchParams.set('api_key', apiKey);
 
-        // Language resolution precedence:
+        // Language resolution precedence (Phase 04-02 adds step 3):
         //   1. explicit `lang` (2-letter) → map to BCP 47 (preferred new contract)
         //   2. legacy `language` (already BCP 47) → pass through unchanged
-        //   3. neither → default to 'en-US' (NOT 'tr-TR') per i18n EN-first
+        //   3. Accept-Language header → first supported tag mapped to BCP 47
+        //   4. default 'en-US' (NOT 'tr-TR') per i18n EN-first
         const rawLang = searchParams.get('lang');
         const legacyLanguage = searchParams.get('language');
         const tmdbLanguage = rawLang
             ? BCP_47[resolveLang(rawLang)]
-            : (legacyLanguage || 'en-US');
+            : (legacyLanguage || pickAcceptLangBCP47(request) || 'en-US');
         tmdbUrl.searchParams.set('language', tmdbLanguage);
 
         // Forward other query params (skip lang/language — handled above).
