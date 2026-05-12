@@ -6,6 +6,8 @@
 
 import { state } from '../lib/state.js';
 import { showToast } from '../ui/toast.js';
+import { migrateOnAuth } from './auth-migration.js';
+import { _onAuthResolved, closeAuthModal } from './auth-modal.js';
 
 // ============================================
 // LOGIN WALL INITIALIZATION
@@ -44,45 +46,59 @@ export function initAuth() {
             updateAuthUI();
             updateProfileAuthUI();
             updateHeaderProfileDropdown();
+
+            // Phase 04-03: resolve any pending requireAuth() promise
+            try { _onAuthResolved(user); } catch (e) { /* swallow */ }
+            // Close the in-wall login modal (auth-modal handles its own close)
+            try { closeLoginModal(); } catch (e) { /* swallow */ }
+
+            // Phase 04-03: one-shot localStorage → Firestore migration
+            try {
+                const db = (window.firebase && typeof window.firebase.firestore === 'function')
+                    ? window.firebase.firestore()
+                    : null;
+                if (db) {
+                    migrateOnAuth({ uid: user.id || user.uid }, db).catch(() => { /* logged inside */ });
+                }
+            } catch (e) {
+                console.warn('[auth] migration trigger failed', e);
+            }
         } else {
             state.currentUser = null;
             state.userTier = 'guest';
-            showLoginWall();
+            // Phase 04-03: do NOT force the login wall on guests — they can browse freely.
+            // requireAuth() opens the modal only when a gated action is invoked.
             updateAuthUI();
             updateProfileAuthUI();
             updateHeaderProfileDropdown();
         }
     });
 
-    // Check initial auth state
-    if (window.AuthService) {
-        const currentUser = window.AuthService.getCurrentUser?.();
-        if (currentUser) {
-            hideLoginWall();
-        } else {
-            showLoginWall();
-        }
-    }
+    // Phase 04-03: do NOT auto-show the login wall. Guest mode is first-class.
+    // Just sync state from whatever AuthService reports.
 }
 
 /**
- * Show login wall (blocks access)
+ * Phase 04-03: optional-auth refactor.
+ *
+ * The full-screen login wall is no longer the default landing experience.
+ * `showLoginWall()` is kept as a NO-OP for backward compatibility with any
+ * legacy call sites that might still invoke it. The intended gating mechanism
+ * is now `requireAuth({ action })` from `src/features/auth-modal.js`.
  */
 export function showLoginWall() {
-    const wall = document.getElementById('login-wall');
-    if (wall) {
-        wall.classList.add('active');
-        wall.style.pointerEvents = 'auto';
-    }
+    // intentionally a no-op — see Phase 04-03 plan
 }
 
 /**
- * Hide login wall (allows access)
+ * Hide login wall (allows access). Still useful for the rare case where the
+ * wall got shown (legacy code paths) — defensive cleanup.
  */
 export function hideLoginWall() {
     const wall = document.getElementById('login-wall');
     if (wall) {
         wall.classList.remove('active');
+        wall.style.display = 'none';
         wall.style.pointerEvents = 'none';
     }
 }
