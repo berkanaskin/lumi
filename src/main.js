@@ -385,6 +385,22 @@ function initCountrySelector() {
 // already exist).
 async function bootOnboardingCheck() {
     try {
+        // Dev/QA reset hook: ?reset-onboarding clears the seen flag + onboarding
+        // payload from localStorage, then re-runs the show check so the wizard
+        // appears again. Strips the param from the URL so reloads don't loop.
+        try {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('reset-onboarding')) {
+                localStorage.removeItem('lumi_onboarding_seen');
+                localStorage.removeItem('lumi_onboarding');
+                params.delete('reset-onboarding');
+                const qs = params.toString();
+                const newUrl = window.location.pathname + (qs ? '?' + qs : '') + window.location.hash;
+                window.history.replaceState({}, '', newUrl);
+                console.info('[onboarding] reset via ?reset-onboarding — flag cleared');
+            }
+        } catch {}
+
         let user = null;
         let db = null;
         if (typeof window !== 'undefined' && window.firebase) {
