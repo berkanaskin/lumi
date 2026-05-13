@@ -95,6 +95,9 @@ Key existing infrastructure:
 | Letterboxd-style design direction | Cinematic, dark, poster-heavy — fits the movie/TV domain perfectly | — Pending |
 | Global launch (EN + TR) | Broader market from day one, i18n already in place | — Pending |
 | User community ratings as Premium feature | Incentivizes premium while keeping core discovery free | — Pending |
+| **Premium pricing (locked 2026-05-13)** | TR is too price-sensitive for default Apple/Google PPP (~99/599/1499 TL). Custom 50%-scaled TR tier protects conversion. 7-day trial drives sub adoption; lifetime is limited to seed early revenue + scarcity. See `.planning/decisions/PREMIUM-PRICING.md`. | $2.99/mo • $19.99/yr • $49.99 lifetime (limited). TR: 49/299/799 TL custom PPP. 7-day trial on subs only. |
+| **Production platforms (locked 2026-05-13)** | Native mobile UX (push, IAP, App Store discovery) is the path to monetization; web payment infra adds maintenance with no upside. RevenueCat unifies iOS + Android purchase + entitlement. | iOS + Android via Capacitor + RevenueCat. NO web premium. Web stays dev/test only. |
+| **Lifetime archive (locked 2026-05-13)** | Lifetime is a launch-window scarcity offer, not a permanent SKU. Caps protect long-term ARPU while seeding early loyal users. | Cap at first 1000 lifetime purchases OR 90 days post-launch (whichever first). |
 
 ---
-*Last updated: 2026-03-20 after Phase 2 completion*
+*Last updated: 2026-05-13 — Premium pricing + production platforms locked*

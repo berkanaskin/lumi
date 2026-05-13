@@ -2,7 +2,7 @@
 
 ## Overview
 
-Lumi transforms from a working SPA into a globally launchable mobile-first movie/TV discovery app in six phases. Phase 1 establishes the cinematic design foundation. Phase 2 delivers the core differentiator — hybrid AI-powered natural language search. Phase 3 enriches content with streaming availability, aggregated ratings, and comprehensive video/cast content. Phases 3.1 and 03.2 fix mobile QA bugs and Turkish-platform polish before launch prep. Phase 4 makes the app globally consumable (EN-first i18n, region detection, optional auth, onboarding, active series broadcast info). Phase 5 introduces the Premium Movie Night Agent with RevenueCat-managed subscriptions and four proactive features. Phase 6 ships the app to the iOS App Store via Capacitor wrapper.
+Lumi transforms from a working SPA into a globally launchable mobile-first movie/TV discovery app in six phases. Phase 1 establishes the cinematic design foundation. Phase 2 delivers the core differentiator — hybrid AI-powered natural language search. Phase 3 enriches content with streaming availability, aggregated ratings, and comprehensive video/cast content. Phases 3.1 and 03.2 fix mobile QA bugs and Turkish-platform polish before launch prep. Phase 4 makes the app globally consumable (EN-first i18n, region detection, optional auth, onboarding, active series broadcast info). Phase 5 introduces the Premium Movie Night Agent with RevenueCat-managed subscriptions and four proactive features. Phase 6 ships the app to the iOS App Store **and Google Play in parallel** via Capacitor + RevenueCat (primary markets TR/US/UK/CA/AU + secondary DE/FR/ES/IT/JP/KR).
 
 ## Phases
 
@@ -19,7 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 03.2: Polish & Platform Gaps (INSERTED)** - Turkish platform catalog, favorites bug, profile customization, cinema badge, discover redesign, AI search reliability (6/6 plans + 14 polish rounds complete 2026-05-10)
 - [ ] **Phase 4: Global Foundation** - EN-first i18n refactor, region/locale detection, optional auth + guest mode, onboarding flow, active series broadcast info
 - [ ] **Phase 5: Premium Agent** - RevenueCat subscriptions (monthly/yearly/lifetime), free-tier limits, paywall UX, and 4 proactive premium features: Decide-for-Me, Pair Mode, Smart Notifications, Evening Assistant
-- [ ] **Phase 6: iOS Launch** - Capacitor wrapper, push notification infrastructure (APNs), App Store Connect setup, ASO + screenshots, TestFlight → public release
+- [ ] **Phase 6: Mobile Launch** - iOS + Android parallel launch via Capacitor + RevenueCat. Primary markets TR/US/UK/CA/AU + DE/FR/ES/IT/JP/KR (secondary). Push (APNs + FCM), App Store Connect + Play Console setup, ASO + screenshots, TestFlight/Internal-track → public release
 
 ## Phase Details
 
@@ -178,25 +178,25 @@ Plans:
 - [ ] 05-04: Smart Notifications infrastructure (Firestore listeners for watchlist platform changes + favorite-creator alerts)
 - [ ] 05-05: Evening Assistant scheduled push (Vercel cron + per-user delivery time based on locale)
 
-### Phase 6: iOS Launch
+### Phase 6: Mobile Launch (iOS + Android Parallel)
 
-**Goal**: Lumi ships to the iOS App Store as a paid/freemium app with proper ASO, screenshots, push notification support, and TestFlight beta-to-public release pipeline.
+**Goal**: Lumi ships to the iOS App Store **and** Google Play in parallel as a freemium app with proper ASO, screenshots, push notification support, and beta-to-public release pipelines on both stores. iOS + Android parallel launch via Capacitor + RevenueCat. Primary markets TR/US/UK/CA/AU + DE/FR/ES/IT/JP/KR (secondary). See `.planning/decisions/PREMIUM-PRICING.md`.
 **Depends on**: Phase 5
 **Requirements**: LAUNCH-01, LAUNCH-02, LAUNCH-03, LAUNCH-04
 **Success Criteria** (what must be TRUE):
-  1. App runs natively on iOS via Capacitor wrapper, no PWA install required
-  2. APNs push notifications work for Smart Notifications + Evening Assistant
-  3. App Store Connect record is configured with bundle ID, signing, capabilities, App Privacy
-  4. Localized App Store listings (EN + TR minimum) with optimized keywords, subtitle, screenshots, preview video
-  5. TestFlight beta is shippable, public release happens after at least one week of beta feedback
+  1. App runs natively on iOS **and Android** via Capacitor wrapper — no PWA install required
+  2. APNs (iOS) + FCM (Android) push notifications work for Smart Notifications + Evening Assistant
+  3. App Store Connect **and Play Console** records are configured with bundle ID, signing, capabilities, App Privacy / Data Safety
+  4. Localized listings (EN + TR minimum) with optimized keywords, subtitle, screenshots, preview video across both stores
+  5. TestFlight beta (iOS) + Internal-track (Android) are shippable; public release happens after at least one week of beta feedback on both platforms
 
 **Plans:** 4 plans (estimate)
 
 Plans:
-- [ ] 06-01: Capacitor wrapper setup — Xcode project, iOS native shell, build pipeline, asc CLI integration
-- [ ] 06-02: APNs push infrastructure — Firebase Cloud Messaging or direct APNs, token registration, device management
-- [ ] 06-03: App Store Connect setup — bundle ID, signing certificates, provisioning, capabilities, App Privacy disclosures, IAP products linked to RevenueCat
-- [ ] 06-04: ASO + screenshots — keyword research (English markets first: US/UK/CA/AU), screenshot framing, preview video, EN + TR localized metadata, TestFlight beta + public submission
+- [ ] 06-01: Capacitor wrapper setup — Xcode + Android Studio projects, native shells, build pipelines, asc CLI + Play Console CLI integration
+- [ ] 06-02: Push infrastructure — APNs (iOS) + FCM (Android), token registration, device management
+- [ ] 06-03: Store Connect + Play Console setup — bundle IDs, signing certs/keystores, provisioning, capabilities, privacy/data-safety disclosures, IAP products linked to RevenueCat (TR custom PPP applied)
+- [ ] 06-04: ASO + screenshots — keyword research (primary TR/US/UK/CA/AU + secondary DE/FR/ES/IT/JP/KR), screenshot framing, preview video, localized metadata, TestFlight + Internal-track beta → public submission
 
 ## Progress
 
