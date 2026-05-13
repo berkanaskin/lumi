@@ -252,3 +252,43 @@ All 5 plans complete (code-wise):
 - Visual eyeball pass at 360px / 390px / 430px (Chrome DevTools mobile preset).
 
 **Commits:** `a99753f` (main implementation), `<this commit>` (R1 docs + state update).
+
+---
+
+## R2: Cinema Grade polish round (2026-05-13)
+
+Two-commit round bringing the wizard up to App Store submission visual bar.
+
+### R2 Commit 1 — `4ff1e24` Functional fixes (haptics + a11y + search + persistence)
+
+- **Haptics:** new `src/lib/haptics.js` with `tap`/`select`/`success` intensities. Uses Capacitor `Haptics` plugin if available, else `navigator.vibrate(...)`. All paths suppressed under `prefers-reduced-motion`. One haptic per interaction — no spam.
+- **A11y:** wizard root is `role="dialog"` + `aria-modal="true"` + `aria-labelledby="onb-slide-heading"`. Polite `aria-live` announcer fires "Step N of 6: <name>" on every slide change. Heading auto-focuses; Tab is trapped inside wizard root. Progress pill gains `aria-current="step"` on active. Platform tiles use `aria-pressed`; country options use `role="option"` + `aria-selected`. Visible focus rings.
+- **Country search:** debounced 80ms live filter, case + accent insensitive (TR diacritic fold + NFD), empty-state copy `onboarding.country.empty` (TR + EN). When search has focus, the poster wall fades to 30% opacity (`.onb-search-focused`) to reduce distraction.
+- **Mid-flow state persistence:** new key `lumi_onboarding_progress` = `{step, picks:{lang,country,platforms,premiumChoice}, savedAt}`. Written on every slide advance + selection change. Hydrated on `startOnboarding()` if `savedAt` is within 7 days and `step > 0`. Cleared on final completion (Ready CTA), on `skipOnboarding()`, and when the dev "Always show" toggle fires.
+- **Tests:** added `tests/onboarding-progress.test.js` (9 tests) + `tests/onboarding-country-search.test.js` (7 tests). 28 existing tests stay green → **44/44 onboarding tests green**.
+
+### R2 Commit 2 — `7fd125f` Cinema Grade visuals
+
+- **3-layer parallax poster wall:** back (6×8 w92 / 18px blur / 0.45 op / 30s ken-burns), mid (4×6 w185 / 8px blur / 0.65 op / 24s ± 20px drift), front (3×4 w342 / 0px blur / 0.8 op / 18s + radial vignette). Reuses the SAME 24 trending posters fetched in R1 — no new TMDB calls. Pointer-driven shift on `(hover: hover)` devices.
+- **S1 Welcome:** letter-by-letter type-on (30ms stagger), gradient text shimmer (6s loop, slow `background-position` slide). Subtitle + CTA cascade behind it (existing stagger). Whole sequence < 1.6s.
+- **S3 Country:** inline ~3KB simplified-continents SVG world map above the country list. Picking a country drops an orange→pink pin at approximate lat/long coordinates with spring overshoot (`translateY(-40px → 0)`, `scale(0 → 1.25 → 1)`) and flashes the country card border for 600ms. Graceful degrade if SVG injection fails.
+- **S5 Premium:** vault opening transition (two frosted glass halves slide outward 700ms with spring), feature rows already stagger-fade-in from R1, varied emoji pulse phases (3s loop, `--pulse-delay: 0/0.4/0.8/1.2s`), and pointer-based 3D tilt on each feature row (`perspective(600px) + rotateX/Y`).
+- **S6 Ready:** cinema letterbox curtain reveal (two black bars slide outward 800ms), recap chips spring-pop with 100ms stagger, CSS-only confetti burst on final CTA (36 absolutely-positioned divs, brand-gradient colors, random angle + 120-300px throw distance, 1.5s lifecycle), then close.
+- **Audio (default OFF):** Web Audio API 35ms 880Hz sine "tick" on every slide advance + chip select. Speaker icon in topbar toggles, preference persisted in `lumi_onboarding_audio`. **Ambient music was dropped** — no CC0 audio asset bundled (per brief).
+- **Reduced motion:** parallax, ken-burns, type-on, vault, curtains, confetti, emoji pulse, chip pop are all `animation: none` / `transition: none` under `prefers-reduced-motion: reduce`. Functional transitions still work via opacity fade.
+
+### R2 Verification
+
+- `npx vitest run tests/onboarding*.test.js` → **44/44 green** (28 from R1 + 16 new R2 functional tests).
+- Full project suite: 253 passing / 8 stale Phase-03.2 failures (untouched per brief).
+- Production build green: `dist/assets/main-*.js` 421.55kB / **131.81kB gzipped**; `main-*.css` 122.74kB / 20.92kB gzipped. Bundle delta vs pre-R2 ≈ +13kB gzipped (well under 40KB budget).
+- Performance: all animations on `transform` + `opacity`, `will-change` only on actively animating layers.
+
+### R2 Deviations from brief
+
+- **Ambient music dropped** (explicit out per brief if no CC0 asset). Tick synth retained.
+- World map SVG is a hand-drawn ultra-simplified continent shape set (~3KB) — chose this over importing a public-domain detailed map to stay under the 40KB budget while keeping continents recognizable.
+- Premium feature 3D tilt only fires on `pointermove` (pointer devices). Touch-only mobile gets the static row (no gyroscope path added — out of scope vs 40KB budget).
+
+**R2 Commits:** `4ff1e24` (functional fixes), `7fd125f` (cinema visuals), `<this docs commit>` (R2 summary + state).
+

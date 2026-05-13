@@ -10,6 +10,15 @@ last_updated: "2026-05-13T00:00:00.000Z"
 # 3-step form to cinematic 5-slide (Poster Wall + Ken Burns + frosted glass + gradient CTA).
 # State machine + persistence unchanged. 19/19 onboarding tests still green. Plan count
 # unchanged (24/25). See .planning/phases/04-global-foundation/04-04-SUMMARY.md (R1 section).
+#
+# R2 Cinema Grade polish round (2026-05-13): 04-04 functional + visual final pass before
+# App Store submission. Functional (commit 4ff1e24): haptics util, full ARIA dialog +
+# focus trap + live announcer, country search live-filter w/ accent fold + empty state,
+# mid-flow state persistence (lumi_onboarding_progress, 7-day TTL). Cinema visuals
+# (commit 7fd125f): 3-layer parallax poster wall, S1 letter type-on + gradient shimmer,
+# S3 world-map pin drop, S5 vault opening + 3D tilt, S6 cinema curtain + confetti, Web
+# Audio API tick synth (default OFF). 28→44 onboarding tests green (+16 new). Bundle
+# delta ≈ +13KB gzipped. Plan count unchanged. See SUMMARY (R2 section) for details.
 progress:
   total_phases: 8
   completed_phases: 5
@@ -111,6 +120,6 @@ None yet for Phase 4. Phase 03.2 left no carryover items.
 
 ## Session Continuity
 
-Last session: 2026-05-12T19:55:00.000Z
-Stopped at: Phase 04 Global Foundation code-complete — 04-04 onboarding wizard implemented + tested (19/19 green), boot-time trigger wired in main.js, CSS + i18n shipped. Worktree branch carries commits aebd59a/a573323/65f003e. Awaiting manual QA on Task 3 (5 scenarios: first-launch guest, skip, re-launch, provider-fetch-failure, cross-device hydration).
-Resume file: None — once QA approved, merge worktree → main → run `/gsd-verify-work 04` → plan Phase 5 Premium Agent.
+Last session: 2026-05-13T22:00:00.000Z
+Stopped at: Phase 04-04 R2 (Cinema Grade) polish round complete on worktree agent-a6ed75aa86d2c3c80 — commits 4ff1e24 (haptics + a11y + country search + state persistence) and 7fd125f (3-layer parallax wall + type-on hero + world map pin + vault + curtains + confetti + audio ticks). 44/44 onboarding tests green (28 prior + 16 new functional). Full suite 253 passing / 8 stale 03.2 failures untouched. Bundle delta ≈ +13KB gzipped. Worktree branch needs manual merge to main + push to origin.
+Resume file: None — merge worktree → main → push → optional manual QA pass at 360/390/430px on mobile. Phase 5 Premium Agent planning unchanged.
