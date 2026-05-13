@@ -411,8 +411,9 @@ function renderWizard(options = {}) {
 
     const locale = getLocale();
 
-    // Visual slide indices: 0 welcome, 1 lang, 2 country, 3 platforms, 4 ready
-    // These map to storage step nums via the input handlers below.
+    // Visual slide indices: 0 welcome, 1 lang, 2 country, 3 platforms, 4 premium, 5 ready
+    // Storage steps remain 1..3 (lang/country/platforms); premium is visual-only
+    // (mock paywall — Phase 5 wires the real RevenueCat purchase flow).
     const state = {
         slide: 0,
         direction: 'fwd',
@@ -448,9 +449,9 @@ function renderWizard(options = {}) {
     // Overlay (back + pills + stage)
     const backBtn = el('button', { class: 'onb-back', type: 'button', 'aria-label': 'Back', html: BACK_SVG });
 
-    const pills = el('div', { class: 'onb-pills', role: 'progressbar', 'aria-valuemin': '1', 'aria-valuemax': '5' });
+    const pills = el('div', { class: 'onb-pills', role: 'progressbar', 'aria-valuemin': '1', 'aria-valuemax': '6' });
     const pillEls = [];
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
         const p = el('div', { class: 'onb-pill' });
         pills.appendChild(p);
         pillEls.push(p);
@@ -495,7 +496,8 @@ function renderWizard(options = {}) {
         backBtn.toggleAttribute('disabled', state.slide === 0);
     }
     function updateAtmosphere() {
-        const showGlow = state.slide === 0 || state.slide === 4;
+        // Welcome (0), Premium (4) and Ready (5) get the warm glow.
+        const showGlow = state.slide === 0 || state.slide === 4 || state.slide === 5;
         glowOrange.style.display = showGlow ? '' : 'none';
         glowPink.style.display = showGlow ? '' : 'none';
     }
@@ -699,7 +701,7 @@ function renderWizard(options = {}) {
             onclick: () => {
                 state.ownedPlatforms = [];
                 completeStep(3, { ownedPlatforms: [] }, options);
-                goto(4);
+                goto(4); // → Premium slide
             },
         });
         slide.appendChild(skipLink);
@@ -710,11 +712,264 @@ function renderWizard(options = {}) {
             text: t('onboarding.next', 'Devam'),
             onclick: () => {
                 completeStep(3, { ownedPlatforms: state.ownedPlatforms.slice() }, options);
-                goto(4);
+                goto(4); // → Premium slide
             },
         });
         slide.appendChild(cta);
         return slide;
+    }
+
+    // ---- Premium teaser slide (S5) — Phase 04-04-r1 -----------------------
+    //
+    // Locale-aware pricing block. TR users see ₺ pricing, others see USD.
+    // CTA opens a MOCK paywall sheet (Phase 5 will replace with real
+    // RevenueCat purchase flow). Skip-for-now advances to Ready (slide 5).
+    //
+    // Locked decisions: see .planning/decisions/PREMIUM-PRICING.md.
+    function isTRLocale() {
+        // Pricing locale is determined by country (matches App Store / Play
+        // Console behavior — storefront country drives currency, not UI lang).
+        return (state.country || '').toUpperCase() === 'TR';
+    }
+
+    function premiumPricingStrings() {
+        if (isTRLocale()) {
+            return {
+                monthly: '49 ₺/ay',
+                yearly: '299 ₺/yıl',
+                lifetime: '799 ₺ ömürlük',
+                full: '49 ₺/ay • 299 ₺/yıl • 799 ₺ ömürlük',
+                trial: t('onboarding.premium.trialNote', 'İlk 7 gün ücretsiz'),
+                savings: '289 ₺',
+                yearlyAmount: '299 ₺',
+                monthlyAmount: '49 ₺',
+                lifetimeAmount: '799 ₺',
+            };
+        }
+        return {
+            monthly: '$2.99/mo',
+            yearly: '$19.99/yr',
+            lifetime: '$49.99 lifetime',
+            full: '$2.99/mo • $19.99/yr • $49.99 lifetime',
+            trial: t('onboarding.premium.trialNote', 'First 7 days free'),
+            savings: '$15.89',
+            yearlyAmount: '$19.99',
+            monthlyAmount: '$2.99',
+            lifetimeAmount: '$49.99',
+        };
+    }
+
+    function buildPremium() {
+        const slide = el('div', { class: 'onb-slide onb-slide-premium', 'data-dir': state.direction });
+
+        slide.appendChild(el('h1', { class: 'onb-hero-title onb-premium-title', text: t('onboarding.premium.title', 'Lumi Premium') }));
+        slide.appendChild(el('p', { class: 'onb-hero-sub onb-premium-sub', text: t('onboarding.premium.sub', 'Film Gecesi Asistanın') }));
+
+        // Feature rows
+        const features = el('div', { class: 'onb-premium-features' });
+        const featureDefs = [
+            { emoji: '🎯', titleKey: 'onboarding.premium.feature.decide.title', titleDefault: 'Decide-for-Me', descKey: 'onboarding.premium.feature.decide.desc', descDefault: 'Karar veremediğinde Lumi versin' },
+            { emoji: '👥', titleKey: 'onboarding.premium.feature.pair.title',   titleDefault: 'Pair Mode',     descKey: 'onboarding.premium.feature.pair.desc',   descDefault: 'İki kişi için ortak öneri' },
+            { emoji: '🔔', titleKey: 'onboarding.premium.feature.notif.title',  titleDefault: 'Smart Notifications', descKey: 'onboarding.premium.feature.notif.desc', descDefault: 'Sevdiğin dizilere yeni bölüm geldiğinde haber' },
+            { emoji: '🌙', titleKey: 'onboarding.premium.feature.evening.title', titleDefault: 'Evening Assistant', descKey: 'onboarding.premium.feature.evening.desc', descDefault: "Akşam 8'de bugünlük öneri" },
+        ];
+        featureDefs.forEach((f) => {
+            const row = el('div', { class: 'onb-premium-feature' }, [
+                el('span', { class: 'onb-premium-feature-icon', text: f.emoji, 'aria-hidden': 'true' }),
+                el('div', { class: 'onb-premium-feature-body' }, [
+                    el('div', { class: 'onb-premium-feature-title', text: t(f.titleKey, f.titleDefault) }),
+                    el('div', { class: 'onb-premium-feature-desc', text: t(f.descKey, f.descDefault) }),
+                ]),
+            ]);
+            features.appendChild(row);
+        });
+        slide.appendChild(features);
+
+        // Pricing block
+        const p = premiumPricingStrings();
+        const pricing = el('div', { class: 'onb-premium-pricing', 'data-locale': isTRLocale() ? 'tr' : 'intl' });
+        pricing.appendChild(el('div', { class: 'onb-premium-pricing-line', text: p.full }));
+        const lifeBadge = el('span', { class: 'onb-premium-limited-badge', text: t('onboarding.premium.limited', 'Limited') });
+        pricing.appendChild(lifeBadge);
+        pricing.appendChild(el('div', { class: 'onb-premium-trial-note', text: p.trial }));
+        slide.appendChild(pricing);
+
+        // Primary CTA — opens mock paywall sheet
+        slide.appendChild(el('button', {
+            class: 'onb-cta onb-cta-premium',
+            type: 'button',
+            text: t('onboarding.premium.cta', "Premium'u dene"),
+            'data-testid': 'onb-premium-cta',
+            onclick: () => openMockPaywall(),
+        }));
+
+        // Secondary skip ghost link
+        slide.appendChild(el('button', {
+            class: 'onboarding-skip-link onb-premium-skip',
+            type: 'button',
+            text: t('onboarding.premium.skip', 'Şimdilik geç'),
+            'data-testid': 'onb-premium-skip',
+            onclick: () => goto(5),
+        }));
+
+        return slide;
+    }
+
+    // Mock paywall bottom sheet — Phase 5 will replace with real RevenueCat flow.
+    function openMockPaywall() {
+        if (document.getElementById('onb-paywall-sheet')) return;
+
+        const p = premiumPricingStrings();
+        const backdrop = el('div', { class: 'onb-paywall-backdrop', 'aria-hidden': 'true' });
+        const sheet = el('div', {
+            id: 'onb-paywall-sheet',
+            class: 'onb-paywall-sheet',
+            role: 'dialog',
+            'aria-modal': 'true',
+            'aria-label': t('onboarding.premium.title', 'Lumi Premium'),
+        });
+
+        // Close (X)
+        const closeBtn = el('button', {
+            class: 'onb-paywall-close',
+            type: 'button',
+            'aria-label': t('common.close', 'Kapat'),
+            html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6l-12 12"/></svg>',
+        });
+
+        const title = el('h2', { class: 'onb-paywall-title', text: t('onboarding.premium.title', 'Lumi Premium') });
+        const subtitle = el('p', { class: 'onb-paywall-sub', text: t('onboarding.premium.sub', 'Film Gecesi Asistanın') });
+
+        // Tier cards (radio group)
+        const tiers = el('div', { class: 'onb-paywall-tiers', role: 'radiogroup' });
+        const selected = { value: 'yearly' };
+
+        const tierDefs = [
+            {
+                value: 'monthly',
+                title: t('onboarding.premium.tier.monthly', 'Aylık'),
+                price: p.monthlyAmount,
+                period: isTRLocale() ? '/ay' : '/mo',
+                badge: null,
+                note: p.trial,
+            },
+            {
+                value: 'yearly',
+                title: t('onboarding.premium.tier.yearly', 'Yıllık'),
+                price: p.yearlyAmount,
+                period: isTRLocale() ? '/yıl' : '/yr',
+                badge: t('onboarding.premium.bestValue', 'BEST VALUE'),
+                note: t('onboarding.premium.savings', '{amount} saved vs monthly').replace('{amount}', p.savings),
+            },
+            {
+                value: 'lifetime',
+                title: t('onboarding.premium.tier.lifetime', 'Ömürlük'),
+                price: p.lifetimeAmount,
+                period: '',
+                badge: t('onboarding.premium.limited', 'LIMITED'),
+                badgeClass: 'limited',
+                note: null,
+            },
+        ];
+
+        const tierCards = [];
+        tierDefs.forEach((t_) => {
+            const card = el('label', {
+                class: `onb-paywall-tier${selected.value === t_.value ? ' selected' : ''}${t_.badgeClass ? ' ' + t_.badgeClass : ''}`,
+                'data-tier': t_.value,
+            });
+            const input = el('input', {
+                type: 'radio',
+                name: 'onb-paywall-tier',
+                value: t_.value,
+            });
+            if (selected.value === t_.value) input.setAttribute('checked', '');
+            input.addEventListener('change', () => {
+                selected.value = t_.value;
+                tierCards.forEach((c) => c.classList.toggle('selected', c.getAttribute('data-tier') === t_.value));
+            });
+            card.appendChild(input);
+
+            const head = el('div', { class: 'onb-paywall-tier-head' }, [
+                el('span', { class: 'onb-paywall-tier-title', text: t_.title }),
+                t_.badge ? el('span', { class: `onb-paywall-tier-badge${t_.badgeClass ? ' ' + t_.badgeClass : ''}`, text: t_.badge }) : null,
+            ]);
+            card.appendChild(head);
+
+            const price = el('div', { class: 'onb-paywall-tier-price' }, [
+                el('span', { class: 'onb-paywall-tier-amount', text: t_.price }),
+                t_.period ? el('span', { class: 'onb-paywall-tier-period', text: t_.period }) : null,
+            ]);
+            card.appendChild(price);
+
+            if (t_.note) card.appendChild(el('div', { class: 'onb-paywall-tier-note', text: t_.note }));
+
+            tiers.appendChild(card);
+            tierCards.push(card);
+        });
+
+        // Bottom CTA — Phase 5 will wire real purchase. For now: notify-me toast.
+        const notifyCta = el('button', {
+            class: 'onb-cta onb-cta-premium onb-paywall-cta',
+            type: 'button',
+            text: t('onboarding.premium.notifyCta', 'Premium çıkınca haber ver'),
+            'data-testid': 'onb-paywall-notify',
+        });
+
+        // Restore Purchases — Phase 5 wires.
+        const restore = el('button', {
+            class: 'onb-paywall-restore',
+            type: 'button',
+            text: t('onboarding.premium.restore', 'Satın alımları geri yükle'),
+        });
+
+        function closeSheet() {
+            sheet.classList.remove('open');
+            backdrop.classList.remove('open');
+            setTimeout(() => {
+                if (sheet.parentNode) sheet.parentNode.removeChild(sheet);
+                if (backdrop.parentNode) backdrop.parentNode.removeChild(backdrop);
+            }, 240);
+        }
+        closeBtn.addEventListener('click', closeSheet);
+        backdrop.addEventListener('click', closeSheet);
+        notifyCta.addEventListener('click', () => {
+            const toastMsg = t('onboarding.premium.notifyAdded', 'Eklendi');
+            try {
+                if (typeof window !== 'undefined' && typeof window.showToast === 'function') {
+                    window.showToast(toastMsg);
+                }
+            } catch {}
+            // Visual confirmation inline as fallback (some apps don't expose showToast yet).
+            notifyCta.textContent = '✓ ' + toastMsg;
+            notifyCta.disabled = true;
+            setTimeout(closeSheet, 700);
+        });
+        restore.addEventListener('click', () => {
+            // Phase 5 will wire real RevenueCat.restorePurchases().
+            try {
+                if (typeof window !== 'undefined' && typeof window.showToast === 'function') {
+                    window.showToast(t('onboarding.premium.restoreSoon', 'Phase 5 ile aktif olacak'));
+                }
+            } catch {}
+        });
+
+        sheet.appendChild(closeBtn);
+        sheet.appendChild(title);
+        sheet.appendChild(subtitle);
+        sheet.appendChild(tiers);
+        sheet.appendChild(notifyCta);
+        sheet.appendChild(restore);
+
+        document.body.appendChild(backdrop);
+        document.body.appendChild(sheet);
+        // Force reflow then trigger slide-up animation.
+        // eslint-disable-next-line no-unused-expressions
+        sheet.offsetHeight;
+        requestAnimationFrame(() => {
+            backdrop.classList.add('open');
+            sheet.classList.add('open');
+        });
     }
 
     function buildReady() {
@@ -748,7 +1003,8 @@ function renderWizard(options = {}) {
             case 1: node = buildLang(); break;
             case 2: node = buildCountry(); break;
             case 3: node = buildPlatforms(); break;
-            case 4: node = buildReady(); break;
+            case 4: node = buildPremium(); break;
+            case 5: node = buildReady(); break;
             default: node = buildWelcome();
         }
         stage.appendChild(node);
