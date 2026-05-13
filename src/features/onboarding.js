@@ -446,9 +446,187 @@ function el(tag, props = {}, children = []) {
 
 const BACK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>';
 
+// ---------------------------------------------------------------------------
+// 04-04-r2 — Cinema Grade visual helpers
+// ---------------------------------------------------------------------------
+
+function prefersReducedMotion() {
+    try {
+        if (typeof window === 'undefined' || !window.matchMedia) return false;
+        return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    } catch { return false; }
+}
+
+const AUDIO_PREF_KEY = 'lumi_onboarding_audio';
+let _audioCtx = null;
+function getAudioCtx() {
+    if (typeof window === 'undefined') return null;
+    if (_audioCtx) return _audioCtx;
+    const Ctor = window.AudioContext || window.webkitAudioContext;
+    if (!Ctor) return null;
+    try { _audioCtx = new Ctor(); } catch { return null; }
+    return _audioCtx;
+}
+
+function shouldPlayAudio() {
+    if (prefersReducedMotion()) return false;
+    try {
+        return localStorage.getItem(AUDIO_PREF_KEY) === 'on';
+    } catch { return false; }
+}
+
+/** 35ms sine "tick" at 880 Hz with rapid envelope. Default OFF. */
+function playTick() {
+    if (!shouldPlayAudio()) return;
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+    try {
+        const t = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = 880;
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(0.12, t + 0.005);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.035);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.05);
+    } catch { /* ignore */ }
+}
+
+/** Split text into per-letter spans for the type-on hero animation. */
+function applyLetterTypeOn(el_) {
+    if (!el_ || prefersReducedMotion()) return;
+    const text = el_.textContent;
+    el_.textContent = '';
+    let i = 0;
+    for (const ch of text) {
+        const span = document.createElement('span');
+        span.className = 'onb-typeon-letter' + (ch === ' ' ? ' space' : '');
+        if (ch === ' ') span.innerHTML = '&nbsp;';
+        else span.textContent = ch;
+        span.style.setProperty('--i', String(i++));
+        el_.appendChild(span);
+    }
+}
+
+// Approximate lat/long → percent coords on a simplified equirectangular world map.
+// (x: 0..100 left→right, y: 0..100 top→bottom)
+const COUNTRY_MAP_COORDS = {
+    TR: { x: 56, y: 36 }, US: { x: 22, y: 38 }, GB: { x: 47, y: 28 },
+    DE: { x: 51, y: 30 }, FR: { x: 49, y: 33 }, ES: { x: 46, y: 36 },
+    IT: { x: 51, y: 35 }, NL: { x: 50, y: 28 }, BE: { x: 50, y: 30 },
+    SE: { x: 53, y: 22 }, NO: { x: 51, y: 21 }, DK: { x: 52, y: 26 },
+    FI: { x: 56, y: 21 }, PL: { x: 54, y: 30 }, RU: { x: 65, y: 26 },
+    JP: { x: 86, y: 39 }, KR: { x: 84, y: 39 }, CN: { x: 78, y: 40 },
+    TW: { x: 84, y: 45 }, HK: { x: 81, y: 46 }, AU: { x: 84, y: 73 },
+    NZ: { x: 93, y: 79 }, CA: { x: 22, y: 27 }, MX: { x: 19, y: 50 },
+    BR: { x: 33, y: 65 }, AR: { x: 30, y: 78 }, CL: { x: 28, y: 76 },
+    AE: { x: 63, y: 47 }, SA: { x: 60, y: 44 }, IN: { x: 70, y: 47 },
+    ZA: { x: 55, y: 76 },
+};
+
+// Tiny inline world map (highly simplified continents). ~3KB.
+const WORLD_MAP_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="onb-map-g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3a3148"/>
+      <stop offset="1" stop-color="#1a1626"/>
+    </linearGradient>
+  </defs>
+  <rect width="100" height="50" fill="rgba(0,0,0,0)"/>
+  <g fill="url(#onb-map-g)" stroke="rgba(255,255,255,0.06)" stroke-width="0.15">
+    <!-- N America -->
+    <path d="M8,16 L22,12 L30,18 L26,28 L18,30 L14,26 L10,22 Z"/>
+    <!-- C/S America -->
+    <path d="M22,30 L28,32 L32,42 L30,48 L26,46 L24,38 Z"/>
+    <!-- Europe -->
+    <path d="M44,16 L56,15 L58,22 L54,24 L48,22 L44,20 Z"/>
+    <!-- Africa -->
+    <path d="M46,26 L58,26 L60,38 L54,46 L48,40 Z"/>
+    <!-- Asia -->
+    <path d="M58,14 L84,14 L88,24 L82,30 L72,28 L62,24 Z"/>
+    <!-- India -->
+    <path d="M68,26 L74,26 L72,32 L70,32 Z"/>
+    <!-- SE Asia/Indonesia -->
+    <path d="M78,32 L86,32 L86,40 L80,38 Z"/>
+    <!-- Australia -->
+    <path d="M80,38 L92,38 L92,46 L82,46 Z"/>
+  </g>
+</svg>`.trim();
+
+// Register the pin-drop helper on window so the country slide can invoke it.
+function ensurePinHelper() {
+    if (typeof window === 'undefined' || window.__onbDropMapPin) return;
+    window.__onbDropMapPin = (cc, mapHost) => {
+        if (!mapHost || prefersReducedMotion()) return;
+        const coords = COUNTRY_MAP_COORDS[cc];
+        if (!coords) return;
+        // Lazy-mount the map SVG once.
+        if (!mapHost.querySelector('svg')) {
+            mapHost.insertAdjacentHTML('afterbegin', WORLD_MAP_SVG);
+        }
+        // Remove old pin if any
+        mapHost.querySelectorAll('.onb-map-pin').forEach((n) => n.remove());
+        const pin = document.createElement('div');
+        pin.className = 'onb-map-pin drop';
+        pin.style.left = coords.x + '%';
+        pin.style.top  = coords.y + '%';
+        pin.innerHTML = '<svg viewBox="0 0 18 22" xmlns="http://www.w3.org/2000/svg">'
+          + '<path d="M9 1c4 0 7 3 7 7c0 5-7 13-7 13S2 13 2 8c0-4 3-7 7-7z" fill="url(#pg)" stroke="#fff" stroke-width="0.8"/>'
+          + '<circle cx="9" cy="8" r="2.4" fill="#fff"/>'
+          + '<defs><linearGradient id="pg" x1="0" y1="0" x2="0" y2="1">'
+          + '<stop offset="0" stop-color="#f4a261"/><stop offset="1" stop-color="#ff5d8f"/>'
+          + '</linearGradient></defs></svg>';
+        mapHost.appendChild(pin);
+
+        // Flash the country card
+        const card = mapHost.parentElement?.querySelector('.onb-card');
+        if (card) {
+            card.classList.add('flash');
+            setTimeout(() => card.classList.remove('flash'), 600);
+        }
+    };
+}
+
+function ensureConfettiHelper() {
+    if (typeof window === 'undefined' || window.__onbConfettiBurst) return;
+    window.__onbConfettiBurst = (anchor) => {
+        if (prefersReducedMotion()) return;
+        const rect = anchor && anchor.getBoundingClientRect
+            ? anchor.getBoundingClientRect()
+            : { left: window.innerWidth / 2, top: window.innerHeight / 2, width: 0, height: 0 };
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const colors = ['#f4a261', '#e76f51', '#ff5d8f', '#ffb36b', '#c77dff'];
+        const N = 36;
+        for (let i = 0; i < N; i++) {
+            const piece = document.createElement('div');
+            piece.className = 'onb-confetti-piece';
+            piece.style.left = cx + 'px';
+            piece.style.top  = cy + 'px';
+            piece.style.background = colors[i % colors.length];
+            const angle = (Math.PI * 2 * i) / N + Math.random() * 0.4;
+            const dist = 120 + Math.random() * 180;
+            const dx = Math.cos(angle) * dist;
+            const dy = Math.sin(angle) * dist - 80; // gravity offset upward burst
+            piece.style.setProperty('--dx', dx + 'px');
+            piece.style.setProperty('--dy', dy + 'px');
+            piece.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+            document.body.appendChild(piece);
+            setTimeout(() => { try { piece.remove(); } catch {} }, 1600);
+        }
+    };
+}
+
 function renderWizard(options = {}) {
     if (typeof document === 'undefined') return;
     if (document.getElementById('onboarding-root')) return; // idempotent
+
+    ensurePinHelper();
+    ensureConfettiHelper();
 
     const locale = getLocale();
 
@@ -499,13 +677,35 @@ function renderWizard(options = {}) {
         'aria-atomic': 'true',
     });
 
-    // Poster wall (24 tiles)
+    // Poster wall (24 tiles) — kept as fallback; r2 parallax layers below override it.
     const wall = el('div', { class: 'onb-wall', 'aria-hidden': 'true' });
     const wallTiles = [];
     for (let i = 0; i < 24; i++) {
         const tile = el('div', { class: 'onb-wall-tile' }, [el('img', { alt: '', loading: 'lazy', decoding: 'async' })]);
         wallTiles.push(tile);
         wall.appendChild(tile);
+    }
+
+    // 04-04-r2 — 3-layer parallax poster wall.
+    // Back (6x8 small w92, 18px blur), Mid (4x6 w185, 8px blur), Front (3x4 w342).
+    const reduced = prefersReducedMotion();
+    const wallBack  = el('div', { class: 'onb-wall-layer back',  'aria-hidden': 'true' });
+    const wallMid   = el('div', { class: 'onb-wall-layer mid',   'aria-hidden': 'true' });
+    const wallFront = el('div', { class: 'onb-wall-layer front', 'aria-hidden': 'true' });
+    const wallBackImgs  = [];
+    const wallMidImgs   = [];
+    const wallFrontImgs = [];
+    for (let i = 0; i < 48; i++) {
+        const im = el('img', { alt: '', loading: 'lazy', decoding: 'async' });
+        wallBackImgs.push(im); wallBack.appendChild(im);
+    }
+    for (let i = 0; i < 24; i++) {
+        const im = el('img', { alt: '', loading: 'lazy', decoding: 'async' });
+        wallMidImgs.push(im); wallMid.appendChild(im);
+    }
+    for (let i = 0; i < 12; i++) {
+        const im = el('img', { alt: '', loading: 'lazy', decoding: 'async' });
+        wallFrontImgs.push(im); wallFront.appendChild(im);
     }
 
     const scrim = el('div', { class: 'onb-scrim', 'aria-hidden': 'true' });
@@ -515,6 +715,29 @@ function renderWizard(options = {}) {
 
     // Overlay (back + pills + stage)
     const backBtn = el('button', { class: 'onb-back', type: 'button', 'aria-label': 'Back', html: BACK_SVG });
+
+    // 04-04-r2 — Audio toggle (subtle, default OFF) — stored in localStorage.
+    const SPEAKER_ON_SVG  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>';
+    const SPEAKER_OFF_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
+    let audioOn = false;
+    try { audioOn = localStorage.getItem(AUDIO_PREF_KEY) === 'on'; } catch {}
+    const audioBtn = el('button', {
+        class: 'onb-audio-toggle' + (audioOn ? ' on' : ''),
+        type: 'button',
+        'aria-label': audioOn ? 'Sound on' : 'Sound off',
+        'aria-pressed': audioOn ? 'true' : 'false',
+        html: audioOn ? SPEAKER_ON_SVG : SPEAKER_OFF_SVG,
+    });
+    audioBtn.addEventListener('click', () => {
+        audioOn = !audioOn;
+        try { localStorage.setItem(AUDIO_PREF_KEY, audioOn ? 'on' : 'off'); } catch {}
+        audioBtn.classList.toggle('on', audioOn);
+        audioBtn.setAttribute('aria-pressed', audioOn ? 'true' : 'false');
+        audioBtn.setAttribute('aria-label', audioOn ? 'Sound on' : 'Sound off');
+        audioBtn.innerHTML = audioOn ? SPEAKER_ON_SVG : SPEAKER_OFF_SVG;
+        haptic.tap();
+        if (audioOn) { playTick(); }
+    });
 
     const pills = el('div', { class: 'onb-pills', role: 'progressbar', 'aria-valuemin': '1', 'aria-valuemax': '6' });
     const pillEls = [];
@@ -529,17 +752,38 @@ function renderWizard(options = {}) {
         pillEls.push(p);
     }
 
-    const topbar = el('div', { class: 'onb-topbar' }, [backBtn, pills]);
+    const topbar = el('div', { class: 'onb-topbar' }, [backBtn, pills, audioBtn]);
     const stage = el('div', { class: 'onb-stage', 'data-onb-stage': '' });
 
     const overlay = el('div', { class: 'onb-overlay' }, [topbar, stage, announcer]);
 
-    root.appendChild(wall);
+    root.classList.add('has-parallax');
+    root.appendChild(wall); // legacy fallback (CSS hides when .has-parallax)
+    root.appendChild(wallBack);
+    root.appendChild(wallMid);
+    root.appendChild(wallFront);
     root.appendChild(scrim);
     root.appendChild(glowOrange);
     root.appendChild(glowPink);
     root.appendChild(overlay);
     document.body.appendChild(root);
+
+    // Pointer-driven parallax (desktop QA / devices with hover).
+    if (!reduced && typeof window !== 'undefined' && window.matchMedia) {
+        const hasHover = (() => { try { return window.matchMedia('(hover: hover)').matches; } catch { return false; } })();
+        if (hasHover) {
+            let lastShift = 0;
+            window.addEventListener('mousemove', (e) => {
+                if (Date.now() - lastShift < 16) return;
+                lastShift = Date.now();
+                const xRatio = (e.clientX / window.innerWidth) - 0.5;
+                const yRatio = (e.clientY / window.innerHeight) - 0.5;
+                root.style.setProperty('--onb-px-back',  (xRatio * -8)  + 'px');
+                root.style.setProperty('--onb-px-mid',   (xRatio * -16) + 'px');
+                root.style.setProperty('--onb-px-front', (xRatio * -28) + 'px');
+            });
+        }
+    }
 
     // ----- Focus trap ------------------------------------------------------
     function getFocusable() {
@@ -566,6 +810,7 @@ function renderWizard(options = {}) {
     // ----- Poster wall load ------------------------------------------------
     function paintWall(urls) {
         if (!urls.length) return;
+        // Legacy wall (kept for fallback paths)
         for (let i = 0; i < wallTiles.length; i++) {
             const url = urls[i % urls.length];
             const img = wallTiles[i].querySelector('img');
@@ -573,6 +818,21 @@ function renderWizard(options = {}) {
             img.addEventListener('load', () => wallTiles[i].classList.add('loaded'), { once: true });
             img.src = url;
         }
+        // 04-04-r2 — Paint 3 parallax layers using SAME source posters (no new fetches).
+        // Build the per-size URLs by mapping the /w342/ prefix down to /w185/ + /w92/.
+        function reSize(url, size) {
+            return url.replace(/\/w\d+\//, '/' + size + '/');
+        }
+        const paintLayer = (imgs, size) => {
+            for (let i = 0; i < imgs.length; i++) {
+                const im = imgs[i];
+                im.addEventListener('load', () => im.classList.add('loaded'), { once: true });
+                im.src = reSize(urls[i % urls.length], size);
+            }
+        };
+        paintLayer(wallBackImgs,  'w92');
+        paintLayer(wallMidImgs,   'w185');
+        paintLayer(wallFrontImgs, 'w342');
     }
     fetchPosterWall().then((urls) => {
         state.posters = urls;
@@ -627,7 +887,43 @@ function renderWizard(options = {}) {
         announceSlide();
         focusSlideHeading();
         persistProgress();
+        playTick();
         if (n === 3) loadProvidersIfNeeded();
+        if (n === 4) openPremiumVault();
+        if (n === 5) openCurtains();
+    }
+
+    // 04-04-r2 — Vault opening for premium slide. The two halves slide apart
+    // 700ms after mount, revealing the feature stack underneath.
+    function openPremiumVault() {
+        if (reduced) return;
+        requestAnimationFrame(() => {
+            const slide = stage.querySelector('.onb-slide-premium');
+            if (!slide || slide.querySelector('.onb-vault')) return;
+            const vault = el('div', { class: 'onb-vault', 'aria-hidden': 'true' }, [
+                el('div', { class: 'onb-vault-half left' }),
+                el('div', { class: 'onb-vault-half right' }),
+            ]);
+            slide.appendChild(vault);
+            requestAnimationFrame(() => vault.classList.add('open'));
+            setTimeout(() => { try { vault.remove(); } catch {} }, 1200);
+        });
+    }
+
+    // 04-04-r2 — Cinema letterbox curtains for Ready slide.
+    function openCurtains() {
+        if (reduced) return;
+        const top = el('div', { class: 'onb-curtain top', 'aria-hidden': 'true' });
+        const bot = el('div', { class: 'onb-curtain bottom', 'aria-hidden': 'true' });
+        document.body.appendChild(top);
+        document.body.appendChild(bot);
+        requestAnimationFrame(() => {
+            top.classList.add('open');
+            bot.classList.add('open');
+        });
+        setTimeout(() => {
+            try { top.remove(); bot.remove(); } catch {}
+        }, 1200);
     }
 
     backBtn.addEventListener('click', () => {
@@ -639,13 +935,16 @@ function renderWizard(options = {}) {
 
     // ----- Slide renderers -------------------------------------------------
     function buildWelcome() {
-        const slide = el('div', { class: 'onb-slide', 'data-dir': state.direction });
-        slide.appendChild(el('h1', {
+        const slide = el('div', { class: 'onb-slide onb-slide-welcome', 'data-dir': state.direction });
+        const hero = el('h1', {
             class: 'onb-hero-title onb-hero-typeon',
             id: 'onb-slide-heading',
             'data-onb-heading': '',
             text: t('onboarding.welcome.title', "Lumi'ye hoş geldin."),
-        }));
+        });
+        slide.appendChild(hero);
+        // 04-04-r2 — Letter-by-letter type-on (reduced-motion: skipped).
+        requestAnimationFrame(() => applyLetterTypeOn(hero));
         slide.appendChild(el('p', { class: 'onb-hero-sub', text: t('onboarding.welcome.sub', "İzleyecek bir şey bulamadığında, biz buradayız.") }));
         slide.appendChild(el('div', { style: 'flex:1' })); // spacer
         slide.appendChild(el('button', {
@@ -970,14 +1269,27 @@ function renderWizard(options = {}) {
             { emoji: '🔔', titleKey: 'onboarding.premium.feature.notif.title',  titleDefault: 'Smart Notifications', descKey: 'onboarding.premium.feature.notif.desc', descDefault: 'Sevdiğin dizilere yeni bölüm geldiğinde haber' },
             { emoji: '🌙', titleKey: 'onboarding.premium.feature.evening.title', titleDefault: 'Evening Assistant', descKey: 'onboarding.premium.feature.evening.desc', descDefault: "Akşam 8'de bugünlük öneri" },
         ];
-        featureDefs.forEach((f) => {
+        featureDefs.forEach((f, idx) => {
+            const icon = el('span', { class: 'onb-premium-feature-icon', text: f.emoji, 'aria-hidden': 'true' });
+            // Varied pulse phase per row so the emojis don't all beat in sync.
+            icon.style.setProperty('--pulse-delay', (idx * 0.4) + 's');
             const row = el('div', { class: 'onb-premium-feature' }, [
-                el('span', { class: 'onb-premium-feature-icon', text: f.emoji, 'aria-hidden': 'true' }),
+                icon,
                 el('div', { class: 'onb-premium-feature-body' }, [
                     el('div', { class: 'onb-premium-feature-title', text: t(f.titleKey, f.titleDefault) }),
                     el('div', { class: 'onb-premium-feature-desc', text: t(f.descKey, f.descDefault) }),
                 ]),
             ]);
+            // 3D tilt-on-touch (pointer-aware).
+            if (!reduced) {
+                row.addEventListener('pointermove', (e) => {
+                    const r = row.getBoundingClientRect();
+                    const dx = ((e.clientX - r.left) / r.width) - 0.5;
+                    const dy = ((e.clientY - r.top) / r.height) - 0.5;
+                    row.style.transform = `perspective(600px) rotateX(${(-dy * 6).toFixed(2)}deg) rotateY(${(dx * 8).toFixed(2)}deg)`;
+                });
+                row.addEventListener('pointerleave', () => { row.style.transform = ''; });
+            }
             features.appendChild(row);
         });
         slide.appendChild(features);
