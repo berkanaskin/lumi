@@ -22,6 +22,7 @@
  */
 
 import { getLocale, setLocale, SUPPORTED_LANGS } from '../lib/locale.js';
+import { haptic } from '../lib/haptics.js';
 
 // 31 top-watching countries — shortlist for v1. Defer TMDB /configuration/countries.
 export const COUNTRY_SHORTLIST = [
@@ -57,6 +58,44 @@ const SCHEMA_VERSION = 1;
 // so the wizard re-appears on every launch. Toggle lives in profile settings.
 export const ALWAYS_SHOW_FLAG = 'lumi_always_show_onboarding';
 
+// 04-04-r2 — Mid-flow state persistence. If the user closes the app between
+// slides, we restore where they left off (within 7 days).
+export const PROGRESS_KEY = 'lumi_onboarding_progress';
+const PROGRESS_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+export function readOnboardingProgress() {
+    try {
+        const raw = localStorage.getItem(PROGRESS_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== 'object') return null;
+        if (typeof parsed.step !== 'number' || parsed.step <= 0) return null;
+        const savedAt = parsed.savedAt ? Date.parse(parsed.savedAt) : NaN;
+        if (!isFinite(savedAt)) return null;
+        if (Date.now() - savedAt > PROGRESS_TTL_MS) return null;
+        return parsed;
+    } catch {
+        return null;
+    }
+}
+
+export function writeOnboardingProgress(progress) {
+    try {
+        const payload = {
+            step: Number(progress?.step) || 0,
+            picks: progress?.picks || {},
+            savedAt: new Date().toISOString(),
+        };
+        localStorage.setItem(PROGRESS_KEY, JSON.stringify(payload));
+    } catch {
+        /* quota / disabled / etc. */
+    }
+}
+
+export function clearOnboardingProgress() {
+    try { localStorage.removeItem(PROGRESS_KEY); } catch {}
+}
+
 function readData() {
     try { return JSON.parse(localStorage.getItem(DATA_KEY) || '{}'); }
     catch { return {}; }
@@ -86,6 +125,7 @@ export async function shouldShowOnboarding({ user, db } = {}) {
         try {
             localStorage.removeItem(SEEN_FLAG);
             localStorage.removeItem(COMPLETED_FLAG);
+            localStorage.removeItem(PROGRESS_KEY);
         } catch {}
         return true;
     }
@@ -186,6 +226,7 @@ export function skipOnboarding(options = {}) {
     try {
         localStorage.setItem(SEEN_FLAG, 'true');
         localStorage.setItem(COMPLETED_FLAG, 'true');
+        localStorage.removeItem(PROGRESS_KEY);
     } catch {}
     if (options.user?.uid && options.db) {
         try {
@@ -411,15 +452,19 @@ function renderWizard(options = {}) {
 
     const locale = getLocale();
 
+    // 04-04-r2 — Hydrate from in-flight progress (≤7 days old).
+    const restored = readOnboardingProgress();
+
     // Visual slide indices: 0 welcome, 1 lang, 2 country, 3 platforms, 4 premium, 5 ready
     // Storage steps remain 1..3 (lang/country/platforms); premium is visual-only
     // (mock paywall — Phase 5 wires the real RevenueCat purchase flow).
     const state = {
-        slide: 0,
+        slide: restored?.step || 0,
         direction: 'fwd',
-        lang: locale.lang,
-        country: locale.country || 'TR',
-        ownedPlatforms: [],
+        lang: restored?.picks?.lang || locale.lang,
+        country: restored?.picks?.country || locale.country || 'TR',
+        ownedPlatforms: Array.isArray(restored?.picks?.platforms) ? restored.picks.platforms.slice() : [],
+        premiumChoice: restored?.picks?.premiumChoice || null,
         providers: [],
         providersLoading: false,
         providersFailed: false,
@@ -427,10 +472,32 @@ function renderWizard(options = {}) {
         posters: [],
     };
 
+    function persistProgress() {
+        writeOnboardingProgress({
+            step: state.slide,
+            picks: {
+                lang: state.lang,
+                country: state.country,
+                platforms: state.ownedPlatforms.slice(),
+                premiumChoice: state.premiumChoice,
+            },
+        });
+    }
+
     // ----- DOM scaffold ----------------------------------------------------
     const root = document.createElement('div');
     root.id = 'onboarding-root';
     root.className = 'onboarding-root';
+    root.setAttribute('role', 'dialog');
+    root.setAttribute('aria-modal', 'true');
+    root.setAttribute('aria-labelledby', 'onb-slide-heading');
+
+    // ARIA live region — announces step changes ("Step 3 of 6: country").
+    const announcer = el('div', {
+        class: 'onb-sr-only',
+        'aria-live': 'polite',
+        'aria-atomic': 'true',
+    });
 
     // Poster wall (24 tiles)
     const wall = el('div', { class: 'onb-wall', 'aria-hidden': 'true' });
@@ -451,8 +518,13 @@ function renderWizard(options = {}) {
 
     const pills = el('div', { class: 'onb-pills', role: 'progressbar', 'aria-valuemin': '1', 'aria-valuemax': '6' });
     const pillEls = [];
+    const SLIDE_NAMES = ['welcome', 'language', 'country', 'platforms', 'premium', 'ready'];
     for (let i = 0; i < 6; i++) {
-        const p = el('div', { class: 'onb-pill' });
+        const p = el('div', {
+            class: 'onb-pill',
+            role: 'presentation',
+            'aria-label': `Step ${i + 1} of 6`,
+        });
         pills.appendChild(p);
         pillEls.push(p);
     }
@@ -460,7 +532,7 @@ function renderWizard(options = {}) {
     const topbar = el('div', { class: 'onb-topbar' }, [backBtn, pills]);
     const stage = el('div', { class: 'onb-stage', 'data-onb-stage': '' });
 
-    const overlay = el('div', { class: 'onb-overlay' }, [topbar, stage]);
+    const overlay = el('div', { class: 'onb-overlay' }, [topbar, stage, announcer]);
 
     root.appendChild(wall);
     root.appendChild(scrim);
@@ -468,6 +540,28 @@ function renderWizard(options = {}) {
     root.appendChild(glowPink);
     root.appendChild(overlay);
     document.body.appendChild(root);
+
+    // ----- Focus trap ------------------------------------------------------
+    function getFocusable() {
+        return Array.from(root.querySelectorAll(
+            'button:not([disabled]):not([tabindex="-1"]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        )).filter((n) => n.offsetParent !== null || n === document.activeElement);
+    }
+    function onKeydown(e) {
+        if (e.key !== 'Tab') return;
+        const focusable = getFocusable();
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+        }
+    }
+    root.addEventListener('keydown', onKeydown);
 
     // ----- Poster wall load ------------------------------------------------
     function paintWall(urls) {
@@ -489,7 +583,10 @@ function renderWizard(options = {}) {
     function updatePills() {
         pillEls.forEach((p, i) => {
             p.classList.toggle('done', i < state.slide);
-            p.classList.toggle('active', i === state.slide);
+            const isActive = i === state.slide;
+            p.classList.toggle('active', isActive);
+            if (isActive) p.setAttribute('aria-current', 'step');
+            else p.removeAttribute('aria-current');
         });
     }
     function updateBackBtn() {
@@ -501,7 +598,22 @@ function renderWizard(options = {}) {
         glowOrange.style.display = showGlow ? '' : 'none';
         glowPink.style.display = showGlow ? '' : 'none';
     }
+    function announceSlide() {
+        const name = SLIDE_NAMES[state.slide] || `slide ${state.slide + 1}`;
+        announcer.textContent = `Step ${state.slide + 1} of 6: ${name}`;
+    }
+    function focusSlideHeading() {
+        // Defer to next frame so the slide is mounted.
+        requestAnimationFrame(() => {
+            const heading = stage.querySelector('[data-onb-heading]') || stage.querySelector('h1, h2');
+            if (heading) {
+                heading.setAttribute('tabindex', '-1');
+                try { heading.focus({ preventScroll: true }); } catch { try { heading.focus(); } catch {} }
+            }
+        });
+    }
     function close() {
+        try { root.removeEventListener('keydown', onKeydown); } catch {}
         if (root.parentNode) root.parentNode.removeChild(root);
     }
 
@@ -512,31 +624,47 @@ function renderWizard(options = {}) {
         updateBackBtn();
         updateAtmosphere();
         renderCurrentSlide();
+        announceSlide();
+        focusSlideHeading();
+        persistProgress();
         if (n === 3) loadProvidersIfNeeded();
     }
 
     backBtn.addEventListener('click', () => {
-        if (state.slide > 0) goto(state.slide - 1);
+        if (state.slide > 0) {
+            haptic.tap();
+            goto(state.slide - 1);
+        }
     });
 
     // ----- Slide renderers -------------------------------------------------
     function buildWelcome() {
         const slide = el('div', { class: 'onb-slide', 'data-dir': state.direction });
-        slide.appendChild(el('h1', { class: 'onb-hero-title', text: t('onboarding.welcome.title', "Lumi'ye hoş geldin.") }));
+        slide.appendChild(el('h1', {
+            class: 'onb-hero-title onb-hero-typeon',
+            id: 'onb-slide-heading',
+            'data-onb-heading': '',
+            text: t('onboarding.welcome.title', "Lumi'ye hoş geldin."),
+        }));
         slide.appendChild(el('p', { class: 'onb-hero-sub', text: t('onboarding.welcome.sub', "İzleyecek bir şey bulamadığında, biz buradayız.") }));
         slide.appendChild(el('div', { style: 'flex:1' })); // spacer
         slide.appendChild(el('button', {
             class: 'onb-cta',
             type: 'button',
             text: t('onboarding.welcome.cta', 'Başlayalım'),
-            onclick: () => goto(1),
+            onclick: () => { haptic.tap(); goto(1); },
         }));
         return slide;
     }
 
     function buildLang() {
         const slide = el('div', { class: 'onb-slide', 'data-dir': state.direction });
-        slide.appendChild(el('h2', { class: 'onb-card-title', text: t('onboarding.lang.title', 'Hangi dilde konuşalım?') }));
+        slide.appendChild(el('h2', {
+            class: 'onb-card-title',
+            id: 'onb-slide-heading',
+            'data-onb-heading': '',
+            text: t('onboarding.lang.title', 'Hangi dilde konuşalım?'),
+        }));
         slide.appendChild(el('p', { class: 'onb-card-sub', text: t('onboarding.lang.sub', 'Daha fazla dil yakında.') }));
 
         const list = el('div', { class: 'onb-list' });
@@ -552,12 +680,15 @@ function renderWizard(options = {}) {
                 el('span', { class: 'onb-opt-check', 'aria-hidden': 'true' }),
             ]);
             if (ready) {
+                opt.setAttribute('aria-label', `${t('onboarding.lang.title', 'Language')}: ${LANG_DISPLAY[lng] || lng}`);
                 opt.addEventListener('click', () => {
+                    haptic.select();
                     state.lang = lng;
                     list.querySelectorAll('.onb-option').forEach((n) => n.classList.remove('selected'));
                     opt.classList.add('selected');
                     cta.disabled = false;
                     cta.classList.remove('disabled');
+                    persistProgress();
                 });
             }
             list.appendChild(opt);
@@ -573,6 +704,7 @@ function renderWizard(options = {}) {
             disabled: !state.lang,
             onclick: () => {
                 if (!state.lang) return;
+                haptic.tap();
                 completeStep(1, { lang: state.lang }, options);
                 goto(2);
             },
@@ -582,9 +714,17 @@ function renderWizard(options = {}) {
     }
 
     function buildCountry() {
-        const slide = el('div', { class: 'onb-slide', 'data-dir': state.direction });
-        slide.appendChild(el('h2', { class: 'onb-card-title', text: t('onboarding.country.title', 'Nereden izliyorsun?') }));
+        const slide = el('div', { class: 'onb-slide onb-slide-country', 'data-dir': state.direction });
+        slide.appendChild(el('h2', {
+            class: 'onb-card-title',
+            id: 'onb-slide-heading',
+            'data-onb-heading': '',
+            text: t('onboarding.country.title', 'Nereden izliyorsun?'),
+        }));
         slide.appendChild(el('p', { class: 'onb-card-sub', text: t('onboarding.country.sub', 'Yayın platformlarını ülkene göre getiriyoruz.') }));
+
+        // Optional world map (commit 2 inserts SVG via #onb-world-map placeholder)
+        const mapHost = el('div', { class: 'onb-world-map', 'aria-hidden': 'true', id: 'onb-world-map' });
 
         const search = el('input', {
             class: 'onb-search',
@@ -592,44 +732,83 @@ function renderWizard(options = {}) {
             placeholder: t('onboarding.country.search', 'Ülke ara'),
             value: state.countryQuery,
             autocomplete: 'off',
+            'aria-label': t('onboarding.country.search', 'Ülke ara'),
         });
 
-        const list = el('div', { class: 'onb-list' });
+        const list = el('div', { class: 'onb-list', role: 'listbox' });
+        const emptyState = el('div', { class: 'onb-search-empty', 'aria-live': 'polite' });
+
+        // Accent-insensitive normalization for Turkish + Latin diacritics.
+        function fold(s) {
+            return (s || '')
+                .toLowerCase()
+                .replace(/ı/g, 'i')
+                .replace(/İ/g, 'i')
+                .normalize('NFD')
+                .replace(/[̀-ͯ]/g, '');
+        }
 
         function renderCountryList() {
             list.innerHTML = '';
-            const q = state.countryQuery.trim().toLowerCase();
+            const q = fold(state.countryQuery.trim());
             const filtered = COUNTRY_SHORTLIST.filter((cc) => {
                 if (!q) return true;
-                const name = (COUNTRY_NAMES[cc] || cc).toLowerCase();
-                return cc.toLowerCase().includes(q) || name.includes(q);
+                const name = fold(COUNTRY_NAMES[cc] || cc);
+                const code = fold(cc);
+                return code.includes(q) || name.includes(q);
             });
+            if (!filtered.length) {
+                emptyState.textContent = t('onboarding.country.empty', 'Sonuç yok');
+                emptyState.style.display = '';
+            } else {
+                emptyState.style.display = 'none';
+            }
             filtered.forEach((cc) => {
                 const opt = el('button', {
                     class: `onb-option${state.country === cc ? ' selected' : ''}`,
                     type: 'button',
+                    role: 'option',
+                    'aria-selected': state.country === cc ? 'true' : 'false',
+                    'aria-label': `${COUNTRY_NAMES[cc] || cc} (${cc})`,
+                    'data-cc': cc,
                 }, [
                     el('span', { class: 'onb-opt-flag', text: flag(cc) }),
                     el('span', { class: 'onb-opt-label', text: COUNTRY_NAMES[cc] || cc }),
                     el('span', { class: 'onb-opt-check', 'aria-hidden': 'true' }),
                 ]);
                 opt.addEventListener('click', () => {
+                    haptic.select();
                     state.country = cc;
-                    list.querySelectorAll('.onb-option').forEach((n) => n.classList.remove('selected'));
+                    list.querySelectorAll('.onb-option').forEach((n) => {
+                        n.classList.remove('selected');
+                        n.setAttribute('aria-selected', 'false');
+                    });
                     opt.classList.add('selected');
+                    opt.setAttribute('aria-selected', 'true');
                     cta.disabled = false;
                     cta.classList.remove('disabled');
+                    persistProgress();
+                    // 04-04-r2 — Cinema: drop a pin onto the world map for the picked country.
+                    try { window.__onbDropMapPin?.(cc, mapHost); } catch {}
                 });
                 list.appendChild(opt);
             });
         }
+        // Debounced filter (80ms)
+        let filterTimer = null;
         search.addEventListener('input', () => {
             state.countryQuery = search.value;
-            renderCountryList();
+            if (filterTimer) clearTimeout(filterTimer);
+            filterTimer = setTimeout(renderCountryList, 80);
         });
+        // Backdrop fade — when the search input is active, dim the poster wall.
+        search.addEventListener('focus', () => root.classList.add('onb-search-focused'));
+        search.addEventListener('blur', () => root.classList.remove('onb-search-focused'));
+
         renderCountryList();
 
-        slide.appendChild(el('div', { class: 'onb-card' }, [search, list]));
+        slide.appendChild(mapHost);
+        slide.appendChild(el('div', { class: 'onb-card' }, [search, list, emptyState]));
 
         const cta = el('button', {
             class: `onb-cta${state.country ? '' : ' disabled'}`,
@@ -638,6 +817,7 @@ function renderWizard(options = {}) {
             disabled: !state.country,
             onclick: () => {
                 if (!state.country) return;
+                haptic.tap();
                 completeStep(2, { country: state.country }, options);
                 goto(3);
             },
@@ -648,7 +828,12 @@ function renderWizard(options = {}) {
 
     function buildPlatforms() {
         const slide = el('div', { class: 'onb-slide', 'data-dir': state.direction });
-        slide.appendChild(el('h2', { class: 'onb-card-title', text: t('onboarding.platforms.title', 'Hangi platformların var?') }));
+        slide.appendChild(el('h2', {
+            class: 'onb-card-title',
+            id: 'onb-slide-heading',
+            'data-onb-heading': '',
+            text: t('onboarding.platforms.title', 'Hangi platformların var?'),
+        }));
         slide.appendChild(el('p', {
             class: 'onb-card-sub',
             text: state.ownedPlatforms.length
@@ -681,12 +866,17 @@ function renderWizard(options = {}) {
                 const tile = el('button', {
                     class: `onb-tile${selected ? ' selected' : ''}`,
                     type: 'button',
+                    'aria-pressed': selected ? 'true' : 'false',
+                    'aria-label': p.name,
                 }, children);
                 tile.addEventListener('click', () => {
+                    haptic.select();
                     const idx = state.ownedPlatforms.indexOf(p.id);
                     if (idx >= 0) state.ownedPlatforms.splice(idx, 1);
                     else state.ownedPlatforms.push(p.id);
                     tile.classList.toggle('selected');
+                    tile.setAttribute('aria-pressed', tile.classList.contains('selected') ? 'true' : 'false');
+                    persistProgress();
                 });
                 body.appendChild(tile);
             });
@@ -699,6 +889,7 @@ function renderWizard(options = {}) {
             type: 'button',
             text: t('onboarding.platforms.skipForNow', 'Daha sonra eklerim'),
             onclick: () => {
+                haptic.tap();
                 state.ownedPlatforms = [];
                 completeStep(3, { ownedPlatforms: [] }, options);
                 goto(4); // → Premium slide
@@ -711,6 +902,7 @@ function renderWizard(options = {}) {
             type: 'button',
             text: t('onboarding.next', 'Devam'),
             onclick: () => {
+                haptic.tap();
                 completeStep(3, { ownedPlatforms: state.ownedPlatforms.slice() }, options);
                 goto(4); // → Premium slide
             },
@@ -762,7 +954,12 @@ function renderWizard(options = {}) {
     function buildPremium() {
         const slide = el('div', { class: 'onb-slide onb-slide-premium', 'data-dir': state.direction });
 
-        slide.appendChild(el('h1', { class: 'onb-hero-title onb-premium-title', text: t('onboarding.premium.title', 'Lumi Premium') }));
+        slide.appendChild(el('h1', {
+            class: 'onb-hero-title onb-premium-title',
+            id: 'onb-slide-heading',
+            'data-onb-heading': '',
+            text: t('onboarding.premium.title', 'Lumi Premium'),
+        }));
         slide.appendChild(el('p', { class: 'onb-hero-sub onb-premium-sub', text: t('onboarding.premium.sub', 'Film Gecesi Asistanın') }));
 
         // Feature rows
@@ -800,7 +997,7 @@ function renderWizard(options = {}) {
             type: 'button',
             text: t('onboarding.premium.cta', "Premium'u dene"),
             'data-testid': 'onb-premium-cta',
-            onclick: () => openMockPaywall(),
+            onclick: () => { haptic.tap(); openMockPaywall(); },
         }));
 
         // Secondary skip ghost link
@@ -809,7 +1006,7 @@ function renderWizard(options = {}) {
             type: 'button',
             text: t('onboarding.premium.skip', 'Şimdilik geç'),
             'data-testid': 'onb-premium-skip',
-            onclick: () => goto(5),
+            onclick: () => { haptic.tap(); goto(5); },
         }));
 
         return slide;
@@ -885,8 +1082,11 @@ function renderWizard(options = {}) {
             });
             if (selected.value === t_.value) input.setAttribute('checked', '');
             input.addEventListener('change', () => {
+                haptic.select();
                 selected.value = t_.value;
+                state.premiumChoice = t_.value;
                 tierCards.forEach((c) => c.classList.toggle('selected', c.getAttribute('data-tier') === t_.value));
+                persistProgress();
             });
             card.appendChild(input);
 
@@ -973,8 +1173,13 @@ function renderWizard(options = {}) {
     }
 
     function buildReady() {
-        const slide = el('div', { class: 'onb-slide', 'data-dir': state.direction });
-        slide.appendChild(el('h1', { class: 'onb-hero-title', text: t('onboarding.ready.title', 'Hazırız.') }));
+        const slide = el('div', { class: 'onb-slide onb-slide-ready', 'data-dir': state.direction });
+        slide.appendChild(el('h1', {
+            class: 'onb-hero-title',
+            id: 'onb-slide-heading',
+            'data-onb-heading': '',
+            text: t('onboarding.ready.title', 'Hazırız.'),
+        }));
         slide.appendChild(el('p', { class: 'onb-hero-sub', text: t('onboarding.ready.sub', 'Sana özel seçimler hazır.') }));
 
         const chips = el('div', { class: 'onb-recap' });
@@ -990,7 +1195,13 @@ function renderWizard(options = {}) {
             class: 'onb-cta onb-cta-pulse',
             type: 'button',
             text: t('onboarding.ready.cta', "Lumi'yi keşfet"),
-            onclick: () => close(),
+            onclick: (e) => {
+                haptic.success();
+                // 04-04-r2 — Confetti burst before close (visual handler injected below).
+                try { window.__onbConfettiBurst?.(e.currentTarget); } catch {}
+                clearOnboardingProgress();
+                setTimeout(close, 700);
+            },
         }));
         return slide;
     }
@@ -1035,4 +1246,7 @@ function renderWizard(options = {}) {
     updateBackBtn();
     updateAtmosphere();
     renderCurrentSlide();
+    announceSlide();
+    focusSlideHeading();
+    persistProgress();
 }
