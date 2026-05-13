@@ -4,7 +4,12 @@ milestone: v1.0
 milestone_name: milestone
 status: Phase 4 COMPLETE — all 5 plans merged (04-04 awaits manual QA checkpoint only)
 stopped_at: Phase 04 (Global Foundation) code-complete on worktree — 04-01 (i18n EN-first), 04-02 (locale layer), 04-03 (optional auth + Firestore migration), 04-04 (onboarding wizard), 04-05 (TR broadcast) all shipped. 04-04 has a blocking `checkpoint:human-verify` (5 manual mobile scenarios A-E) — code + unit tests are green (19/19 onboarding tests; 228/258 full suite, 8 fails = pre-existing 03.2 debt). Worktree cleanup pending. Next: run `/gsd-verify-work 04` after manual QA approval, then plan Phase 5 (Premium Agent — RevenueCat + 4 proactive features).
-last_updated: "2026-05-12T19:55:00.000Z"
+last_updated: "2026-05-13T00:00:00.000Z"
+
+# R1 redesign round (2026-05-13): 04-04 onboarding wizard upgraded from utilitarian
+# 3-step form to cinematic 5-slide (Poster Wall + Ken Burns + frosted glass + gradient CTA).
+# State machine + persistence unchanged. 19/19 onboarding tests still green. Plan count
+# unchanged (24/25). See .planning/phases/04-global-foundation/04-04-SUMMARY.md (R1 section).
 progress:
   total_phases: 8
   completed_phases: 5

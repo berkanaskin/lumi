@@ -202,3 +202,53 @@ All 5 plans complete (code-wise):
 - `public/i18n.js` contains `'onboarding.step1.title'` in TR + EN blocks: VERIFIED
 - Commits `aebd59a`, `a573323`, `65f003e`: FOUND
 - 19/19 onboarding tests green; 228/258 full suite (8 fails = pre-existing 03.2 debt): VERIFIED
+
+---
+
+## R1: Cinematic Redesign (2026-05-13)
+
+**Trigger:** Manual QA called the v1 wizard "Paint design". User approved a SceneMatch-inspired direction (Poster Wall + Ken Burns).
+
+**Scope:** Visual + UX redesign only. State machine, persistence, Firestore mirroring, cross-device hydration, public API — **all unchanged**. 19 existing tests stay green.
+
+**What shipped:**
+
+- **5 slides** (was 3): `Welcome → Language → Country → Platforms → Ready`. Storage step numbers (1/2/3) preserved; welcome + ready are pure visual layers.
+- **Poster Wall + Ken Burns**: 24-tile grid fetched from `/api/tmdb?endpoint=/trending/all/week` (TMDB w342), 24s scale 1.0 → 1.07 zoom with drift. Falls back to dark gradient tiles on fetch error.
+- **Dark-only theme**: forced via `color-scheme: dark` and hard-coded palette, ignores in-app theme.
+- **Frosted glass cards**: `backdrop-filter: blur(20px) saturate(180%)`, `rgba(20,20,30,0.55)` bg, 24px radius, soft inner highlight.
+- **Top progress pills** (frosted, gradient-filled) replace bottom dots.
+- **Back button** (circular glass, top-left, auto-disabled on welcome). **Skip button removed** per brief.
+- **Gradient CTA**: `linear-gradient(90deg, #f4a261 → #e76f51 → #ff5d8f)`, 28px radius, shimmer sweep every 2.6s, spring hover scale, pulse-glow on Ready CTA.
+- **Direction-aware slide transitions**: `translateX(±240px) scale(0.84) → translateX(∓8px) scale(1.02) → 0 scale(1)` with `cubic-bezier(0.34, 1.56, 0.64, 1)` spring + staggered child rise (80ms × index).
+- **Atmospheric glow orbs** (orange #f4a261 + pink #ff5d8f, 360px, blur(80px), 32% opacity, drift over 14-18s) shown only on Welcome + Ready.
+- **Country card**: searchable list (filter by code or English name), 31 codes from `COUNTRY_SHORTLIST`, flag emoji + name + animated check.
+- **Language card**: TR + EN selectable; DE/FR/ES/JA/KO/ZH marked "coming soon" (disabled, faint).
+- **Platforms card**: 3-col tile grid (2-col under 360px wide), gradient border + checkmark badge on select, lazy-loaded TMDB logos.
+- **Ready slide**: recap chips (lang · country · N platforms), atmospheric glow, pulsing gradient CTA "Lumi'yi keşfet" / "Discover Lumi".
+- **Reduced-motion**: full `prefers-reduced-motion` guard — disables Ken Burns, glow drift, shimmer, slide entry, CTA pulse.
+
+**Performance discipline:**
+- Animations use only `transform` + `opacity` (no `width`/`height`/`top`/`left`/`filter` on hot paths).
+- `will-change: transform` on the poster wall + glow layers.
+- `contain: strict` on the root container.
+- Poster images: `loading="lazy"` + `decoding="async"`, opacity fade-in on load.
+
+**Files touched (3, all modified — no new files):**
+- `src/styles/onboarding.css` — full rewrite (~535 lines)
+- `src/features/onboarding.js` — render path rewritten (state machine + persistence untouched, ~480 lines)
+- `public/i18n.js` — added 16 new keys (8 TR + 8 EN) under `onboarding.welcome.*`, `onboarding.lang.*`, `onboarding.country.*`, `onboarding.platforms.*`, `onboarding.ready.*`, `onboarding.next`
+
+**Reused vs new:**
+- **Reused:** `fetchProviders` (TMDB watch/providers), TMDB proxy contract (`/api/tmdb?endpoint=...`), `SUPPORTED_LANGS`, `COUNTRY_SHORTLIST`, `getLocale`/`setLocale`, `i18n.t`, `flag()` emoji helper, `completeStep`/`skipOnboarding`/`shouldShowOnboarding`/`startOnboarding` (public API frozen).
+- **New:** `fetchPosterWall()` (private, fetches /trending/all/week), `LANG_DISPLAY` + `COUNTRY_NAMES` maps, `LAUNCH_LANGS` allow-list, `el()` DOM builder helper, 5 slide builders (welcome/lang/country/platforms/ready).
+
+**Deviations from brief:**
+- Brief said reuse "home-screen carousel asset list already in the codebase" OR `/trending`. Chose **`/trending/all/week`** because the home-screen carousel lives inside `main.js` boot state and isn't exposed as a reusable export — pulling it cleanly would require a refactor outside R1 scope. The `/trending` proxy was already used elsewhere and adds zero new infra.
+- Brief said 4×6 grid (24 tiles). Implemented as 4-col grid with auto-rows — at typical 16:9-ish viewports this yields 24 visible tiles (some clipped). Verified at 360/390/430 widths.
+
+**Verification:**
+- `npx vitest run tests/onboarding.test.js tests/onboarding-cross-device.test.js` → 19/19 ✅
+- Visual eyeball pass at 360px / 390px / 430px (Chrome DevTools mobile preset).
+
+**Commits:** `a99753f` (main implementation), `<this commit>` (R1 docs + state update).
