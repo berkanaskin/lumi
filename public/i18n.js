@@ -206,7 +206,25 @@ const i18n = {
             'onboarding.step3.title': 'Hangi platformları kullanıyorsun?',
             'onboarding.step3.done': 'Bitir',
             'onboarding.step3.skip': 'Sonra eklerim',
-            'onboarding.providers.loadError': 'Şu an yükleyemedik. Sonra eklersin.'
+            'onboarding.providers.loadError': 'Şu an yükleyemedik. Sonra eklersin.',
+
+            // Phase 04-04 R1: Cinematic redesign — 5-slide wizard copy
+            'onboarding.next': 'Devam',
+            'onboarding.welcome.title': "Lumi'ye hoş geldin.",
+            'onboarding.welcome.sub': 'İzleyecek bir şey bulamadığında, biz buradayız.',
+            'onboarding.welcome.cta': 'Başlayalım',
+            'onboarding.lang.title': 'Hangi dilde konuşalım?',
+            'onboarding.lang.sub': 'Daha fazla dil yakında.',
+            'onboarding.country.title': 'Nereden izliyorsun?',
+            'onboarding.country.sub': 'Yayın platformlarını ülkene göre getiriyoruz.',
+            'onboarding.country.search': 'Ülke ara',
+            'onboarding.platforms.title': 'Hangi platformların var?',
+            'onboarding.platforms.sub': 'Birden fazla seçebilirsin.',
+            'onboarding.platforms.subSelected': '{n} seçildi',
+            'onboarding.ready.title': 'Hazırız.',
+            'onboarding.ready.sub': 'Sana özel seçimler hazır.',
+            'onboarding.ready.platforms': '{n} platform',
+            'onboarding.ready.cta': "Lumi'yi keşfet"
         },
 
         en: {
@@ -409,7 +427,25 @@ const i18n = {
             'onboarding.step3.title': 'Which platforms do you use?',
             'onboarding.step3.done': 'Done',
             'onboarding.step3.skip': 'Add later',
-            'onboarding.providers.loadError': "Couldn't load providers. Add later."
+            'onboarding.providers.loadError': "Couldn't load providers. Add later.",
+
+            // Phase 04-04 R1: Cinematic redesign — 5-slide wizard copy
+            'onboarding.next': 'Continue',
+            'onboarding.welcome.title': 'Welcome to Lumi.',
+            'onboarding.welcome.sub': "When you don't know what to watch, we're here.",
+            'onboarding.welcome.cta': "Let's go",
+            'onboarding.lang.title': 'Which language?',
+            'onboarding.lang.sub': 'More languages coming soon.',
+            'onboarding.country.title': 'Where are you watching from?',
+            'onboarding.country.sub': "We'll surface streaming services for your region.",
+            'onboarding.country.search': 'Search country',
+            'onboarding.platforms.title': 'Which platforms do you have?',
+            'onboarding.platforms.sub': 'Pick as many as you like.',
+            'onboarding.platforms.subSelected': '{n} selected',
+            'onboarding.ready.title': 'All set.',
+            'onboarding.ready.sub': 'Your picks are ready.',
+            'onboarding.ready.platforms': '{n} platforms',
+            'onboarding.ready.cta': 'Discover Lumi'
         },
 
         de: {

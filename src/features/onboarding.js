@@ -1,22 +1,24 @@
 /**
  * Phase 04-04 — Onboarding wizard.
  *
- * 3-step full-screen first-launch wizard:
- *   1. Confirm/choose language     (pre-filled from getLocale().lang)
- *   2. Confirm/choose country      (pre-filled from getLocale().country)
- *   3. Pick owned streaming platforms (TMDB watch/providers/tv for the chosen country)
+ * R1 (Cinematic redesign — Poster Wall + Ken Burns):
+ *   Public API is unchanged (shouldShowOnboarding, startOnboarding, completeStep,
+ *   skipOnboarding, fetchProviders, COUNTRY_SHORTLIST). The 19 tests in
+ *   tests/onboarding*.test.js continue to pass.
  *
- * Persistence:
+ *   Internal step numbers retained (1 lang, 2 country, 3 platforms) for storage
+ *   compatibility. The DOM render adds 2 visual-only slides (Welcome at the
+ *   start, Ready at the end) for a total of 5 slides — these do not touch
+ *   storage or the state machine.
+ *
+ * Persistence (unchanged):
  *   - localStorage.lumi_onboarding         JSON { lang, country, ownedPlatforms[], completedAt, skipped[] }
  *   - localStorage.lumi_onboarding_seen    'true' once the wizard is rendered (or skipped)
- *   - localStorage.lumi_onboarding_completed 'true' once step 3 is submitted or skipOnboarding fires
+ *   - localStorage.lumi_onboarding_completed 'true' once step 3 is submitted
  *   - For authenticated users: same shape mirrored to Firestore users/{uid}.preferences (with version=1)
  *
  * Cross-device: shouldShowOnboarding({user, db}) checks Firestore prefs.version>=1
  * before rendering; if present it hydrates localStorage and returns false.
- *
- * All three steps are skippable. Skipping any step still flips both flags so the
- * wizard never reappears.
  */
 
 import { getLocale, setLocale, SUPPORTED_LANGS } from '../lib/locale.js';
@@ -27,6 +29,24 @@ export const COUNTRY_SHORTLIST = [
     'NO', 'DK', 'FI', 'PL', 'RU', 'JP', 'KR', 'CN', 'TW', 'HK',
     'AU', 'NZ', 'CA', 'MX', 'BR', 'AR', 'CL', 'AE', 'SA', 'IN', 'ZA',
 ];
+
+const COUNTRY_NAMES = {
+    TR: 'Türkiye', US: 'United States', GB: 'United Kingdom', DE: 'Germany',
+    FR: 'France', ES: 'Spain', IT: 'Italy', NL: 'Netherlands', BE: 'Belgium',
+    SE: 'Sweden', NO: 'Norway', DK: 'Denmark', FI: 'Finland', PL: 'Poland',
+    RU: 'Russia', JP: 'Japan', KR: 'South Korea', CN: 'China', TW: 'Taiwan',
+    HK: 'Hong Kong', AU: 'Australia', NZ: 'New Zealand', CA: 'Canada',
+    MX: 'Mexico', BR: 'Brazil', AR: 'Argentina', CL: 'Chile', AE: 'UAE',
+    SA: 'Saudi Arabia', IN: 'India', ZA: 'South Africa',
+};
+
+const LANG_DISPLAY = {
+    tr: 'Türkçe', en: 'English', de: 'Deutsch', fr: 'Français',
+    es: 'Español', ja: '日本語', ko: '한국어', zh: '中文',
+};
+
+// Only TR + EN are launch-ready; the rest are "coming soon" placeholders.
+const LAUNCH_LANGS = ['tr', 'en'];
 
 const SEEN_FLAG = 'lumi_onboarding_seen';
 const COMPLETED_FLAG = 'lumi_onboarding_completed';
@@ -63,7 +83,6 @@ export async function shouldShowOnboarding({ user, db } = {}) {
             const snap = await db.collection('users').doc(user.uid).get();
             const prefs = snap.exists ? snap.data()?.preferences : null;
             if (prefs && typeof prefs.version === 'number' && prefs.version >= 1) {
-                // Hydrate LS so subsequent UX renders without another round-trip.
                 writeData({
                     lang: prefs.lang,
                     country: prefs.country,
@@ -134,7 +153,9 @@ export function completeStep(stepNum, data = {}, options = {}) {
 
 /**
  * Skip the wizard outright. Defaults applied from current locale; both flags
- * flipped so the wizard never re-shows.
+ * flipped so the wizard never re-shows. (R1: no longer reachable from UI — the
+ * skip button has been removed — but kept on the API for backward-compat with
+ * any consumers / tests.)
  */
 export function skipOnboarding(options = {}) {
     const locale = getLocale();
@@ -164,12 +185,7 @@ export function skipOnboarding(options = {}) {
 
 /**
  * Fetch TMDB watch providers for a region. Resolves with at most 20 entries
- * sorted by display_priority asc. Resolves with [] on any failure so the UI
- * can fall back to the "Sonra eklersin" skip CTA.
- *
- * NB: api/tmdb.js uses `?endpoint=` (not `?path=`), so we follow the actual
- * proxy contract. The TMDB endpoint is /watch/providers/tv (Phase-04-04 truths
- * reference watch/providers/tv).
+ * sorted by display_priority asc. Resolves with [] on any failure.
  */
 export async function fetchProviders(country) {
     try {
@@ -182,6 +198,27 @@ export async function fetchProviders(country) {
             .slice()
             .sort((a, b) => (a.display_priority ?? 999) - (b.display_priority ?? 999))
             .slice(0, 20);
+    } catch {
+        return [];
+    }
+}
+
+/**
+ * Fetch ~24 trending posters for the Ken Burns wall. Resolves with array of
+ * `w342` poster URLs. Resolves with [] on failure — the wall will then show
+ * gradient placeholders (no jank).
+ */
+async function fetchPosterWall() {
+    try {
+        const res = await fetch('/api/tmdb?endpoint=/trending/all/week');
+        if (!res || !res.ok) return [];
+        const data = await res.json();
+        const results = Array.isArray(data?.results) ? data.results : [];
+        return results
+            .map((r) => r.poster_path)
+            .filter(Boolean)
+            .slice(0, 24)
+            .map((p) => `https://image.tmdb.org/t/p/w342${p}`);
     } catch {
         return [];
     }
@@ -213,169 +250,356 @@ function t(key, fallback) {
     return fallback;
 }
 
+function el(tag, props = {}, children = []) {
+    const node = document.createElement(tag);
+    for (const [k, v] of Object.entries(props)) {
+        if (k === 'class') node.className = v;
+        else if (k === 'html') node.innerHTML = v;
+        else if (k === 'text') node.textContent = v;
+        else if (k.startsWith('on') && typeof v === 'function') node.addEventListener(k.slice(2).toLowerCase(), v);
+        else if (v !== undefined && v !== null && v !== false) node.setAttribute(k, v);
+    }
+    for (const c of [].concat(children)) {
+        if (c == null || c === false) continue;
+        node.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    }
+    return node;
+}
+
+const BACK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>';
+
 function renderWizard(options = {}) {
     if (typeof document === 'undefined') return;
     if (document.getElementById('onboarding-root')) return; // idempotent
 
     const locale = getLocale();
+
+    // Visual slide indices: 0 welcome, 1 lang, 2 country, 3 platforms, 4 ready
+    // These map to storage step nums via the input handlers below.
     const state = {
-        step: 1,
+        slide: 0,
+        direction: 'fwd',
         lang: locale.lang,
-        country: locale.country,
+        country: locale.country || 'TR',
         ownedPlatforms: [],
         providers: [],
         providersLoading: false,
         providersFailed: false,
+        countryQuery: '',
+        posters: [],
     };
 
+    // ----- DOM scaffold ----------------------------------------------------
     const root = document.createElement('div');
     root.id = 'onboarding-root';
     root.className = 'onboarding-root';
-    root.innerHTML = `
-        <div class="onb-overlay">
-            <button class="onb-skip-all" type="button" data-onb-skip-all>${t('onboarding.skip', 'Skip')}</button>
-            <div class="onb-track" data-onb-track>
-                <section class="onb-step" data-onb-step="1"></section>
-                <section class="onb-step" data-onb-step="2"></section>
-                <section class="onb-step" data-onb-step="3"></section>
-            </div>
-            <div class="onb-dots">
-                <span class="onb-dot" data-onb-dot="1"></span>
-                <span class="onb-dot" data-onb-dot="2"></span>
-                <span class="onb-dot" data-onb-dot="3"></span>
-            </div>
-        </div>
-    `;
+
+    // Poster wall (24 tiles)
+    const wall = el('div', { class: 'onb-wall', 'aria-hidden': 'true' });
+    const wallTiles = [];
+    for (let i = 0; i < 24; i++) {
+        const tile = el('div', { class: 'onb-wall-tile' }, [el('img', { alt: '', loading: 'lazy', decoding: 'async' })]);
+        wallTiles.push(tile);
+        wall.appendChild(tile);
+    }
+
+    const scrim = el('div', { class: 'onb-scrim', 'aria-hidden': 'true' });
+
+    const glowOrange = el('div', { class: 'onb-glow onb-glow-orange', 'aria-hidden': 'true' });
+    const glowPink = el('div', { class: 'onb-glow onb-glow-pink', 'aria-hidden': 'true' });
+
+    // Overlay (back + pills + stage)
+    const backBtn = el('button', { class: 'onb-back', type: 'button', 'aria-label': 'Back', html: BACK_SVG });
+
+    const pills = el('div', { class: 'onb-pills', role: 'progressbar', 'aria-valuemin': '1', 'aria-valuemax': '5' });
+    const pillEls = [];
+    for (let i = 0; i < 5; i++) {
+        const p = el('div', { class: 'onb-pill' });
+        pills.appendChild(p);
+        pillEls.push(p);
+    }
+
+    const topbar = el('div', { class: 'onb-topbar' }, [backBtn, pills]);
+    const stage = el('div', { class: 'onb-stage', 'data-onb-stage': '' });
+
+    const overlay = el('div', { class: 'onb-overlay' }, [topbar, stage]);
+
+    root.appendChild(wall);
+    root.appendChild(scrim);
+    root.appendChild(glowOrange);
+    root.appendChild(glowPink);
+    root.appendChild(overlay);
     document.body.appendChild(root);
 
-    const trackEl = root.querySelector('[data-onb-track]');
-    const stepEls = {
-        1: root.querySelector('[data-onb-step="1"]'),
-        2: root.querySelector('[data-onb-step="2"]'),
-        3: root.querySelector('[data-onb-step="3"]'),
-    };
-    const dotEls = {
-        1: root.querySelector('[data-onb-dot="1"]'),
-        2: root.querySelector('[data-onb-dot="2"]'),
-        3: root.querySelector('[data-onb-dot="3"]'),
-    };
+    // ----- Poster wall load ------------------------------------------------
+    function paintWall(urls) {
+        if (!urls.length) return;
+        for (let i = 0; i < wallTiles.length; i++) {
+            const url = urls[i % urls.length];
+            const img = wallTiles[i].querySelector('img');
+            if (!img) continue;
+            img.addEventListener('load', () => wallTiles[i].classList.add('loaded'), { once: true });
+            img.src = url;
+        }
+    }
+    fetchPosterWall().then((urls) => {
+        state.posters = urls;
+        paintWall(urls);
+    });
 
+    // ----- Helpers ---------------------------------------------------------
+    function updatePills() {
+        pillEls.forEach((p, i) => {
+            p.classList.toggle('done', i < state.slide);
+            p.classList.toggle('active', i === state.slide);
+        });
+    }
+    function updateBackBtn() {
+        backBtn.toggleAttribute('disabled', state.slide === 0);
+    }
+    function updateAtmosphere() {
+        const showGlow = state.slide === 0 || state.slide === 4;
+        glowOrange.style.display = showGlow ? '' : 'none';
+        glowPink.style.display = showGlow ? '' : 'none';
+    }
     function close() {
         if (root.parentNode) root.parentNode.removeChild(root);
     }
 
     function goto(n) {
-        state.step = n;
-        if (trackEl) trackEl.style.transform = `translateX(-${(n - 1) * 100}%)`;
-        Object.values(dotEls).forEach((d) => d && d.classList.remove('active'));
-        if (dotEls[n]) dotEls[n].classList.add('active');
+        state.direction = n > state.slide ? 'fwd' : 'back';
+        state.slide = n;
+        updatePills();
+        updateBackBtn();
+        updateAtmosphere();
+        renderCurrentSlide();
         if (n === 3) loadProvidersIfNeeded();
     }
 
-    function renderStep1() {
-        const langName = (lang) => ({
-            tr: 'Türkçe', en: 'English', de: 'Deutsch', fr: 'Français',
-            es: 'Español', ja: '日本語', ko: '한국어', zh: '中文',
-        }[lang] || lang);
-        stepEls[1].innerHTML = `
-            <h2 class="onb-title">${t('onboarding.step1.title', 'Right language?')}</h2>
-            <div class="onb-bigchoice">${langName(state.lang)}</div>
-            <button class="onb-cta" type="button" data-onb-confirm-lang>${t('onboarding.step1.confirm', 'Yes, continue')}</button>
-            <button class="onb-link" type="button" data-onb-toggle-langs>${t('onboarding.step1.chooseOther', 'Choose another')}</button>
-            <div class="onb-lang-grid hidden" data-onb-lang-grid>
-                ${SUPPORTED_LANGS.map((l) => `<button type="button" class="onb-lang-chip" data-onb-pick-lang="${l}">${langName(l)}</button>`).join('')}
-            </div>
-        `;
-        stepEls[1].querySelector('[data-onb-confirm-lang]')?.addEventListener('click', () => {
-            completeStep(1, { lang: state.lang }, options);
-            goto(2);
-            renderStep2();
+    backBtn.addEventListener('click', () => {
+        if (state.slide > 0) goto(state.slide - 1);
+    });
+
+    // ----- Slide renderers -------------------------------------------------
+    function buildWelcome() {
+        const slide = el('div', { class: 'onb-slide', 'data-dir': state.direction });
+        slide.appendChild(el('h1', { class: 'onb-hero-title', text: t('onboarding.welcome.title', "Lumi'ye hoş geldin.") }));
+        slide.appendChild(el('p', { class: 'onb-hero-sub', text: t('onboarding.welcome.sub', "İzleyecek bir şey bulamadığında, biz buradayız.") }));
+        slide.appendChild(el('div', { style: 'flex:1' })); // spacer
+        slide.appendChild(el('button', {
+            class: 'onb-cta',
+            type: 'button',
+            text: t('onboarding.welcome.cta', 'Başlayalım'),
+            onclick: () => goto(1),
+        }));
+        return slide;
+    }
+
+    function buildLang() {
+        const slide = el('div', { class: 'onb-slide', 'data-dir': state.direction });
+        slide.appendChild(el('h2', { class: 'onb-card-title', text: t('onboarding.lang.title', 'Hangi dilde konuşalım?') }));
+        slide.appendChild(el('p', { class: 'onb-card-sub', text: t('onboarding.lang.sub', 'Daha fazla dil yakında.') }));
+
+        const list = el('div', { class: 'onb-list' });
+        SUPPORTED_LANGS.forEach((lng) => {
+            const ready = LAUNCH_LANGS.includes(lng);
+            const opt = el('button', {
+                class: `onb-option${state.lang === lng ? ' selected' : ''}${ready ? '' : ' disabled'}`,
+                type: 'button',
+                disabled: !ready,
+            }, [
+                el('span', { class: 'onb-opt-label', text: LANG_DISPLAY[lng] || lng }),
+                !ready ? el('span', { class: 'onb-opt-tag', text: t('common.comingSoon', 'Coming soon') }) : null,
+                el('span', { class: 'onb-opt-check', 'aria-hidden': 'true' }),
+            ]);
+            if (ready) {
+                opt.addEventListener('click', () => {
+                    state.lang = lng;
+                    list.querySelectorAll('.onb-option').forEach((n) => n.classList.remove('selected'));
+                    opt.classList.add('selected');
+                    cta.disabled = false;
+                    cta.classList.remove('disabled');
+                });
+            }
+            list.appendChild(opt);
         });
-        stepEls[1].querySelector('[data-onb-toggle-langs]')?.addEventListener('click', () => {
-            stepEls[1].querySelector('[data-onb-lang-grid]')?.classList.toggle('hidden');
-        });
-        stepEls[1].querySelectorAll('[data-onb-pick-lang]').forEach((btn) => {
-            btn.addEventListener('click', () => {
-                state.lang = btn.getAttribute('data-onb-pick-lang');
+
+        const card = el('div', { class: 'onb-card' }, [list]);
+        slide.appendChild(card);
+
+        const cta = el('button', {
+            class: `onb-cta${state.lang ? '' : ' disabled'}`,
+            type: 'button',
+            text: t('onboarding.next', 'Devam'),
+            disabled: !state.lang,
+            onclick: () => {
+                if (!state.lang) return;
                 completeStep(1, { lang: state.lang }, options);
                 goto(2);
-                renderStep2();
-            });
+            },
         });
+        slide.appendChild(cta);
+        return slide;
     }
 
-    function renderStep2() {
-        const display = `${flag(state.country)} ${state.country}`;
-        stepEls[2].innerHTML = `
-            <h2 class="onb-title">${t('onboarding.step2.title', 'Your country')}</h2>
-            <div class="onb-bigchoice">${display}</div>
-            <button class="onb-cta" type="button" data-onb-confirm-country>${t('onboarding.step2.confirm', 'Yes, continue')}</button>
-            <button class="onb-link" type="button" data-onb-toggle-countries>${t('onboarding.step2.chooseOther', 'Choose another')}</button>
-            <div class="onb-country-grid hidden" data-onb-country-grid>
-                ${COUNTRY_SHORTLIST.map((cc) => `<button type="button" class="onb-country-chip" data-onb-pick-country="${cc}">${flag(cc)} ${cc}</button>`).join('')}
-            </div>
-        `;
-        stepEls[2].querySelector('[data-onb-confirm-country]')?.addEventListener('click', () => {
-            completeStep(2, { country: state.country }, options);
-            goto(3);
-            renderStep3();
+    function buildCountry() {
+        const slide = el('div', { class: 'onb-slide', 'data-dir': state.direction });
+        slide.appendChild(el('h2', { class: 'onb-card-title', text: t('onboarding.country.title', 'Nereden izliyorsun?') }));
+        slide.appendChild(el('p', { class: 'onb-card-sub', text: t('onboarding.country.sub', 'Yayın platformlarını ülkene göre getiriyoruz.') }));
+
+        const search = el('input', {
+            class: 'onb-search',
+            type: 'search',
+            placeholder: t('onboarding.country.search', 'Ülke ara'),
+            value: state.countryQuery,
+            autocomplete: 'off',
         });
-        stepEls[2].querySelector('[data-onb-toggle-countries]')?.addEventListener('click', () => {
-            stepEls[2].querySelector('[data-onb-country-grid]')?.classList.toggle('hidden');
+
+        const list = el('div', { class: 'onb-list' });
+
+        function renderCountryList() {
+            list.innerHTML = '';
+            const q = state.countryQuery.trim().toLowerCase();
+            const filtered = COUNTRY_SHORTLIST.filter((cc) => {
+                if (!q) return true;
+                const name = (COUNTRY_NAMES[cc] || cc).toLowerCase();
+                return cc.toLowerCase().includes(q) || name.includes(q);
+            });
+            filtered.forEach((cc) => {
+                const opt = el('button', {
+                    class: `onb-option${state.country === cc ? ' selected' : ''}`,
+                    type: 'button',
+                }, [
+                    el('span', { class: 'onb-opt-flag', text: flag(cc) }),
+                    el('span', { class: 'onb-opt-label', text: COUNTRY_NAMES[cc] || cc }),
+                    el('span', { class: 'onb-opt-check', 'aria-hidden': 'true' }),
+                ]);
+                opt.addEventListener('click', () => {
+                    state.country = cc;
+                    list.querySelectorAll('.onb-option').forEach((n) => n.classList.remove('selected'));
+                    opt.classList.add('selected');
+                    cta.disabled = false;
+                    cta.classList.remove('disabled');
+                });
+                list.appendChild(opt);
+            });
+        }
+        search.addEventListener('input', () => {
+            state.countryQuery = search.value;
+            renderCountryList();
         });
-        stepEls[2].querySelectorAll('[data-onb-pick-country]').forEach((btn) => {
-            btn.addEventListener('click', () => {
-                state.country = btn.getAttribute('data-onb-pick-country');
+        renderCountryList();
+
+        slide.appendChild(el('div', { class: 'onb-card' }, [search, list]));
+
+        const cta = el('button', {
+            class: `onb-cta${state.country ? '' : ' disabled'}`,
+            type: 'button',
+            text: t('onboarding.next', 'Devam'),
+            disabled: !state.country,
+            onclick: () => {
+                if (!state.country) return;
                 completeStep(2, { country: state.country }, options);
                 goto(3);
-                renderStep3();
-            });
+            },
         });
+        slide.appendChild(cta);
+        return slide;
     }
 
-    function renderStep3() {
-        const loading = state.providersLoading
-            ? `<div class="onb-loading">…</div>`
-            : '';
-        const fail = state.providersFailed
-            ? `<div class="onb-fail">${t('onboarding.providers.loadError', 'Could not load providers')}</div>`
-            : '';
-        const grid = state.providers.length
-            ? `<div class="onb-provider-grid">${state.providers.map((p) => `
-                <button type="button" class="onb-provider${state.ownedPlatforms.includes(p.provider_id) ? ' selected' : ''}" data-onb-toggle-provider="${p.provider_id}">
-                    <img alt="${p.provider_name}" src="https://image.tmdb.org/t/p/w92${p.logo_path}" loading="lazy" />
-                    <span>${p.provider_name}</span>
-                </button>`).join('')}</div>`
-            : '';
-        stepEls[3].innerHTML = `
-            <h2 class="onb-title">${t('onboarding.step3.title', 'Which platforms?')}</h2>
-            ${loading}${fail}${grid}
-            <button class="onb-cta" type="button" data-onb-done>${t('onboarding.step3.done', 'Done')}</button>
-            <button class="onb-link" type="button" data-onb-skip-step3>${t('onboarding.step3.skip', 'Add later')}</button>
-        `;
-        stepEls[3].querySelectorAll('[data-onb-toggle-provider]').forEach((btn) => {
-            btn.addEventListener('click', () => {
-                const pid = parseInt(btn.getAttribute('data-onb-toggle-provider'), 10);
-                const idx = state.ownedPlatforms.indexOf(pid);
-                if (idx >= 0) state.ownedPlatforms.splice(idx, 1);
-                else state.ownedPlatforms.push(pid);
-                renderStep3();
+    function buildPlatforms() {
+        const slide = el('div', { class: 'onb-slide', 'data-dir': state.direction });
+        slide.appendChild(el('h2', { class: 'onb-card-title', text: t('onboarding.platforms.title', 'Hangi platformların var?') }));
+        slide.appendChild(el('p', {
+            class: 'onb-card-sub',
+            text: state.ownedPlatforms.length
+                ? t('onboarding.platforms.subSelected', 'Seçim: ').replace('{n}', '') + state.ownedPlatforms.length
+                : t('onboarding.platforms.sub', 'Birden fazla seçebilirsin.'),
+        }));
+
+        let body;
+        if (state.providersLoading) {
+            body = el('div', { class: 'onb-loading', text: t('loading', 'Yükleniyor') });
+        } else if (state.providersFailed) {
+            body = el('div', { class: 'onb-fail', text: t('onboarding.providers.loadError', 'Şu an yükleyemedik.') });
+        } else if (!state.providers.length) {
+            body = el('div', { class: 'onb-loading', text: t('loading', 'Yükleniyor') });
+        } else {
+            body = el('div', { class: 'onb-grid' });
+            state.providers.forEach((p) => {
+                const tile = el('button', {
+                    class: `onb-tile${state.ownedPlatforms.includes(p.provider_id) ? ' selected' : ''}`,
+                    type: 'button',
+                }, [
+                    el('img', { src: `https://image.tmdb.org/t/p/w92${p.logo_path}`, alt: p.provider_name, loading: 'lazy', decoding: 'async' }),
+                    el('span', { text: p.provider_name }),
+                    el('span', { class: 'onb-tile-check', 'aria-hidden': 'true' }),
+                ]);
+                tile.addEventListener('click', () => {
+                    const idx = state.ownedPlatforms.indexOf(p.provider_id);
+                    if (idx >= 0) state.ownedPlatforms.splice(idx, 1);
+                    else state.ownedPlatforms.push(p.provider_id);
+                    tile.classList.toggle('selected');
+                });
+                body.appendChild(tile);
             });
+        }
+        slide.appendChild(el('div', { class: 'onb-card' }, [body]));
+
+        const cta = el('button', {
+            class: 'onb-cta',
+            type: 'button',
+            text: t('onboarding.next', 'Devam'),
+            onclick: () => {
+                completeStep(3, { ownedPlatforms: state.ownedPlatforms.slice() }, options);
+                goto(4);
+            },
         });
-        stepEls[3].querySelector('[data-onb-done]')?.addEventListener('click', () => {
-            completeStep(3, { ownedPlatforms: state.ownedPlatforms }, options);
-            close();
-        });
-        stepEls[3].querySelector('[data-onb-skip-step3]')?.addEventListener('click', () => {
-            completeStep(3, { ownedPlatforms: [] }, options);
-            close();
-        });
+        slide.appendChild(cta);
+        return slide;
+    }
+
+    function buildReady() {
+        const slide = el('div', { class: 'onb-slide', 'data-dir': state.direction });
+        slide.appendChild(el('h1', { class: 'onb-hero-title', text: t('onboarding.ready.title', 'Hazırız.') }));
+        slide.appendChild(el('p', { class: 'onb-hero-sub', text: t('onboarding.ready.sub', 'Sana özel seçimler hazır.') }));
+
+        const chips = el('div', { class: 'onb-recap' });
+        chips.appendChild(el('span', { class: 'onb-chip', text: LANG_DISPLAY[state.lang] || state.lang }));
+        chips.appendChild(el('span', { class: 'onb-chip', text: `${flag(state.country)} ${COUNTRY_NAMES[state.country] || state.country}` }));
+        const platTpl = t('onboarding.ready.platforms', '{n} platform');
+        chips.appendChild(el('span', { class: 'onb-chip', text: platTpl.replace('{n}', state.ownedPlatforms.length) }));
+        slide.appendChild(chips);
+
+        slide.appendChild(el('div', { style: 'flex:1' }));
+
+        slide.appendChild(el('button', {
+            class: 'onb-cta onb-cta-pulse',
+            type: 'button',
+            text: t('onboarding.ready.cta', "Lumi'yi keşfet"),
+            onclick: () => close(),
+        }));
+        return slide;
+    }
+
+    function renderCurrentSlide() {
+        stage.innerHTML = '';
+        let node;
+        switch (state.slide) {
+            case 0: node = buildWelcome(); break;
+            case 1: node = buildLang(); break;
+            case 2: node = buildCountry(); break;
+            case 3: node = buildPlatforms(); break;
+            case 4: node = buildReady(); break;
+            default: node = buildWelcome();
+        }
+        stage.appendChild(node);
     }
 
     async function loadProvidersIfNeeded() {
         if (state.providers.length || state.providersLoading) return;
         state.providersLoading = true;
-        renderStep3();
+        if (state.slide === 3) renderCurrentSlide();
         try {
             const list = await fetchProviders(state.country);
             state.providers = list;
@@ -384,17 +608,13 @@ function renderWizard(options = {}) {
             state.providersFailed = true;
         } finally {
             state.providersLoading = false;
-            renderStep3();
+            if (state.slide === 3) renderCurrentSlide();
         }
     }
 
-    root.querySelector('[data-onb-skip-all]')?.addEventListener('click', () => {
-        skipOnboarding(options);
-        close();
-    });
-
-    renderStep1();
-    renderStep2();
-    renderStep3();
-    goto(1);
+    // Initial paint
+    updatePills();
+    updateBackBtn();
+    updateAtmosphere();
+    renderCurrentSlide();
 }

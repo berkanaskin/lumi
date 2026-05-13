@@ -1,187 +1,645 @@
 /**
- * Phase 04-04 — Onboarding wizard (full-screen, mobile-first).
- * Uses theme tokens from tokens.css where available; falls back to safe defaults.
+ * Phase 04-04-R1 — Cinematic onboarding (Poster Wall + Ken Burns).
+ *
+ * Design system:
+ *   - Dark-only (forced; ignores in-app theme)
+ *   - Mobile-first 360-430px; centered max-width 480px on tablet/desktop with
+ *     poster wall extending edge-to-edge.
+ *   - Animations: transform + opacity only. No layout-triggering props.
+ *   - Spring curve: cubic-bezier(0.34, 1.56, 0.64, 1) — overshoot for "snap".
+ *   - Glass: backdrop-filter: blur(20px) saturate(180%)
+ *   - Gradient: orange→pink (#f4a261 → #e76f51 → #ff5d8f)
  */
 
+:root {
+    --onb-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --onb-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --onb-bg: #07070b;
+    --onb-text: #f5f5f7;
+    --onb-text-dim: rgba(245, 245, 247, 0.7);
+    --onb-text-faint: rgba(245, 245, 247, 0.45);
+    --onb-glass-bg: rgba(20, 20, 30, 0.55);
+    --onb-glass-border: rgba(255, 255, 255, 0.08);
+    --onb-gradient: linear-gradient(90deg, #f4a261 0%, #e76f51 50%, #ff5d8f 100%);
+    --onb-gradient-mute: linear-gradient(90deg, #555 0%, #444 50%, #555 100%);
+}
+
+/* =====================================================================
+   ROOT — fixed full-viewport, dark forced.
+   ===================================================================== */
 .onboarding-root {
     position: fixed;
     inset: 0;
     z-index: 10000;
-    background: var(--bg-primary, #0b0b10);
-    color: var(--text-primary, #f5f5f7);
-    font-family: var(--font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+    background: var(--onb-bg);
+    color: var(--onb-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto, sans-serif;
+    overflow: hidden;
+    contain: strict;
+    /* Force dark regardless of app theme */
+    color-scheme: dark;
 }
 
-.onboarding-root .onb-overlay {
+.onboarding-root * {
+    box-sizing: border-box;
+}
+
+/* =====================================================================
+   POSTER WALL — 4x6 grid behind scrim, Ken Burns zoom.
+   ===================================================================== */
+.onb-wall {
+    position: absolute;
+    inset: -8% -4%;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 1fr;
+    gap: 6px;
+    transform-origin: center center;
+    animation: onb-kenburns 24s ease-in-out infinite alternate;
+    will-change: transform;
+    z-index: 0;
+}
+
+.onb-wall-tile {
+    position: relative;
+    width: 100%;
+    padding-bottom: 150%; /* poster aspect 2:3 */
+    border-radius: 6px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1a1a22 0%, #0f0f15 100%);
+}
+.onb-wall-tile > img {
     position: absolute;
     inset: 0;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 1.6s var(--onb-ease);
+}
+.onb-wall-tile.loaded > img { opacity: 1; }
+
+@keyframes onb-kenburns {
+    0%   { transform: scale(1.0) translate(0, 0); }
+    50%  { transform: scale(1.04) translate(-1%, -1%); }
+    100% { transform: scale(1.07) translate(1%, 1%); }
 }
 
-.onboarding-root .onb-skip-all {
+/* Scrim — dark vignette over the wall so foreground reads */
+.onb-scrim {
     position: absolute;
-    top: calc(env(safe-area-inset-top, 0) + 14px);
-    right: 16px;
-    background: transparent;
-    border: 0;
-    color: var(--text-secondary, #b3b3b8);
-    font-size: 14px;
-    padding: 8px 12px;
-    cursor: pointer;
-    z-index: 2;
+    inset: 0;
+    z-index: 1;
+    background:
+        radial-gradient(ellipse at center top, rgba(7, 7, 11, 0.45) 0%, rgba(7, 7, 11, 0.85) 60%, rgba(7, 7, 11, 0.98) 100%),
+        linear-gradient(180deg, rgba(7, 7, 11, 0.65) 0%, rgba(7, 7, 11, 0.55) 40%, rgba(7, 7, 11, 0.92) 100%);
+    pointer-events: none;
 }
-.onboarding-root .onb-skip-all:hover { color: var(--text-primary, #fff); }
 
-.onboarding-root .onb-track {
-    flex: 1;
-    display: flex;
-    width: 300%;
-    transition: transform 0.3s ease;
+/* Atmospheric glows — only on hero slides (welcome/ready) */
+.onb-glow {
+    position: absolute;
+    z-index: 1;
+    width: 360px;
+    height: 360px;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.32;
+    pointer-events: none;
     will-change: transform;
 }
+.onb-glow.onb-glow-orange {
+    background: radial-gradient(circle, #f4a261 0%, transparent 70%);
+    top: 8%;
+    left: -20%;
+    animation: onb-drift-a 14s ease-in-out infinite alternate;
+}
+.onb-glow.onb-glow-pink {
+    background: radial-gradient(circle, #ff5d8f 0%, transparent 70%);
+    bottom: 12%;
+    right: -25%;
+    animation: onb-drift-b 18s ease-in-out infinite alternate;
+}
+@keyframes onb-drift-a {
+    0%   { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(40px, 30px) scale(1.15); }
+}
+@keyframes onb-drift-b {
+    0%   { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(-30px, -40px) scale(1.1); }
+}
 
-.onboarding-root .onb-step {
-    flex: 0 0 33.3333%;
+/* =====================================================================
+   OVERLAY — flex column on top of wall+scrim.
+   ===================================================================== */
+.onb-overlay {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: calc(env(safe-area-inset-top, 0px) + 16px) 20px calc(env(safe-area-inset-bottom, 0px) + 20px);
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+/* =====================================================================
+   TOP BAR — back button + frosted progress pills.
+   ===================================================================== */
+.onb-topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 40px;
+    margin-bottom: 8px;
+}
+
+.onb-back {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--onb-glass-border);
+    color: var(--onb-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.18s var(--onb-spring), opacity 0.2s var(--onb-ease);
+    flex-shrink: 0;
+    padding: 0;
+}
+.onb-back:hover { transform: scale(1.06); }
+.onb-back:active { transform: scale(0.94); }
+.onb-back[disabled] {
+    opacity: 0;
+    pointer-events: none;
+}
+.onb-back svg { width: 18px; height: 18px; }
+
+.onb-pills {
+    flex: 1;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    height: 6px;
+}
+.onb-pill {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    overflow: hidden;
+    position: relative;
+}
+.onb-pill::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--onb-gradient);
+    transform: translateX(-101%);
+    transition: transform 0.6s var(--onb-ease);
+}
+.onb-pill.active::after,
+.onb-pill.done::after {
+    transform: translateX(0);
+}
+
+/* =====================================================================
+   SLIDE STAGE — single slide rendered at a time with direction-aware enter.
+   ===================================================================== */
+.onb-stage {
+    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
-    padding: 48px 24px 24px;
-    box-sizing: border-box;
-    overflow-y: auto;
+    position: relative;
+    padding: 16px 0;
+    min-height: 0;
 }
 
-.onboarding-root .onb-title {
-    font-size: 28px;
-    font-weight: 700;
-    text-align: center;
-    margin: 0 0 24px;
-    line-height: 1.2;
+.onb-slide {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    opacity: 0;
+    transform: translateX(0) scale(0.84);
+    animation: onb-slide-in 0.55s var(--onb-spring) forwards;
+    will-change: transform, opacity;
+}
+.onb-slide[data-dir="fwd"] { animation-name: onb-slide-in-fwd; }
+.onb-slide[data-dir="back"] { animation-name: onb-slide-in-back; }
+
+@keyframes onb-slide-in-fwd {
+    0%   { opacity: 0; transform: translateX(240px) scale(0.84); }
+    60%  { opacity: 1; transform: translateX(-8px) scale(1.02); }
+    100% { opacity: 1; transform: translateX(0) scale(1); }
+}
+@keyframes onb-slide-in-back {
+    0%   { opacity: 0; transform: translateX(-240px) scale(0.84); }
+    60%  { opacity: 1; transform: translateX(8px) scale(1.02); }
+    100% { opacity: 1; transform: translateX(0) scale(1); }
+}
+@keyframes onb-slide-in {
+    0%   { opacity: 0; transform: scale(0.92); }
+    100% { opacity: 1; transform: scale(1); }
 }
 
-.onboarding-root .onb-bigchoice {
-    font-size: 48px;
-    font-weight: 800;
-    text-align: center;
-    margin: 16px 0 32px;
+/* Stagger child reveals: each immediate child fades up with delay */
+.onb-slide > * {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: onb-rise 0.5s var(--onb-ease) forwards;
+}
+.onb-slide > *:nth-child(1) { animation-delay: 0.10s; }
+.onb-slide > *:nth-child(2) { animation-delay: 0.18s; }
+.onb-slide > *:nth-child(3) { animation-delay: 0.26s; }
+.onb-slide > *:nth-child(4) { animation-delay: 0.34s; }
+.onb-slide > *:nth-child(5) { animation-delay: 0.42s; }
+
+@keyframes onb-rise {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* =====================================================================
+   TYPOGRAPHY — Letterboxd-inspired display + body.
+   ===================================================================== */
+.onb-hero-title {
+    font-size: 44px;
+    line-height: 1.05;
     letter-spacing: -0.02em;
+    font-weight: 800;
+    margin: 0;
+    text-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+}
+.onb-hero-sub {
+    font-size: 17px;
+    line-height: 1.45;
+    font-weight: 400;
+    color: var(--onb-text-dim);
+    margin: 0;
+    max-width: 28ch;
+}
+.onb-card-title {
+    font-size: 26px;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    font-weight: 700;
+    margin: 0 0 4px;
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.5);
+}
+.onb-card-sub {
+    font-size: 14px;
+    color: var(--onb-text-dim);
+    margin: 0;
 }
 
-.onboarding-root .onb-cta {
+@media (max-width: 360px) {
+    .onb-hero-title { font-size: 38px; }
+    .onb-card-title { font-size: 22px; }
+}
+
+/* =====================================================================
+   FROSTED CARDS — for input slides.
+   ===================================================================== */
+.onb-card {
+    background: var(--onb-glass-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--onb-glass-border);
+    border-radius: 24px;
+    padding: 24px 20px;
+    box-shadow:
+        0 24px 64px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* =====================================================================
+   GRADIENT CTA — primary action, with shimmer.
+   ===================================================================== */
+.onb-cta {
+    position: relative;
     width: 100%;
-    max-width: 340px;
-    padding: 14px 20px;
+    height: 56px;
     border: 0;
-    border-radius: 12px;
-    background: var(--accent-primary, #ff3b30);
+    border-radius: 28px;
+    background: var(--onb-gradient);
     color: #fff;
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
     cursor: pointer;
-    margin: 8px 0;
+    overflow: hidden;
+    isolation: isolate;
+    transition: transform 0.2s var(--onb-spring), box-shadow 0.3s var(--onb-ease), opacity 0.2s;
+    box-shadow:
+        0 12px 32px rgba(231, 111, 81, 0.35),
+        0 4px 12px rgba(255, 93, 143, 0.25);
 }
-.onboarding-root .onb-cta:hover { filter: brightness(1.08); }
-
-.onboarding-root .onb-link {
-    background: transparent;
-    border: 0;
-    color: var(--text-secondary, #b3b3b8);
-    font-size: 14px;
-    padding: 8px 12px;
-    cursor: pointer;
-    text-decoration: underline;
+.onb-cta::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.32) 50%,
+        transparent 100%
+    );
+    transform: translateX(-100%);
+    animation: onb-shimmer 2.6s linear infinite;
+    pointer-events: none;
+}
+@keyframes onb-shimmer {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+.onb-cta:hover { transform: translateY(-1px) scale(1.01); }
+.onb-cta:active { transform: scale(0.98); }
+.onb-cta[disabled],
+.onb-cta.disabled {
+    background: var(--onb-gradient-mute);
+    cursor: not-allowed;
+    opacity: 0.7;
+    box-shadow: none;
+}
+.onb-cta[disabled]::after,
+.onb-cta.disabled::after {
+    display: none;
 }
 
-.onboarding-root .onb-lang-grid,
-.onboarding-root .onb-country-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+/* Pulse on Ready CTA */
+.onb-cta.onb-cta-pulse {
+    animation: onb-pulse 2.4s ease-in-out infinite;
+}
+@keyframes onb-pulse {
+    0%, 100% { box-shadow: 0 12px 32px rgba(231, 111, 81, 0.35), 0 4px 12px rgba(255, 93, 143, 0.25); }
+    50%      { box-shadow: 0 16px 44px rgba(231, 111, 81, 0.55), 0 8px 24px rgba(255, 93, 143, 0.4); }
+}
+
+/* =====================================================================
+   OPTION ROWS — language + country radio lists.
+   ===================================================================== */
+.onb-list {
+    display: flex;
+    flex-direction: column;
     gap: 8px;
-    margin-top: 16px;
-    width: 100%;
-    max-width: 340px;
+    max-height: 48vh;
+    overflow-y: auto;
+    margin: 4px -4px 0;
+    padding: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.15) transparent;
 }
-.onboarding-root .onb-country-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.onboarding-root .onb-lang-grid.hidden,
-.onboarding-root .onb-country-grid.hidden { display: none; }
+.onb-list::-webkit-scrollbar { width: 4px; }
+.onb-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
 
-.onboarding-root .onb-lang-chip,
-.onboarding-root .onb-country-chip {
-    padding: 10px 8px;
-    border-radius: 10px;
-    border: 1px solid var(--border-color, #2a2a32);
-    background: var(--bg-secondary, #16161c);
-    color: var(--text-primary, #f5f5f7);
-    cursor: pointer;
-    font-size: 14px;
-}
-.onboarding-root .onb-lang-chip:hover,
-.onboarding-root .onb-country-chip:hover {
-    border-color: var(--accent-primary, #ff3b30);
-}
-
-.onboarding-root .onb-provider-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+.onb-option {
+    display: flex;
+    align-items: center;
     gap: 12px;
-    margin: 16px 0;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    color: var(--onb-text);
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: transform 0.18s var(--onb-spring), background 0.2s, border-color 0.2s;
     width: 100%;
-    max-width: 360px;
+}
+.onb-option:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.14);
+}
+.onb-option:active { transform: scale(0.98); }
+.onb-option.selected {
+    background: rgba(244, 162, 97, 0.10);
+    border-color: rgba(231, 111, 81, 0.55);
+    box-shadow: 0 0 0 1px rgba(231, 111, 81, 0.55), 0 6px 20px rgba(231, 111, 81, 0.15);
+}
+.onb-option.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+.onb-option .onb-opt-flag {
+    font-size: 22px;
+    line-height: 1;
+}
+.onb-option .onb-opt-label {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.onb-option .onb-opt-tag {
+    font-size: 11px;
+    color: var(--onb-text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+.onb-option .onb-opt-check {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255, 255, 255, 0.18);
+    flex-shrink: 0;
+    position: relative;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s var(--onb-spring);
+}
+.onb-option.selected .onb-opt-check {
+    background: var(--onb-gradient);
+    border-color: transparent;
+    transform: scale(1.05);
+}
+.onb-option.selected .onb-opt-check::after {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 3px;
+    width: 6px;
+    height: 11px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
 }
 
-.onboarding-root .onb-provider {
+/* Search input inside country card */
+.onb-search {
+    display: block;
+    width: 100%;
+    height: 44px;
+    padding: 0 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.25);
+    color: var(--onb-text);
+    font-size: 15px;
+    margin-bottom: 4px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.onb-search:focus { border-color: rgba(231, 111, 81, 0.55); }
+.onb-search::placeholder { color: var(--onb-text-faint); }
+
+/* =====================================================================
+   PLATFORM GRID — 3 columns of logo tiles, multi-select.
+   ===================================================================== */
+.onb-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    max-height: 52vh;
+    overflow-y: auto;
+    padding: 4px;
+    margin: 0 -4px;
+}
+@media (max-width: 360px) {
+    .onb-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.onb-tile {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 6px;
-    padding: 10px 4px;
-    border-radius: 12px;
+    padding: 12px 6px;
+    aspect-ratio: 1 / 1;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.05);
     border: 2px solid transparent;
-    background: var(--bg-secondary, #16161c);
-    color: var(--text-primary, #f5f5f7);
+    color: var(--onb-text);
     cursor: pointer;
-    font-size: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.2;
+    text-align: center;
+    transition: transform 0.18s var(--onb-spring), background 0.2s, border-color 0.2s;
+    overflow: hidden;
 }
-.onboarding-root .onb-provider img {
-    width: 56px;
-    height: 56px;
+.onb-tile:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+}
+.onb-tile:active { transform: scale(0.96); }
+.onb-tile img {
+    width: 48px;
+    height: 48px;
     border-radius: 12px;
     object-fit: cover;
+    pointer-events: none;
 }
-.onboarding-root .onb-provider.selected {
-    border-color: var(--accent-primary, #ff3b30);
-    box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.18);
+.onb-tile span {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--onb-text-dim);
 }
-
-.onboarding-root .onb-loading,
-.onboarding-root .onb-fail {
-    padding: 24px;
-    text-align: center;
-    color: var(--text-secondary, #b3b3b8);
+.onb-tile.selected {
+    background: rgba(244, 162, 97, 0.10);
+    border-image: var(--onb-gradient) 1;
+    border: 2px solid;
+    border-color: rgba(231, 111, 81, 0.85);
+    box-shadow:
+        0 0 0 1px rgba(231, 111, 81, 0.4),
+        0 12px 28px rgba(231, 111, 81, 0.2);
 }
-
-.onboarding-root .onb-dots {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    padding: 16px 0 24px;
-}
-.onboarding-root .onb-dot {
-    width: 8px;
-    height: 8px;
+.onb-tile.selected span { color: var(--onb-text); }
+.onb-tile-check {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
-    background: var(--border-color, #2a2a32);
-    transition: background 0.2s ease, transform 0.2s ease;
+    background: var(--onb-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: scale(0);
+    transition: transform 0.25s var(--onb-spring);
 }
-.onboarding-root .onb-dot.active {
-    background: var(--accent-primary, #ff3b30);
-    transform: scale(1.25);
+.onb-tile.selected .onb-tile-check { transform: scale(1); }
+.onb-tile-check::after {
+    content: "";
+    width: 5px;
+    height: 9px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) translate(-1px, -1px);
 }
 
-@media (min-width: 600px) {
-    .onboarding-root .onb-step { padding: 80px 32px 32px; }
-    .onboarding-root .onb-title { font-size: 32px; }
+/* =====================================================================
+   RECAP CHIPS — Ready slide summary.
+   ===================================================================== */
+.onb-recap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+.onb-chip {
+    padding: 8px 14px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--onb-glass-border);
+    font-size: 13px;
+    color: var(--onb-text-dim);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* =====================================================================
+   STATES — loading / error.
+   ===================================================================== */
+.onb-loading,
+.onb-fail {
+    padding: 32px 0;
+    text-align: center;
+    color: var(--onb-text-dim);
+    font-size: 14px;
+}
+.onb-loading::after {
+    content: "";
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-left: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-top-color: #f4a261;
+    border-radius: 50%;
+    animation: onb-spin 0.9s linear infinite;
+    vertical-align: middle;
+}
+@keyframes onb-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .onb-wall,
+    .onb-glow.onb-glow-orange,
+    .onb-glow.onb-glow-pink,
+    .onb-cta::after,
+    .onb-cta.onb-cta-pulse {
+        animation: none;
+    }
+    .onb-slide,
+    .onb-slide > * {
+        animation-duration: 0.01ms;
+        animation-delay: 0ms;
+    }
 }
