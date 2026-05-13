@@ -17,6 +17,7 @@ import {
     skipOnboarding,
     fetchProviders,
     COUNTRY_SHORTLIST,
+    ALWAYS_SHOW_FLAG,
 } from '../src/features/onboarding.js';
 
 beforeEach(() => {
@@ -190,6 +191,34 @@ describe('fetchProviders', () => {
         global.fetch = vi.fn(() => Promise.resolve({ ok: false, json: () => Promise.resolve({}) }));
         const list = await fetchProviders('XX');
         expect(list).toEqual([]);
+    });
+});
+
+describe('shouldShowOnboarding — always-show override (04-04-r1)', () => {
+    it('returns true and clears seen+completed flags when override is set', async () => {
+        localStorage.setItem('lumi_onboarding_seen', 'true');
+        localStorage.setItem('lumi_onboarding_completed', 'true');
+        localStorage.setItem(ALWAYS_SHOW_FLAG, 'true');
+
+        expect(await shouldShowOnboarding()).toBe(true);
+        expect(localStorage.getItem('lumi_onboarding_seen')).toBeNull();
+        expect(localStorage.getItem('lumi_onboarding_completed')).toBeNull();
+        // Override itself persists — only flipping the toggle clears it.
+        expect(localStorage.getItem(ALWAYS_SHOW_FLAG)).toBe('true');
+    });
+
+    it('override beats Firestore hydration (auth users still see wizard)', async () => {
+        localStorage.setItem(ALWAYS_SHOW_FLAG, 'true');
+        const db = {
+            collection: () => ({
+                doc: () => ({
+                    async get() {
+                        return { exists: true, data: () => ({ preferences: { version: 1, lang: 'tr', country: 'TR' } }) };
+                    },
+                }),
+            }),
+        };
+        expect(await shouldShowOnboarding({ user: { uid: 'u1' }, db })).toBe(true);
     });
 });
 
