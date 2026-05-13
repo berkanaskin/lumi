@@ -570,6 +570,49 @@
     transition: transform 0.25s var(--onb-spring);
 }
 .onb-tile.selected .onb-tile-check { transform: scale(1); }
+
+/* Recommended badge (Phase 04-04-r1) — corner pill on pre-selected tiles. */
+.platform-tile--recommended-badge {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    padding: 2px 7px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #f4a261 0%, #e76f51 60%, #ec4899 100%);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    line-height: 1.2;
+    pointer-events: none;
+    box-shadow: 0 2px 6px rgba(231, 111, 81, 0.35);
+    max-width: none;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: clip;
+}
+
+/* Skip-for-now ghost link below the platform grid. */
+.onboarding-skip-link {
+    background: transparent;
+    border: 0;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 12px;
+    margin-top: 8px;
+    cursor: pointer;
+    text-align: center;
+    align-self: center;
+    transition: color 0.18s, transform 0.18s;
+}
+.onboarding-skip-link:hover,
+.onboarding-skip-link:active {
+    color: #fff;
+    text-decoration: underline;
+    transform: translateY(-1px);
+}
 .onb-tile-check::after {
     content: "";
     width: 5px;

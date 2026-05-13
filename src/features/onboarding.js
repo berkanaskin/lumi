@@ -202,6 +202,10 @@ export function skipOnboarding(options = {}) {
 /**
  * Fetch TMDB watch providers for a region. Resolves with at most 20 entries
  * sorted by display_priority asc. Resolves with [] on any failure.
+ *
+ * NOTE: This is the raw TMDB pass-through used by tests and any consumer that
+ * wants the unfiltered TMDB list. The onboarding UI uses getCuratedProviders()
+ * below, which applies regional curation + pre-select hints.
  */
 export async function fetchProviders(country) {
     try {
@@ -217,6 +221,123 @@ export async function fetchProviders(country) {
     } catch {
         return [];
     }
+}
+
+// ---------------------------------------------------------------------------
+// Curated platform catalog (Phase 04-04-r1)
+//
+// Replaces the unfiltered TMDB dump (Hoichoi, CaixaForum+, Dekkoo, etc.) with a
+// regional allowlist. TR uses a hardcoded priority list (incl. BluTV→HBO Max
+// consolidation per 03.2-r14b decision). Other regions filter TMDB by a global
+// popular-IDs allowlist, sorted by allowlist priority (NOT display_priority).
+// ---------------------------------------------------------------------------
+
+const TMDB_LOGO_BASE = 'https://image.tmdb.org/t/p/w92';
+
+// TR curated list — priority order, BluTV consolidated under HBO Max.
+const TR_CURATED = [
+    { id: 8,    name: 'Netflix',     logo: `${TMDB_LOGO_BASE}/t2yyOv40HZeVlLjYsCsPHnWLk4W.jpg` },
+    { id: 337,  name: 'Disney+',     logo: `${TMDB_LOGO_BASE}/97yvRBw1GzX7fXprcF80er19ot.jpg` },
+    { id: 119,  name: 'Prime Video', logo: `${TMDB_LOGO_BASE}/68MNrwlkpF7WnmNPXLah69CR5cb.jpg` },
+    { id: 1899, name: 'HBO Max',     logo: `${TMDB_LOGO_BASE}/jbe4gVSfRlbPTdESXhEKpornsfu.jpg` },
+    { id: 350,  name: 'Apple TV+',   logo: `${TMDB_LOGO_BASE}/6uhKBfmtzFqOcLousHwZuzcrScK.jpg` },
+    { id: 11,   name: 'MUBI',        logo: `${TMDB_LOGO_BASE}/lJ5mInhFXBeqndt0kc1xMtcWqUq.jpg` },
+    { id: 1968, name: 'Gain',        logo: `${TMDB_LOGO_BASE}/3sJfizPV7lOiBM5kFW5pAFvX3uV.jpg` },
+    { id: 1888, name: 'Exxen',       logo: `${TMDB_LOGO_BASE}/dkPEAEoFLNpQrPMu3IbY29Sevtv.jpg` },
+    { id: 1855, name: 'Tabii',       logo: `${TMDB_LOGO_BASE}/3IhJgUSzqQ5wQlGqgZJJqx5KaaP.jpg` },
+    { id: 2895, name: 'TOD',         logo: `${TMDB_LOGO_BASE}/i0OOFiztAQ2sNTdHRVy1y0HiwxR.jpg` },
+    { id: 2864, name: 'Puhu TV',     logo: `${TMDB_LOGO_BASE}/abc.jpg` },
+];
+
+// Global popular provider IDs — used as an allowlist for non-TR regions.
+// Priority order matches array order (Netflix first → most universal).
+const GLOBAL_POPULAR_PROVIDER_IDS = [
+    8,    // Netflix
+    337,  // Disney+
+    119,  // Amazon Prime Video
+    9,    //   alt Prime ID
+    2100, //   alt Prime ID
+    1899, // Max (global)
+    384,  // HBO Max (US)
+    350,  // Apple TV+
+    531,  // Paramount+
+    386,  // Peacock
+    15,   // Hulu
+    283,  // Crunchyroll
+    11,   // MUBI
+];
+
+// Default pre-selected provider IDs (top-3 universal).
+const PRE_SELECTED_IDS = new Set([8, 337, 119]);
+
+/**
+ * Curated platform list for the onboarding UI.
+ *
+ * TR  → hardcoded priority list (11 entries, BluTV consolidated under HBO Max).
+ * else → TMDB fetch, filtered by GLOBAL_POPULAR_PROVIDER_IDS allowlist, sorted
+ *        by allowlist priority, capped at 10. Falls back to a static global set
+ *        if TMDB returns nothing.
+ *
+ * Returns: [{ id, name, logoUrl, preSelected }]
+ */
+export async function getCuratedProviders(country) {
+    const cc = (country || '').toUpperCase();
+
+    if (cc === 'TR') {
+        return TR_CURATED.map((p) => ({
+            id: p.id,
+            name: p.name,
+            logoUrl: p.logo,
+            preSelected: PRE_SELECTED_IDS.has(p.id),
+        }));
+    }
+
+    // Non-TR: pull TMDB, filter by allowlist, sort by allowlist priority.
+    const raw = await fetchProviders(cc);
+    const priorityIndex = new Map(GLOBAL_POPULAR_PROVIDER_IDS.map((id, i) => [id, i]));
+
+    let filtered = raw
+        .filter((p) => priorityIndex.has(p.provider_id))
+        .sort((a, b) => priorityIndex.get(a.provider_id) - priorityIndex.get(b.provider_id))
+        .map((p) => ({
+            id: p.provider_id,
+            name: p.provider_name,
+            logoUrl: p.logo_path ? `${TMDB_LOGO_BASE}${p.logo_path}` : '',
+            preSelected: PRE_SELECTED_IDS.has(p.provider_id),
+        }));
+
+    // Dedupe Prime Video variants (9 / 119 / 2100) — keep only the first.
+    const seenPrime = { hit: false };
+    filtered = filtered.filter((p) => {
+        const isPrime = p.id === 9 || p.id === 119 || p.id === 2100;
+        if (!isPrime) return true;
+        if (seenPrime.hit) return false;
+        seenPrime.hit = true;
+        return true;
+    });
+
+    // Dedupe Max/HBO Max variants (1899 / 384) — keep only the first.
+    const seenMax = { hit: false };
+    filtered = filtered.filter((p) => {
+        const isMax = p.id === 1899 || p.id === 384;
+        if (!isMax) return true;
+        if (seenMax.hit) return false;
+        seenMax.hit = true;
+        return true;
+    });
+
+    // Fallback: if TMDB returned nothing usable, show a minimal global default.
+    if (!filtered.length) {
+        return [
+            { id: 8,   name: 'Netflix',     logoUrl: `${TMDB_LOGO_BASE}/t2yyOv40HZeVlLjYsCsPHnWLk4W.jpg`, preSelected: true },
+            { id: 337, name: 'Disney+',     logoUrl: `${TMDB_LOGO_BASE}/97yvRBw1GzX7fXprcF80er19ot.jpg`, preSelected: true },
+            { id: 119, name: 'Prime Video', logoUrl: `${TMDB_LOGO_BASE}/68MNrwlkpF7WnmNPXLah69CR5cb.jpg`, preSelected: true },
+            { id: 350, name: 'Apple TV+',   logoUrl: `${TMDB_LOGO_BASE}/6uhKBfmtzFqOcLousHwZuzcrScK.jpg`, preSelected: false },
+            { id: 531, name: 'Paramount+',  logoUrl: `${TMDB_LOGO_BASE}/fi83B1oztoS47xxcemFdPMhIzK.jpg`,  preSelected: false },
+        ];
+    }
+
+    return filtered.slice(0, 10);
 }
 
 /**
@@ -543,24 +664,45 @@ function renderWizard(options = {}) {
         } else {
             body = el('div', { class: 'onb-grid' });
             state.providers.forEach((p) => {
-                const tile = el('button', {
-                    class: `onb-tile${state.ownedPlatforms.includes(p.provider_id) ? ' selected' : ''}`,
-                    type: 'button',
-                }, [
-                    el('img', { src: `https://image.tmdb.org/t/p/w92${p.logo_path}`, alt: p.provider_name, loading: 'lazy', decoding: 'async' }),
-                    el('span', { text: p.provider_name }),
+                const selected = state.ownedPlatforms.includes(p.id);
+                const children = [
+                    el('img', { src: p.logoUrl, alt: p.name, loading: 'lazy', decoding: 'async' }),
+                    el('span', { text: p.name }),
                     el('span', { class: 'onb-tile-check', 'aria-hidden': 'true' }),
-                ]);
+                ];
+                if (p.preSelected) {
+                    children.push(el('span', {
+                        class: 'platform-tile--recommended-badge',
+                        text: t('onboarding.platforms.recommended', 'Önerilen'),
+                    }));
+                }
+                const tile = el('button', {
+                    class: `onb-tile${selected ? ' selected' : ''}`,
+                    type: 'button',
+                }, children);
                 tile.addEventListener('click', () => {
-                    const idx = state.ownedPlatforms.indexOf(p.provider_id);
+                    const idx = state.ownedPlatforms.indexOf(p.id);
                     if (idx >= 0) state.ownedPlatforms.splice(idx, 1);
-                    else state.ownedPlatforms.push(p.provider_id);
+                    else state.ownedPlatforms.push(p.id);
                     tile.classList.toggle('selected');
                 });
                 body.appendChild(tile);
             });
         }
         slide.appendChild(el('div', { class: 'onb-card' }, [body]));
+
+        // Skip-for-now ghost button — completes step 3 with empty platforms.
+        const skipLink = el('button', {
+            class: 'onboarding-skip-link',
+            type: 'button',
+            text: t('onboarding.platforms.skipForNow', 'Daha sonra eklerim'),
+            onclick: () => {
+                state.ownedPlatforms = [];
+                completeStep(3, { ownedPlatforms: [] }, options);
+                goto(4);
+            },
+        });
+        slide.appendChild(skipLink);
 
         const cta = el('button', {
             class: 'onb-cta',
@@ -617,9 +759,13 @@ function renderWizard(options = {}) {
         state.providersLoading = true;
         if (state.slide === 3) renderCurrentSlide();
         try {
-            const list = await fetchProviders(state.country);
+            const list = await getCuratedProviders(state.country);
             state.providers = list;
             state.providersFailed = list.length === 0;
+            // Auto-select the curated "Recommended" tiles on first paint.
+            if (list.length && state.ownedPlatforms.length === 0) {
+                state.ownedPlatforms = list.filter((p) => p.preSelected).map((p) => p.id);
+            }
         } catch {
             state.providersFailed = true;
         } finally {
