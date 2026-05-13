@@ -8,6 +8,45 @@ import { state } from '../lib/state.js';
 import { showToast } from '../ui/toast.js';
 import { migrateOnAuth } from './auth-migration.js';
 import { _onAuthResolved, closeAuthModal } from './auth-modal.js';
+import { ALWAYS_SHOW_FLAG } from './onboarding.js';
+
+// ============================================
+// DEVELOPER / QA — Always-show-onboarding (04-04-r1)
+// ============================================
+
+/**
+ * Initialize the "Always show onboarding" dev toggle. Reads current state
+ * from localStorage[ALWAYS_SHOW_FLAG] and wires the change handler.
+ *
+ * - ON  → localStorage.setItem(ALWAYS_SHOW_FLAG, 'true')   — wizard re-shows every launch
+ * - OFF → localStorage.removeItem(ALWAYS_SHOW_FLAG)        — normal behavior
+ *
+ * Flipping the toggle only updates the override flag; it does NOT clear the
+ * seen/completed flags immediately. shouldShowOnboarding() clears them on the
+ * next boot when the override is true.
+ */
+export function initDevAlwaysShowOnboarding() {
+    const toggle = document.getElementById('dev-always-show-onboarding-toggle');
+    if (!toggle) return;
+    try {
+        toggle.checked = localStorage.getItem(ALWAYS_SHOW_FLAG) === 'true';
+    } catch {
+        toggle.checked = false;
+    }
+    toggle.addEventListener('change', () => {
+        const i18n = window.i18n || { t: (k) => k };
+        try {
+            if (toggle.checked) {
+                localStorage.setItem(ALWAYS_SHOW_FLAG, 'true');
+                showToast(i18n.t('profile.dev.alwaysShowOnboardingHint'));
+            } else {
+                localStorage.removeItem(ALWAYS_SHOW_FLAG);
+            }
+        } catch (err) {
+            console.warn('[profile] dev toggle write failed:', err);
+        }
+    });
+}
 
 // ============================================
 // LOGIN WALL INITIALIZATION

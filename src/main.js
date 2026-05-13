@@ -147,6 +147,7 @@ import {
     saveUserRating,
     getUserRating,
     detectUserRegion,
+    initDevAlwaysShowOnboarding,
 } from './features/profile.js';
 
 import {
@@ -450,6 +451,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load auth state
     loadAuth();
     updateAuthUI();
+
+    // 04-04-r1 — Wire the Developer/QA "Always show onboarding" toggle.
+    initDevAlwaysShowOnboarding();
 
     // Initialize person page
     initPersonPage();

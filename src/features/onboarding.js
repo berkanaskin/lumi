@@ -53,6 +53,10 @@ const COMPLETED_FLAG = 'lumi_onboarding_completed';
 const DATA_KEY = 'lumi_onboarding';
 const SCHEMA_VERSION = 1;
 
+// 04-04-r1 — Dev/QA override. When 'true', clear the seen+completed flags
+// so the wizard re-appears on every launch. Toggle lives in profile settings.
+export const ALWAYS_SHOW_FLAG = 'lumi_always_show_onboarding';
+
 function readData() {
     try { return JSON.parse(localStorage.getItem(DATA_KEY) || '{}'); }
     catch { return {}; }
@@ -73,6 +77,18 @@ function writeData(next) {
  * configure their profile rather than be blocked by transient network issues.
  */
 export async function shouldShowOnboarding({ user, db } = {}) {
+    // 04-04-r1 — Dev/QA "Always show onboarding" override. If set, clear the
+    // seen+completed flags and short-circuit BEFORE the Firestore hydration
+    // path (which would otherwise restore the flags and skip the wizard).
+    let alwaysShow = false;
+    try { alwaysShow = localStorage.getItem(ALWAYS_SHOW_FLAG) === 'true'; } catch {}
+    if (alwaysShow) {
+        try {
+            localStorage.removeItem(SEEN_FLAG);
+            localStorage.removeItem(COMPLETED_FLAG);
+        } catch {}
+        return true;
+    }
     try {
         if (localStorage.getItem(COMPLETED_FLAG) === 'true') return false;
         if (localStorage.getItem(SEEN_FLAG) === 'true') return false;

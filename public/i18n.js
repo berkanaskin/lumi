@@ -224,7 +224,13 @@ const i18n = {
             'onboarding.ready.title': 'Hazırız.',
             'onboarding.ready.sub': 'Sana özel seçimler hazır.',
             'onboarding.ready.platforms': '{n} platform',
-            'onboarding.ready.cta': "Lumi'yi keşfet"
+            'onboarding.ready.cta': "Lumi'yi keşfet",
+
+            // Profile — Developer / QA section (04-04-r1)
+            'profile.dev.title': 'Geliştirici / QA',
+            'profile.dev.alwaysShowOnboarding': "Onboarding'i her zaman göster",
+            'profile.dev.alwaysShowOnboardingHint': 'Test için. Her uygulama açılışında onboarding ekranı tekrar görünür.',
+            'profile.dev.betaTesterOnly': 'Sadece beta test için'
         },
 
         en: {
@@ -445,7 +451,13 @@ const i18n = {
             'onboarding.ready.title': 'All set.',
             'onboarding.ready.sub': 'Your picks are ready.',
             'onboarding.ready.platforms': '{n} platforms',
-            'onboarding.ready.cta': 'Discover Lumi'
+            'onboarding.ready.cta': 'Discover Lumi',
+
+            // Profile — Developer / QA section (04-04-r1)
+            'profile.dev.title': 'Developer / QA',
+            'profile.dev.alwaysShowOnboarding': 'Always show onboarding',
+            'profile.dev.alwaysShowOnboardingHint': 'For testing. The onboarding screen will appear every time the app launches.',
+            'profile.dev.betaTesterOnly': 'Beta tester only'
         },
 
         de: {
