@@ -990,21 +990,118 @@ function renderWizard(options = {}) {
     // ----- Slide renderers -------------------------------------------------
     function buildWelcome() {
         const slide = el('div', { class: 'onb-slide onb-slide-welcome', 'data-dir': state.direction });
+
+        // --- Wordmark + tagline (top) ---
+        const brand = el('div', { class: 'onb-brand', 'aria-hidden': 'false' });
+        const wordmark = el('div', { class: 'onb-wordmark', text: 'lumi' });
+        const tagline = el('div', {
+            class: 'onb-tagline',
+            text: t('onboarding.welcome.tagline', 'Film gecesi asistanın'),
+        });
+        brand.appendChild(wordmark);
+        brand.appendChild(tagline);
+        slide.appendChild(brand);
+
+        // --- Featured posters rotator (Ken Burns + crossfade) ---
+        // 04-04-r5: hand-picked iconic TMDB IDs. Falls back to gradient if any 404.
+        const FEATURED_TMDB = [
+            { id: 27205, type: 'movie' }, // Inception
+            { id: 157336, type: 'movie' }, // Interstellar
+            { id: 1396, type: 'tv' },      // Breaking Bad
+            { id: 66732, type: 'tv' },     // Stranger Things
+            { id: 438631, type: 'movie' }, // Dune
+            { id: 155, type: 'movie' },    // The Dark Knight
+        ];
+        const featured = el('div', { class: 'onb-featured', 'aria-hidden': 'true' });
+        FEATURED_TMDB.forEach((_, idx) => {
+            featured.appendChild(el('div', {
+                class: `onb-featured-frame${idx === 0 ? ' active' : ''}`,
+                'data-idx': String(idx),
+            }));
+        });
+        slide.appendChild(featured);
+
+        // Lazy-load poster paths via TMDB; gracefully no-op on failure.
+        (async () => {
+            const urls = await Promise.all(FEATURED_TMDB.map(async (item) => {
+                try {
+                    const r = await fetch(`/api/tmdb?endpoint=/${item.type}/${item.id}`);
+                    if (!r || !r.ok) return null;
+                    const d = await r.json();
+                    return d?.poster_path
+                        ? `https://image.tmdb.org/t/p/w500${d.poster_path}`
+                        : null;
+                } catch { return null; }
+            }));
+            featured.querySelectorAll('.onb-featured-frame').forEach((frame, i) => {
+                if (urls[i]) frame.style.backgroundImage = `url("${urls[i]}")`;
+            });
+        })();
+
+        // Rotate every 3.5s with crossfade.
+        if (!prefersReducedMotion()) {
+            let curIdx = 0;
+            const frames = featured.querySelectorAll('.onb-featured-frame');
+            const rotateTimer = setInterval(() => {
+                if (!document.body.contains(featured)) { clearInterval(rotateTimer); return; }
+                frames[curIdx].classList.remove('active');
+                curIdx = (curIdx + 1) % frames.length;
+                frames[curIdx].classList.add('active');
+            }, 3500);
+        }
+
+        // --- Hero copy (mega headline + body) ---
         const hero = el('h1', {
             class: 'onb-hero-title onb-hero-typeon',
             id: 'onb-slide-heading',
             'data-onb-heading': '',
-            text: t('onboarding.welcome.title', "Lumi'ye hoş geldin."),
+            text: t('onboarding.welcome.title', 'Bu akşam ne izlesem?'),
         });
         slide.appendChild(hero);
-        // 04-04-r2 — Letter-by-letter type-on (reduced-motion: skipped).
         requestAnimationFrame(() => applyLetterTypeOn(hero));
-        slide.appendChild(el('p', { class: 'onb-hero-sub', text: t('onboarding.welcome.sub', "İzleyecek bir şey bulamadığında, biz buradayız.") }));
-        slide.appendChild(el('div', { style: 'flex:1' })); // spacer
+        slide.appendChild(el('p', {
+            class: 'onb-hero-sub',
+            text: t('onboarding.welcome.sub', 'Lumi, ruh hâline göre filmi bulur. 5 saniyede, doğru film.'),
+        }));
+
+        // --- 3-up value props (frosted pills) ---
+        const props = el('div', { class: 'onb-value-props', role: 'list' });
+        const valueRows = [
+            { icon: '🎯', title: t('onboarding.welcome.prop1.title', 'Doğru film'),  body: t('onboarding.welcome.prop1.body', 'AI ruh hâlini anlar') },
+            { icon: '⚡', title: t('onboarding.welcome.prop2.title', 'Saniyeler'),   body: t('onboarding.welcome.prop2.body', '5 saniyede öneri') },
+            { icon: '🌍', title: t('onboarding.welcome.prop3.title', 'Türkçe + global'), body: t('onboarding.welcome.prop3.body', '10+ dil, 200+ ülke') },
+        ];
+        valueRows.forEach((row) => {
+            const pill = el('div', { class: 'onb-value-pill', role: 'listitem' }, [
+                el('span', { class: 'onb-value-icon', text: row.icon }),
+                el('div', { class: 'onb-value-text' }, [
+                    el('div', { class: 'onb-value-title', text: row.title }),
+                    el('div', { class: 'onb-value-body',  text: row.body }),
+                ]),
+            ]);
+            props.appendChild(pill);
+        });
+        slide.appendChild(props);
+
+        // --- Particle dust field (decorative) ---
+        if (!prefersReducedMotion()) {
+            const dust = el('div', { class: 'onb-dust', 'aria-hidden': 'true' });
+            for (let i = 0; i < 7; i++) {
+                const m = el('span', { class: 'onb-dust-mote' });
+                m.style.setProperty('--mx', (Math.random() * 100) + '%');
+                m.style.setProperty('--dur', (8 + Math.random() * 6) + 's');
+                m.style.setProperty('--delay', (Math.random() * 4) + 's');
+                m.style.setProperty('--hue', i % 2 ? '#f4a261' : '#ff5d8f');
+                dust.appendChild(m);
+            }
+            slide.appendChild(dust);
+        }
+
+        slide.appendChild(el('div', { class: 'onb-welcome-spacer' }));
         slide.appendChild(el('button', {
             class: 'onb-cta',
             type: 'button',
-            text: t('onboarding.welcome.cta', 'Başlayalım'),
+            text: t('onboarding.welcome.cta', 'Sahne hazırlansın'),
             onclick: () => { haptic.tap(); goto(1); },
         }));
         return slide;
