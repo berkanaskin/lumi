@@ -250,14 +250,27 @@ export function skipOnboarding(options = {}) {
  */
 export async function fetchProviders(country) {
     try {
-        const url = `/api/tmdb?endpoint=/watch/providers/tv&watch_region=${encodeURIComponent(country)}`;
+        const cc = (country || '').toUpperCase();
+        const url = `/api/tmdb?endpoint=/watch/providers/tv&watch_region=${encodeURIComponent(cc)}`;
         const res = await fetch(url);
         if (!res || !res.ok) return [];
         const data = await res.json();
         const results = Array.isArray(data?.results) ? data.results : [];
-        return results
+        // Filter: provider must be available in `cc` per display_priorities map.
+        // (TMDB returns global list; presence of cc key = available in region.)
+        const inRegion = results.filter((p) => {
+            if (!p || typeof p !== 'object') return false;
+            const dp = p.display_priorities;
+            if (!dp || typeof dp !== 'object') return true; // shape unknown → keep
+            return typeof dp[cc] === 'number';
+        });
+        return inRegion
             .slice()
-            .sort((a, b) => (a.display_priority ?? 999) - (b.display_priority ?? 999))
+            .sort((a, b) => {
+                const ap = a.display_priorities?.[cc] ?? a.display_priority ?? 999;
+                const bp = b.display_priorities?.[cc] ?? b.display_priority ?? 999;
+                return ap - bp;
+            })
             .slice(0, 20);
     } catch {
         return [];
@@ -277,17 +290,17 @@ const TMDB_LOGO_BASE = 'https://image.tmdb.org/t/p/w92';
 
 // TR curated list — priority order, BluTV consolidated under HBO Max.
 const TR_CURATED = [
-    { id: 8,    name: 'Netflix',     logo: `${TMDB_LOGO_BASE}/t2yyOv40HZeVlLjYsCsPHnWLk4W.jpg` },
-    { id: 337,  name: 'Disney+',     logo: `${TMDB_LOGO_BASE}/97yvRBw1GzX7fXprcF80er19ot.jpg` },
-    { id: 119,  name: 'Prime Video', logo: `${TMDB_LOGO_BASE}/68MNrwlkpF7WnmNPXLah69CR5cb.jpg` },
-    { id: 1899, name: 'HBO Max',     logo: `${TMDB_LOGO_BASE}/jbe4gVSfRlbPTdESXhEKpornsfu.jpg` },
-    { id: 350,  name: 'Apple TV+',   logo: `${TMDB_LOGO_BASE}/6uhKBfmtzFqOcLousHwZuzcrScK.jpg` },
-    { id: 11,   name: 'MUBI',        logo: `${TMDB_LOGO_BASE}/lJ5mInhFXBeqndt0kc1xMtcWqUq.jpg` },
-    { id: 1968, name: 'Gain',        logo: `${TMDB_LOGO_BASE}/3sJfizPV7lOiBM5kFW5pAFvX3uV.jpg` },
-    { id: 1888, name: 'Exxen',       logo: `${TMDB_LOGO_BASE}/dkPEAEoFLNpQrPMu3IbY29Sevtv.jpg` },
-    { id: 1855, name: 'Tabii',       logo: `${TMDB_LOGO_BASE}/3IhJgUSzqQ5wQlGqgZJJqx5KaaP.jpg` },
-    { id: 2895, name: 'TOD',         logo: `${TMDB_LOGO_BASE}/i0OOFiztAQ2sNTdHRVy1y0HiwxR.jpg` },
-    { id: 2864, name: 'Puhu TV',     logo: `${TMDB_LOGO_BASE}/abc.jpg` },
+    { id: 8,    name: 'Netflix',     logo: '/img/providers/netflix.png' },
+    { id: 337,  name: 'Disney+',     logo: '/img/providers/disney-plus.png' },
+    { id: 119,  name: 'Prime Video', logo: '/img/providers/prime-video.png' },
+    { id: 1899, name: 'HBO Max',     logo: '/img/providers/hbo-max.png' },
+    { id: 350,  name: 'Apple TV+',   logo: '/img/providers/apple-tv-plus.png' },
+    { id: 11,   name: 'MUBI',        logo: '/img/providers/mubi.png' },
+    { id: 1968, name: 'Gain',        logo: '/img/providers/gain.svg' },
+    { id: 1888, name: 'Exxen',       logo: '/img/providers/exxen.svg' },
+    { id: 1855, name: 'Tabii',       logo: '/img/providers/tabii.svg' },
+    { id: 2895, name: 'TOD',         logo: '/img/providers/tod.svg' },
+    { id: 2864, name: 'Puhu TV',     logo: '/img/providers/puhutv.svg' },
 ];
 
 // Global popular provider IDs — used as an allowlist for non-TR regions.
@@ -370,11 +383,11 @@ export async function getCuratedProviders(country) {
     // Fallback: if TMDB returned nothing usable, show a minimal global default.
     if (!filtered.length) {
         return [
-            { id: 8,   name: 'Netflix',     logoUrl: `${TMDB_LOGO_BASE}/t2yyOv40HZeVlLjYsCsPHnWLk4W.jpg`, preSelected: true },
-            { id: 337, name: 'Disney+',     logoUrl: `${TMDB_LOGO_BASE}/97yvRBw1GzX7fXprcF80er19ot.jpg`, preSelected: true },
-            { id: 119, name: 'Prime Video', logoUrl: `${TMDB_LOGO_BASE}/68MNrwlkpF7WnmNPXLah69CR5cb.jpg`, preSelected: true },
-            { id: 350, name: 'Apple TV+',   logoUrl: `${TMDB_LOGO_BASE}/6uhKBfmtzFqOcLousHwZuzcrScK.jpg`, preSelected: false },
-            { id: 531, name: 'Paramount+',  logoUrl: `${TMDB_LOGO_BASE}/fi83B1oztoS47xxcemFdPMhIzK.jpg`,  preSelected: false },
+            { id: 8,   name: 'Netflix',     logoUrl: '/img/providers/netflix.png',       preSelected: true },
+            { id: 337, name: 'Disney+',     logoUrl: '/img/providers/disney-plus.png',   preSelected: true },
+            { id: 119, name: 'Prime Video', logoUrl: '/img/providers/prime-video.png',   preSelected: true },
+            { id: 350, name: 'Apple TV+',   logoUrl: '/img/providers/apple-tv-plus.png', preSelected: false },
+            { id: 531, name: 'Paramount+',  logoUrl: '/img/providers/paramount-plus.png', preSelected: false },
         ];
     }
 
