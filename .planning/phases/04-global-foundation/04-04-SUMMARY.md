@@ -306,27 +306,27 @@ Two-commit round bringing the wizard up to App Store submission visual bar.
 
 ---
 
-## R4 ó bug-fix round (2026-05-14)
+## R4 ÔøΩ bug-fix round (2026-05-14)
 
 Four user-reported bugs after r3 ship; surgical fixes, no scope creep.
 
-### Bug 1 ó i18n count leak (`selected2` / ` seÁildi2`)
-- **Root cause:** `onboarding.js:1152` used `t('...subSelected', 'SeÁim: ').replace('{n}', '')` which stripped the placeholder, then concatenated the count separately ó producing ` seÁildi2` / ` selected2`.
+### Bug 1 ÔøΩ i18n count leak (`selected2` / ` seÔøΩildi2`)
+- **Root cause:** `onboarding.js:1152` used `t('...subSelected', 'SeÔøΩim: ').replace('{n}', '')` which stripped the placeholder, then concatenated the count separately ÔøΩ producing ` seÔøΩildi2` / ` selected2`.
 - **Fix:** Proper interpolation: `.replace('{n}', String(count))`.
 
-### Bug 2 ó same platforms regardless of country
+### Bug 2 ÔøΩ same platforms regardless of country
 - **Root cause (a):** `fetchProviders` second-guessed TMDB's server-side `watch_region` filter with a redundant `display_priorities[cc]` check, dropping providers when the per-region map was incomplete.
 - **Root cause (b):** `loadProvidersIfNeeded` cached providers once and never re-fetched on country change.
-- **Fix (a):** Drop the redundant filter ó TMDB already region-filters via `watch_region`.
+- **Fix (a):** Drop the redundant filter ÔøΩ TMDB already region-filters via `watch_region`.
 - **Fix (b):** Track `providersLoadedFor`; invalidate cache in the country click handler.
 
-### Bug 3 ó country title overlapped back arrow
+### Bug 3 ÔøΩ country title overlapped back arrow
 - **Root cause:** Country slide is the tallest (title+sub+map+search+list+CTA); with `.onb-stage` `justify-content: center`, the title got pushed up under the topbar on shorter viewports.
 - **Fix:** Top-align this slide via `.onb-stage:has(.onb-slide-country) { justify-content: flex-start }` + a small top padding on `.onb-slide-country`.
 
-### Bug 4 ó world map invisible
-- **Root cause:** Continents filled with `#3a3148õ#1a1626` (near-black) at `opacity: 0.55` ó invisible against `#07070b` panel. Map was also lazy-mounted only after the first pin-drop, so initial state showed nothing.
-- **Fix:** Brighten continents to `#9683b8õ#5a4a73`, lift svg opacity to `0.85`, eagerly mount the SVG on `buildCountry()`, and drop an initial pin for the geo-default country.
+### Bug 4 ÔøΩ world map invisible
+- **Root cause:** Continents filled with `#3a3148ÔøΩ#1a1626` (near-black) at `opacity: 0.55` ÔøΩ invisible against `#07070b` panel. Map was also lazy-mounted only after the first pin-drop, so initial state showed nothing.
+- **Fix:** Brighten continents to `#9683b8ÔøΩ#5a4a73`, lift svg opacity to `0.85`, eagerly mount the SVG on `buildCountry()`, and drop an initial pin for the geo-default country.
 
 ### Tests
 - Replaced stale `display_priorities[US]` intersection test with pure allowlist test.
@@ -334,5 +334,42 @@ Four user-reported bugs after r3 ship; surgical fixes, no scope creep.
 - 259 tests passing (1 net new); 8 pre-existing Phase-03.2 failures untouched.
 
 ### Commits
-- `7780593` fix(04-04-r4): onboarding ó 4 bug fixes (i18n / region / overlap / map)
+- `7780593` fix(04-04-r4): onboarding ÔøΩ 4 bug fixes (i18n / region / overlap / map)
 - `9c45294` test(04-04-r4): cover region delta + drop stale display_priorities filter
+
+## 04-04-r5 ÔøΩ Bug-fix + Welcome redesign round (2026-05-14)
+
+Three user-reported issues addressed: S3 CTA missing (BLOCKER), world map placeholder, weak S1 design.
+
+### Bug 1 ÔøΩ S3 country slide CTA scrolled off-screen (BLOCKER)
+- **Root cause:** R4 added `padding-top` and `justify-content: flex-start` to the country slide, but the slide had no vertical-space budget ÔøΩ on 390/430px viewports the title + sub + 110px map + search + 6-country list + CTA exceeded 100vh and the CTA fell below the fold.
+- **Fix:** `.onb-slide-country` is now a strict `flex: 1; min-height: 0` column. The map + sub + title are `flex-shrink: 0`. The frosted card (`.onb-card`) becomes the scrollable middle: `flex: 1 1 auto; min-height: 0` with `.onb-list` scrolling internally. The CTA is `flex-shrink: 0` with `env(safe-area-inset-bottom)` so it sits at the bottom on every iOS notch geometry. World map clamped to 130px on mobile (96px under 700px height, hidden under 620px).
+- **Files:** `src/styles/onboarding.css:1170-1235`.
+
+### Bug 2 ÔøΩ world map not a real world map
+- **Root cause:** R2 shipped 8 hand-drawn blobs (3KB) that weren't recognizable as continents.
+- **Fix:** Replaced with a hand-traced equirectangular world map (viewBox 0 0 1000 500, ~3.5KB). Path elements for Greenland, N. America, Central America, S. America, Iceland, UK/Ireland, Scandinavia, Continental Europe, Africa, Madagascar, Middle East, Russia, Central Asia, India, SE Asia, Philippines, Japan, Australia, New Zealand, Antarctica strip ÔøΩ 20 paths total. Pin coordinates now derived from real lat/lng via `latLngToPct()` (equirectangular: `x = (lng+180)/360, y = (90-lat)/180`). TR pin lands on Turkey, JP on Japan, etc.
+- **Acquisition:** Hand-written inline SVG (no network dependency). Avoided Wikipedia download because: (a) keeping it inline avoids a second HTTP round-trip on a critical-path slide; (b) full Natural Earth basemap is ~30KB+ which is excessive for a decorative anchor.
+- **Files:** `src/features/onboarding.js:526-617`.
+
+### Bug 3 ÔøΩ S1 Welcome design too weak
+- **Root cause:** R2's 3-layer poster-wall backdrop + type-on hero alone read as flat because there was no focal point and no value proposition.
+- **Fix:**
+  1. **Wordmark + tagline at top:** "lumi" in 44px display weight with orangeÔøΩpinkÔøΩpurple gradient text, drop-shadow halo. Tagline "Film gecesi asistanƒ±n" in 13px uppercase tracking.
+  2. **Featured-poster rotator (`.onb-featured`):** 70%-width 2:3 frame above the hero copy with slow Ken Burns zoom + 1.1s crossfade between 6 hand-picked TMDB IDs (Inception 27205, Interstellar 157336, Breaking Bad 1396, Stranger Things 66732, Dune 438631, The Dark Knight 155), 3.5s rotation cadence. Posters lazy-load from `/api/tmdb`; failure shows the gradient placeholder frame.
+  3. **Stronger hero copy:** "Bu ak≈üam ne izlesem?" (38-44px) + "Lumi, ruh h√¢line g√∂re filmi bulur. 5 saniyede, doƒüru film." (max 30ch, 0.7 opacity).
+  4. **3-up value-prop pills:** üéØ Doƒüru film / ‚ö° Saniyeler / üåç T√ºrk√ße + global. Frosted-glass mini-pills, staggered fade-in (0.55s/0.65s/0.75s).
+  5. **Particle dust field:** 7 orange/pink dust motes drifting upward (8-14s loops, opacity 0.3, blur 1px) for ambient cinema dust.
+  6. **CTA:** "Sahne hazƒ±rlansƒ±n" (was "Ba≈ülayalƒ±m").
+- **Atmospheric layers (R2 parallax wall, audio toggle, etc.) untouched.**
+- **Files:** `src/features/onboarding.js:990-1107`, `src/styles/onboarding.css:1380-1565`.
+
+### Tests
+- New `tests/onboarding-r5-welcome-country.test.js`: 3 specs (wordmark + value pills + CTA copy, S3 CTA direct-child, world map viewBox+paths). Uses a fresh JSDOM per test (mirrors `onboarding-country-search.test.js`).
+- **262 passing** (was 259, +3). 8 stale Phase-03.2 failures untouched (per brief).
+
+### Commits
+- `05b1758` fix(04-04-r5): S3 country CTA always visible ÔøΩ scroll body, fixed footer
+- `3458ea6` feat(04-04-r5): real world map (continents SVG) + accurate pin coords
+- `a38495e` feat(04-04-r5): S1 Welcome redesign ÔøΩ featured posters, logo, value props, stronger copy
+- `bfa3851` test(04-04-r5): cover S3 CTA + new welcome content + real world map
