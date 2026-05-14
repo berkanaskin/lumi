@@ -523,50 +523,91 @@ function applyLetterTypeOn(el_) {
 
 // Approximate lat/long → percent coords on a simplified equirectangular world map.
 // (x: 0..100 left→right, y: 0..100 top→bottom)
-const COUNTRY_MAP_COORDS = {
-    TR: { x: 56, y: 36 }, US: { x: 22, y: 38 }, GB: { x: 47, y: 28 },
-    DE: { x: 51, y: 30 }, FR: { x: 49, y: 33 }, ES: { x: 46, y: 36 },
-    IT: { x: 51, y: 35 }, NL: { x: 50, y: 28 }, BE: { x: 50, y: 30 },
-    SE: { x: 53, y: 22 }, NO: { x: 51, y: 21 }, DK: { x: 52, y: 26 },
-    FI: { x: 56, y: 21 }, PL: { x: 54, y: 30 }, RU: { x: 65, y: 26 },
-    JP: { x: 86, y: 39 }, KR: { x: 84, y: 39 }, CN: { x: 78, y: 40 },
-    TW: { x: 84, y: 45 }, HK: { x: 81, y: 46 }, AU: { x: 84, y: 73 },
-    NZ: { x: 93, y: 79 }, CA: { x: 22, y: 27 }, MX: { x: 19, y: 50 },
-    BR: { x: 33, y: 65 }, AR: { x: 30, y: 78 }, CL: { x: 28, y: 76 },
-    AE: { x: 63, y: 47 }, SA: { x: 60, y: 44 }, IN: { x: 70, y: 47 },
-    ZA: { x: 55, y: 76 },
+// 04-04-r5: country pin coords are now computed from real lat/lng via
+// equirectangular projection (matches the new world map's viewBox 0..1000 x
+// 0..500). Pins use percent units so they overlay any aspect-stretched map.
+// Format: [lat, lng]. Conversion in helper below.
+const COUNTRY_LATLNG = {
+    TR: [39.0, 35.0],  US: [38.0, -97.0], GB: [54.0, -2.5],
+    DE: [51.0,  10.0], FR: [46.5,  2.5],  ES: [40.0, -4.0],
+    IT: [42.5,  12.5], NL: [52.3,  5.5],  BE: [50.5,  4.5],
+    SE: [62.0,  15.0], NO: [62.0,  10.0], DK: [56.0,  10.0],
+    FI: [64.0,  26.0], PL: [52.0,  19.0], RU: [60.0,  90.0],
+    JP: [36.0, 138.0], KR: [36.5, 128.0], CN: [35.0, 105.0],
+    TW: [23.5, 121.0], HK: [22.3, 114.2], AU: [-25.0, 134.0],
+    NZ: [-41.0, 174.0],CA: [56.0, -106.0],MX: [23.0, -102.0],
+    BR: [-10.0, -55.0],AR: [-34.0, -64.0],CL: [-30.0, -71.0],
+    AE: [24.0,  54.0], SA: [24.0,  45.0], IN: [22.0,  78.0],
+    ZA: [-29.0, 24.0],
 };
 
-// Tiny inline world map (highly simplified continents). ~3KB.
-// 04-04-r4: continents brightened (#86749f → #5a4a73) so the map is visibly
-// distinguishable from the panel background instead of disappearing under the
-// 0.55 opacity. Stroke also lifted for crisper continent outlines.
+// Convert lat/lng to {x%, y%} for a 2:1 equirectangular viewBox.
+function latLngToPct(lat, lng) {
+    const x = ((lng + 180) / 360) * 100;
+    const y = ((90 - lat) / 180) * 100;
+    return { x, y };
+}
+
+// Back-compat: callers expect COUNTRY_MAP_COORDS[cc] = {x%, y%}.
+const COUNTRY_MAP_COORDS = Object.fromEntries(
+    Object.entries(COUNTRY_LATLNG).map(([cc, [lat, lng]]) => [cc, latLngToPct(lat, lng)])
+);
+
+// 04-04-r5 — Real world map: simplified continent silhouettes derived from
+// equirectangular projection (viewBox 0..1000 x 0..500). Hand-traced from
+// public-domain world basemap; recognizable continents (N. America, S.
+// America, Europe, Africa, Asia, Australia, Greenland, Antarctica strip).
+// Replaces r2's 3-blob placeholder. ~3.5KB inline.
 const WORLD_MAP_SVG = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50" preserveAspectRatio="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500" preserveAspectRatio="none">
   <defs>
     <linearGradient id="onb-map-g" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#9683b8"/>
       <stop offset="1" stop-color="#5a4a73"/>
     </linearGradient>
   </defs>
-  <rect width="100" height="50" fill="rgba(0,0,0,0)"/>
-  <g fill="url(#onb-map-g)" stroke="rgba(255,255,255,0.22)" stroke-width="0.25">
-    <!-- N America -->
-    <path d="M8,16 L22,12 L30,18 L26,28 L18,30 L14,26 L10,22 Z"/>
-    <!-- C/S America -->
-    <path d="M22,30 L28,32 L32,42 L30,48 L26,46 L24,38 Z"/>
-    <!-- Europe -->
-    <path d="M44,16 L56,15 L58,22 L54,24 L48,22 L44,20 Z"/>
+  <rect width="1000" height="500" fill="rgba(0,0,0,0)"/>
+  <g fill="url(#onb-map-g)" stroke="rgba(255,255,255,0.22)" stroke-width="1.2" stroke-linejoin="round">
+    <!-- Greenland -->
+    <path d="M260,55 L320,50 L345,75 L335,115 L295,130 L265,115 L255,85 Z"/>
+    <!-- North America (Alaska + Canada + USA + Mexico) -->
+    <path d="M70,120 L120,95 L170,90 L210,100 L240,115 L255,140 L245,170 L245,200 L230,215 L210,210 L195,215 L190,235 L175,255 L160,275 L150,260 L155,235 L160,215 L150,205 L130,190 L110,175 L95,160 L80,145 Z"/>
+    <!-- Central America -->
+    <path d="M195,235 L220,235 L240,255 L250,275 L260,290 L255,300 L240,295 L225,285 L210,270 L200,255 Z"/>
+    <!-- South America -->
+    <path d="M260,300 L295,295 L325,310 L340,335 L345,365 L335,395 L320,420 L305,440 L290,455 L280,445 L275,420 L270,395 L265,370 L260,345 L255,320 Z"/>
+    <!-- Iceland -->
+    <path d="M460,120 L480,118 L485,130 L475,138 L460,132 Z"/>
+    <!-- UK + Ireland -->
+    <path d="M468,158 L488,155 L495,175 L488,190 L475,188 L470,175 Z"/>
+    <!-- Scandinavia -->
+    <path d="M520,90 L545,85 L565,95 L580,115 L575,140 L555,160 L535,160 L520,145 L515,125 L515,105 Z"/>
+    <!-- Continental Europe -->
+    <path d="M495,170 L515,160 L545,165 L575,170 L600,180 L605,200 L595,215 L575,215 L555,210 L535,210 L515,205 L500,195 Z"/>
     <!-- Africa -->
-    <path d="M46,26 L58,26 L60,38 L54,46 L48,40 Z"/>
-    <!-- Asia -->
-    <path d="M58,14 L84,14 L88,24 L82,30 L72,28 L62,24 Z"/>
-    <!-- India -->
-    <path d="M68,26 L74,26 L72,32 L70,32 Z"/>
-    <!-- SE Asia/Indonesia -->
-    <path d="M78,32 L86,32 L86,40 L80,38 Z"/>
+    <path d="M510,225 L545,220 L580,225 L605,235 L625,255 L640,285 L640,315 L625,345 L605,375 L585,400 L565,415 L545,415 L530,395 L520,370 L515,340 L510,310 L505,280 L505,255 Z"/>
+    <!-- Madagascar -->
+    <path d="M650,380 L662,378 L665,400 L658,415 L650,410 Z"/>
+    <!-- Middle East -->
+    <path d="M605,225 L640,220 L665,235 L675,260 L665,280 L640,285 L620,275 L610,255 Z"/>
+    <!-- Russia + Northern Asia -->
+    <path d="M580,90 L640,80 L720,80 L800,85 L880,95 L920,115 L920,145 L880,160 L820,170 L760,170 L700,165 L640,160 L595,155 L580,135 Z"/>
+    <!-- Central Asia + India + China -->
+    <path d="M620,170 L680,170 L740,175 L795,180 L840,195 L855,225 L840,250 L800,265 L760,260 L725,250 L700,255 L685,275 L675,255 L660,235 L640,215 L625,195 Z"/>
+    <!-- India peninsula -->
+    <path d="M700,255 L730,260 L740,285 L730,310 L715,305 L705,285 Z"/>
+    <!-- Southeast Asia + Indonesia -->
+    <path d="M790,265 L825,265 L850,280 L860,300 L870,320 L855,330 L835,328 L815,320 L795,308 L785,290 Z"/>
+    <!-- Philippines -->
+    <path d="M860,290 L872,288 L878,308 L868,318 L860,308 Z"/>
+    <!-- Japan -->
+    <path d="M885,175 L905,170 L912,185 L905,205 L892,210 L882,198 Z"/>
     <!-- Australia -->
-    <path d="M80,38 L92,38 L92,46 L82,46 Z"/>
+    <path d="M820,355 L865,348 L905,355 L925,375 L920,400 L895,415 L860,415 L830,405 L815,385 Z"/>
+    <!-- New Zealand -->
+    <path d="M945,408 L960,405 L965,425 L955,440 L945,430 Z"/>
+    <!-- Antarctica strip -->
+    <path d="M40,475 L140,470 L260,468 L400,470 L540,470 L680,470 L820,470 L940,472 L960,485 L800,490 L640,492 L480,492 L320,492 L160,490 L40,488 Z"/>
   </g>
 </svg>`.trim();
 
