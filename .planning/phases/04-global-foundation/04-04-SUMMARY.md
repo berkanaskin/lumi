@@ -303,3 +303,36 @@ Two-commit round bringing the wizard up to App Store submission visual bar.
 - fetchProviders now uppercases country and filters by display_priorities[cc] before sorting â€” ensures non-TR users only see providers actually available in their region.
 - New test file tests/onboarding-platforms.test.js (5 tests) covers TR locality, US allowlist+region intersection, fallback path.
 - Test suite: 258 passed / 8 pre-existing failures (Phase-03.2 stale, untouched).
+
+---
+
+## R4 — bug-fix round (2026-05-14)
+
+Four user-reported bugs after r3 ship; surgical fixes, no scope creep.
+
+### Bug 1 — i18n count leak (`selected2` / ` seçildi2`)
+- **Root cause:** `onboarding.js:1152` used `t('...subSelected', 'Seçim: ').replace('{n}', '')` which stripped the placeholder, then concatenated the count separately — producing ` seçildi2` / ` selected2`.
+- **Fix:** Proper interpolation: `.replace('{n}', String(count))`.
+
+### Bug 2 — same platforms regardless of country
+- **Root cause (a):** `fetchProviders` second-guessed TMDB's server-side `watch_region` filter with a redundant `display_priorities[cc]` check, dropping providers when the per-region map was incomplete.
+- **Root cause (b):** `loadProvidersIfNeeded` cached providers once and never re-fetched on country change.
+- **Fix (a):** Drop the redundant filter — TMDB already region-filters via `watch_region`.
+- **Fix (b):** Track `providersLoadedFor`; invalidate cache in the country click handler.
+
+### Bug 3 — country title overlapped back arrow
+- **Root cause:** Country slide is the tallest (title+sub+map+search+list+CTA); with `.onb-stage` `justify-content: center`, the title got pushed up under the topbar on shorter viewports.
+- **Fix:** Top-align this slide via `.onb-stage:has(.onb-slide-country) { justify-content: flex-start }` + a small top padding on `.onb-slide-country`.
+
+### Bug 4 — world map invisible
+- **Root cause:** Continents filled with `#3a3148›#1a1626` (near-black) at `opacity: 0.55` — invisible against `#07070b` panel. Map was also lazy-mounted only after the first pin-drop, so initial state showed nothing.
+- **Fix:** Brighten continents to `#9683b8›#5a4a73`, lift svg opacity to `0.85`, eagerly mount the SVG on `buildCountry()`, and drop an initial pin for the geo-default country.
+
+### Tests
+- Replaced stale `display_priorities[US]` intersection test with pure allowlist test.
+- Added region-delta test: US vs JP must return DIFFERENT provider lists.
+- 259 tests passing (1 net new); 8 pre-existing Phase-03.2 failures untouched.
+
+### Commits
+- `7780593` fix(04-04-r4): onboarding — 4 bug fixes (i18n / region / overlap / map)
+- `9c45294` test(04-04-r4): cover region delta + drop stale display_priorities filter
