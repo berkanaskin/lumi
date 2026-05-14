@@ -373,3 +373,48 @@ Three user-reported issues addressed: S3 CTA missing (BLOCKER), world map placeh
 - `3458ea6` feat(04-04-r5): real world map (continents SVG) + accurate pin coords
 - `a38495e` feat(04-04-r5): S1 Welcome redesign � featured posters, logo, value props, stronger copy
 - `bfa3851` test(04-04-r5): cover S3 CTA + new welcome content + real world map
+
+---
+
+## r6 — Global-first round (2026-05-14)
+
+Three coordinated fixes to make the wizard read as a globally launched product, not a TR app translated to EN.
+
+### Fix 1 — S1 Welcome redesign
+- KILLED the giant centered "lumi" wordmark + tagline pair.
+- KILLED the single rotating featured poster.
+- Replaced with: (a) small top-left wordmark bar (`.onb-wordmark-bar`, 24px gradient text, no tagline); (b) a 3-poster asymmetric "pile" (`.onb-poster-trio`) — Inception / Interstellar / Stranger Things at rotate(-4deg / 2deg / -1deg), shadow-stacked, center poster largest and lifted.
+- Particle dust intensity halved (7 → 3 motes).
+
+### Fix 2 — EN-first locale policy
+- `src/lib/locale.js:resolveLocaleSync()` tightened: only `tr*` navigator language overrides EN. Any other navigator language (de-DE, ja-JP, ko-KR, fr-FR, zh-Hans-CN, …) boots EN with region remembered for provider hints.
+- All onboarding copy rewritten EN-first; TR is now an idiomatic translation:
+  - Welcome title: "What should we watch tonight?" / "Bu akşam ne izlesek?"
+  - Welcome sub: "Lumi reads your mood and surfaces the right film in seconds. 200+ countries, 10+ languages, one perfect pick."
+  - CTA: "Set the scene" / "Sahneyi hazırla"
+  - Ready: "Lights, camera, Lumi." / "Işıklar, kamera, Lumi."
+  - Platforms: "Which services do you have?" / "Hangi servislerin var?"
+  - Value pills, lang title, premium tagline — all re-authored in EN first.
+
+### Fix 3 — Regional provider allowlist
+- Added `REGIONAL_POPULAR_PROVIDERS` map layered ON TOP of the 13 universal IDs. Coverage: UK/GB, DE, FR, ES, IT, JP, KR, CA, AU, BR, MX, IN. Cap raised 10 → 12.
+- Total provider IDs across universal + regional: **13 universal + 33 regional = 46 distinct TMDB IDs** (GB and UK alias share the same set).
+- 1968 (Gain) stays TR-only; AU uses 87 Binge + 132 Stan; 415 Salto skipped (defunct).
+- New export `_getAllowlistForCountry(cc)` for test/inspection.
+
+### Sanity
+- `_getAllowlistForCountry('UK')` → contains 8 / 337 / 119 (universal) + 38 BritBox + 39 NOW TV + 1796 ITVX. ✅
+- `_getAllowlistForCountry('US')` does NOT contain 1968. ✅
+- `resolveLocaleSync()` with `navigator.language='de-DE'` → `{lang:'en', country:'DE'}`. ✅
+
+### Tests
+- Added `tests/onboarding-r6-global.test.js` (14 cases — EN-first × 6, regional deltas × 8).
+- Updated `tests/onboarding-r5-welcome-country.test.js` to assert new `.onb-wordmark-bar` + `.onb-poster-trio` × 3, no `.onb-tagline`.
+- Updated 2 stale `tests/locale.test.js` cases that asserted the old "navigator language wins for all langs" behavior.
+- Final: **276 passed**, 22 todo, 8 stale Phase-03.2 failures untouched (api / detail / platforms — BluTV legacy).
+
+### Commits
+- `57782cb` feat(04-04-r6): EN-first locale default + canonical EN copy across onboarding
+- `4db4e13` feat(04-04-r6): S1 Welcome — refined wordmark + asymmetric poster trio + balanced layout
+- `ddc79da` feat(04-04-r6): expand provider allowlist with regional popular (UK/DE/FR/ES/IT/JP/KR/CA/AU/BR/MX/IN)
+- `77ac80e` test(04-04-r6): cover EN-first default + regional provider deltas
