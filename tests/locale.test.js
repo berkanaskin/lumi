@@ -43,10 +43,12 @@ describe('resolveLocaleSync — fallback chain', () => {
         expect(resolveLocaleSync()).toEqual({ lang: 'tr', country: 'TR', source: 'navigator' });
     });
 
-    it('handles complex tag navigator.language="zh-Hans-CN" → lang:zh', () => {
+    it('handles complex tag navigator.language="zh-Hans-CN" → EN (r6 EN-first), country preserved', () => {
+        // 04-04-r6: only navigator='tr*' overrides EN. Every other navigator
+        // language boots in EN; the region is still remembered for provider hints.
         globalThis.navigator = { language: 'zh-Hans-CN' };
         const r = resolveLocaleSync();
-        expect(r.lang).toBe('zh');
+        expect(r.lang).toBe('en');
         expect(r.country).toBe('CN');
         expect(r.source).toBe('navigator');
     });
@@ -70,10 +72,12 @@ describe('resolveLocaleSync — fallback chain', () => {
     });
 
     it('malformed stored JSON does NOT throw — falls through to navigator/default', () => {
+        // 04-04-r6: EN-first means fr-FR navigator → EN (not fr); region kept.
         globalThis.localStorage.setItem('lumi_locale', '{not json');
         globalThis.navigator = { language: 'fr-FR' };
         const r = resolveLocaleSync();
-        expect(r.lang).toBe('fr');
+        expect(r.lang).toBe('en');
+        expect(r.country).toBe('FR');
         expect(r.source).toBe('navigator');
     });
 });
