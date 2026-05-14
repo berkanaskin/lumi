@@ -1145,7 +1145,9 @@
     width: 100%;
     height: 100%;
     display: block;
-    opacity: 0.55;
+    /* 04-04-r4: lifted from 0.55 — at low opacity the continents read as
+       background noise; the map needs to be unambiguously visible. */
+    opacity: 0.85;
 }
 .onb-world-map .onb-map-pin {
     position: absolute;
@@ -1163,6 +1165,20 @@
     0%   { transform: translate(-50%, calc(-50% - 40px)) scale(0); opacity: 0; }
     60%  { transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
     100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+/* 04-04-r4: country slide is the tallest (title + sub + map + search + list +
+   CTA). With .onb-stage's justify-content: center, the heading can collide
+   with the topbar's back button on shorter viewports. Top-align this slide
+   and reserve clear space above the title so the back button is unambiguous. */
+.onb-stage:has(.onb-slide-country) {
+    justify-content: flex-start;
+}
+.onb-slide-country {
+    padding-top: 8px;
+}
+.onb-slide-country .onb-card-title {
+    margin-top: 4px;
 }
 
 .onb-slide-country .onb-card {

@@ -256,15 +256,12 @@ export async function fetchProviders(country) {
         if (!res || !res.ok) return [];
         const data = await res.json();
         const results = Array.isArray(data?.results) ? data.results : [];
-        // Filter: provider must be available in `cc` per display_priorities map.
-        // (TMDB returns global list; presence of cc key = available in region.)
-        const inRegion = results.filter((p) => {
-            if (!p || typeof p !== 'object') return false;
-            const dp = p.display_priorities;
-            if (!dp || typeof dp !== 'object') return true; // shape unknown → keep
-            return typeof dp[cc] === 'number';
-        });
-        return inRegion
+        // 04-04-r4: TMDB already region-filters when `watch_region` is passed,
+        // so the previous display_priorities[cc] filter was redundant AND could
+        // drop entries when TMDB returns `display_priority` (singular) instead
+        // of a per-region map. Trust the server-side filter; just sort.
+        return results
+            .filter((p) => p && typeof p === 'object')
             .slice()
             .sort((a, b) => {
                 const ap = a.display_priorities?.[cc] ?? a.display_priority ?? 999;
@@ -541,16 +538,19 @@ const COUNTRY_MAP_COORDS = {
 };
 
 // Tiny inline world map (highly simplified continents). ~3KB.
+// 04-04-r4: continents brightened (#86749f → #5a4a73) so the map is visibly
+// distinguishable from the panel background instead of disappearing under the
+// 0.55 opacity. Stroke also lifted for crisper continent outlines.
 const WORLD_MAP_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50" preserveAspectRatio="none">
   <defs>
     <linearGradient id="onb-map-g" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#3a3148"/>
-      <stop offset="1" stop-color="#1a1626"/>
+      <stop offset="0" stop-color="#9683b8"/>
+      <stop offset="1" stop-color="#5a4a73"/>
     </linearGradient>
   </defs>
   <rect width="100" height="50" fill="rgba(0,0,0,0)"/>
-  <g fill="url(#onb-map-g)" stroke="rgba(255,255,255,0.06)" stroke-width="0.15">
+  <g fill="url(#onb-map-g)" stroke="rgba(255,255,255,0.22)" stroke-width="0.25">
     <!-- N America -->
     <path d="M8,16 L22,12 L30,18 L26,28 L18,30 L14,26 L10,22 Z"/>
     <!-- C/S America -->
@@ -1090,6 +1090,13 @@ function renderWizard(options = {}) {
                 ]);
                 opt.addEventListener('click', () => {
                     haptic.select();
+                    // 04-04-r4: country change invalidates cached providers so
+                    // the platforms slide re-fetches with the new region.
+                    if (state.country !== cc) {
+                        state.providers = [];
+                        state.providersFailed = false;
+                        state.providersLoadedFor = null;
+                    }
                     state.country = cc;
                     list.querySelectorAll('.onb-option').forEach((n) => {
                         n.classList.remove('selected');
@@ -1118,6 +1125,18 @@ function renderWizard(options = {}) {
         search.addEventListener('blur', () => root.classList.remove('onb-search-focused'));
 
         renderCountryList();
+
+        // 04-04-r4: eagerly mount the world map SVG so it's visible from
+        // first paint (previously only mounted lazily on first pin-drop).
+        // Also drop a pin for the currently-selected country (geo default or
+        // restored progress) so the slide opens with a visual anchor.
+        mapHost.insertAdjacentHTML('afterbegin', WORLD_MAP_SVG);
+        if (state.country && COUNTRY_MAP_COORDS[state.country]) {
+            // Defer to next frame so the drop animation plays after slide entry.
+            requestAnimationFrame(() => {
+                try { window.__onbDropMapPin?.(state.country, mapHost); } catch {}
+            });
+        }
 
         slide.appendChild(mapHost);
         slide.appendChild(el('div', { class: 'onb-card' }, [search, list, emptyState]));
@@ -1149,7 +1168,7 @@ function renderWizard(options = {}) {
         slide.appendChild(el('p', {
             class: 'onb-card-sub',
             text: state.ownedPlatforms.length
-                ? t('onboarding.platforms.subSelected', 'Seçim: ').replace('{n}', '') + state.ownedPlatforms.length
+                ? t('onboarding.platforms.subSelected', '{n} seçildi').replace('{n}', String(state.ownedPlatforms.length))
                 : t('onboarding.platforms.sub', 'Birden fazla seçebilirsin.'),
         }));
 
@@ -1547,8 +1566,12 @@ function renderWizard(options = {}) {
     }
 
     async function loadProvidersIfNeeded() {
-        if (state.providers.length || state.providersLoading) return;
+        // 04-04-r4: re-fetch when country changed since last load.
+        const cc = (state.country || '').toUpperCase();
+        if (state.providersLoading) return;
+        if (state.providers.length && state.providersLoadedFor === cc) return;
         state.providersLoading = true;
+        state.providersLoadedFor = cc;
         if (state.slide === 3) renderCurrentSlide();
         try {
             const list = await getCuratedProviders(state.country);
