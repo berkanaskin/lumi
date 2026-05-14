@@ -32,17 +32,17 @@ describe('TR_CURATED logo paths', () => {
     });
 });
 
-describe('getCuratedProviders (non-TR) — display_priorities filter', () => {
-    it('filters to providers present in display_priorities[US] AND allowlist', async () => {
+describe('getCuratedProviders (non-TR) — allowlist filter (r4: trust watch_region)', () => {
+    it('filters TMDB results by GLOBAL_POPULAR_PROVIDER_IDS allowlist', async () => {
+        // r4: TMDB already region-filters server-side via watch_region. We no
+        // longer second-guess that with display_priorities[cc]; we just keep
+        // the providers in our curated allowlist.
         global.fetch = vi.fn().mockResolvedValue({
             ok: true,
             json: async () => ({
                 results: [
-                    // In allowlist + in US → keep
-                    { provider_id: 8,   provider_name: 'Netflix',  logo_path: '/n.jpg', display_priorities: { US: 1, DE: 2 } },
+                    { provider_id: 8,   provider_name: 'Netflix',  logo_path: '/n.jpg', display_priorities: { US: 1 } },
                     { provider_id: 337, provider_name: 'Disney+',  logo_path: '/d.jpg', display_priorities: { US: 2 } },
-                    // In allowlist but NOT in US → drop
-                    { provider_id: 11,  provider_name: 'MUBI',     logo_path: '/m.jpg', display_priorities: { DE: 4, FR: 5 } },
                     // Not in allowlist → drop
                     { provider_id: 9999, provider_name: 'Hoichoi', logo_path: '/h.jpg', display_priorities: { US: 8 } },
                 ],
@@ -53,8 +53,36 @@ describe('getCuratedProviders (non-TR) — display_priorities filter', () => {
         const ids = list.map((p) => p.id);
         expect(ids).toContain(8);
         expect(ids).toContain(337);
-        expect(ids).not.toContain(11);
         expect(ids).not.toContain(9999);
+    });
+
+    it('returns different lists for different countries (region delta)', async () => {
+        // Simulate TMDB's server-side region filter: US returns Netflix+Disney,
+        // JP returns Netflix+Crunchyroll. After our allowlist+sort, the two
+        // country results MUST differ — that was the bug in r3.
+        const byRegion = {
+            US: [
+                { provider_id: 8,   provider_name: 'Netflix',     logo_path: '/n.jpg', display_priority: 1 },
+                { provider_id: 337, provider_name: 'Disney+',     logo_path: '/d.jpg', display_priority: 2 },
+            ],
+            JP: [
+                { provider_id: 8,   provider_name: 'Netflix',     logo_path: '/n.jpg', display_priority: 1 },
+                { provider_id: 283, provider_name: 'Crunchyroll', logo_path: '/c.jpg', display_priority: 2 },
+            ],
+        };
+        global.fetch = vi.fn().mockImplementation((url) => {
+            const region = String(url).match(/watch_region=([A-Z]{2})/i)?.[1]?.toUpperCase() || 'US';
+            return Promise.resolve({
+                ok: true,
+                json: async () => ({ results: byRegion[region] || [] }),
+            });
+        });
+
+        const us = (await getCuratedProviders('US')).map((p) => p.id).sort();
+        const jp = (await getCuratedProviders('JP')).map((p) => p.id).sort();
+        expect(us).not.toEqual(jp);
+        expect(us).toContain(337);
+        expect(jp).toContain(283);
     });
 });
 
