@@ -66,20 +66,30 @@ export function resolveLocaleSync() {
         return { lang: legacy, country: LANG_TO_COUNTRY[legacy] || 'US', source: 'migrated' };
     }
 
-    // 3) navigator.language via Intl.Locale
+    // 3) navigator.language — EN-first policy (04-04-r6).
+    // App's design source language is EN. Only navigator-language values that
+    // are *clearly Turkish* override the EN default; every other browser locale
+    // (de-DE, ja-JP, ko-KR, fr-CA, …) still boots in English so the user sees
+    // the canonical copy and can opt into their own language on S2.
     const nav = (typeof navigator !== 'undefined' && navigator.language) || null;
     if (nav) {
         try {
             const loc = new Intl.Locale(nav);
-            const lang = SUPPORTED_LANGS.includes(loc.language) ? loc.language : 'en';
-            const country = loc.region || LANG_TO_COUNTRY[lang] || 'US';
-            return { lang, country, source: 'navigator' };
+            const lower = String(nav).toLowerCase();
+            const isTurkish = loc.language === 'tr' || lower.startsWith('tr');
+            if (isTurkish) {
+                const country = loc.region || 'TR';
+                return { lang: 'tr', country, source: 'navigator' };
+            }
+            // Non-Turkish navigator → keep EN but remember region for provider region hints.
+            const country = loc.region || 'US';
+            return { lang: 'en', country, source: 'navigator' };
         } catch {
             // Malformed BCP-47 → fall through to default
         }
     }
 
-    // 4) Default
+    // 4) Default — EN/US is the global launch baseline.
     return { lang: 'en', country: 'US', source: 'default' };
 }
 
