@@ -300,8 +300,10 @@ const TR_CURATED = [
     { id: 2864, name: 'Puhu TV',     logo: '/img/providers/puhutv.svg' },
 ];
 
-// Global popular provider IDs — used as an allowlist for non-TR regions.
-// Priority order matches array order (Netflix first → most universal).
+// Tier 1 — Universal popular provider IDs (work across most launch markets).
+// Priority order matches array order (Netflix first → most universal). This is
+// the baseline allowlist applied to every non-TR region; regional additions
+// are layered on top via REGIONAL_POPULAR_PROVIDERS below.
 const GLOBAL_POPULAR_PROVIDER_IDS = [
     8,    // Netflix
     337,  // Disney+
@@ -317,6 +319,35 @@ const GLOBAL_POPULAR_PROVIDER_IDS = [
     283,  // Crunchyroll
     11,   // MUBI
 ];
+
+// Tier 2+ — Region-popular providers layered ON TOP of the universal set.
+// Keys are ISO-3166-1 alpha-2 country codes (uppercase). Values are TMDB
+// provider_ids known to be relevant in that market. IDs that overlap with the
+// universal list (Netflix/Prime/etc.) are intentionally omitted.
+//
+// Notes / caveats:
+//   - 1968 in TR_CURATED is "Gain". The global allowlist must NOT promote 1968
+//     in non-TR regions (Foxtel Now would be a wrong fit anyway); we list 87
+//     Binge + 132 Stan for AU instead.
+//   - 415 Salto (FR) is defunct → skipped.
+//   - Some IDs may not be present in TMDB's current response; filtering uses
+//     the priorityIndex.has() guard so unknown entries are harmless no-ops.
+const REGIONAL_POPULAR_PROVIDERS = {
+    US: [15, 386, 387],                    // Hulu, Peacock, Tubi
+    GB: [38, 39, 1796],                    // BritBox, NOW TV, ITVX (verify)
+    UK: [38, 39, 1796],                    // alias — TMDB sometimes returns UK
+    DE: [29, 56, 178, 532],                // WOW (Sky), Joyn, RTL+, Magenta TV
+    FR: [381, 138],                        // Canal+, OCS
+    ES: [47, 149],                         // Movistar+, FlixOlé
+    IT: [78, 110],                         // TIMVision, Discovery+
+    JP: [84, 191, 1882, 235],              // U-NEXT, Hulu Japan, DAZN, dTV
+    KR: [356, 1947, 97],                   // Wavve, TVING, Coupang Play
+    CA: [230, 387],                        // Crave, Tubi
+    AU: [87, 132],                         // Binge, Stan
+    BR: [188, 167],                        // Globoplay, Looke
+    MX: [387, 1796],                       // Tubi, Vix
+    IN: [122, 232],                        // Hotstar, Zee5
+};
 
 // Default pre-selected provider IDs (top-3 universal).
 const PRE_SELECTED_IDS = new Set([8, 337, 119]);
@@ -343,9 +374,13 @@ export async function getCuratedProviders(country) {
         }));
     }
 
-    // Non-TR: pull TMDB, filter by allowlist, sort by allowlist priority.
+    // Non-TR: pull TMDB, filter by (universal ∪ regional), sort by priority.
+    // 04-04-r6: regional allowlist additions surface BBC iPlayer in UK,
+    // Canal+ in FR, U-NEXT in JP, etc. Universal IDs always rank first.
     const raw = await fetchProviders(cc);
-    const priorityIndex = new Map(GLOBAL_POPULAR_PROVIDER_IDS.map((id, i) => [id, i]));
+    const regional = REGIONAL_POPULAR_PROVIDERS[cc] || [];
+    const combinedOrder = [...GLOBAL_POPULAR_PROVIDER_IDS, ...regional];
+    const priorityIndex = new Map(combinedOrder.map((id, i) => [id, i]));
 
     let filtered = raw
         .filter((p) => priorityIndex.has(p.provider_id))
@@ -388,7 +423,19 @@ export async function getCuratedProviders(country) {
         ];
     }
 
-    return filtered.slice(0, 10);
+    // 04-04-r6: cap raised 10 → 12 to make room for regional additions.
+    return filtered.slice(0, 12);
+}
+
+/**
+ * Test-only export: get the regional+universal allowlist for a given country.
+ * Returns an ordered array of provider IDs that would be accepted from TMDB.
+ * Used by tests to assert regional deltas without an actual fetch.
+ */
+export function _getAllowlistForCountry(country) {
+    const cc = (country || '').toUpperCase();
+    const regional = REGIONAL_POPULAR_PROVIDERS[cc] || [];
+    return [...GLOBAL_POPULAR_PROVIDER_IDS, ...regional];
 }
 
 /**
