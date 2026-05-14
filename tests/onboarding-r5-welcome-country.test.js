@@ -52,29 +52,31 @@ afterEach(() => {
 });
 
 describe('04-04-r5 — S1 Welcome new content', () => {
-    it('renders wordmark, tagline, value props, featured rotator and CTA', async () => {
+    it('renders refined wordmark bar, asymmetric poster trio, value props and CTA', async () => {
         startOnboarding();
         await new Promise((r) => setTimeout(r, 20));
 
         const root = document.getElementById('onboarding-root');
         expect(root).toBeTruthy();
 
-        const wordmark = root.querySelector('.onb-wordmark');
+        // 04-04-r6: wordmark is now in a top-left brand bar (no tagline).
+        const wordmark = root.querySelector('.onb-wordmark.onb-wordmark-bar');
         expect(wordmark).toBeTruthy();
         expect(wordmark.textContent.trim().toLowerCase()).toBe('lumi');
-
-        expect(root.querySelector('.onb-tagline')).toBeTruthy();
+        // Tagline pair was removed from S1 (lives on Premium slide instead).
+        expect(root.querySelector('.onb-slide-welcome .onb-tagline')).toBeFalsy();
 
         const pills = root.querySelectorAll('.onb-value-pill');
         expect(pills.length).toBe(3);
 
-        expect(root.querySelector('.onb-featured')).toBeTruthy();
-        expect(root.querySelectorAll('.onb-featured-frame').length).toBe(6);
+        // 04-04-r6: single rotating poster replaced by a 3-poster asymmetric pile.
+        expect(root.querySelector('.onb-poster-trio')).toBeTruthy();
+        expect(root.querySelectorAll('.onb-trio-poster').length).toBe(3);
 
         const cta = root.querySelector('.onb-slide-welcome .onb-cta');
         expect(cta).toBeTruthy();
-        // TR fallback is "Sahne hazırlansın".
-        expect(cta.textContent).toMatch(/Sahne|scene/i);
+        // EN canonical is "Set the scene"; TR is "Sahneyi hazırla".
+        expect(cta.textContent).toMatch(/scene|Sahne/i);
     });
 });
 

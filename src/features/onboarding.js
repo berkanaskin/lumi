@@ -991,39 +991,34 @@ function renderWizard(options = {}) {
     function buildWelcome() {
         const slide = el('div', { class: 'onb-slide onb-slide-welcome', 'data-dir': state.direction });
 
-        // --- Wordmark + tagline (top) ---
-        const brand = el('div', { class: 'onb-brand', 'aria-hidden': 'false' });
-        const wordmark = el('div', { class: 'onb-wordmark', text: 'lumi' });
-        const tagline = el('div', {
-            class: 'onb-tagline',
-            text: t('onboarding.welcome.tagline', 'Film gecesi asistanın'),
-        });
+        // --- Top app-bar style brand (small, top-left). 04-04-r6:
+        // The giant centered wordmark + tagline pair was replaced with a single
+        // refined "lumi" mark anchored top-left, the way Apple TV / Netflix do.
+        const brand = el('div', { class: 'onb-brand onb-brand-bar', 'aria-hidden': 'false' });
+        const wordmark = el('div', { class: 'onb-wordmark onb-wordmark-bar', text: 'lumi' });
         brand.appendChild(wordmark);
-        brand.appendChild(tagline);
         slide.appendChild(brand);
 
-        // --- Featured posters rotator (Ken Burns + crossfade) ---
-        // 04-04-r5: hand-picked iconic TMDB IDs. Falls back to gradient if any 404.
-        const FEATURED_TMDB = [
-            { id: 27205, type: 'movie' }, // Inception
-            { id: 157336, type: 'movie' }, // Interstellar
-            { id: 1396, type: 'tv' },      // Breaking Bad
-            { id: 66732, type: 'tv' },     // Stranger Things
-            { id: 438631, type: 'movie' }, // Dune
-            { id: 155, type: 'movie' },    // The Dark Knight
+        // --- Asymmetric poster trio (foreground hero). 04-04-r6:
+        // Single rotating poster replaced with a 3-poster "pile" — different
+        // sizes, slight rotation, shadow-stacked. Posters resolve via TMDB.
+        const TRIO_TMDB = [
+            { id: 27205,  type: 'movie' }, // Inception (left, back)
+            { id: 157336, type: 'movie' }, // Interstellar (center, front)
+            { id: 66732,  type: 'tv' },    // Stranger Things (right, mid)
         ];
-        const featured = el('div', { class: 'onb-featured', 'aria-hidden': 'true' });
-        FEATURED_TMDB.forEach((_, idx) => {
-            featured.appendChild(el('div', {
-                class: `onb-featured-frame${idx === 0 ? ' active' : ''}`,
+        const trio = el('div', { class: 'onb-poster-trio', 'aria-hidden': 'true' });
+        TRIO_TMDB.forEach((_, idx) => {
+            trio.appendChild(el('div', {
+                class: `onb-trio-poster onb-trio-poster-${idx}`,
                 'data-idx': String(idx),
             }));
         });
-        slide.appendChild(featured);
+        slide.appendChild(trio);
 
         // Lazy-load poster paths via TMDB; gracefully no-op on failure.
         (async () => {
-            const urls = await Promise.all(FEATURED_TMDB.map(async (item) => {
+            const urls = await Promise.all(TRIO_TMDB.map(async (item) => {
                 try {
                     const r = await fetch(`/api/tmdb?endpoint=/${item.type}/${item.id}`);
                     if (!r || !r.ok) return null;
@@ -1033,43 +1028,31 @@ function renderWizard(options = {}) {
                         : null;
                 } catch { return null; }
             }));
-            featured.querySelectorAll('.onb-featured-frame').forEach((frame, i) => {
-                if (urls[i]) frame.style.backgroundImage = `url("${urls[i]}")`;
+            trio.querySelectorAll('.onb-trio-poster').forEach((p, i) => {
+                if (urls[i]) p.style.backgroundImage = `url("${urls[i]}")`;
             });
         })();
-
-        // Rotate every 3.5s with crossfade.
-        if (!prefersReducedMotion()) {
-            let curIdx = 0;
-            const frames = featured.querySelectorAll('.onb-featured-frame');
-            const rotateTimer = setInterval(() => {
-                if (!document.body.contains(featured)) { clearInterval(rotateTimer); return; }
-                frames[curIdx].classList.remove('active');
-                curIdx = (curIdx + 1) % frames.length;
-                frames[curIdx].classList.add('active');
-            }, 3500);
-        }
 
         // --- Hero copy (mega headline + body) ---
         const hero = el('h1', {
             class: 'onb-hero-title onb-hero-typeon',
             id: 'onb-slide-heading',
             'data-onb-heading': '',
-            text: t('onboarding.welcome.title', 'Bu akşam ne izlesem?'),
+            text: t('onboarding.welcome.title', 'What should we watch tonight?'),
         });
         slide.appendChild(hero);
         requestAnimationFrame(() => applyLetterTypeOn(hero));
         slide.appendChild(el('p', {
             class: 'onb-hero-sub',
-            text: t('onboarding.welcome.sub', 'Lumi, ruh hâline göre filmi bulur. 5 saniyede, doğru film.'),
+            text: t('onboarding.welcome.sub', 'Lumi reads your mood and surfaces the right film in seconds. 200+ countries, 10+ languages, one perfect pick.'),
         }));
 
         // --- 3-up value props (frosted pills) ---
         const props = el('div', { class: 'onb-value-props', role: 'list' });
         const valueRows = [
-            { icon: '🎯', title: t('onboarding.welcome.prop1.title', 'Doğru film'),  body: t('onboarding.welcome.prop1.body', 'AI ruh hâlini anlar') },
-            { icon: '⚡', title: t('onboarding.welcome.prop2.title', 'Saniyeler'),   body: t('onboarding.welcome.prop2.body', '5 saniyede öneri') },
-            { icon: '🌍', title: t('onboarding.welcome.prop3.title', 'Türkçe + global'), body: t('onboarding.welcome.prop3.body', '10+ dil, 200+ ülke') },
+            { icon: '🎯', title: t('onboarding.welcome.prop1.title', "Tonight's pick"),         body: t('onboarding.welcome.prop1.body', 'One right film') },
+            { icon: '⚡', title: t('onboarding.welcome.prop2.title', 'In seconds'),             body: t('onboarding.welcome.prop2.body', 'Picked in 5s') },
+            { icon: '🌍', title: t('onboarding.welcome.prop3.title', 'Anywhere, any language'), body: t('onboarding.welcome.prop3.body', '200+ countries, 10+ langs') },
         ];
         valueRows.forEach((row) => {
             const pill = el('div', { class: 'onb-value-pill', role: 'listitem' }, [
@@ -1083,10 +1066,10 @@ function renderWizard(options = {}) {
         });
         slide.appendChild(props);
 
-        // --- Particle dust field (decorative) ---
+        // --- Particle dust field (decorative, low-intensity per r6 brief) ---
         if (!prefersReducedMotion()) {
             const dust = el('div', { class: 'onb-dust', 'aria-hidden': 'true' });
-            for (let i = 0; i < 7; i++) {
+            for (let i = 0; i < 3; i++) {
                 const m = el('span', { class: 'onb-dust-mote' });
                 m.style.setProperty('--mx', (Math.random() * 100) + '%');
                 m.style.setProperty('--dur', (8 + Math.random() * 6) + 's');
@@ -1101,7 +1084,7 @@ function renderWizard(options = {}) {
         slide.appendChild(el('button', {
             class: 'onb-cta',
             type: 'button',
-            text: t('onboarding.welcome.cta', 'Sahne hazırlansın'),
+            text: t('onboarding.welcome.cta', 'Set the scene'),
             onclick: () => { haptic.tap(); goto(1); },
         }));
         return slide;
