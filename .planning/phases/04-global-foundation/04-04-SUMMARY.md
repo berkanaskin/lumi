@@ -292,3 +292,14 @@ Two-commit round bringing the wizard up to App Store submission visual bar.
 
 **R2 Commits:** `4ff1e24` (functional fixes), `7fd125f` (cinema visuals), `<this docs commit>` (R2 summary + state).
 
+
+
+## Round r3 — Platform logos + non-TR region fix (2026-05-14)
+
+- Replaced TMDB-hotlinked logos in TR_CURATED (11) and static fallback (5) with local /img/providers/* paths.
+- Removed bogus abc.jpg placeholder; Puhu TV now points at gain/exxen/tabii/tod/puhutv.svg generated placeholders.
+- 11 real PNG logos committed for major platforms; 5 SVG gradient placeholders for TR niche (Gain, Exxen, Tabii, TOD, Puhu TV).
+- Deleted 5 unusable favicon ICOs (16/32px).
+- fetchProviders now uppercases country and filters by display_priorities[cc] before sorting — ensures non-TR users only see providers actually available in their region.
+- New test file tests/onboarding-platforms.test.js (5 tests) covers TR locality, US allowlist+region intersection, fallback path.
+- Test suite: 258 passed / 8 pre-existing failures (Phase-03.2 stale, untouched).
