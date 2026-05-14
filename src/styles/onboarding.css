@@ -1167,18 +1167,70 @@
     100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
 }
 
-/* 04-04-r4: country slide is the tallest (title + sub + map + search + list +
-   CTA). With .onb-stage's justify-content: center, the heading can collide
-   with the topbar's back button on shorter viewports. Top-align this slide
-   and reserve clear space above the title so the back button is unambiguous. */
+/* 04-04-r5: Country slide must guarantee CTA visibility on small viewports
+   (360-430px). Layout: title/sub fixed at top, map+card scrollable middle,
+   CTA sticky-bottom with safe-area inset. Without this, on a 390px viewport
+   the world map + country list + CTA together exceed 100vh and the CTA gets
+   clipped or pushed below the fold. */
 .onb-stage:has(.onb-slide-country) {
     justify-content: flex-start;
+    /* Allow the slide to stretch to the full stage height so flex children
+       can divide vertical space correctly. */
+    align-items: stretch;
+    overflow: hidden;
 }
 .onb-slide-country {
     padding-top: 8px;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 .onb-slide-country .onb-card-title {
     margin-top: 4px;
+    flex-shrink: 0;
+}
+.onb-slide-country .onb-card-sub {
+    flex-shrink: 0;
+}
+.onb-slide-country .onb-world-map {
+    flex-shrink: 0;
+    /* 04-04-r5: shorter map on mobile — country list is the primary input,
+       map is decorative. Frees ~70px for the CTA + list. */
+    max-height: 140px;
+    height: 130px;
+}
+/* The frosted card holds search + scrollable country list. It must shrink
+   so the CTA at the bottom always stays visible. */
+.onb-slide-country .onb-card {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 14px 14px;
+}
+.onb-slide-country .onb-card .onb-search {
+    flex-shrink: 0;
+}
+.onb-slide-country .onb-card .onb-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+/* Sticky CTA at the bottom with safe-area inset (iOS notch). */
+.onb-slide-country > .onb-cta {
+    flex-shrink: 0;
+    margin-top: 4px;
+    margin-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (max-height: 700px) {
+    .onb-slide-country .onb-world-map { height: 96px; max-height: 110px; }
+}
+@media (max-height: 620px) {
+    .onb-slide-country .onb-world-map { display: none; }
 }
 
 .onb-slide-country .onb-card {
@@ -1324,3 +1376,191 @@
     .onb-vault.open .onb-vault-half { transform: translateX(0); display: none; }
 }
 
+/* =====================================================================
+   04-04-r5 — S1 Welcome redesign: brand wordmark, featured poster
+   rotator (Ken Burns + crossfade), value props row, particle dust.
+   ===================================================================== */
+.onb-slide-welcome {
+    gap: 14px;
+    align-items: stretch;
+}
+
+/* Wordmark "lumi" + tagline */
+.onb-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    margin-bottom: 2px;
+}
+.onb-wordmark {
+    font-size: 44px;
+    line-height: 1;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #f4a261 0%, #ff5d8f 60%, #c77dff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    text-shadow: none;
+    filter: drop-shadow(0 0 18px rgba(255, 93, 143, 0.45));
+}
+.onb-tagline {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--onb-text-dim);
+    opacity: 0.85;
+}
+
+/* Featured poster rotator */
+.onb-featured {
+    position: relative;
+    width: 70%;
+    max-width: 240px;
+    aspect-ratio: 2 / 3;
+    margin: 4px auto 6px;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow:
+        0 24px 64px rgba(0, 0, 0, 0.6),
+        0 8px 24px rgba(255, 93, 143, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: linear-gradient(135deg, #1a1226 0%, #2b1f3f 100%);
+}
+.onb-featured-frame {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transform: scale(1.04);
+    transition: opacity 1.1s ease, transform 4s ease;
+    will-change: opacity, transform;
+}
+.onb-featured-frame.active {
+    opacity: 1;
+    transform: scale(1.12); /* slow Ken Burns zoom */
+}
+.onb-featured::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+        ellipse at center,
+        transparent 50%,
+        rgba(0, 0, 0, 0.45) 100%
+    );
+}
+
+/* Hero copy after the poster */
+.onb-slide-welcome .onb-hero-title {
+    font-size: 38px;
+    text-align: center;
+    margin-top: 4px;
+}
+.onb-slide-welcome .onb-hero-sub {
+    text-align: center;
+    margin: 0 auto;
+    max-width: 30ch;
+    opacity: 0.7;
+}
+
+/* 3-up value props */
+.onb-value-props {
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+    margin-top: 6px;
+    justify-content: space-between;
+}
+.onb-value-pill {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 6px;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(8px);
+    animation: onb-rise 0.5s var(--onb-ease) forwards;
+}
+.onb-value-props .onb-value-pill:nth-child(1) { animation-delay: 0.55s; }
+.onb-value-props .onb-value-pill:nth-child(2) { animation-delay: 0.65s; }
+.onb-value-props .onb-value-pill:nth-child(3) { animation-delay: 0.75s; }
+
+.onb-value-icon {
+    font-size: 20px;
+    line-height: 1;
+}
+.onb-value-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.005em;
+}
+.onb-value-body {
+    font-size: 10.5px;
+    color: var(--onb-text-dim);
+    line-height: 1.25;
+    margin-top: 1px;
+}
+
+.onb-welcome-spacer { flex: 1; min-height: 4px; }
+
+/* Particle dust field (decorative) */
+.onb-dust {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+}
+.onb-dust-mote {
+    position: absolute;
+    bottom: -10px;
+    left: var(--mx, 50%);
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--hue, #f4a261);
+    opacity: 0.3;
+    filter: blur(1px);
+    animation: onb-dust-rise var(--dur, 10s) linear var(--delay, 0s) infinite;
+}
+@keyframes onb-dust-rise {
+    0%   { transform: translateY(0) translateX(0);   opacity: 0; }
+    10%  { opacity: 0.35; }
+    50%  { transform: translateY(-50vh) translateX(8px); }
+    90%  { opacity: 0.25; }
+    100% { transform: translateY(-100vh) translateX(-6px); opacity: 0; }
+}
+
+/* Small viewport polish */
+@media (max-height: 700px) {
+    .onb-featured { width: 56%; max-width: 200px; }
+    .onb-wordmark { font-size: 38px; }
+    .onb-slide-welcome .onb-hero-title { font-size: 32px; }
+    .onb-value-body { display: none; }
+    .onb-value-pill { padding: 8px 4px; }
+}
+@media (max-height: 600px) {
+    .onb-featured { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .onb-featured-frame.active { transform: scale(1); }
+    .onb-featured-frame { transition: opacity 0.4s ease; }
+    .onb-dust { display: none; }
+    .onb-value-pill { animation: none; opacity: 1; transform: none; }
+}
