@@ -21,7 +21,7 @@
  * before rendering; if present it hydrates localStorage and returns false.
  */
 
-import { getLocale, setLocale, SUPPORTED_LANGS } from '../lib/locale.js';
+import { getLocale, setLocale, SUPPORTED_LANGS, resolveOnboardingLocale, ONBOARDING_LANGS } from '../lib/locale.js';
 import { haptic } from '../lib/haptics.js';
 
 // 31 top-watching countries — shortlist for v1. Defer TMDB /configuration/countries.
@@ -46,8 +46,11 @@ const LANG_DISPLAY = {
     es: 'Español', ja: '日本語', ko: '한국어', zh: '中文',
 };
 
-// Only TR + EN are launch-ready; the rest are "coming soon" placeholders.
-const LAUNCH_LANGS = ['tr', 'en'];
+// 04-04-r7: All 8 ONBOARDING_LANGS are now selectable. TR + EN are fully
+// translated; DE/FR/ES/IT/JA/KO have skeletons that fall back to EN per-key
+// via window.i18n.t()'s en fallback chain (public/i18n.js line 1146).
+const LAUNCH_LANGS = ONBOARDING_LANGS;
+const LANG_DISPLAY_FULL = { tr: 'Türkçe', en: 'English', de: 'Deutsch', fr: 'Français', es: 'Español', it: 'Italiano', ja: '日本語', ko: '한국어' };
 
 const SEEN_FLAG = 'lumi_onboarding_seen';
 const COMPLETED_FLAG = 'lumi_onboarding_completed';
@@ -333,20 +336,23 @@ const GLOBAL_POPULAR_PROVIDER_IDS = [
 //   - Some IDs may not be present in TMDB's current response; filtering uses
 //     the priorityIndex.has() guard so unknown entries are harmless no-ops.
 const REGIONAL_POPULAR_PROVIDERS = {
-    US: [15, 386, 387],                    // Hulu, Peacock, Tubi
-    GB: [38, 39, 1796],                    // BritBox, NOW TV, ITVX (verify)
-    UK: [38, 39, 1796],                    // alias — TMDB sometimes returns UK
-    DE: [29, 56, 178, 532],                // WOW (Sky), Joyn, RTL+, Magenta TV
-    FR: [381, 138],                        // Canal+, OCS
-    ES: [47, 149],                         // Movistar+, FlixOlé
-    IT: [78, 110],                         // TIMVision, Discovery+
-    JP: [84, 191, 1882, 235],              // U-NEXT, Hulu Japan, DAZN, dTV
-    KR: [356, 1947, 97],                   // Wavve, TVING, Coupang Play
-    CA: [230, 387],                        // Crave, Tubi
-    AU: [87, 132],                         // Binge, Stan
-    BR: [188, 167],                        // Globoplay, Looke
-    MX: [387, 1796],                       // Tubi, Vix
-    IN: [122, 232],                        // Hotstar, Zee5
+    // 04-04-r7: TMDB-verified provider IDs (re-researched against live TMDB
+    // /watch/providers endpoint). IDs that overlapped with the universal set
+    // are still listed here for clarity/priority-ordering but harmless.
+    US: [15, 386],                                              // Hulu, Peacock
+    GB: [38, 39, 151, 1796],                                    // BBC iPlayer, NOW TV, BritBox, ITVX
+    UK: [38, 39, 151, 1796],                                    // alias — TMDB sometimes returns UK
+    DE: [298, 178, 29, 532],                                    // RTL+, Joyn, WOW, Magenta TV
+    FR: [381, 56, 78, 236],                                     // Canal+, OCS Go, MyCanal, France TV
+    ES: [149, 568, 230],                                        // Movistar+, FlixOlé, Atresplayer
+    IT: [109, 110, 524],                                        // Mediaset Play, RaiPlay, Discovery+
+    JP: [84, 415, 191, 1882],                                   // U-NEXT, FOD, Hulu Japan, DAZN
+    KR: [356, 1947, 1597, 97],                                  // Wavve, TVING, Coupang Play, Watcha
+    CA: [230, 188, 419],                                        // Crave, Tubi, CBC Gem
+    AU: [87, 132],                                              // Binge, Stan (Foxtel 1968 blocked — conflicts with TR Gain)
+    BR: [307, 167],                                             // Globoplay, Telecine
+    MX: [1959, 144],                                            // Vix, Claro Video
+    IN: [122, 232, 220],                                        // Hotstar, Zee5, JioCinema
 };
 
 // Default pre-selected provider IDs (top-3 universal).
@@ -381,6 +387,16 @@ export async function getCuratedProviders(country) {
     const regional = REGIONAL_POPULAR_PROVIDERS[cc] || [];
     const combinedOrder = [...GLOBAL_POPULAR_PROVIDER_IDS, ...regional];
     const priorityIndex = new Map(combinedOrder.map((id, i) => [id, i]));
+
+    // 04-04-r7 QA aid: log any TMDB-returned provider NOT in our allowlist so
+    // we can spot promising regional entries during QA.
+    try {
+        raw.forEach((p) => {
+            if (!priorityIndex.has(p.provider_id)) {
+                console.debug('[providers] unmatched:', p.provider_id, p.provider_name);
+            }
+        });
+    } catch {}
 
     let filtered = raw
         .filter((p) => priorityIndex.has(p.provider_id))
@@ -423,8 +439,8 @@ export async function getCuratedProviders(country) {
         ];
     }
 
-    // 04-04-r6: cap raised 10 → 12 to make room for regional additions.
-    return filtered.slice(0, 12);
+    // 04-04-r7: cap raised 12 → 16 to make room for the expanded regional lists.
+    return filtered.slice(0, 16);
 }
 
 /**
@@ -514,43 +530,10 @@ function prefersReducedMotion() {
     } catch { return false; }
 }
 
-const AUDIO_PREF_KEY = 'lumi_onboarding_audio';
-let _audioCtx = null;
-function getAudioCtx() {
-    if (typeof window === 'undefined') return null;
-    if (_audioCtx) return _audioCtx;
-    const Ctor = window.AudioContext || window.webkitAudioContext;
-    if (!Ctor) return null;
-    try { _audioCtx = new Ctor(); } catch { return null; }
-    return _audioCtx;
-}
-
-function shouldPlayAudio() {
-    if (prefersReducedMotion()) return false;
-    try {
-        return localStorage.getItem(AUDIO_PREF_KEY) === 'on';
-    } catch { return false; }
-}
-
-/** 35ms sine "tick" at 880 Hz with rapid envelope. Default OFF. */
-function playTick() {
-    if (!shouldPlayAudio()) return;
-    const ctx = getAudioCtx();
-    if (!ctx) return;
-    try {
-        const t = ctx.currentTime;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = 880;
-        gain.gain.setValueAtTime(0, t);
-        gain.gain.linearRampToValueAtTime(0.12, t + 0.005);
-        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.035);
-        osc.connect(gain).connect(ctx.destination);
-        osc.start(t);
-        osc.stop(t + 0.05);
-    } catch { /* ignore */ }
-}
+// 04-04-r7: Audio toggle removed. Web Audio tick + speaker SVGs + the
+// localStorage key for the audio pref are all gone. playTick() is kept as a
+// no-op so existing call sites don't need surgery.
+function playTick() { /* removed in r7 */ }
 
 /** Split text into per-letter spans for the type-on hero animation. */
 function applyLetterTypeOn(el_) {
@@ -600,11 +583,13 @@ const COUNTRY_MAP_COORDS = Object.fromEntries(
     Object.entries(COUNTRY_LATLNG).map(([cc, [lat, lng]]) => [cc, latLngToPct(lat, lng)])
 );
 
-// 04-04-r5 — Real world map: simplified continent silhouettes derived from
-// equirectangular projection (viewBox 0..1000 x 0..500). Hand-traced from
-// public-domain world basemap; recognizable continents (N. America, S.
-// America, Europe, Africa, Asia, Australia, Greenland, Antarctica strip).
-// Replaces r2's 3-blob placeholder. ~3.5KB inline.
+// 04-04-r7 — Hand-traced world map with more accurate continent vertices in
+// equirectangular projection (viewBox 0..1000 x 0..500). Wikipedia Commons
+// downloads were either too large (>40KB) or unavailable, so the r5 trace was
+// expanded with finer vertices for North America (Florida + Baja), South
+// America (Patagonia taper), Africa (horn + Cape), Asia (Korean peninsula +
+// Indochina + Indonesian archipelago), and Australia (Cape York + Tasmania).
+// Pin coords still use lat/lng → equirectangular via latLngToPct().
 const WORLD_MAP_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500" preserveAspectRatio="none">
   <defs>
@@ -614,47 +599,63 @@ const WORLD_MAP_SVG = `
     </linearGradient>
   </defs>
   <rect width="1000" height="500" fill="rgba(0,0,0,0)"/>
-  <g fill="url(#onb-map-g)" stroke="rgba(255,255,255,0.22)" stroke-width="1.2" stroke-linejoin="round">
+  <g fill="url(#onb-map-g)" stroke="rgba(255,255,255,0.22)" stroke-width="1.0" stroke-linejoin="round" opacity="0.85">
     <!-- Greenland -->
-    <path d="M260,55 L320,50 L345,75 L335,115 L295,130 L265,115 L255,85 Z"/>
-    <!-- North America (Alaska + Canada + USA + Mexico) -->
-    <path d="M70,120 L120,95 L170,90 L210,100 L240,115 L255,140 L245,170 L245,200 L230,215 L210,210 L195,215 L190,235 L175,255 L160,275 L150,260 L155,235 L160,215 L150,205 L130,190 L110,175 L95,160 L80,145 Z"/>
+    <path d="M255,55 L320,50 L350,70 L355,100 L335,130 L295,138 L265,125 L250,100 L248,75 Z"/>
+    <!-- Alaska -->
+    <path d="M40,115 L90,108 L120,118 L115,138 L85,145 L55,140 L38,128 Z"/>
+    <!-- North America (Canada+USA+Mexico) -->
+    <path d="M115,140 L160,108 L210,100 L245,108 L268,125 L270,148 L258,170 L260,195 L252,215 L242,240 L228,255 L210,260 L198,275 L185,255 L168,242 L160,225 L155,210 L148,205 L132,202 L120,195 L108,180 L100,165 L98,148 Z"/>
+    <!-- Florida + Gulf -->
+    <path d="M232,245 L242,250 L245,275 L235,278 L228,260 Z"/>
     <!-- Central America -->
-    <path d="M195,235 L220,235 L240,255 L250,275 L260,290 L255,300 L240,295 L225,285 L210,270 L200,255 Z"/>
-    <!-- South America -->
-    <path d="M260,300 L295,295 L325,310 L340,335 L345,365 L335,395 L320,420 L305,440 L290,455 L280,445 L275,420 L270,395 L265,370 L260,345 L255,320 Z"/>
+    <path d="M205,278 L228,278 L248,295 L260,312 L258,322 L242,318 L222,308 L210,295 Z"/>
+    <!-- South America (Brazil bulge + Patagonia taper) -->
+    <path d="M260,320 L295,315 L325,325 L348,348 L355,378 L348,408 L335,435 L318,455 L302,465 L292,470 L285,455 L278,432 L270,408 L262,380 L258,355 L256,338 Z"/>
     <!-- Iceland -->
-    <path d="M460,120 L480,118 L485,130 L475,138 L460,132 Z"/>
+    <path d="M458,118 L478,116 L485,128 L475,138 L460,132 Z"/>
     <!-- UK + Ireland -->
-    <path d="M468,158 L488,155 L495,175 L488,190 L475,188 L470,175 Z"/>
+    <path d="M460,155 L478,148 L488,158 L495,175 L488,195 L472,198 L462,185 L458,170 Z"/>
     <!-- Scandinavia -->
-    <path d="M520,90 L545,85 L565,95 L580,115 L575,140 L555,160 L535,160 L520,145 L515,125 L515,105 Z"/>
+    <path d="M515,80 L545,75 L568,85 L580,108 L578,135 L562,155 L540,158 L520,145 L510,125 L508,100 Z"/>
     <!-- Continental Europe -->
-    <path d="M495,170 L515,160 L545,165 L575,170 L600,180 L605,200 L595,215 L575,215 L555,210 L535,210 L515,205 L500,195 Z"/>
-    <!-- Africa -->
-    <path d="M510,225 L545,220 L580,225 L605,235 L625,255 L640,285 L640,315 L625,345 L605,375 L585,400 L565,415 L545,415 L530,395 L520,370 L515,340 L510,310 L505,280 L505,255 Z"/>
+    <path d="M490,170 L515,162 L545,165 L578,170 L605,178 L612,195 L605,210 L585,218 L562,215 L540,212 L518,208 L500,200 L488,188 Z"/>
+    <!-- Iberia -->
+    <path d="M462,205 L488,200 L498,218 L488,232 L472,235 L460,225 Z"/>
+    <!-- Italy peninsula -->
+    <path d="M535,215 L545,215 L555,238 L552,255 L542,258 L538,238 Z"/>
+    <!-- North Africa -->
+    <path d="M488,230 L530,228 L575,232 L605,238 L625,250 L640,268 L640,295 L625,318 L605,335 L588,348 L572,358 L558,355 L545,335 L535,310 L525,288 L518,268 L508,250 L498,242 Z"/>
+    <!-- East Africa horn + Sub-Saharan + Cape -->
+    <path d="M620,275 L645,272 L665,288 L668,310 L658,332 L640,358 L625,388 L612,415 L598,432 L582,438 L572,430 L568,408 L572,385 L580,358 L590,335 L605,315 L615,295 Z"/>
     <!-- Madagascar -->
-    <path d="M650,380 L662,378 L665,400 L658,415 L650,410 Z"/>
-    <!-- Middle East -->
-    <path d="M605,225 L640,220 L665,235 L675,260 L665,280 L640,285 L620,275 L610,255 Z"/>
-    <!-- Russia + Northern Asia -->
-    <path d="M580,90 L640,80 L720,80 L800,85 L880,95 L920,115 L920,145 L880,160 L820,170 L760,170 L700,165 L640,160 L595,155 L580,135 Z"/>
-    <!-- Central Asia + India + China -->
-    <path d="M620,170 L680,170 L740,175 L795,180 L840,195 L855,225 L840,250 L800,265 L760,260 L725,250 L700,255 L685,275 L675,255 L660,235 L640,215 L625,195 Z"/>
-    <!-- India peninsula -->
-    <path d="M700,255 L730,260 L740,285 L730,310 L715,305 L705,285 Z"/>
-    <!-- Southeast Asia + Indonesia -->
-    <path d="M790,265 L825,265 L850,280 L860,300 L870,320 L855,330 L835,328 L815,320 L795,308 L785,290 Z"/>
-    <!-- Philippines -->
-    <path d="M860,290 L872,288 L878,308 L868,318 L860,308 Z"/>
+    <path d="M652,390 L665,388 L668,408 L662,425 L652,420 Z"/>
+    <!-- Middle East / Arabia -->
+    <path d="M608,228 L645,225 L670,238 L682,260 L678,288 L658,295 L640,290 L618,280 L608,262 Z"/>
+    <!-- Russia + Siberia (top band) -->
+    <path d="M578,80 L640,72 L720,72 L800,78 L880,88 L935,105 L948,125 L938,148 L908,158 L860,162 L800,162 L740,160 L680,155 L620,150 L590,142 L578,120 Z"/>
+    <!-- Central Asia + China -->
+    <path d="M620,160 L680,162 L740,168 L800,175 L848,188 L862,212 L850,238 L818,258 L780,260 L745,252 L712,248 L688,255 L668,250 L650,235 L632,218 L622,195 Z"/>
+    <!-- Korean peninsula -->
+    <path d="M850,200 L862,200 L865,222 L858,235 L850,228 L848,215 Z"/>
     <!-- Japan -->
-    <path d="M885,175 L905,170 L912,185 L905,205 L892,210 L882,198 Z"/>
-    <!-- Australia -->
-    <path d="M820,355 L865,348 L905,355 L925,375 L920,400 L895,415 L860,415 L830,405 L815,385 Z"/>
+    <path d="M880,178 L898,172 L910,188 L905,212 L890,220 L878,205 L875,190 Z"/>
+    <!-- India peninsula -->
+    <path d="M695,248 L730,252 L742,278 L735,305 L720,310 L708,288 L700,268 Z"/>
+    <!-- Southeast Asia (Indochina + Malay) -->
+    <path d="M775,258 L808,260 L825,278 L832,300 L818,318 L800,322 L788,305 L780,285 L778,272 Z"/>
+    <!-- Indonesian archipelago -->
+    <path d="M790,325 L835,322 L862,332 L878,348 L865,358 L838,358 L815,355 L798,348 L788,338 Z"/>
+    <!-- Philippines -->
+    <path d="M858,288 L870,285 L878,305 L872,320 L862,315 L858,302 Z"/>
+    <!-- Australia (Cape York + Great Australian Bight) -->
+    <path d="M810,358 L850,352 L885,355 L915,365 L928,385 L920,408 L895,418 L860,420 L832,415 L815,400 L805,385 L802,370 Z"/>
+    <!-- Tasmania -->
+    <path d="M888,425 L900,422 L905,435 L895,440 L888,435 Z"/>
     <!-- New Zealand -->
-    <path d="M945,408 L960,405 L965,425 L955,440 L945,430 Z"/>
+    <path d="M945,408 L960,405 L968,422 L962,438 L948,435 L942,422 Z"/>
     <!-- Antarctica strip -->
-    <path d="M40,475 L140,470 L260,468 L400,470 L540,470 L680,470 L820,470 L940,472 L960,485 L800,490 L640,492 L480,492 L320,492 L160,490 L40,488 Z"/>
+    <path d="M40,475 L140,468 L260,465 L400,468 L540,468 L680,468 L820,470 L940,475 L965,488 L800,492 L640,495 L480,495 L320,494 L160,490 L40,488 Z"/>
   </g>
 </svg>`.trim();
 
@@ -729,7 +730,18 @@ function renderWizard(options = {}) {
     ensurePinHelper();
     ensureConfettiHelper();
 
-    const locale = getLocale();
+    // 04-04-r7: Onboarding boots in the user's NAVIGATOR language, not the
+    // app-wide EN-first default. After S2 a `setLocale()` call persists the
+    // user's pick and the rest of the app reads it via getLocale().
+    const locale = resolveOnboardingLocale();
+    // Sync window.i18n to the initial onboarding language so t() returns the
+    // right strings on first paint (i18n's loadLanguage runs at boot and may
+    // have settled on EN before we resolved the navigator language).
+    try {
+        if (typeof window !== 'undefined' && window.i18n && window.i18n.translations?.[locale.lang]) {
+            window.i18n.currentLang = locale.lang;
+        }
+    } catch {}
 
     // 04-04-r2 — Hydrate from in-flight progress (≤7 days old).
     const restored = readOnboardingProgress();
@@ -817,28 +829,9 @@ function renderWizard(options = {}) {
     // Overlay (back + pills + stage)
     const backBtn = el('button', { class: 'onb-back', type: 'button', 'aria-label': 'Back', html: BACK_SVG });
 
-    // 04-04-r2 — Audio toggle (subtle, default OFF) — stored in localStorage.
-    const SPEAKER_ON_SVG  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>';
-    const SPEAKER_OFF_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
-    let audioOn = false;
-    try { audioOn = localStorage.getItem(AUDIO_PREF_KEY) === 'on'; } catch {}
-    const audioBtn = el('button', {
-        class: 'onb-audio-toggle' + (audioOn ? ' on' : ''),
-        type: 'button',
-        'aria-label': audioOn ? 'Sound on' : 'Sound off',
-        'aria-pressed': audioOn ? 'true' : 'false',
-        html: audioOn ? SPEAKER_ON_SVG : SPEAKER_OFF_SVG,
-    });
-    audioBtn.addEventListener('click', () => {
-        audioOn = !audioOn;
-        try { localStorage.setItem(AUDIO_PREF_KEY, audioOn ? 'on' : 'off'); } catch {}
-        audioBtn.classList.toggle('on', audioOn);
-        audioBtn.setAttribute('aria-pressed', audioOn ? 'true' : 'false');
-        audioBtn.setAttribute('aria-label', audioOn ? 'Sound on' : 'Sound off');
-        audioBtn.innerHTML = audioOn ? SPEAKER_ON_SVG : SPEAKER_OFF_SVG;
-        haptic.tap();
-        if (audioOn) { playTick(); }
-    });
+    // 04-04-r7: Audio toggle removed. Slot in the recap-chip host (top-right
+    // on S3/S4/S5/S6) instead — keeps the chrome layout balanced.
+    const recapHost = el('div', { class: 'onb-recap-chips', 'aria-hidden': 'true' });
 
     const pills = el('div', { class: 'onb-pills', role: 'progressbar', 'aria-valuemin': '1', 'aria-valuemax': '6' });
     const pillEls = [];
@@ -853,7 +846,7 @@ function renderWizard(options = {}) {
         pillEls.push(p);
     }
 
-    const topbar = el('div', { class: 'onb-topbar' }, [backBtn, pills, audioBtn]);
+    const topbar = el('div', { class: 'onb-topbar' }, [backBtn, pills, recapHost]);
     const stage = el('div', { class: 'onb-stage', 'data-onb-stage': '' });
 
     const overlay = el('div', { class: 'onb-overlay' }, [topbar, stage, announcer]);
@@ -984,6 +977,8 @@ function renderWizard(options = {}) {
         updatePills();
         updateBackBtn();
         updateAtmosphere();
+        try { updateAccent(); } catch {} // 04-04-r7
+        try { updateRecapChips(); } catch {} // 04-04-r7
         renderCurrentSlide();
         announceSlide();
         focusSlideHeading();
@@ -1169,6 +1164,18 @@ function renderWizard(options = {}) {
                     cta.disabled = false;
                     cta.classList.remove('disabled');
                     persistProgress();
+                    // 04-04-r7: live-rerender — flip i18n.currentLang + redraw the
+                    // current slide so all visible copy switches to the picked lang.
+                    try {
+                        if (typeof window !== 'undefined' && window.i18n) {
+                            if (window.i18n.translations?.[lng]) window.i18n.currentLang = lng;
+                        }
+                    } catch {}
+                    // Completion checkmark (R7 polish item 3)
+                    spawnCheckmark(opt);
+                    // Rerender ONLY the lang slide so the option list/labels update.
+                    // Defer a tick so haptic + checkmark spawn first.
+                    requestAnimationFrame(() => renderCurrentSlide());
                 });
             }
             list.appendChild(opt);
@@ -1185,6 +1192,9 @@ function renderWizard(options = {}) {
             onclick: () => {
                 if (!state.lang) return;
                 haptic.tap();
+                // 04-04-r7: persist the picked language to app-wide locale so the
+                // rest of the UI (post-onboarding) shows in the right language.
+                try { setLocale({ lang: state.lang }); } catch {}
                 completeStep(1, { lang: state.lang }, options);
                 goto(2);
             },
@@ -1277,6 +1287,7 @@ function renderWizard(options = {}) {
                     persistProgress();
                     // 04-04-r2 — Cinema: drop a pin onto the world map for the picked country.
                     try { window.__onbDropMapPin?.(cc, mapHost); } catch {}
+                    spawnCheckmark(opt); // r7 — completion celebration
                 });
                 list.appendChild(opt);
             });
@@ -1341,12 +1352,12 @@ function renderWizard(options = {}) {
         }));
 
         let body;
-        if (state.providersLoading) {
-            body = el('div', { class: 'onb-loading', text: t('loading', 'Yükleniyor') });
+        if (state.providersLoading || (!state.providersFailed && !state.providers.length)) {
+            // 04-04-r7 — 6-tile shimmer skeleton instead of plain "Loading" text.
+            body = el('div', { class: 'onb-grid onb-skeleton-grid', 'aria-busy': 'true' });
+            for (let i = 0; i < 6; i++) body.appendChild(el('div', { class: 'onb-skeleton-tile' }));
         } else if (state.providersFailed) {
             body = el('div', { class: 'onb-fail', text: t('onboarding.providers.loadError', 'Şu an yükleyemedik.') });
-        } else if (!state.providers.length) {
-            body = el('div', { class: 'onb-loading', text: t('loading', 'Yükleniyor') });
         } else {
             body = el('div', { class: 'onb-grid' });
             state.providers.forEach((p) => {
@@ -1694,9 +1705,37 @@ function renderWizard(options = {}) {
         }));
         slide.appendChild(el('p', { class: 'onb-hero-sub', text: t('onboarding.ready.sub', 'Sana özel seçimler hazır.') }));
 
-        const chips = el('div', { class: 'onb-recap' });
-        chips.appendChild(el('span', { class: 'onb-chip', text: LANG_DISPLAY[state.lang] || state.lang }));
-        chips.appendChild(el('span', { class: 'onb-chip', text: `${flag(state.country)} ${COUNTRY_NAMES[state.country] || state.country}` }));
+        // 04-04-r7 — vertical 3-row recap card (replaces inline chip strip).
+        const langName = LANG_DISPLAY_FULL[state.lang] || LANG_DISPLAY[state.lang] || state.lang;
+        const countryName = COUNTRY_NAMES[state.country] || state.country;
+        // Resolve picked provider names from the curated providers list.
+        const idToName = new Map((state.providers || []).map((p) => [p.id, p.name]));
+        const pickedNames = state.ownedPlatforms.map((id) => idToName.get(id)).filter(Boolean);
+        const platformLine = pickedNames.length === 0
+            ? t('onboarding.ready.noPlatforms', 'Not yet')
+            : (pickedNames.length <= 3
+                ? pickedNames.join(', ')
+                : `${pickedNames.slice(0, 3).join(', ')} + ${pickedNames.length - 3} more`);
+
+        const card = el('div', { class: 'onb-recap-card' });
+        const row = (labelKey, labelDefault, icon, text) => {
+            return el('div', { class: 'onb-recap-row' }, [
+                el('div', { class: 'onb-recap-row-label', text: t(labelKey, labelDefault) }),
+                el('div', { class: 'onb-recap-row-value' }, [
+                    el('span', { class: 'onb-recap-row-icon', text: icon }),
+                    el('span', { class: 'onb-recap-row-text', text }),
+                ]),
+            ]);
+        };
+        card.appendChild(row('onboarding.ready.langLabel', 'Language', flag(LANG_TO_FLAG_COUNTRY[state.lang] || 'US'), langName));
+        card.appendChild(row('onboarding.ready.countryLabel', 'Country', flag(state.country), countryName));
+        card.appendChild(row('onboarding.ready.servicesLabel', 'Services', '📺', platformLine));
+        slide.appendChild(card);
+
+        // Keep the inline chip strip for screen readers (hidden visually).
+        const chips = el('div', { class: 'onb-recap onb-sr-only' });
+        chips.appendChild(el('span', { class: 'onb-chip', text: langName }));
+        chips.appendChild(el('span', { class: 'onb-chip', text: `${flag(state.country)} ${countryName}` }));
         const platTpl = t('onboarding.ready.platforms', '{n} platform');
         chips.appendChild(el('span', { class: 'onb-chip', text: platTpl.replace('{n}', state.ownedPlatforms.length) }));
         slide.appendChild(chips);
@@ -1757,12 +1796,129 @@ function renderWizard(options = {}) {
         }
     }
 
+    // -------------------------------------------------------------------
+    // 04-04-r7 — Per-slide accent (CSS variable swap), recap chips,
+    // swipe gestures, completion checkmark helper.
+    // -------------------------------------------------------------------
+    const SLIDE_ACCENTS = ['warm', 'cool', 'teal', 'purple', 'magenta', 'warm'];
+    function updateAccent() {
+        const tone = SLIDE_ACCENTS[state.slide] || 'warm';
+        root.setAttribute('data-accent', tone);
+    }
+
+    function updateRecapChips() {
+        // Recap chips show on S3/S4/S5/S6 (indices 2..5).
+        if (state.slide < 2) {
+            recapHost.innerHTML = '';
+            recapHost.setAttribute('aria-hidden', 'true');
+            return;
+        }
+        recapHost.setAttribute('aria-hidden', 'false');
+        const chips = [];
+        // Language chip (after S2)
+        if (state.slide >= 2 && state.lang) {
+            chips.push({ icon: flag(LANG_TO_FLAG_COUNTRY[state.lang] || 'US'), text: LANG_DISPLAY_FULL[state.lang] || state.lang });
+        }
+        // Country chip (after S3)
+        if (state.slide >= 3 && state.country) {
+            chips.push({ icon: flag(state.country), text: COUNTRY_NAMES[state.country] || state.country });
+        }
+        recapHost.innerHTML = '';
+        chips.forEach((c) => {
+            const chip = el('span', { class: 'onb-recap-chip' }, [
+                el('span', { class: 'onb-recap-chip-icon', text: c.icon }),
+                el('span', { class: 'onb-recap-chip-text', text: c.text }),
+            ]);
+            recapHost.appendChild(chip);
+        });
+    }
+
+    // Completion checkmark — slides in from top with scale punch.
+    function spawnCheckmark(anchor) {
+        if (!anchor) return;
+        if (prefersReducedMotion()) return; // no animation when reduced
+        try {
+            const r = anchor.getBoundingClientRect();
+            const badge = document.createElement('div');
+            badge.className = 'onb-completion-check';
+            badge.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+            badge.style.left = (r.left + r.width - 18) + 'px';
+            badge.style.top = (r.top - 8) + 'px';
+            document.body.appendChild(badge);
+            requestAnimationFrame(() => badge.classList.add('in'));
+            setTimeout(() => { try { badge.remove(); } catch {} }, 700);
+        } catch {}
+    }
+
+    // ---- Swipe gestures (touch only — pointer/mouse left alone) ----
+    const SWIPE_HINT_KEY = 'lumi_onboarding_swipe_hint_seen';
+    let touchStartX = 0, touchStartY = 0, touchStartT = 0, swipeBlocked = false;
+    function isInScrollable(target) {
+        if (!target || typeof target.closest !== 'function') return false;
+        // Search input or scrollable lists should NOT trigger advance/back.
+        if (target.closest('.onb-search')) return true;
+        if (target.closest('.onb-list')) return true;
+        if (target.closest('.onb-grid')) return true;
+        if (target.closest('.onb-paywall-sheet')) return true;
+        return false;
+    }
+    root.addEventListener('touchstart', (e) => {
+        if (!e.touches || !e.touches.length) return;
+        swipeBlocked = isInScrollable(e.target);
+        const t0 = e.touches[0];
+        touchStartX = t0.clientX;
+        touchStartY = t0.clientY;
+        touchStartT = Date.now();
+    }, { passive: true });
+    root.addEventListener('touchend', (e) => {
+        if (swipeBlocked) return;
+        const t0 = (e.changedTouches && e.changedTouches[0]) || null;
+        if (!t0) return;
+        const dx = t0.clientX - touchStartX;
+        const dy = t0.clientY - touchStartY;
+        const dt = Date.now() - touchStartT;
+        if (dt > 800) return;
+        if (Math.abs(dx) < 40 || Math.abs(dy) > 50) return;
+        // Disable advance-swipe on S1 if the wizard is restoring (no back).
+        if (dx > 0 && state.slide === 0) return; // S1 back-swipe blocked (no back)
+        if (state.slide === 5) return; // S6 confetti slide — block both
+        if (dx < 0) {
+            // Advance: emulate the active CTA on the current slide.
+            const cta = stage.querySelector('.onb-cta:not(.disabled):not([disabled])');
+            if (cta) { haptic.tap(); cta.click(); }
+        } else {
+            if (state.slide > 0) { haptic.tap(); goto(state.slide - 1); }
+        }
+    }, { passive: true });
+
+    // One-time wiggle hint on S1.
+    function maybeShowSwipeHint() {
+        if (state.slide !== 0) return;
+        if (prefersReducedMotion()) return;
+        try {
+            if (localStorage.getItem(SWIPE_HINT_KEY)) return;
+            localStorage.setItem(SWIPE_HINT_KEY, '1');
+        } catch {}
+        setTimeout(() => {
+            const slide = stage.querySelector('.onb-slide');
+            if (!slide) return;
+            slide.classList.add('onb-swipe-hint');
+            setTimeout(() => slide.classList.remove('onb-swipe-hint'), 700);
+        }, 800);
+    }
+
     // Initial paint
     updatePills();
     updateBackBtn();
     updateAtmosphere();
+    updateAccent();
+    updateRecapChips();
     renderCurrentSlide();
     announceSlide();
     focusSlideHeading();
     persistProgress();
+    maybeShowSwipeHint();
 }
+
+// Map onboarding lang → country code for the recap flag chip.
+const LANG_TO_FLAG_COUNTRY = { tr: 'TR', en: 'GB', de: 'DE', fr: 'FR', es: 'ES', it: 'IT', ja: 'JP', ko: 'KR' };
