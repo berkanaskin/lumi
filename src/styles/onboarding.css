@@ -1661,3 +1661,160 @@
 @media (prefers-reduced-motion: reduce) {
     .onb-trio-poster { transition: none; }
 }
+
+/* =====================================================================
+   04-04-r7 — Per-slide accent, recap chips, skeleton, swipe hint,
+   completion checkmark, vertical recap card on S6.
+   ===================================================================== */
+:root {
+    --accent-warm:    linear-gradient(90deg, #f4a261 0%, #ff5d8f 100%);
+    --accent-cool:    linear-gradient(90deg, #60a5fa 0%, #3b82f6 100%);
+    --accent-teal:    linear-gradient(90deg, #34d399 0%, #10b981 100%);
+    --accent-purple:  linear-gradient(90deg, #a78bfa 0%, #8b5cf6 100%);
+    --accent-magenta: linear-gradient(90deg, #ec4899 0%, #f59e0b 100%);
+    --accent-current: var(--accent-warm);
+}
+.onboarding-root[data-accent="warm"]    { --accent-current: var(--accent-warm); }
+.onboarding-root[data-accent="cool"]    { --accent-current: var(--accent-cool); }
+.onboarding-root[data-accent="teal"]    { --accent-current: var(--accent-teal); }
+.onboarding-root[data-accent="purple"]  { --accent-current: var(--accent-purple); }
+.onboarding-root[data-accent="magenta"] { --accent-current: var(--accent-magenta); }
+
+/* CTA picks up the slide-current accent. */
+.onboarding-root .onb-cta:not(.disabled):not([disabled]) {
+    background: var(--accent-current);
+    transition: background 400ms var(--onb-ease);
+}
+
+/* Atmospheric glow tints (orange/pink) get slightly biased per accent. */
+.onboarding-root[data-accent="cool"]    .onb-glow-orange { filter: hue-rotate(180deg); }
+.onboarding-root[data-accent="teal"]    .onb-glow-orange { filter: hue-rotate(120deg); }
+.onboarding-root[data-accent="purple"]  .onb-glow-orange { filter: hue-rotate(80deg); }
+.onboarding-root[data-accent="magenta"] .onb-glow-orange { filter: hue-rotate(-10deg); }
+
+/* Recap chips in the top-right corner (S3..S6). */
+.onb-recap-chips {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-left: auto;
+}
+.onb-recap-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: rgba(20, 20, 30, 0.55);
+    backdrop-filter: blur(12px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    font-size: 11px;
+    color: var(--onb-text);
+    white-space: nowrap;
+    max-width: 110px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.onb-recap-chip-icon { font-size: 12px; line-height: 1; }
+.onb-recap-chip-text { font-size: 11px; }
+
+/* Skeleton tiles on S4 loading. */
+.onb-skeleton-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 8px 0; }
+.onb-skeleton-tile {
+    aspect-ratio: 1.6;
+    border-radius: 14px;
+    background: linear-gradient(110deg, rgba(255,255,255,0.04) 8%, rgba(255,255,255,0.10) 18%, rgba(255,255,255,0.04) 33%);
+    background-size: 200% 100%;
+    animation: onb-shimmer 1.4s linear infinite;
+}
+@keyframes onb-shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .onb-skeleton-tile { animation: none; opacity: 0.6; }
+}
+
+/* Completion checkmark — slides in from top + scale punch. */
+.onb-completion-check {
+    position: fixed;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--accent-current);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 10010;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+    transform: translateY(-12px) scale(0.6);
+    opacity: 0;
+    transition: transform 220ms var(--onb-spring), opacity 220ms ease-out;
+    pointer-events: none;
+}
+.onb-completion-check.in {
+    transform: translateY(0) scale(1.1);
+    opacity: 1;
+    animation: onb-check-pop 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.onb-completion-check svg { width: 16px; height: 16px; }
+@keyframes onb-check-pop {
+    0%   { transform: translateY(-12px) scale(0.6); }
+    55%  { transform: translateY(0) scale(1.2); }
+    100% { transform: translateY(0) scale(1.0); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .onb-completion-check { animation: none; transition: none; transform: none; }
+    .onb-completion-check.in { transform: none; opacity: 1; }
+}
+
+/* S1 swipe-hint wiggle (4px nudge right then settle, ≤700ms). */
+.onb-swipe-hint { animation: onb-swipe-hint-anim 600ms cubic-bezier(0.4, 0, 0.2, 1); }
+@keyframes onb-swipe-hint-anim {
+    0%   { transform: translateX(0); }
+    35%  { transform: translateX(4px); }
+    60%  { transform: translateX(-2px); }
+    100% { transform: translateX(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .onb-swipe-hint { animation: none; }
+}
+
+/* Subtle swipe affordance pill — bottom center on slides where swipe works. */
+.onb-slide:not(.onb-slide-welcome):not(.onb-slide-ready)::after {
+    content: '';
+    position: absolute;
+    bottom: 14px; left: 50%;
+    width: 40px; height: 4px;
+    transform: translateX(-50%);
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.18);
+    pointer-events: none;
+}
+
+/* S6 — 3-row frosted recap card replacing inline chip strip. */
+.onb-recap-card {
+    width: 100%;
+    max-width: 360px;
+    margin: 18px auto;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: rgba(20, 20, 30, 0.55);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+    display: flex; flex-direction: column; gap: 10px;
+}
+.onb-recap-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.onb-recap-row-label { font-size: 12px; color: var(--onb-text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+.onb-recap-row-value { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--onb-text); }
+.onb-recap-row-icon  { font-size: 16px; line-height: 1; }
+.onb-recap-row-text  { font-weight: 500; }
+
+/* Hide the SR-only chip strip visually while keeping it accessible. */
+.onb-recap.onb-sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+}
