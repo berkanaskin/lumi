@@ -94,10 +94,12 @@ describe('04-04-r6 — Regional provider allowlist deltas', () => {
     });
 
     it('DE allowlist includes WOW + Joyn + RTL+ + Magenta TV', () => {
+        // 04-04-r7: TMDB-verified IDs — Joyn=178, RTL+=298. Test asserts the
+        // r7 set: 298 RTL+, 178 Joyn, 29 WOW, 532 Magenta TV.
         const ids = _getAllowlistForCountry('DE');
+        expect(ids).toContain(298);  // RTL+
+        expect(ids).toContain(178);  // Joyn
         expect(ids).toContain(29);   // WOW
-        expect(ids).toContain(56);   // Joyn
-        expect(ids).toContain(178);  // RTL+
         expect(ids).toContain(532);  // Magenta TV
     });
 
