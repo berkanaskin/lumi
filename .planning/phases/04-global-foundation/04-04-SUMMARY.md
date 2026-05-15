@@ -418,3 +418,82 @@ Three coordinated fixes to make the wizard read as a globally launched product, 
 - `4db4e13` feat(04-04-r6): S1 Welcome — refined wordmark + asymmetric poster trio + balanced layout
 - `ddc79da` feat(04-04-r6): expand provider allowlist with regional popular (UK/DE/FR/ES/IT/JP/KR/CA/AU/BR/MX/IN)
 - `77ac80e` test(04-04-r6): cover EN-first default + regional provider deltas
+
+## R7 — Onboarding polish + nav-language wizard + TMDB-verified providers + swipe
+
+5 fixes shipped (2026-05-15):
+
+1. **Navigator language auto-detection.** `resolveOnboardingLocale()` detects
+   `navigator.language` against the 8-lang `ONBOARDING_LANGS` set
+   (`tr/en/de/fr/es/it/ja/ko`) and the wizard now boots in that lang. App-wide
+   `resolveLocaleSync()` stays EN-first for storefront/copy consistency.
+   Picking a language on S2 live-rerenders the slide; advancing persists via
+   `setLocale({lang})`. Missing keys fall back to EN via i18n's existing chain.
+
+2. **Improved world map.** Wikipedia CC0 candidates were >40KB (84KB
+   World_map low-res) or 404'd. Kept inline hand-traced WORLD_MAP_SVG but
+   rewrote vertices for better recognizability (Florida, Baja, Patagonia,
+   Iberia, Italy boot, Africa horn + Cape, Korean peninsula, Indochina,
+   Indonesia, Tasmania). Still equirectangular viewBox 0 0 1000 500.
+
+3. **Corrected TMDB provider IDs.** REGIONAL_POPULAR_PROVIDERS rebuilt with
+   verified IDs for 13 regions. DE: 298 RTL+ / 178 Joyn / 29 WOW / 532
+   Magenta. FR: 381 Canal+ / 56 OCS Go / 78 MyCanal / 236 France TV. UK: 38
+   BBC iPlayer / 39 NOW / 151 BritBox / 1796 ITVX. Cap raised 12 → 16.
+   `console.debug` logs unmatched TMDB responses for ongoing QA.
+
+4. **Audio removed + swipe gestures.** Deleted `AUDIO_PREF_KEY`, Web Audio
+   tick code, speaker SVGs, audio toggle button. Added touchstart/touchend
+   swipe handlers on wizard root: left → advance, right → back (40px
+   threshold, 50px vertical guard, scrollable-element bypass for
+   `.onb-list`/`.onb-grid`/`.onb-search`). One-time wiggle hint on S1
+   (`lumi_onboarding_swipe_hint_seen` flag, respects prefers-reduced-motion).
+   Bottom-center 40×4px gray pill as affordance indicator.
+
+5. **Polish.** (a) Per-slide accent — 5 CSS gradients (warm/cool/teal/
+   purple/magenta) bound to `--accent-current` via
+   `[data-accent="..."]` attribute, CTA + glow hue-rotate inherit.
+   (b) Recap chips top-right on S3/S4/S5/S6 — frosted, max-width 110px.
+   (c) Completion checkmark — scale 1→1.2→1 over 400ms after a pick.
+   (d) S4 skeleton — 6 shimmer tiles while providers load.
+   (e) S6 vertical recap card — 3-row frosted card (Language / Country /
+   Services + "N more"), replaces inline chip strip (kept for SR-only).
+
+### Tests
+20 new tests in `tests/onboarding-r7-polish.test.js`, all green.
+Full suite: **296 passing** (was 275 pre-r7, baseline 276 target exceeded).
+8 pre-existing failures untouched (detail.test.js toast, platforms.test.js
+TR-platform — stale Phase 03.2 surface area, out of scope).
+
+### Map source
+Tried `https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg`
+(84823 bytes, exceeded 40KB limit) and
+`https://upload.wikimedia.org/wikipedia/commons/b/b2/BlankMap-World-noborders.svg`
+(95 bytes, server returned error page). Both rejected; kept hand-traced
+inline approach with expanded vertices.
+
+### Deviations
+Spec asked for 7 atomic commits ordered fix-by-fix. The 5 source fixes
+proved entangled in a single 1700-line `onboarding.js` (audio code lives
+inside the same chrome block as the new recap-chip host, swipe handlers
+share the closure with `goto()`, accent updates wire into the same goto).
+Splitting required either reverting work or risky multi-patch surgery.
+Pragmatic choice: 5 commits total:
+- `150ea27` locale.js navigator detection (already partially shipped by
+  prior agent; this lands the final wiring contract).
+- `e51e165` onboarding.js: fixes 1-wiring + 2 (map) + 3 (provider IDs).
+- `7c93b80` onboarding.css: fixes 4-CSS + 5 (per-slide accent + chips +
+  skeleton + checkmark + S6 card).
+- `8b43b2b` r6 test update (DE allowlist re-baselined for r7 IDs).
+- `5d21caa` r7 test suite (20 new tests).
+
+Audio removal + swipe gestures (fix 4 JS) bundled into `e51e165` since
+removing the audio button affected the same chrome assembly that hosts
+the new recap-chip slot.
+
+### Commits
+- `150ea27` feat(04-04-r7): auto-detect navigator language for onboarding initial render
+- `e51e165` feat(04-04-r7): wire navigator detection + improved world map + provider IDs (+ swipe + audio removal)
+- `7c93b80` feat(04-04-r7): per-slide accent CSS + recap chips + skeleton + completion checkmark + swipe hint
+- `8b43b2b` fix(04-04-r7): update r6 DE allowlist test to match r7 TMDB-verified IDs
+- `5d21caa` test(04-04-r7): cover navigator detection, providers, audio removal, swipe, accent
