@@ -33,6 +33,63 @@ export const COUNTRY_TO_LANG = {
 
 export const SUPPORTED_LANGS = ['tr', 'en', 'de', 'fr', 'es', 'ja', 'ko', 'zh'];
 
+/**
+ * Onboarding-only locales (04-04-r7).
+ *
+ * The app-wide `resolveLocaleSync()` is EN-first (only TR overrides). But the
+ * onboarding WIZARD must render in the user's navigator language so a German
+ * user sees German welcome copy, French sees French, etc. After picking a
+ * different language on S2, `setLocale()` persists the choice and the rest of
+ * the app honors it.
+ *
+ * Skeleton coverage: TR + EN are full; DE/FR/ES/IT/JA/KO have skeleton strings
+ * that fall back to EN for missing keys (i18n loader handles fallback).
+ */
+export const ONBOARDING_LANGS = ['tr', 'en', 'de', 'fr', 'es', 'it', 'ja', 'ko'];
+
+/**
+ * Detect the BEST onboarding language from navigator.language.
+ *
+ *  - Stored lumi_locale wins (user already picked once)
+ *  - Legacy appLanguage migration is honored
+ *  - Otherwise, match `navigator.language` first 2 chars against ONBOARDING_LANGS
+ *  - Fallback: 'en'
+ *
+ * Returns: { lang, country, source }
+ */
+export function resolveOnboardingLocale() {
+    const ls = safeLocalStorage();
+
+    // 1) Stored locale wins (user already picked, persist across reloads)
+    const stored = parseStored(ls);
+    if (stored) return { lang: stored.lang, country: stored.country, source: 'stored' };
+
+    // 2) Legacy appLanguage migration
+    const legacy = ls?.getItem('appLanguage');
+    if (legacy && SUPPORTED_LANGS.includes(legacy)) {
+        return { lang: legacy, country: LANG_TO_COUNTRY[legacy] || 'US', source: 'migrated' };
+    }
+
+    // 3) navigator.language — auto-detect for onboarding render only.
+    const nav = (typeof navigator !== 'undefined' && navigator.language) || null;
+    if (nav) {
+        try {
+            const loc = new Intl.Locale(nav);
+            const lower = String(loc.language || nav).toLowerCase();
+            const base = lower.slice(0, 2);
+            if (ONBOARDING_LANGS.includes(base)) {
+                const country = loc.region || (LANG_TO_COUNTRY[base] || 'US');
+                return { lang: base, country, source: 'navigator' };
+            }
+            // Non-supported language — keep EN, remember region for provider hints.
+            return { lang: 'en', country: loc.region || 'US', source: 'navigator' };
+        } catch {}
+    }
+
+    // 4) Default
+    return { lang: 'en', country: 'US', source: 'default' };
+}
+
 function safeLocalStorage() {
     try {
         if (typeof localStorage !== 'undefined') return localStorage;
