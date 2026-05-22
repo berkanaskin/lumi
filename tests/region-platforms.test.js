@@ -148,19 +148,18 @@ describe('Logo file existence (smoke test)', () => {
                 }
             }
         }
-        // Soft assertion: print missing logos so Task 1.4 can fill them in.
-        // Hard-fail only if more than 60% of unique slugs are missing — Task 1.4
-        // populates the rest. This keeps the suite green during incremental work.
+        expect(missing, `Missing logos:\n  ${missing.join('\n  ')}`).toHaveLength(0);
+    });
+
+    it('FALLBACK_PLATFORMS logos all exist', () => {
+        for (const p of FALLBACK_PLATFORMS) {
+            const full = path.join(repoRoot, 'public', p.logo_path);
+            expect(fs.existsSync(full), `fallback logo missing: ${p.logo_path}`).toBe(true);
+        }
+    });
+
+    it('getAllSlugs surface matches actual file presence', () => {
         const slugs = getAllSlugs();
-        const missingRatio = missing.length / slugs.size;
-        if (missing.length > 0) {
-            // eslint-disable-next-line no-console
-            console.warn(`[region-platforms] ${missing.length} missing logos (${(missingRatio * 100).toFixed(0)}%):\n  ${missing.slice(0, 8).join('\n  ')}${missing.length > 8 ? '\n  ...' : ''}`);
-        }
-        // Hard fail only if the universal top-3 logos are missing — those exist in repo.
-        const corePaths = ['/img/providers/netflix.png', '/img/providers/disney-plus.png', '/img/providers/prime-video.png'];
-        for (const cp of corePaths) {
-            expect(fs.existsSync(path.join(repoRoot, 'public', cp)), `core logo missing: ${cp}`).toBe(true);
-        }
+        expect(slugs.size).toBeGreaterThan(30);
     });
 });
