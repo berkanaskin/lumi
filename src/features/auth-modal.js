@@ -67,7 +67,7 @@ function createModalDOM() {
             const svc = window.AuthService;
             if (svc && typeof svc.loginWithGoogle === 'function') {
                 svc.loginWithGoogle().catch((err) => {
-                    // eslint-disable-next-line no-console
+                     
                     console.warn('[auth-modal] google sign-in failed', err);
                 });
             }

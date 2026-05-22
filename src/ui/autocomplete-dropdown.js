@@ -19,7 +19,7 @@ import { escapeHtml } from '../lib/helpers.js';
  * @param {Function} onSelect - Callback when item selected
  * @returns {string} HTML string for dropdown
  */
-export function renderAutocomplete(suggestions, activeIndex = -1, onSelect = null) {
+export function renderAutocomplete(suggestions, activeIndex = -1, _onSelect = null) {
     if (!suggestions || ((!suggestions.titles?.length) && (!suggestions.actors?.length) && (!suggestions.genres?.length))) {
         return `
             <div class="autocomplete-empty">
@@ -33,7 +33,7 @@ export function renderAutocomplete(suggestions, activeIndex = -1, onSelect = nul
     let currentIndex = 0;
 
     // Helper to build items array with tracking
-    const addItem = (type, data, sectionIndex) => {
+    const addItem = (type, data, _sectionIndex) => {
         return {
             type,
             data,
@@ -88,7 +88,7 @@ export function renderAutocomplete(suggestions, activeIndex = -1, onSelect = nul
         const dataAttrs = `data-index="${item.index}" data-item-type="${item.type}"`;
 
         switch (item.type) {
-            case 'title':
+            case 'title': {
                 const title = item.data.title || item.data.name || 'Unknown';
                 const year = (item.data.release_date || item.data.first_air_date || '').substring(0, 4);
                 const posterUrl = item.data.poster_path
@@ -100,9 +100,9 @@ export function renderAutocomplete(suggestions, activeIndex = -1, onSelect = nul
                     <div class="autocomplete-item ${isActive}" ${dataAttrs}>
                         <div class="autocomplete-poster">
                             ${posterUrl
-                        ? `<img src="${posterUrl}" alt="${escapeHtml(title)}" loading="lazy" />`
-                        : '<div class="autocomplete-poster-placeholder">🎬</div>'
-                    }
+        ? `<img src="${posterUrl}" alt="${escapeHtml(title)}" loading="lazy" />`
+        : '<div class="autocomplete-poster-placeholder">🎬</div>'
+}
                         </div>
                         <div class="autocomplete-content">
                             <div class="autocomplete-title">${escapeHtml(title)}</div>
@@ -113,6 +113,7 @@ export function renderAutocomplete(suggestions, activeIndex = -1, onSelect = nul
                         </div>
                     </div>
                 `;
+            }
 
             case 'actor':
                 return `

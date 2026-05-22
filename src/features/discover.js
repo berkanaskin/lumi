@@ -3,7 +3,7 @@
 // v0.12.0
 // ============================================
 
-import { CONFIG, API_URLS } from '../config.js';
+import { CONFIG } from '../config.js';
 import { TMDBService, SearchService, EmbeddingService } from '../services/api.js';
 import { showToast } from '../ui/toast.js';
 import { showLoading, hideLoading } from '../ui/loading.js';

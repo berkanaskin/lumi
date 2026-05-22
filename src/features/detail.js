@@ -6,7 +6,7 @@
 
 import { state, elements } from '../lib/state.js';
 import { showToast } from '../ui/toast.js';
-import { API, GeoIPService } from '../services/api.js';
+import { API } from '../services/api.js';
 import { getStreamingWithCache } from '../services/streaming-cache.js';
 import { getPlatformUrl, getLogoOverride } from '../lib/platforms.js';
 import { filterProvidersToCurated } from '../lib/providers-resolver.js';
@@ -489,7 +489,7 @@ export function renderDetail(details, providers, type, itemId, streamingData) {
 
     // Ratings
     const allRatings = state.currentAllRatings;
-    const ratingsHTML = buildRatingsHTML(tmdbScore, allRatings);
+    const _ratingsHTML = buildRatingsHTML(tmdbScore, allRatings);
 
     // Credits / Cast
     const credits = state.currentCredits;
@@ -525,18 +525,18 @@ export function renderDetail(details, providers, type, itemId, streamingData) {
         <!-- Hero Backdrop -->
         <div class="detail-hero">
             ${backdropUrl
-                ? `<img src="${backdropUrl}" alt="${title}" class="detail-backdrop-img">`
-                : `<div class="detail-backdrop-placeholder"></div>`
-            }
+        ? `<img src="${backdropUrl}" alt="${title}" class="detail-backdrop-img">`
+        : '<div class="detail-backdrop-placeholder"></div>'
+}
             <div class="detail-backdrop-gradient"></div>
 
             <!-- Poster + Core Info overlaid on hero -->
             <div class="detail-hero-content">
                 <div class="detail-poster-wrap" style="position:relative">
                     ${posterUrl
-                        ? `<img src="${posterUrl}" alt="${title}" class="detail-poster-img">`
-                        : `<div class="detail-poster-placeholder"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg></div>`
-                    }
+        ? `<img src="${posterUrl}" alt="${title}" class="detail-poster-img">`
+        : '<div class="detail-poster-placeholder"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg></div>'
+}
                     ${cinemaBadgeHTML}
                 </div>
                 <div class="detail-core-info">
@@ -785,7 +785,7 @@ function buildRatingsHTML(tmdbScore, allRatings) {
     // Rotten Tomatoes — skip for TV shows (OMDb does not return RT for TV)
     const rtScore = allRatings.rottenTomatoes?.tomatometer;
     if (rtScore != null) {
-        const rtFresh = parseInt(rtScore, 10) >= 60;
+        const _rtFresh = parseInt(rtScore, 10) >= 60;
         items.push(`
             <div class="ratings-bar__item">
                 <img class="ratings-bar__logo" height="24"
@@ -1133,9 +1133,9 @@ function buildCastHTML(credits) {
                 <div class="detail-cast-card" data-person-id="${person.id}"
                     role="button" tabindex="0" aria-label="${person.name}" style="cursor:pointer">
                     ${photoUrl
-                        ? `<img src="${photoUrl}" alt="${person.name}" class="detail-cast-photo" loading="lazy">`
-                        : `<div class="detail-cast-photo-placeholder">👤</div>`
-                    }
+        ? `<img src="${photoUrl}" alt="${person.name}" class="detail-cast-photo" loading="lazy">`
+        : '<div class="detail-cast-photo-placeholder">👤</div>'
+}
                     <span class="detail-cast-name">${person.name}</span>
                     <span class="detail-cast-character">${person.character || ''}</span>
                 </div>
@@ -1153,7 +1153,7 @@ function buildCastHTML(credits) {
     return html;
 }
 
-function buildProvidersHTML(providers) {
+function _buildProvidersHTML(providers) {
     const regionData = providers;
     if (!regionData) return '';
 
@@ -1285,7 +1285,7 @@ function buildDateMetaHTML(details, type) {
 
 // buildSeriesInfoHTML is deprecated — series info handled by buildDateMetaHTML
 
-function buildPremiumSectionHTML() {
+function _buildPremiumSectionHTML() {
     // Check premium status — default to locked
     const isPremium = state.isPremium || false;
 

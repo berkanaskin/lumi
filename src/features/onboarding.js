@@ -21,7 +21,7 @@
  * before rendering; if present it hydrates localStorage and returns false.
  */
 
-import { getLocale, setLocale, SUPPORTED_LANGS, resolveOnboardingLocale, ONBOARDING_LANGS } from '../lib/locale.js';
+import { getLocale, setLocale, resolveOnboardingLocale, ONBOARDING_LANGS } from '../lib/locale.js';
 import { haptic } from '../lib/haptics.js';
 import { getResolvedProviders } from '../lib/providers-resolver.js';
 
@@ -900,7 +900,7 @@ function renderWizard(options = {}) {
                 if (Date.now() - lastShift < 16) return;
                 lastShift = Date.now();
                 const xRatio = (e.clientX / window.innerWidth) - 0.5;
-                const yRatio = (e.clientY / window.innerHeight) - 0.5;
+                const _yRatio = (e.clientY / window.innerHeight) - 0.5;
                 root.style.setProperty('--onb-px-back',  (xRatio * -8)  + 'px');
                 root.style.setProperty('--onb-px-mid',   (xRatio * -16) + 'px');
                 root.style.setProperty('--onb-px-front', (xRatio * -28) + 'px');
@@ -1388,7 +1388,7 @@ function renderWizard(options = {}) {
         document.body.appendChild(sheet);
         renderLists();
         // Force reflow then animate in.
-        // eslint-disable-next-line no-unused-expressions
+         
         sheet.offsetHeight;
         requestAnimationFrame(() => {
             backdrop.classList.add('open');
@@ -1752,7 +1752,7 @@ function renderWizard(options = {}) {
         document.body.appendChild(backdrop);
         document.body.appendChild(sheet);
         // Force reflow then trigger slide-up animation.
-        // eslint-disable-next-line no-unused-expressions
+         
         sheet.offsetHeight;
         requestAnimationFrame(() => {
             backdrop.classList.add('open');
@@ -1890,7 +1890,7 @@ function renderWizard(options = {}) {
     // All 5 named tones still referenced ('warm', 'cool', 'teal', 'purple', 'magenta')
     // so the r7-polish source-grep tests stay green.
     const SLIDE_ACCENTS = ['warm', 'teal', 'purple', 'magenta'];
-    const _ALL_ACCENT_TONES = ['warm', 'cool', 'teal', 'purple', 'magenta']; // eslint-disable-line no-unused-vars
+    const _ALL_ACCENT_TONES = ['warm', 'cool', 'teal', 'purple', 'magenta'];  
     function updateAccent() {
         const tone = SLIDE_ACCENTS[state.slide] || 'warm';
         root.setAttribute('data-accent', tone);
@@ -1924,7 +1924,7 @@ function renderWizard(options = {}) {
     }
 
     // Completion checkmark — slides in from top with scale punch.
-    function spawnCheckmark(anchor) {
+    function _spawnCheckmark(anchor) {
         if (!anchor) return;
         if (prefersReducedMotion()) return; // no animation when reduced
         try {

@@ -7,7 +7,7 @@
 import { state } from '../lib/state.js';
 import { showToast } from '../ui/toast.js';
 import { migrateOnAuth } from './auth-migration.js';
-import { _onAuthResolved, closeAuthModal } from './auth-modal.js';
+import { _onAuthResolved } from './auth-modal.js';
 import { ALWAYS_SHOW_FLAG } from './onboarding.js';
 
 // ============================================
@@ -87,9 +87,9 @@ export function initAuth() {
             updateHeaderProfileDropdown();
 
             // Phase 04-03: resolve any pending requireAuth() promise
-            try { _onAuthResolved(user); } catch (e) { /* swallow */ }
+            try { _onAuthResolved(user); } catch (_e) { /* swallow */ }
             // Close the in-wall login modal (auth-modal handles its own close)
-            try { closeLoginModal(); } catch (e) { /* swallow */ }
+            try { closeLoginModal(); } catch (_e) { /* swallow */ }
 
             // Phase 04-03: one-shot localStorage → Firestore migration
             try {

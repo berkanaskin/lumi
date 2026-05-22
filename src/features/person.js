@@ -7,7 +7,6 @@
 import { state } from '../lib/state.js';
 import { TMDBService, RatingsService } from '../services/api.js';
 import { navigateTo } from '../lib/navigation.js';
-import { showToast } from '../ui/toast.js';
 
 // ============================================
 // MODULE STATE
@@ -259,16 +258,16 @@ function buildPersonBioHTML(person) {
         <div class="person-bio">
             <div class="person-photo-wrap">
                 ${photoUrl
-                    ? `<img src="${photoUrl}" alt="${escapeHtml(person.name)}" class="person-photo" loading="lazy">`
-                    : `<div class="person-photo person-photo-placeholder"><span class="material-symbols-outlined" style="font-size:48px;color:var(--text-muted)">person</span></div>`
-                }
+        ? `<img src="${photoUrl}" alt="${escapeHtml(person.name)}" class="person-photo" loading="lazy">`
+        : '<div class="person-photo person-photo-placeholder"><span class="material-symbols-outlined" style="font-size:48px;color:var(--text-muted)">person</span></div>'
+}
             </div>
             <div class="person-bio-content">
                 <h2 class="person-name">${escapeHtml(person.name)}</h2>
                 ${metaParts.length ? `<div class="person-meta label">${metaParts.join('<span class="person-meta-sep">·</span>')}</div>` : ''}
                 ${hasBio ? `
                     <p class="person-biography body-text">${escapeHtml(biography)}</p>
-                    ${biography.length > 300 ? `<button class="person-show-more">Show more</button>` : ''}
+                    ${biography.length > 300 ? '<button class="person-show-more">Show more</button>' : ''}
                 ` : ''}
             </div>
         </div>
@@ -460,9 +459,9 @@ async function loadCollaborators(credits) {
                 <div class="collaborator-chip" data-person-id="${person.id}"
                     role="button" tabindex="0" aria-label="${safeName}">
                     ${avatarUrl
-                        ? `<img src="${avatarUrl}" alt="${safeName}" class="collaborator-chip__avatar" loading="lazy">`
-                        : `<div class="collaborator-chip__avatar collaborator-chip__avatar--placeholder"><span class="material-symbols-outlined" style="font-size:24px;color:var(--text-muted)">person</span></div>`
-                    }
+        ? `<img src="${avatarUrl}" alt="${safeName}" class="collaborator-chip__avatar" loading="lazy">`
+        : '<div class="collaborator-chip__avatar collaborator-chip__avatar--placeholder"><span class="material-symbols-outlined" style="font-size:24px;color:var(--text-muted)">person</span></div>'
+}
                     <span class="collaborator-chip__name label">${safeName}</span>
                 </div>
             `;
@@ -484,7 +483,7 @@ async function loadCollaborators(credits) {
  * This enables Phase 4 to compare snapshots and detect new platform availability.
  * No notification UI — this is data infrastructure only.
  */
-async function storeWatchlistStreamingSnapshot(personId) {
+async function storeWatchlistStreamingSnapshot(_personId) {
     try {
         // Only run if user is authenticated and firebase is available
         const { firebase } = window;
@@ -534,7 +533,7 @@ async function storeWatchlistStreamingSnapshot(personId) {
 function buildPersonError() {
     const isLang = state.currentLanguage === 'tr';
     const msg = isLang
-        ? "Bu kişinin bilgisi yüklenemedi. Tekrar dene."
+        ? 'Bu kişinin bilgisi yüklenemedi. Tekrar dene.'
         : "Couldn't load this person's info. Try again.";
 
     return `

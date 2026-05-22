@@ -41,6 +41,8 @@ export default [
             'quotes': ['warn', 'single', { avoidEscape: true }],
             'indent': ['warn', 4, { SwitchCase: 1 }],
             'no-mixed-spaces-and-tabs': 'warn',
+            // Allow empty catch blocks (intentional swallows of non-critical errors)
+            'no-empty': ['error', { allowEmptyCatch: true }],
             'eqeqeq': ['warn', 'smart'],
             'curly': ['warn', 'multi-line'],
             'no-var': 'warn',
@@ -56,6 +58,10 @@ export default [
             '*.min.js',
             'stitch/**',
             'assets/**',
+            // Build / deploy artifacts
+            '.vercel/**',
+            '.claude/**',
+            'public/**',
             // Legacy files - will be migrated in Sprint 2
             'app.js',
             'api.js',
@@ -75,8 +81,12 @@ export default [
     {
         files: ['src/**/*.js'],
         rules: {
-            // Stricter rules for new modular code
-            'no-unused-vars': 'error',
+            // Stricter rules for new modular code (allow _-prefix opt-out)
+            'no-unused-vars': ['error', {
+                argsIgnorePattern: '^_',
+                varsIgnorePattern: '^_',
+                caughtErrorsIgnorePattern: '^_',
+            }],
             'no-undef': 'error',
         },
     },
@@ -87,6 +97,16 @@ export default [
         languageOptions: {
             globals: {
                 ...globals.node,
+                process: 'readonly',
+            },
+        },
+    },
+
+    // src/config.js reads import.meta.env via process fallback (Vite + Node typecheck)
+    {
+        files: ['src/config.js'],
+        languageOptions: {
+            globals: {
                 process: 'readonly',
             },
         },

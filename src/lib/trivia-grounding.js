@@ -175,20 +175,20 @@ export function buildGroundedPrompt(ground, type) {
 
     // The four mandatory instruction strings are LITERAL and tested.
     return [
-        `You are a movie trivia formatter for the Lumi app.`,
-        ``,
+        'You are a movie trivia formatter for the Lumi app.',
+        '',
         `TITLE: ${title}`,
         `TYPE: ${mediaType}`,
         `GROUND_TRUTH_SOURCE: ${safe.source}`,
-        ``,
-        `Use ONLY these facts. If unsure, say 'no notable trivia available'. Never invent awards, dates, names, or events.`,
-        ``,
-        `Output format: ≤3 short bullets, each ≤140 characters, each verifiable from GROUND_TRUTH below.`,
-        `- Begin each bullet with "• ".`,
-        `- Do not output any preamble, headings, or numbers — bullets only.`,
-        `- If GROUND_TRUTH lacks at least one non-obvious interesting fact, return exactly: no notable trivia available`,
-        ``,
-        `GROUND_TRUTH:`,
+        '',
+        'Use ONLY these facts. If unsure, say \'no notable trivia available\'. Never invent awards, dates, names, or events.',
+        '',
+        'Output format: ≤3 short bullets, each ≤140 characters, each verifiable from GROUND_TRUTH below.',
+        '- Begin each bullet with "• ".',
+        '- Do not output any preamble, headings, or numbers — bullets only.',
+        '- If GROUND_TRUTH lacks at least one non-obvious interesting fact, return exactly: no notable trivia available',
+        '',
+        'GROUND_TRUTH:',
         groundJson,
     ].join('\n');
 }
@@ -209,8 +209,8 @@ export function clampBullets(text) {
 
     const lines = trimmed
         .split(/\r?\n+/)
-        .map((l) => l.replace(/^\s*[•\-\*•]\s*/, '').trim())
-        .map((l) => l.replace(/^\d+[\.\)]\s*/, '').trim())
+        .map((l) => l.replace(/^\s*[•\-*•]\s*/, '').trim())
+        .map((l) => l.replace(/^\d+[.)]\s*/, '').trim())
         .filter((l) => l.length > 0);
 
     return lines.slice(0, 3);

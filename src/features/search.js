@@ -7,7 +7,7 @@
 import { state, elements } from '../lib/state.js';
 import { CONFIG } from '../config.js';
 import { API } from '../services/api.js';
-import { renderAutocomplete, getFlatItemsList, getItemText } from '../ui/autocomplete-dropdown.js';
+import { renderAutocomplete } from '../ui/autocomplete-dropdown.js';
 
 // ============================================
 // IMDB RATING CACHE
@@ -211,9 +211,9 @@ export function createMovieCard(item, mediaType) {
     card.innerHTML = `
         <div class="movie-poster">
             ${posterUrl
-            ? `<img src="${posterUrl}" alt="${title}" loading="lazy">`
-            : '<div class="no-image">🎬</div>'
-        }
+        ? `<img src="${posterUrl}" alt="${title}" loading="lazy">`
+        : '<div class="no-image">🎬</div>'
+}
             <span class="card-badge">${mediaType === 'movie' ? 'Film' : 'Dizi'}</span>
             ${tmdbRating ? `<span class="rating-badge" id="${ratingBadgeId}">⭐ ${tmdbRating}</span>` : ''}
         </div>

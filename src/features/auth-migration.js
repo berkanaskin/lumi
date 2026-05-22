@@ -73,7 +73,7 @@ export async function migrateOnAuth(user, db, options = {}) {
         return { migrated: liked.length + watch.length };
     } catch (err) {
         // Flag intentionally NOT set so we retry on next auth event.
-        // eslint-disable-next-line no-console
+         
         console.error('[auth-migration] batch failed', err);
         if (options.onError) {
             try { options.onError(err); } catch { /* swallow */ }

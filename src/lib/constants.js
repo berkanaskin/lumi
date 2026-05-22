@@ -104,15 +104,15 @@ export function getGenreId(name) {
 // ============================================
 
 export const AI_PLACEHOLDERS = [
-    "Christopher Nolan tarzı zihin bükücü filmler...",
+    'Christopher Nolan tarzı zihin bükücü filmler...',
     "Nostaljik hissettiren 90'lar komedileri...",
-    "Yağmurlu bir akşam için hüzünlü ama umutlu bir film...",
-    "Tarkovsky gibi yavaş akan, düşündürücü sinema...",
-    "Wes Anderson estetiğinde renkli ve tuhaf...",
-    "Hayata bakış açımı değiştirecek bir belgesel...",
-    "İzlerken zaman durmuş gibi hissedeceğim sinematik bir şaheser...",
-    "Aşkı ve kaybı anlamlandıran derin bir anlatı arıyorum...",
-    "Finali beni günlerce düşündürecek felsefi bir film...",
+    'Yağmurlu bir akşam için hüzünlü ama umutlu bir film...',
+    'Tarkovsky gibi yavaş akan, düşündürücü sinema...',
+    'Wes Anderson estetiğinde renkli ve tuhaf...',
+    'Hayata bakış açımı değiştirecek bir belgesel...',
+    'İzlerken zaman durmuş gibi hissedeceğim sinematik bir şaheser...',
+    'Aşkı ve kaybı anlamlandıran derin bir anlatı arıyorum...',
+    'Finali beni günlerce düşündürecek felsefi bir film...',
 ];
 
 /**

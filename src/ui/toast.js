@@ -41,8 +41,6 @@ function getIconForType(type) {
  * @returns {HTMLElement} Toast element
  */
 export function showToast(message, type = 'info', duration = 3000) {
-    const container = document.body;
-
     // Validate type
     if (!TOAST_TYPES[type]) {
         console.warn(`[Toast] Unknown type "${type}", defaulting to "info"`);

@@ -117,7 +117,7 @@ export async function getCachedSAProviders(country, type = 'movie', opts = {}) {
         response = await fetchWithTimeout(buildSAUrl(country, type), fetchFn);
     } catch (err) {
         // Timeout / network error → null (do NOT cache)
-        // eslint-disable-next-line no-console
+         
         if (typeof console !== 'undefined') console.warn('[sa-cache] fetch error:', err?.message || err);
         return null;
     }
@@ -125,7 +125,7 @@ export async function getCachedSAProviders(country, type = 'movie', opts = {}) {
     if (!response || !response.ok) {
         const status = response?.status || 0;
         // 429 / 5xx → degrade silently. Surface retry hint for observability only.
-        // eslint-disable-next-line no-console
+         
         if (typeof console !== 'undefined') console.warn(`[sa-cache] upstream ${status} for ${key}`);
         return null;
     }

@@ -19,7 +19,7 @@ import { escapeHtml } from '../lib/helpers.js';
 export function createMovieCard(item, mediaType = 'movie', options = {}) {
     const {
         showRating = true,
-        showYear = true,
+        showYear: _showYear = true,
         lazy = true,
         onClick = null
     } = options;

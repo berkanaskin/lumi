@@ -3,7 +3,7 @@
 // v1.2.0
 // ============================================
 
-import { CONFIG, API_URLS } from '../config.js';
+import { API_URLS } from '../config.js';
 
 /**
  * TMDB Service - Movie and TV data
