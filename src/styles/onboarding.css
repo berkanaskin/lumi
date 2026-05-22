@@ -1818,3 +1818,148 @@
     white-space: nowrap;
     border: 0;
 }
+
+/* ===================================================================
+   04.6-03 — Detection banner + bottom-sheet locale picker
+   =================================================================== */
+
+.onb-detection-banner {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    margin: 12px 16px 0;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #fff;
+    font-size: 13px;
+    line-height: 1.3;
+    cursor: pointer;
+    transition: background 160ms ease, transform 160ms ease;
+    text-align: left;
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.18);
+}
+.onb-detection-banner:hover,
+.onb-detection-banner:focus-visible {
+    background: rgba(255, 255, 255, 0.12);
+    outline: none;
+}
+.onb-detection-banner:active {
+    transform: scale(0.98);
+}
+.onb-banner-text {
+    font-weight: 500;
+}
+.onb-banner-hint {
+    opacity: 0.72;
+    font-size: 11.5px;
+    margin-left: 6px;
+}
+
+/* Bottom-sheet locale picker (frosted, slide-up from bottom) */
+.onb-picker-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(8, 6, 14, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    transition: opacity 220ms ease;
+    z-index: 9000;
+}
+.onb-picker-backdrop.open { opacity: 1; }
+
+.onb-picker-sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-height: 82vh;
+    background: linear-gradient(180deg, #1a1424 0%, #110a1c 100%);
+    border-top-left-radius: 22px;
+    border-top-right-radius: 22px;
+    box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.5);
+    padding: 18px 18px 24px;
+    z-index: 9001;
+    transform: translateY(100%);
+    transition: transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    overflow-y: auto;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.onb-picker-sheet.open { transform: translateY(0); }
+
+.onb-picker-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.onb-picker-close svg { width: 18px; height: 18px; }
+
+.onb-picker-title {
+    margin: 4px 0 4px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+}
+.onb-picker-section-header {
+    margin-top: 6px;
+    margin-bottom: 4px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.55);
+}
+.onb-picker-search {
+    width: 100%;
+    height: 40px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #fff;
+    padding: 0 12px;
+    font-size: 14px;
+}
+.onb-picker-lang-list,
+.onb-picker-country-list {
+    max-height: 28vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.onb-picker-save {
+    margin-top: 8px;
+}
+
+/* ===================================================================
+   04.6-03 — S4 (Ready) CTA tap isolation
+   ===================================================================
+   Defensive pointer-events: only the CTA button accepts taps. Confetti
+   + curtain decoration (appended to document.body) and slide body
+   content cannot accidentally trigger the advance handler.
+*/
+.onb-slide-ready > *:not(.onb-cta-ready) {
+    pointer-events: none;
+}
+.onb-slide-ready .onb-cta-ready {
+    pointer-events: auto;
+    position: relative;
+    z-index: 2;
+}

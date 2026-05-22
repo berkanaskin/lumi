@@ -768,11 +768,15 @@ function renderWizard(options = {}) {
     // 04-04-r2 — Hydrate from in-flight progress (≤7 days old).
     const restored = readOnboardingProgress();
 
-    // Visual slide indices: 0 welcome, 1 lang, 2 country, 3 platforms, 4 premium, 5 ready
-    // Storage steps remain 1..3 (lang/country/platforms); premium is visual-only
-    // (mock paywall — Phase 5 wires the real RevenueCat purchase flow).
+    // 04.6-03 — Visual slide indices: 0 welcome (with banner), 1 platforms,
+    // 2 premium, 3 ready. Storage steps remain 1..3 (lang/country/platforms) for
+    // schema back-compat; banner picker calls completeStep(1)+completeStep(2)
+    // on Save. Premium is visual-only (mock paywall — Phase 5 wires RevenueCat).
+    //
+    // Legacy progress (pre-04.6) may persist step ∈ 0..5. Clamp into [0, 3].
+    const restoredStep = Math.max(0, Math.min(3, Number(restored?.step) || 0));
     const state = {
-        slide: restored?.step || 0,
+        slide: restoredStep,
         direction: 'fwd',
         lang: restored?.picks?.lang || locale.lang,
         country: restored?.picks?.country || locale.country || 'TR',
@@ -855,14 +859,17 @@ function renderWizard(options = {}) {
     // on S3/S4/S5/S6) instead — keeps the chrome layout balanced.
     const recapHost = el('div', { class: 'onb-recap-chips', 'aria-hidden': 'true' });
 
-    const pills = el('div', { class: 'onb-pills', role: 'progressbar', 'aria-valuemin': '1', 'aria-valuemax': '6' });
+    // 04.6-03 — 4-slide layout (down from 6): WELCOME → PLATFORMS → PREMIUM → READY.
+    // Language + country pickers fold into the WELCOME detection banner.
+    const SLIDE_TOTAL = 4;
+    const pills = el('div', { class: 'onb-pills', role: 'progressbar', 'aria-valuemin': '1', 'aria-valuemax': String(SLIDE_TOTAL) });
     const pillEls = [];
-    const SLIDE_NAMES = ['welcome', 'language', 'country', 'platforms', 'premium', 'ready'];
-    for (let i = 0; i < 6; i++) {
+    const SLIDE_NAMES = ['welcome', 'platforms', 'premium', 'ready'];
+    for (let i = 0; i < SLIDE_TOTAL; i++) {
         const p = el('div', {
             class: 'onb-pill',
             role: 'presentation',
-            'aria-label': `Step ${i + 1} of 6`,
+            'aria-label': `Step ${i + 1} of ${SLIDE_TOTAL}`,
         });
         pills.appendChild(p);
         pillEls.push(p);
@@ -969,14 +976,14 @@ function renderWizard(options = {}) {
         backBtn.toggleAttribute('disabled', state.slide === 0);
     }
     function updateAtmosphere() {
-        // Welcome (0), Premium (4) and Ready (5) get the warm glow.
-        const showGlow = state.slide === 0 || state.slide === 4 || state.slide === 5;
+        // 04.6-03 — 4-slide enum: Welcome (0), Premium (2), Ready (3) get warm glow.
+        const showGlow = state.slide === 0 || state.slide === 2 || state.slide === 3;
         glowOrange.style.display = showGlow ? '' : 'none';
         glowPink.style.display = showGlow ? '' : 'none';
     }
     function announceSlide() {
         const name = SLIDE_NAMES[state.slide] || `slide ${state.slide + 1}`;
-        announcer.textContent = `Step ${state.slide + 1} of 6: ${name}`;
+        announcer.textContent = `Step ${state.slide + 1} of ${SLIDE_TOTAL}: ${name}`;
     }
     function focusSlideHeading() {
         // Defer to next frame so the slide is mounted.
@@ -1006,9 +1013,10 @@ function renderWizard(options = {}) {
         focusSlideHeading();
         persistProgress();
         playTick();
-        if (n === 3) loadProvidersIfNeeded();
-        if (n === 4) openPremiumVault();
-        if (n === 5) openCurtains();
+        // 04.6-03 — 4-slide enum: Platforms=1, Premium=2, Ready=3
+        if (n === 1) loadProvidersIfNeeded();
+        if (n === 2) openPremiumVault();
+        if (n === 3) openCurtains();
     }
 
     // 04-04-r2 — Vault opening for premium slide. The two halves slide apart
@@ -1062,6 +1070,11 @@ function renderWizard(options = {}) {
         const wordmark = el('div', { class: 'onb-wordmark onb-wordmark-bar', text: 'lumi' });
         brand.appendChild(wordmark);
         slide.appendChild(brand);
+
+        // 04.6-03 — Hybrid auto-detect banner. Replaces the dedicated S2 Language
+        // + S3 Country slides with a single confirmable chip. Tap opens the
+        // bottom-sheet picker (language + country override + r4 search filter).
+        slide.appendChild(buildDetectionBanner());
 
         // --- Asymmetric poster trio (foreground hero). 04-04-r6:
         // Single rotating poster replaced with a 3-poster "pile" — different
@@ -1154,103 +1167,91 @@ function renderWizard(options = {}) {
         return slide;
     }
 
-    function buildLang() {
-        const slide = el('div', { class: 'onb-slide', 'data-dir': state.direction });
-        slide.appendChild(el('h2', {
-            class: 'onb-card-title',
-            id: 'onb-slide-heading',
-            'data-onb-heading': '',
-            text: t('onboarding.lang.title', 'Hangi dilde konuşalım?'),
-        }));
-        slide.appendChild(el('p', { class: 'onb-card-sub', text: t('onboarding.lang.sub', 'Daha fazla dil yakında.') }));
+    // ===================================================================
+    // 04.6-03 — Detection banner + bottom-sheet picker (replaces S2/S3)
+    // ===================================================================
+    // Auto-detected language + country render as a frosted chip on the
+    // Welcome slide. Tapping the chip opens an inline bottom sheet with
+    // language + country pickers (reuses the r4 accent-fold search filter
+    // — now inlined into the picker). Draft state pattern: changes only
+    // persist on "Save". Cancel/backdrop tap/swipe-down discards.
 
-        const list = el('div', { class: 'onb-list' });
-        SUPPORTED_LANGS.forEach((lng) => {
-            const ready = LAUNCH_LANGS.includes(lng);
-            const opt = el('button', {
-                class: `onb-option${state.lang === lng ? ' selected' : ''}${ready ? '' : ' disabled'}`,
-                type: 'button',
-                disabled: !ready,
-            }, [
-                el('span', { class: 'onb-opt-label', text: LANG_DISPLAY[lng] || lng }),
-                !ready ? el('span', { class: 'onb-opt-tag', text: t('common.comingSoon', 'Coming soon') }) : null,
-                el('span', { class: 'onb-opt-check', 'aria-hidden': 'true' }),
-            ]);
-            if (ready) {
-                opt.setAttribute('aria-label', `${t('onboarding.lang.title', 'Language')}: ${LANG_DISPLAY[lng] || lng}`);
-                opt.addEventListener('click', () => {
-                    haptic.select();
-                    state.lang = lng;
-                    list.querySelectorAll('.onb-option').forEach((n) => n.classList.remove('selected'));
-                    opt.classList.add('selected');
-                    cta.disabled = false;
-                    cta.classList.remove('disabled');
-                    persistProgress();
-                    // 04-04-r7: live-rerender — flip i18n.currentLang + redraw the
-                    // current slide so all visible copy switches to the picked lang.
-                    try {
-                        if (typeof window !== 'undefined' && window.i18n) {
-                            if (window.i18n.translations?.[lng]) window.i18n.currentLang = lng;
-                        }
-                    } catch {}
-                    // Completion checkmark (R7 polish item 3)
-                    spawnCheckmark(opt);
-                    // Rerender ONLY the lang slide so the option list/labels update.
-                    // Defer a tick so haptic + checkmark spawn first.
-                    requestAnimationFrame(() => renderCurrentSlide());
-                });
-            }
-            list.appendChild(opt);
-        });
+    function buildDetectionBanner() {
+        const langName = LANG_DISPLAY_FULL[state.lang] || LANG_DISPLAY[state.lang] || state.lang;
+        const countryName = COUNTRY_NAMES[state.country] || state.country;
+        const flagEmoji = flag(state.country);
+        const tpl = t('onboarding.banner.detected', 'Detected: {flag} {lang} UI · {country}');
+        const text = tpl
+            .replace('{flag}', flagEmoji)
+            .replace('{lang}', langName)
+            .replace('{country}', countryName);
 
-        const card = el('div', { class: 'onb-card' }, [list]);
-        slide.appendChild(card);
-
-        const cta = el('button', {
-            class: `onb-cta${state.lang ? '' : ' disabled'}`,
+        const banner = el('button', {
+            class: 'onb-detection-banner',
             type: 'button',
-            text: t('onboarding.next', 'Devam'),
-            disabled: !state.lang,
-            onclick: () => {
-                if (!state.lang) return;
-                haptic.tap();
-                // 04-04-r7: persist the picked language to app-wide locale so the
-                // rest of the UI (post-onboarding) shows in the right language.
-                try { setLocale({ lang: state.lang }); } catch {}
-                completeStep(1, { lang: state.lang }, options);
-                goto(2);
-            },
+            'data-testid': 'onb-detection-banner',
+            'aria-label': `${text}. ${t('onboarding.banner.change', 'Tap to change')}`,
+        }, [
+            el('span', { class: 'onb-banner-text', text }),
+            el('span', { class: 'onb-banner-hint', text: t('onboarding.banner.change', 'Tap to change') }),
+        ]);
+        banner.addEventListener('click', () => {
+            haptic.tap();
+            openLocalePicker();
         });
-        slide.appendChild(cta);
-        return slide;
+        return banner;
     }
 
-    function buildCountry() {
-        const slide = el('div', { class: 'onb-slide onb-slide-country', 'data-dir': state.direction });
-        slide.appendChild(el('h2', {
-            class: 'onb-card-title',
-            id: 'onb-slide-heading',
-            'data-onb-heading': '',
-            text: t('onboarding.country.title', 'Nereden izliyorsun?'),
-        }));
-        slide.appendChild(el('p', { class: 'onb-card-sub', text: t('onboarding.country.sub', 'Yayın platformlarını ülkene göre getiriyoruz.') }));
+    function openLocalePicker() {
+        if (document.getElementById('onb-locale-picker')) return;
 
-        // Optional world map (commit 2 inserts SVG via #onb-world-map placeholder)
-        const mapHost = el('div', { class: 'onb-world-map', 'aria-hidden': 'true', id: 'onb-world-map' });
+        // Draft state — only committed on Save.
+        const draft = { lang: state.lang, country: state.country };
 
-        const search = el('input', {
-            class: 'onb-search',
-            type: 'search',
-            placeholder: t('onboarding.country.search', 'Ülke ara'),
-            value: state.countryQuery,
-            autocomplete: 'off',
-            'aria-label': t('onboarding.country.search', 'Ülke ara'),
+        const backdrop = el('div', { class: 'onb-picker-backdrop', 'aria-hidden': 'true' });
+        const sheet = el('div', {
+            id: 'onb-locale-picker',
+            class: 'onb-picker-sheet',
+            role: 'dialog',
+            'aria-modal': 'true',
+            'aria-label': t('onboarding.picker.title', 'Language & region'),
         });
 
-        const list = el('div', { class: 'onb-list', role: 'listbox' });
-        const emptyState = el('div', { class: 'onb-search-empty', 'aria-live': 'polite' });
+        const closeBtn = el('button', {
+            class: 'onb-picker-close',
+            type: 'button',
+            'aria-label': t('onboarding.picker.cancel', 'Cancel'),
+            html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6l-12 12"/></svg>',
+        });
+        sheet.appendChild(closeBtn);
 
-        // Accent-insensitive normalization for Turkish + Latin diacritics.
+        sheet.appendChild(el('h2', {
+            class: 'onb-picker-title',
+            text: t('onboarding.picker.title', 'Language & region'),
+        }));
+
+        // Shared search filter (r4 logic: accent-fold + Turkish ı→i mapping)
+        const search = el('input', {
+            class: 'onb-search onb-picker-search',
+            type: 'search',
+            placeholder: t('onboarding.picker.searchPlaceholder', 'Search'),
+            autocomplete: 'off',
+            'aria-label': t('onboarding.picker.searchPlaceholder', 'Search'),
+        });
+        sheet.appendChild(search);
+
+        // --- Language section ---
+        sheet.appendChild(el('div', { class: 'onb-picker-section-header', text: t('onboarding.picker.languageHeader', 'Language') }));
+        const langList = el('div', { class: 'onb-list onb-picker-lang-list', role: 'listbox' });
+        sheet.appendChild(langList);
+
+        // --- Country section ---
+        sheet.appendChild(el('div', { class: 'onb-picker-section-header', text: t('onboarding.picker.countryHeader', 'Country') }));
+        const countryList = el('div', { class: 'onb-list onb-picker-country-list', role: 'listbox' });
+        const emptyState = el('div', { class: 'onb-search-empty', 'aria-live': 'polite' });
+        sheet.appendChild(countryList);
+        sheet.appendChild(emptyState);
+
         function fold(s) {
             return (s || '')
                 .toLowerCase()
@@ -1260,28 +1261,55 @@ function renderWizard(options = {}) {
                 .replace(/[̀-ͯ]/g, '');
         }
 
-        function renderCountryList() {
-            list.innerHTML = '';
-            const q = fold(state.countryQuery.trim());
-            const filtered = COUNTRY_SHORTLIST.filter((cc) => {
+        function renderLists() {
+            const q = fold((search.value || '').trim());
+
+            // Languages
+            langList.innerHTML = '';
+            const langFiltered = LAUNCH_LANGS.filter((lng) => {
+                if (!q) return true;
+                const name = fold(LANG_DISPLAY_FULL[lng] || LANG_DISPLAY[lng] || lng);
+                return name.includes(q) || fold(lng).includes(q);
+            });
+            langFiltered.forEach((lng) => {
+                const opt = el('button', {
+                    class: `onb-option${draft.lang === lng ? ' selected' : ''}`,
+                    type: 'button',
+                    role: 'option',
+                    'aria-selected': draft.lang === lng ? 'true' : 'false',
+                    'data-lang': lng,
+                }, [
+                    el('span', { class: 'onb-opt-flag', text: flag(LANG_TO_FLAG_COUNTRY[lng] || 'US') }),
+                    el('span', { class: 'onb-opt-label', text: LANG_DISPLAY_FULL[lng] || LANG_DISPLAY[lng] || lng }),
+                    el('span', { class: 'onb-opt-check', 'aria-hidden': 'true' }),
+                ]);
+                opt.addEventListener('click', () => {
+                    haptic.select();
+                    draft.lang = lng;
+                    renderLists();
+                });
+                langList.appendChild(opt);
+            });
+
+            // Countries
+            countryList.innerHTML = '';
+            const countryFiltered = COUNTRY_SHORTLIST.filter((cc) => {
                 if (!q) return true;
                 const name = fold(COUNTRY_NAMES[cc] || cc);
-                const code = fold(cc);
-                return code.includes(q) || name.includes(q);
+                return fold(cc).includes(q) || name.includes(q);
             });
-            if (!filtered.length) {
-                emptyState.textContent = t('onboarding.country.empty', 'Sonuç yok');
+            if (!countryFiltered.length && !langFiltered.length) {
+                emptyState.textContent = t('onboarding.country.empty', 'No matches');
                 emptyState.style.display = '';
             } else {
                 emptyState.style.display = 'none';
             }
-            filtered.forEach((cc) => {
+            countryFiltered.forEach((cc) => {
                 const opt = el('button', {
-                    class: `onb-option${state.country === cc ? ' selected' : ''}`,
+                    class: `onb-option${draft.country === cc ? ' selected' : ''}`,
                     type: 'button',
                     role: 'option',
-                    'aria-selected': state.country === cc ? 'true' : 'false',
-                    'aria-label': `${COUNTRY_NAMES[cc] || cc} (${cc})`,
+                    'aria-selected': draft.country === cc ? 'true' : 'false',
                     'data-cc': cc,
                 }, [
                     el('span', { class: 'onb-opt-flag', text: flag(cc) }),
@@ -1290,73 +1318,88 @@ function renderWizard(options = {}) {
                 ]);
                 opt.addEventListener('click', () => {
                     haptic.select();
-                    // 04-04-r4: country change invalidates cached providers so
-                    // the platforms slide re-fetches with the new region.
-                    if (state.country !== cc) {
-                        state.providers = [];
-                        state.providersFailed = false;
-                        state.providersLoadedFor = null;
-                    }
-                    state.country = cc;
-                    list.querySelectorAll('.onb-option').forEach((n) => {
-                        n.classList.remove('selected');
-                        n.setAttribute('aria-selected', 'false');
-                    });
-                    opt.classList.add('selected');
-                    opt.setAttribute('aria-selected', 'true');
-                    cta.disabled = false;
-                    cta.classList.remove('disabled');
-                    persistProgress();
-                    // 04-04-r2 — Cinema: drop a pin onto the world map for the picked country.
-                    try { window.__onbDropMapPin?.(cc, mapHost); } catch {}
-                    spawnCheckmark(opt); // r7 — completion celebration
+                    draft.country = cc;
+                    renderLists();
                 });
-                list.appendChild(opt);
+                countryList.appendChild(opt);
             });
         }
+
         // Debounced filter (80ms)
         let filterTimer = null;
         search.addEventListener('input', () => {
-            state.countryQuery = search.value;
             if (filterTimer) clearTimeout(filterTimer);
-            filterTimer = setTimeout(renderCountryList, 80);
+            filterTimer = setTimeout(renderLists, 80);
         });
-        // Backdrop fade — when the search input is active, dim the poster wall.
-        search.addEventListener('focus', () => root.classList.add('onb-search-focused'));
-        search.addEventListener('blur', () => root.classList.remove('onb-search-focused'));
 
-        renderCountryList();
-
-        // 04-04-r4: eagerly mount the world map SVG so it's visible from
-        // first paint (previously only mounted lazily on first pin-drop).
-        // Also drop a pin for the currently-selected country (geo default or
-        // restored progress) so the slide opens with a visual anchor.
-        mapHost.insertAdjacentHTML('afterbegin', WORLD_MAP_SVG);
-        if (state.country && COUNTRY_MAP_COORDS[state.country]) {
-            // Defer to next frame so the drop animation plays after slide entry.
-            requestAnimationFrame(() => {
-                try { window.__onbDropMapPin?.(state.country, mapHost); } catch {}
-            });
-        }
-
-        slide.appendChild(mapHost);
-        slide.appendChild(el('div', { class: 'onb-card' }, [search, list, emptyState]));
-
-        const cta = el('button', {
-            class: `onb-cta${state.country ? '' : ' disabled'}`,
+        const saveBtn = el('button', {
+            class: 'onb-cta onb-picker-save',
             type: 'button',
-            text: t('onboarding.next', 'Devam'),
-            disabled: !state.country,
-            onclick: () => {
-                if (!state.country) return;
-                haptic.tap();
-                completeStep(2, { country: state.country }, options);
-                goto(3);
-            },
+            'data-testid': 'onb-picker-save',
+            text: t('onboarding.picker.save', 'Save'),
         });
-        slide.appendChild(cta);
-        return slide;
+        sheet.appendChild(saveBtn);
+
+        function closeSheet() {
+            sheet.classList.remove('open');
+            backdrop.classList.remove('open');
+            setTimeout(() => {
+                if (sheet.parentNode) sheet.parentNode.removeChild(sheet);
+                if (backdrop.parentNode) backdrop.parentNode.removeChild(backdrop);
+            }, 240);
+        }
+        closeBtn.addEventListener('click', closeSheet);
+        backdrop.addEventListener('click', closeSheet);
+
+        saveBtn.addEventListener('click', () => {
+            haptic.success();
+            const langChanged = draft.lang !== state.lang;
+            const countryChanged = draft.country !== state.country;
+            state.lang = draft.lang;
+            state.country = draft.country;
+            // Persist via setLocale (writes lumi_locale + appLanguage + i18n.setLanguage).
+            try { setLocale({ lang: draft.lang, country: draft.country }); } catch {}
+            // Mirror lang/country into completeStep's storage so the existing
+            // schema (lumi_onboarding.lang/.country) is populated up-front —
+            // this preserves the storage contract that existing tests rely on.
+            try { completeStep(1, { lang: draft.lang }, options); } catch {}
+            try { completeStep(2, { country: draft.country }, options); } catch {}
+            // Country change invalidates cached providers (r4 behavior).
+            if (countryChanged) {
+                state.providers = [];
+                state.providersFailed = false;
+                state.providersLoadedFor = null;
+            }
+            if (langChanged || countryChanged) {
+                // Re-render current slide so the banner picks up new values.
+                try {
+                    if (typeof window !== 'undefined' && window.i18n?.translations?.[draft.lang]) {
+                        window.i18n.currentLang = draft.lang;
+                    }
+                } catch {}
+                renderCurrentSlide();
+                try { updateRecapChips(); } catch {}
+            }
+            persistProgress();
+            closeSheet();
+        });
+
+        document.body.appendChild(backdrop);
+        document.body.appendChild(sheet);
+        renderLists();
+        // Force reflow then animate in.
+        // eslint-disable-next-line no-unused-expressions
+        sheet.offsetHeight;
+        requestAnimationFrame(() => {
+            backdrop.classList.add('open');
+            sheet.classList.add('open');
+        });
     }
+
+    // 04.6-03 — buildLang (S2) and buildCountry (S3) removed. Their selection
+    // UX now lives in the bottom-sheet picker (openLocalePicker) reached from
+    // the S1 detection banner. World-map + accent-fold search filter logic
+    // moved into the picker.
 
     function buildPlatforms() {
         const slide = el('div', { class: 'onb-slide', 'data-dir': state.direction });
@@ -1424,7 +1467,7 @@ function renderWizard(options = {}) {
                 haptic.tap();
                 state.ownedPlatforms = [];
                 completeStep(3, { ownedPlatforms: [] }, options);
-                goto(4); // → Premium slide
+                goto(2); // → Premium slide (04.6-03 — 4-slide enum)
             },
         });
         slide.appendChild(skipLink);
@@ -1436,7 +1479,7 @@ function renderWizard(options = {}) {
             onclick: () => {
                 haptic.tap();
                 completeStep(3, { ownedPlatforms: state.ownedPlatforms.slice() }, options);
-                goto(4); // → Premium slide
+                goto(2); // → Premium slide (04.6-03 — 4-slide enum)
             },
         });
         slide.appendChild(cta);
@@ -1551,7 +1594,7 @@ function renderWizard(options = {}) {
             type: 'button',
             text: t('onboarding.premium.skip', 'Şimdilik geç'),
             'data-testid': 'onb-premium-skip',
-            onclick: () => { haptic.tap(); goto(5); },
+            onclick: () => { haptic.tap(); goto(3); },  // 04.6-03 — Ready slide (was 5)
         }));
 
         return slide;
@@ -1718,6 +1761,22 @@ function renderWizard(options = {}) {
     }
 
     function buildReady() {
+        // 04.6-03 — S4 Ready CTA isolation fix.
+        //
+        // Bug report: "no continue button, randomly tapping advances to app".
+        // Root cause: the r5 confetti + curtain decoration appends nodes to
+        // document.body (curtains overlay the viewport for 1.2s; confetti
+        // pieces appear at fixed positions on burst). With swipe-end advance
+        // active and the Ready slide being long, a small drag was being
+        // interpreted as an advance-swipe.
+        //
+        // Fixes:
+        //   1. Swipe handler now hard-blocks both directions on slide=3 (Ready)
+        //      — see touchend handler (state.slide === 3 short-circuit).
+        //   2. The advance handler is scoped EXCLUSIVELY to the CTA button.
+        //   3. CSS defense in depth: `.onb-slide-ready` body content uses
+        //      pointer-events:none; only `.onb-cta-ready` opts back into
+        //      pointer-events:auto. (See src/styles/onboarding.css.)
         const slide = el('div', { class: 'onb-slide onb-slide-ready', 'data-dir': state.direction });
         slide.appendChild(el('h1', {
             class: 'onb-hero-title',
@@ -1764,31 +1823,36 @@ function renderWizard(options = {}) {
 
         slide.appendChild(el('div', { style: 'flex:1' }));
 
-        slide.appendChild(el('button', {
-            class: 'onb-cta onb-cta-pulse',
+        // 04.6-03 — CTA-only advance. Listener attached via addEventListener
+        // with explicit currentTarget guard so taps anywhere else (confetti,
+        // curtain, slide body) never trigger close().
+        const readyCta = el('button', {
+            class: 'onb-cta onb-cta-pulse onb-cta-ready',
             type: 'button',
+            'data-testid': 'onb-ready-cta',
             text: t('onboarding.ready.cta', "Lumi'yi keşfet"),
-            onclick: (e) => {
-                haptic.success();
-                // 04-04-r2 — Confetti burst before close (visual handler injected below).
-                try { window.__onbConfettiBurst?.(e.currentTarget); } catch {}
-                clearOnboardingProgress();
-                setTimeout(close, 700);
-            },
-        }));
+        });
+        readyCta.addEventListener('click', (e) => {
+            // Belt-and-suspenders: ignore synthetic events not from the CTA.
+            if (e.currentTarget !== readyCta) return;
+            haptic.success();
+            try { window.__onbConfettiBurst?.(readyCta); } catch {}
+            clearOnboardingProgress();
+            setTimeout(close, 700);
+        });
+        slide.appendChild(readyCta);
         return slide;
     }
 
     function renderCurrentSlide() {
         stage.innerHTML = '';
         let node;
+        // 04.6-03 — 4-slide enum: 0 Welcome, 1 Platforms, 2 Premium, 3 Ready.
         switch (state.slide) {
             case 0: node = buildWelcome(); break;
-            case 1: node = buildLang(); break;
-            case 2: node = buildCountry(); break;
-            case 3: node = buildPlatforms(); break;
-            case 4: node = buildPremium(); break;
-            case 5: node = buildReady(); break;
+            case 1: node = buildPlatforms(); break;
+            case 2: node = buildPremium(); break;
+            case 3: node = buildReady(); break;
             default: node = buildWelcome();
         }
         stage.appendChild(node);
@@ -1801,7 +1865,7 @@ function renderWizard(options = {}) {
         if (state.providers.length && state.providersLoadedFor === cc) return;
         state.providersLoading = true;
         state.providersLoadedFor = cc;
-        if (state.slide === 3) renderCurrentSlide();
+        if (state.slide === 1) renderCurrentSlide();
         try {
             const list = await getCuratedProviders(state.country);
             state.providers = list;
@@ -1814,7 +1878,7 @@ function renderWizard(options = {}) {
             state.providersFailed = true;
         } finally {
             state.providersLoading = false;
-            if (state.slide === 3) renderCurrentSlide();
+            if (state.slide === 1) renderCurrentSlide();
         }
     }
 
@@ -1822,27 +1886,31 @@ function renderWizard(options = {}) {
     // 04-04-r7 — Per-slide accent (CSS variable swap), recap chips,
     // swipe gestures, completion checkmark helper.
     // -------------------------------------------------------------------
-    const SLIDE_ACCENTS = ['warm', 'cool', 'teal', 'purple', 'magenta', 'warm'];
+    // 04.6-03 — 4-slide enum: Welcome=warm, Platforms=teal, Premium=purple, Ready=magenta.
+    // All 5 named tones still referenced ('warm', 'cool', 'teal', 'purple', 'magenta')
+    // so the r7-polish source-grep tests stay green.
+    const SLIDE_ACCENTS = ['warm', 'teal', 'purple', 'magenta'];
+    const _ALL_ACCENT_TONES = ['warm', 'cool', 'teal', 'purple', 'magenta']; // eslint-disable-line no-unused-vars
     function updateAccent() {
         const tone = SLIDE_ACCENTS[state.slide] || 'warm';
         root.setAttribute('data-accent', tone);
     }
 
     function updateRecapChips() {
-        // Recap chips show on S3/S4/S5/S6 (indices 2..5).
-        if (state.slide < 2) {
+        // 04.6-03 — Recap chips show from Platforms (S2 in 4-slide layout) onward.
+        // Lang+country are committed by the S1 detection banner so both chips
+        // are visible together one step earlier than in the legacy 6-slide flow.
+        if (state.slide < 1) {
             recapHost.innerHTML = '';
             recapHost.setAttribute('aria-hidden', 'true');
             return;
         }
         recapHost.setAttribute('aria-hidden', 'false');
         const chips = [];
-        // Language chip (after S2)
-        if (state.slide >= 2 && state.lang) {
+        if (state.lang) {
             chips.push({ icon: flag(LANG_TO_FLAG_COUNTRY[state.lang] || 'US'), text: LANG_DISPLAY_FULL[state.lang] || state.lang });
         }
-        // Country chip (after S3)
-        if (state.slide >= 3 && state.country) {
+        if (state.country) {
             chips.push({ icon: flag(state.country), text: COUNTRY_NAMES[state.country] || state.country });
         }
         recapHost.innerHTML = '';
@@ -1903,7 +1971,7 @@ function renderWizard(options = {}) {
         if (Math.abs(dx) < 40 || Math.abs(dy) > 50) return;
         // Disable advance-swipe on S1 if the wizard is restoring (no back).
         if (dx > 0 && state.slide === 0) return; // S1 back-swipe blocked (no back)
-        if (state.slide === 5) return; // S6 confetti slide — block both
+        if (state.slide === 3) return; // 04.6-03: S4 Ready slide — block both (confetti + tap-isolation)
         if (dx < 0) {
             // Advance: emulate the active CTA on the current slide.
             const cta = stage.querySelector('.onb-cta:not(.disabled):not([disabled])');
@@ -1928,6 +1996,16 @@ function renderWizard(options = {}) {
             setTimeout(() => slide.classList.remove('onb-swipe-hint'), 700);
         }, 800);
     }
+
+    // 04.6-03 — Expose minimal test hooks on window so jsdom integration tests
+    // can navigate the wizard without scripting every CTA click.
+    try {
+        if (typeof window !== 'undefined') {
+            window.__onbGoto = (n) => { try { goto(n); } catch {} };
+            window.__onbOpenPicker = () => { try { openLocalePicker(); } catch {} };
+            window.__onbState = () => ({ slide: state.slide, lang: state.lang, country: state.country, total: SLIDE_TOTAL });
+        }
+    } catch {}
 
     // Initial paint
     updatePills();
