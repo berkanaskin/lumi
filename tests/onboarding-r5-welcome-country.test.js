@@ -59,10 +59,18 @@ describe('04-04-r5 — S1 Welcome new content', () => {
         const root = document.getElementById('onboarding-root');
         expect(root).toBeTruthy();
 
-        // 04-04-r6: wordmark is now in a top-left brand bar (no tagline).
-        const wordmark = root.querySelector('.onb-wordmark.onb-wordmark-bar');
+        // 04-04-r6: wordmark in top-left brand bar (no tagline).
+        // 04.6-r1: gradient text wordmark replaced by real logo image
+        //          (with the gradient text retained as an error-handler fallback).
+        const logoImg = root.querySelector('img.onb-wordmark-img');
+        const textWordmark = root.querySelector('.onb-wordmark.onb-wordmark-bar');
+        const wordmark = logoImg || textWordmark;
         expect(wordmark).toBeTruthy();
-        expect(wordmark.textContent.trim().toLowerCase()).toBe('lumi');
+        if (logoImg) {
+            expect(logoImg.getAttribute('alt')).toMatch(/lumi/i);
+        } else {
+            expect(textWordmark.textContent.trim().toLowerCase()).toBe('lumi');
+        }
         // Tagline pair was removed from S1 (lives on Premium slide instead).
         expect(root.querySelector('.onb-slide-welcome .onb-tagline')).toBeFalsy();
 
