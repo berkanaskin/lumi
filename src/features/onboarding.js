@@ -1069,9 +1069,13 @@ function renderWizard(options = {}) {
         const brand = el('div', { class: 'onb-brand onb-brand-bar', 'aria-hidden': 'false' });
         // 04.6-r1 — Replace gradient text wordmark with real logo image.
         // public/img/lumi-logo.png (copied from assets/lumi-logo-dark.png).
+        // 04.6-r2 — current Lumi logo (Jan 8 2026 neon-spotlight wordmark).
+        // Source: assets/Logotype_design_for_2k_202601082219.jpeg → optimized via
+        // scripts/process-logo.cjs (sharp): trim → 400w PNG (11KB) + 800w retina (61KB).
         const logoImg = el('img', {
             class: 'onb-wordmark-img',
             src: '/img/lumi-logo.png',
+            srcset: '/img/lumi-logo.png 1x, /img/lumi-logo@2x.png 2x',
             alt: 'Lumi',
             loading: 'eager',
             decoding: 'sync',
