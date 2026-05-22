@@ -21,7 +21,7 @@ describe('platforms', () => {
         it('should have Turkish platforms', () => {
             expect(PLATFORM_URLS['GAIN']).toBeDefined();
             expect(PLATFORM_URLS['Exxen']).toBeDefined();
-            expect(PLATFORM_URLS['BluTV']).toBeDefined();
+            // NOTE: BluTV removed in Phase-03.2 (consolidated → HBO Max, 2024 closure)
             expect(PLATFORM_URLS['TOD']).toBeDefined();
         });
 
@@ -57,7 +57,7 @@ describe('platforms', () => {
             expect(isTurkishPlatform('GAIN')).toBe(true);
             expect(isTurkishPlatform('Gain')).toBe(true);
             expect(isTurkishPlatform('Exxen')).toBe(true);
-            expect(isTurkishPlatform('BluTV')).toBe(true);
+            // NOTE: BluTV removed in Phase-03.2 (consolidated → HBO Max, 2024 closure)
             expect(isTurkishPlatform('TOD')).toBe(true);
         });
 

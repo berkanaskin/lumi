@@ -8,6 +8,8 @@ import { TMDBService, YouTubeService, RatingsService, API } from '../src/service
 // Mock fetch
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
+globalThis.fetch = mockFetch;
+if (typeof window !== 'undefined') window.fetch = mockFetch;
 
 describe('API Services', () => {
     beforeEach(() => {
@@ -79,8 +81,9 @@ describe('API Services', () => {
 
                 await TMDBService.fetch('/movie/popular');
 
+                // NOTE: Phase-3 routes TMDB through /api/tmdb proxy; endpoint is URL-encoded as query param
                 expect(mockFetch).toHaveBeenCalledWith(
-                    expect.stringContaining('/movie/popular'),
+                    expect.stringMatching(/\/movie\/popular|%2Fmovie%2Fpopular/),
                     expect.any(Object)
                 );
             });

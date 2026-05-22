@@ -33,6 +33,11 @@ global.window = {
     localStorage: localStorageMock,
     dispatchEvent: vi.fn(),
     addEventListener: vi.fn(),
+    location: {
+        origin: 'http://localhost',
+        href: 'http://localhost/',
+        pathname: '/',
+    },
     CustomEvent: class CustomEvent {
         constructor(type, options) {
             this.type = type;
@@ -50,19 +55,39 @@ global.document = {
     createElement: vi.fn((tag) => ({
         tagName: tag.toUpperCase(),
         className: '',
-        style: {},
+        style: {
+            setProperty: vi.fn(),
+            removeProperty: vi.fn(),
+            getPropertyValue: vi.fn(() => ''),
+        },
         innerHTML: '',
         textContent: '',
         appendChild: vi.fn(),
+        removeChild: vi.fn(),
         addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        querySelector: vi.fn(() => null),
+        querySelectorAll: vi.fn(() => []),
+        setAttribute: vi.fn(),
+        getAttribute: vi.fn(() => null),
+        removeAttribute: vi.fn(),
+        focus: vi.fn(),
+        click: vi.fn(),
+        remove: vi.fn(),
         classList: {
             add: vi.fn(),
             remove: vi.fn(),
             contains: vi.fn(() => false),
+            toggle: vi.fn(),
         },
     })),
     head: {
         appendChild: vi.fn(),
+    },
+    body: {
+        appendChild: vi.fn(),
+        removeChild: vi.fn(),
+        contains: vi.fn(() => false),
     },
     documentElement: {
         getAttribute: vi.fn(() => 'dark'),
