@@ -30,12 +30,17 @@
 .onboarding-root {
     position: fixed;
     inset: 0;
+    /* 04.6-r2 — use dynamic viewport height for mobile (Safari address bar). */
+    height: 100vh;
+    height: 100dvh;
     z-index: 10000;
     background: var(--onb-bg);
     color: var(--onb-text);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto, sans-serif;
     overflow: hidden;
     contain: strict;
+    display: flex;
+    flex-direction: column;
     /* Force dark regardless of app theme */
     color-scheme: dark;
 }
@@ -214,13 +219,22 @@
    SLIDE STAGE — single slide rendered at a time with direction-aware enter.
    ===================================================================== */
 .onb-stage {
+    /* 04.6-r2 — root cause fix for banner-not-clickable + S4-CTA-invisible.
+       Previously `justify-content: center` + parent `overflow: hidden` clipped
+       BOTH ends of long slides on small phones — banner (top) and Ready CTA
+       (bottom) were rendered OUTSIDE the visible viewport.
+       Now: top-aligned + own scroll context. Each slide controls its own
+       layout (welcome lets content flow; ready uses flex margin-top:auto). */
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     position: relative;
     padding: 16px 0;
     min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
 }
 
 .onb-slide {
@@ -1824,12 +1838,15 @@
    =================================================================== */
 
 .onb-detection-banner {
-    /* 04.6-r1 — Explicit position+z+pointer-events so the trio poster
-       overlay and welcome decorations never block taps. */
+    /* 04.6-r2 — block-level flex (was inline-flex). Banner now occupies its
+       OWN row in the slide column layout — guarantees a tappable target box
+       independent of sibling overflow. Self-aligned center so it doesn't
+       stretch full-width. */
     position: relative;
     z-index: 20;
     pointer-events: auto;
-    display: inline-flex;
+    display: flex;
+    align-self: center;
     align-items: center;
     gap: 8px;
     min-height: 44px;
@@ -1979,17 +1996,27 @@
 .onb-slide-ready > *:not(.onb-cta-ready) {
     pointer-events: none;
 }
+/* 04.6-r2 — Ready slide layout. Ensure the slide fills the stage height
+   (min-height: 100%) AND the CTA is pushed to the bottom via flex
+   margin-top:auto. This bypasses `position: sticky` (which fails inside
+   scrolling ancestors) and `position: fixed` (which fights confetti). */
+.onb-slide-ready {
+    min-height: 100%;
+}
 .onb-slide-ready .onb-cta-ready {
     pointer-events: auto;
-    position: sticky;
-    bottom: max(16px, env(safe-area-inset-bottom, 16px));
+    /* Flex auto-margin pins the CTA to the bottom of the slide column. */
+    margin-top: auto;
+    /* Side margins keep the CTA visually centered + breathing room. */
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: max(16px, env(safe-area-inset-bottom, 16px));
     z-index: 30;
-    /* 04.6-r1 — guarantee visibility on small phones: full-width-ish CTA
-       with high-contrast gradient, sits above confetti + curtain layers. */
     width: calc(100% - 32px);
-    margin: 12px auto 0;
     display: block;
     box-shadow: 0 12px 36px rgba(255, 93, 143, 0.45);
+    /* Defensive: ensure visible even if some ancestor has weird transforms. */
+    position: relative;
 }
 /* Confetti must never block the CTA tap target. */
 .onb-confetti-piece { pointer-events: none !important; }

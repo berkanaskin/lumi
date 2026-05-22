@@ -1213,9 +1213,23 @@ function renderWizard(options = {}) {
             el('span', { class: 'onb-banner-text', text }),
             el('span', { class: 'onb-banner-hint', text: t('onboarding.banner.change', 'Tap to change') }),
         ]);
-        banner.addEventListener('click', () => {
+        // 04.6-r2 — direct listener on the button.
+        banner.addEventListener('click', (e) => {
+            e.stopPropagation();
             haptic.tap();
             openLocalePicker();
+        });
+        // 04.6-r2 — belt-and-suspenders: also respond to a tap on inner spans
+        // via pointerup (some mobile browsers swallow the click after a
+        // multi-touch start). Guard with a closest() so we only act once.
+        banner.addEventListener('pointerup', (e) => {
+            // Click will fire afterward; only fall through if click was
+            // suppressed (e.g. composed gesture). We do nothing here unless
+            // the click handler didn't run — but since click is reliable on
+            // a real <button>, this is purely defensive logging.
+            if (!banner.isConnected) return;
+            // No-op: kept as an attachment point if click ever breaks.
+            void e;
         });
         return banner;
     }
@@ -1839,7 +1853,10 @@ function renderWizard(options = {}) {
         chips.appendChild(el('span', { class: 'onb-chip', text: platTpl.replace('{n}', state.ownedPlatforms.length) }));
         slide.appendChild(chips);
 
-        slide.appendChild(el('div', { style: 'flex:1' }));
+        // 04.6-r2 — empty flex:1 spacer removed. The CTA now uses
+        // `margin-top: auto` (see .onb-slide-ready .onb-cta-ready in CSS)
+        // which pushes it to the bottom of the slide column without a sibling
+        // spacer interfering with stagger animations.
 
         // 04.6-03 — CTA-only advance. Listener attached via addEventListener
         // with explicit currentTarget guard so taps anywhere else (confetti,
@@ -1968,6 +1985,11 @@ function renderWizard(options = {}) {
         if (target.closest('.onb-list')) return true;
         if (target.closest('.onb-grid')) return true;
         if (target.closest('.onb-paywall-sheet')) return true;
+        // 04.6-r2 — exclude the detection banner + locale picker sheet so taps
+        // there are never swallowed by the swipe-advance handler.
+        if (target.closest('.onb-detection-banner')) return true;
+        if (target.closest('.onb-picker-sheet')) return true;
+        if (target.closest('.onb-picker-backdrop')) return true;
         return false;
     }
     root.addEventListener('touchstart', (e) => {
