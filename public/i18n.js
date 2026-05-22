@@ -208,6 +208,16 @@ const i18n = {
             'onboarding.step3.skip': 'Sonra eklerim',
             'onboarding.providers.loadError': 'Şu an yükleyemedik. Sonra eklersin.',
 
+            // Phase 04.6-03 — Hybrid auto-detect banner + bottom-sheet picker (S1)
+            'onboarding.banner.detected': 'Algılandı: {flag} {lang} arayüzü · {country}',
+            'onboarding.banner.change': 'Değiştir',
+            'onboarding.picker.title': 'Dil ve ülke',
+            'onboarding.picker.languageHeader': 'Dil',
+            'onboarding.picker.countryHeader': 'Ülke',
+            'onboarding.picker.searchPlaceholder': 'Ara',
+            'onboarding.picker.save': 'Kaydet',
+            'onboarding.picker.cancel': 'Vazgeç',
+
             // Phase 04-04 R1: Cinematic redesign — 5-slide wizard copy
             'onboarding.next': 'Devam',
             'onboarding.welcome.title': 'Bu akşam ne izlesek?',
@@ -467,6 +477,16 @@ const i18n = {
             'onboarding.step3.done': 'Done',
             'onboarding.step3.skip': 'Add later',
             'onboarding.providers.loadError': "Couldn't load providers. Add later.",
+
+            // Phase 04.6-03 — Hybrid auto-detect banner + bottom-sheet picker (S1)
+            'onboarding.banner.detected': 'Detected: {flag} {lang} UI · {country}',
+            'onboarding.banner.change': 'Tap to change',
+            'onboarding.picker.title': 'Language & region',
+            'onboarding.picker.languageHeader': 'Language',
+            'onboarding.picker.countryHeader': 'Country',
+            'onboarding.picker.searchPlaceholder': 'Search',
+            'onboarding.picker.save': 'Save',
+            'onboarding.picker.cancel': 'Cancel',
 
             // Phase 04-04 R1: Cinematic redesign — 5-slide wizard copy
             'onboarding.next': 'Continue',
