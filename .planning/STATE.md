@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Phase 4 COMPLETE through r7 polish; Phase 4.6 INSERTED (Data Sources & Onboarding Refactor) — context written, awaits /gsd-plan-phase 4.6
-stopped_at: Phase 04 (Global Foundation) code-complete on worktree — 04-01 (i18n EN-first), 04-02 (locale layer), 04-03 (optional auth + Firestore migration), 04-04 (onboarding wizard), 04-05 (TR broadcast) all shipped. 04-04 has a blocking `checkpoint:human-verify` (5 manual mobile scenarios A-E) — code + unit tests are green (19/19 onboarding tests; 228/258 full suite, 8 fails = pre-existing 03.2 debt). Worktree cleanup pending. Next: run `/gsd-verify-work 04` after manual QA approval, then plan Phase 5 (Premium Agent — RevenueCat + 4 proactive features).
-last_updated: "2026-05-13T00:00:00.000Z"
+status: Phase 4.6 COMPLETE (3/3 plans shipped). Ready for Phase 5 planning.
+stopped_at: Phase 4.6 (Data Sources & Onboarding Refactor) shipped end-to-end. 04.6-01 (region-platforms.js + getCuratedProviders resolver), 04.6-02 (OMDB-grounded trivia), 04.6-03 (onboarding hybrid auto-detect + 6→4 slide refactor + S4 CTA fix). 387/417 full suite green (+18 from 369 baseline). 8 pre-existing failures untouched (Phase 03.2 stale debt). Next: `/gsd-plan-phase 5` (Premium Agent — RevenueCat + 4 proactive features). Profile settings panel parity deferred to Phase 5 (documented in 04.6-03 SUMMARY).
+last_updated: "2026-05-22T00:00:00.000Z"
 
 # R1 redesign round (2026-05-13): 04-04 onboarding wizard upgraded from utilitarian
 # 3-step form to cinematic 5-slide (Poster Wall + Ken Burns + frosted glass + gradient CTA).
@@ -22,8 +22,8 @@ last_updated: "2026-05-13T00:00:00.000Z"
 progress:
   total_phases: 8
   completed_phases: 5
-  total_plans: 25
-  completed_plans: 24
+  total_plans: 28
+  completed_plans: 27   # +3 for 04.6-01, 04.6-02, 04.6-03
 ---
 
 # Project State
