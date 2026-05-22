@@ -1824,6 +1824,11 @@
    =================================================================== */
 
 .onb-detection-banner {
+    /* 04.6-r1 — Explicit position+z+pointer-events so the trio poster
+       overlay and welcome decorations never block taps. */
+    position: relative;
+    z-index: 20;
+    pointer-events: auto;
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -1842,6 +1847,22 @@
     transition: background 160ms ease, transform 160ms ease;
     text-align: left;
     box-shadow: 0 6px 22px rgba(0, 0, 0, 0.18);
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0.1);
+    touch-action: manipulation;
+}
+/* Trio posters on welcome must NOT block the banner click target. */
+.onb-slide-welcome .onb-poster-trio,
+.onb-slide-welcome .onb-poster-trio * { pointer-events: none; }
+
+/* 04.6-r1 — Real Lumi logo image (replaces gradient text wordmark). */
+.onb-wordmark-img {
+    height: 32px;
+    width: auto;
+    display: block;
+    filter: drop-shadow(0 0 14px rgba(255, 93, 143, 0.32));
+}
+@media (max-width: 380px) {
+    .onb-wordmark-img { height: 28px; }
 }
 .onb-detection-banner:hover,
 .onb-detection-banner:focus-visible {
@@ -1960,6 +1981,17 @@
 }
 .onb-slide-ready .onb-cta-ready {
     pointer-events: auto;
-    position: relative;
-    z-index: 2;
+    position: sticky;
+    bottom: max(16px, env(safe-area-inset-bottom, 16px));
+    z-index: 30;
+    /* 04.6-r1 — guarantee visibility on small phones: full-width-ish CTA
+       with high-contrast gradient, sits above confetti + curtain layers. */
+    width: calc(100% - 32px);
+    margin: 12px auto 0;
+    display: block;
+    box-shadow: 0 12px 36px rgba(255, 93, 143, 0.45);
 }
+/* Confetti must never block the CTA tap target. */
+.onb-confetti-piece { pointer-events: none !important; }
+/* Cinema curtains overlay document.body — keep them tap-transparent. */
+.onb-curtain { pointer-events: none; }

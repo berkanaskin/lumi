@@ -1067,8 +1067,22 @@ function renderWizard(options = {}) {
         // The giant centered wordmark + tagline pair was replaced with a single
         // refined "lumi" mark anchored top-left, the way Apple TV / Netflix do.
         const brand = el('div', { class: 'onb-brand onb-brand-bar', 'aria-hidden': 'false' });
-        const wordmark = el('div', { class: 'onb-wordmark onb-wordmark-bar', text: 'lumi' });
-        brand.appendChild(wordmark);
+        // 04.6-r1 — Replace gradient text wordmark with real logo image.
+        // public/img/lumi-logo.png (copied from assets/lumi-logo-dark.png).
+        const logoImg = el('img', {
+            class: 'onb-wordmark-img',
+            src: '/img/lumi-logo.png',
+            alt: 'Lumi',
+            loading: 'eager',
+            decoding: 'sync',
+            'data-testid': 'onb-logo-img',
+        });
+        // Fallback: if the image fails to load, swap to the gradient wordmark.
+        logoImg.addEventListener('error', () => {
+            const fallback = el('div', { class: 'onb-wordmark onb-wordmark-bar', text: 'lumi' });
+            try { logoImg.replaceWith(fallback); } catch {}
+        }, { once: true });
+        brand.appendChild(logoImg);
         slide.appendChild(brand);
 
         // 04.6-03 — Hybrid auto-detect banner. Replaces the dedicated S2 Language
