@@ -10,6 +10,7 @@ import { API, GeoIPService } from '../services/api.js';
 import { getStreamingWithCache } from '../services/streaming-cache.js';
 import { getPlatformUrl, getLogoOverride } from '../lib/platforms.js';
 import { filterProvidersToCurated } from '../lib/providers-resolver.js';
+import { buildGroundTruth, buildGroundedPrompt, clampBullets } from '../lib/trivia-grounding.js';
 import { isActivelyAiring, getNetworkLogoPath, getNetworkCatalogEntry, formatNextEpisode } from '../lib/broadcast.js';
 
 // ============================================
@@ -639,7 +640,66 @@ function updateHeroRatings() {
 }
 
 /**
- * Load trivia from Gemini AI
+ * Phase 04.6-02 — Trivia loader.
+ *
+ * Replaces the legacy pure-Gemini call (which hallucinated awards / cast / dates)
+ * with an OMDB+TMDB grounded prompt. Gemini may only FORMAT the structured
+ * facts; it is forbidden from inventing claims (see trivia-grounding.js).
+ *
+ * Flow:
+ *   1. Pull imdb_id from TMDB details.external_ids (no extra TMDB roundtrip).
+ *   2. Fetch /api/omdb?i={imdb_id} (8s timeout; error envelope falls back to TMDB-only).
+ *   3. buildGroundTruth → buildGroundedPrompt → /api/gemini.
+ *   4. clampBullets the response (≤3) → render with attribution micro-credit.
+ *   5. Gemini failure → "Trivia unavailable" placeholder (no alarmist UI).
+ */
+
+const TRIVIA_UNAVAILABLE_HTML =
+    '<p style="color:var(--text-muted);font-size:0.875rem">Trivia unavailable.</p>';
+
+/**
+ * Fetch OMDB data for a given IMDb ID. Returns null on any non-OK / error envelope
+ * so callers can fall back to TMDB-only grounding without leaking failures.
+ *
+ * Exported as a test seam (and re-exported only via the renderTrivia path below).
+ */
+async function fetchOmdbSafe(imdbId, fetchImpl = fetch) {
+    if (!imdbId) return null;
+    try {
+        const res = await fetchImpl(`/api/omdb?i=${encodeURIComponent(imdbId)}`);
+        if (!res || !res.ok) return null;
+        const data = await res.json();
+        if (!data || data.error || data.Response === 'False') return null;
+        return data;
+    } catch {
+        return null;
+    }
+}
+
+/**
+ * Pure-ish compute helper: takes already-fetched TMDB + OMDB payloads + raw Gemini
+ * text, returns the bullet list and attribution label. Extracted so trivia-loader
+ * tests can assert behavior without JSDOM.
+ *
+ * @returns {{ bullets: string[], attribution: string, source: string }}
+ */
+export function computeTriviaRender(details, omdbData, geminiText) {
+    const ground = buildGroundTruth(details, omdbData);
+    const bullets = clampBullets(geminiText);
+    const attribution = ground.source === 'omdb+tmdb' ? 'Source: OMDB + TMDB' : 'Source: TMDB';
+    return { bullets, attribution, source: ground.source };
+}
+
+/**
+ * Build the Gemini prompt for a given TMDB+OMDB pair. Exposed for testing.
+ */
+export function buildTriviaPromptFor(details, omdbData, type) {
+    const ground = buildGroundTruth(details, omdbData);
+    return { prompt: buildGroundedPrompt(ground, type), source: ground.source };
+}
+
+/**
+ * Load trivia for the open detail page. Renders into #trivia-container.
  */
 async function loadTrivia(details, type) {
     const triviaSection = document.getElementById('trivia-section');
@@ -647,41 +707,58 @@ async function loadTrivia(details, type) {
     if (!triviaContainer || !triviaSection) return;
     triviaSection.style.display = '';
 
-    const title = details.title || details.name;
-    const year = (details.release_date || details.first_air_date || '').substring(0, 4);
-    const mediaType = type === 'tv' ? 'dizi' : 'film';
+    const imdbId = details?.external_ids?.imdb_id || details?.imdb_id || null;
 
     try {
+        // 1. OMDB (best-effort) in parallel with — well, nothing else right now,
+        //    but Promise.all preserves the option for a future parallel call.
+        const [omdbData] = await Promise.all([fetchOmdbSafe(imdbId)]);
+
+        // 2. Build grounded prompt.
+        const { prompt, source } = buildTriviaPromptFor(details, omdbData, type);
+
+        // 3. Call Gemini with the strict prompt.
         const res = await fetch('/api/gemini', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                prompt: `"${title}" (${year}) ${mediaType} hakkinda 5 ilginc trivia bilgisi yaz. Gercek, dogru ve ilginc bilgiler olsun. Set arkasi hikayeleri, gizli detaylar, oyuncu anektodlari gibi. Her birini 1-2 cumleyle yaz. Sadece bilgileri yaz, baslik veya numara koyma. Her bilgiyi yeni satirda yaz.`,
+                prompt,
                 lang: window.i18n?.currentLang || 'en',
             }),
         });
 
         if (!res.ok) {
-            triviaContainer.innerHTML = '<p style="color:var(--text-muted);font-size:0.875rem">Trivia yuklenemedi.</p>';
+            triviaContainer.innerHTML = TRIVIA_UNAVAILABLE_HTML;
             return;
         }
 
         const data = await res.json();
         const text = data.text || data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
-        if (text) {
-            const facts = text.split('\n').filter(l => l.trim().length > 10).slice(0, 5);
-            triviaContainer.innerHTML = facts.map(fact =>
-                `<div style="display:flex;gap:8px;margin-bottom:var(--space-sm);align-items:flex-start">
-                    <span style="color:var(--primary);font-size:1.1rem;flex-shrink:0">•</span>
-                    <p style="color:var(--text-secondary);font-size:0.875rem;line-height:1.5;margin:0">${fact.trim()}</p>
-                </div>`
-            ).join('');
-        } else {
-            triviaContainer.innerHTML = '<p style="color:var(--text-muted);font-size:0.875rem">Trivia bulunamadi.</p>';
+        const { bullets, attribution } = computeTriviaRender(details, omdbData, text);
+
+        if (!bullets.length) {
+            triviaContainer.innerHTML = `
+                <p style="color:var(--text-muted);font-size:0.875rem">No notable trivia available.</p>
+                <p style="color:var(--text-muted);font-size:0.7rem;margin-top:var(--space-xs);opacity:0.7">${attribution}</p>
+            `;
+            return;
         }
+
+        const bulletsHTML = bullets.map(fact =>
+            `<div style="display:flex;gap:8px;margin-bottom:var(--space-sm);align-items:flex-start">
+                <span style="color:var(--primary);font-size:1.1rem;flex-shrink:0">•</span>
+                <p style="color:var(--text-secondary);font-size:0.875rem;line-height:1.5;margin:0">${fact}</p>
+            </div>`
+        ).join('');
+
+        triviaContainer.innerHTML = `
+            ${bulletsHTML}
+            <p style="color:var(--text-muted);font-size:0.7rem;margin-top:var(--space-sm);opacity:0.7"
+               data-trivia-attribution="${source}">${attribution}</p>
+        `;
     } catch {
-        triviaContainer.innerHTML = '<p style="color:var(--text-muted);font-size:0.875rem">Trivia yuklenemedi.</p>';
+        triviaContainer.innerHTML = TRIVIA_UNAVAILABLE_HTML;
     }
 }
 
