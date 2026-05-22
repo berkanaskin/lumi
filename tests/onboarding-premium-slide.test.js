@@ -61,36 +61,30 @@ afterEach(() => {
     global.requestAnimationFrame = origRAF;
 });
 
-/** Boot the wizard and click forward to the Premium slide (index 4). */
+/** Boot the wizard and navigate to the Premium slide (index 2 in 04.6-03 layout). */
 async function advanceToPremium(countryCode) {
+    // Seed lumi_locale BEFORE startOnboarding so resolveOnboardingLocale picks
+    // it up and state.country reflects the test's chosen country.
+    localStorage.setItem('lumi_locale', JSON.stringify({
+        lang: countryCode === 'TR' ? 'tr' : 'en',
+        country: countryCode,
+    }));
     startOnboarding();
     completeStep(1, { lang: countryCode === 'TR' ? 'tr' : 'en' });
     completeStep(2, { country: countryCode });
-
-    // S0 Welcome → CTA
-    document.querySelector('.onb-slide .onb-cta')?.click();
-    // S1 Lang → first enabled option, then Next
-    document.querySelector('.onb-list .onb-option:not(.disabled)')?.click();
-    document.querySelector('.onb-slide .onb-cta')?.click();
-    // S2 Country → pick target. COUNTRY_SHORTLIST renders names (e.g. "Türkiye",
-    // "United States") not codes, so match by known display names.
-    const nameByCode = { TR: 'Türkiye', US: 'United States', GB: 'United Kingdom' };
-    const wantName = nameByCode[countryCode] || countryCode;
-    const countryOpts = [...document.querySelectorAll('.onb-list .onb-option')];
-    const target = countryOpts.find((b) => (b.textContent || '').includes(wantName));
-    (target || countryOpts[0])?.click();
-    document.querySelector('.onb-slide .onb-cta')?.click();
-    // S3 Platforms → skip link → lands on S4 Premium
-    document.querySelector('.onboarding-skip-link')?.click();
-    await new Promise((r) => setTimeout(r, 0));
+    // 04.6-03 — 4-slide layout: Welcome(0) → Platforms(1) → Premium(2) → Ready(3).
+    if (typeof window.__onbGoto === 'function') {
+        window.__onbGoto(2);
+        await new Promise((r) => setTimeout(r, 20));
+    }
 }
 
-describe('Premium teaser slide (S5) — 04-04-r1', () => {
-    it('wizard now has 6 progress pills (was 5 before premium slide insertion)', () => {
+describe('Premium teaser slide — 04-04-r1 / 04.6-03', () => {
+    it('wizard renders 4 progress pills (04.6-03 — reduced from 6)', () => {
         startOnboarding();
         const pills = document.querySelectorAll('.onb-pill');
-        expect(pills.length).toBe(6);
-        expect(document.querySelector('.onb-pills')?.getAttribute('aria-valuemax')).toBe('6');
+        expect(pills.length).toBe(4);
+        expect(document.querySelector('.onb-pills')?.getAttribute('aria-valuemax')).toBe('4');
     });
 
     it('renders the premium slide with title and 4 feature rows', async () => {

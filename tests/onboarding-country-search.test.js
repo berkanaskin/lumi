@@ -49,12 +49,16 @@ afterEach(() => {
 });
 
 async function advanceToCountry() {
+    // 04.6-03 — Country selection lives in the S1 bottom-sheet picker.
+    // Open the picker so the search input + country list mount.
     startOnboarding();
-    // S0 Welcome → CTA → S1 Lang
-    document.querySelector('.onb-slide .onb-cta')?.click();
-    // S1 Lang → pick first enabled, Next → S2 Country
-    document.querySelector('.onb-list .onb-option:not(.disabled)')?.click();
-    document.querySelector('.onb-slide .onb-cta')?.click();
+    if (typeof window.__onbOpenPicker === 'function') {
+        window.__onbOpenPicker();
+        await new Promise((r) => setTimeout(r, 20));
+    } else {
+        document.querySelector('.onb-detection-banner')?.click();
+        await new Promise((r) => setTimeout(r, 20));
+    }
 }
 
 function flushTimers() {
@@ -121,7 +125,8 @@ describe('wizard a11y wiring (04-04-r2)', () => {
         startOnboarding();
         const announcer = document.querySelector('[aria-live="polite"]');
         expect(announcer).toBeTruthy();
-        expect(announcer.textContent).toMatch(/step 1 of 6/i);
+        // 04.6-03 — 4-slide layout (down from 6)
+        expect(announcer.textContent).toMatch(/step 1 of 4/i);
     });
 
     it('current slide heading has data-onb-heading attribute', () => {
