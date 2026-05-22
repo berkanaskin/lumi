@@ -18,6 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3.1: Mobile QA Fixes (INSERTED)** - Fix 11 mobile bugs (4/4 complete)
 - [x] **Phase 03.2: Polish & Platform Gaps (INSERTED)** - Turkish platform catalog, favorites bug, profile customization, cinema badge, discover redesign, AI search reliability (6/6 plans + 14 polish rounds complete 2026-05-10)
 - [ ] **Phase 4: Global Foundation** - EN-first i18n refactor, region/locale detection, optional auth + guest mode, onboarding flow, active series broadcast info
+- [ ] **Phase 4.6: Data Sources & Onboarding Refactor (INSERTED)** - Per-region curated platform dictionary, Streaming-Availability API activation with cost-aware cache, OMDB-grounded trivia (no more Gemini hallucination), onboarding hybrid auto-detect (6→4 slides), S6 finalize fix
 - [ ] **Phase 5: Premium Agent** - RevenueCat subscriptions (monthly/yearly/lifetime), free-tier limits, paywall UX, and 4 proactive premium features: Decide-for-Me, Pair Mode, Smart Notifications, Evening Assistant
 - [ ] **Phase 6: Mobile Launch** - iOS + Android parallel launch via Capacitor + RevenueCat. Primary markets TR/US/UK/CA/AU + DE/FR/ES/IT/JP/KR (secondary). Push (APNs + FCM), App Store Connect + Play Console setup, ASO + screenshots, TestFlight/Internal-track → public release
 
