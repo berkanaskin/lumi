@@ -1,0 +1,12 @@
+{
+  "_doc": "Synthetic Streaming-Availability response shape for DE.",
+  "options": [
+    { "service": { "id": "netflix", "name": "Netflix" }, "type": "subscription", "link": "https://netflix.com/de", "quality": "uhd" },
+    { "service": { "id": "prime", "name": "Amazon Prime Video" }, "type": "subscription", "link": "https://primevideo.com/de" },
+    { "service": { "id": "disney", "name": "Disney+" }, "type": "subscription", "link": "https://disneyplus.com/de" },
+    { "service": { "id": "wow", "name": "WOW" }, "type": "subscription", "link": "https://wowtv.de/x" },
+    { "service": { "id": "rtlplus", "name": "RTL+" }, "type": "subscription", "link": "https://rtlplus.de/x" },
+    { "service": { "id": "joyn", "name": "Joyn" }, "type": "subscription", "link": "https://joyn.de/x" }
+  ],
+  "fetchedAt": 1763200000000
+}

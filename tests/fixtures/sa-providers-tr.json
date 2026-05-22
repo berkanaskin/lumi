@@ -1,0 +1,33 @@
+{
+  "_doc": "Synthetic Streaming-Availability response shape for TR. Mirrors api/streaming-availability.js which extracts data.streamingOptions[country] from upstream. Each entry follows the SA v3 streamingOption shape: { service: { id, name, imageSet?, homePage? }, type, link, quality?, audios?, subtitles?, expiresSoon?, availableSince?, leavingSoon? }",
+  "options": [
+    {
+      "service": { "id": "netflix", "name": "Netflix", "homePage": "https://www.netflix.com/tr" },
+      "type": "subscription",
+      "link": "https://www.netflix.com/tr/title/80018294",
+      "quality": "uhd"
+    },
+    {
+      "service": { "id": "prime", "name": "Amazon Prime Video", "homePage": "https://www.primevideo.com/" },
+      "type": "subscription",
+      "link": "https://www.primevideo.com/detail/0HQ7E3HTV",
+      "quality": "hd"
+    },
+    {
+      "service": { "id": "disney", "name": "Disney+", "homePage": "https://www.disneyplus.com/tr-tr" },
+      "type": "subscription",
+      "link": "https://www.disneyplus.com/movies/x/x"
+    },
+    {
+      "service": { "id": "exxen", "name": "Exxen", "homePage": "https://www.exxen.com/" },
+      "type": "subscription",
+      "link": "https://www.exxen.com/x"
+    },
+    {
+      "service": { "id": "gain", "name": "Gain", "homePage": "https://www.gain.tv/" },
+      "type": "subscription",
+      "link": "https://www.gain.tv/x"
+    }
+  ],
+  "fetchedAt": 1763200000000
+}
