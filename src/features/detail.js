@@ -9,6 +9,7 @@ import { showToast } from '../ui/toast.js';
 import { API, GeoIPService } from '../services/api.js';
 import { getStreamingWithCache } from '../services/streaming-cache.js';
 import { getPlatformUrl, getLogoOverride } from '../lib/platforms.js';
+import { filterProvidersToCurated } from '../lib/providers-resolver.js';
 import { isActivelyAiring, getNetworkLogoPath, getNetworkCatalogEntry, formatNextEpisode } from '../lib/broadcast.js';
 
 // ============================================
@@ -815,7 +816,15 @@ function buildStreamingHTML(streamingData, title) {
     // Defensive dedup pass — Set on lowercased serviceId, fallback to serviceName
     // (RESEARCH.md "Duplicate Results Fix"). Streaming-cache merges already dedup,
     // but a second pass guards against legacy cached docs and TMDB fallback path.
-    const rawProviders = streamingData.providers || [];
+    //
+    // Phase 04.6-01: pre-filter through the curated providers resolver so the
+    // "Where to watch" overlay shows only the platforms locked in
+    // REGION-PLATFORMS-DRAFT.md, in their curated display order. For countries
+    // not in the 13-region dict, filterProvidersToCurated() returns the input
+    // unchanged (defensive — no regression for legacy regions).
+    const rawProvidersIn = streamingData.providers || [];
+    const _activeRegion = (state.currentRegion || 'TR');
+    const rawProviders = filterProvidersToCurated(rawProvidersIn, _activeRegion);
     const seenKeys = new Set();
     const providers = [];
     for (const p of rawProviders) {

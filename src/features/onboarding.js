@@ -23,6 +23,7 @@
 
 import { getLocale, setLocale, SUPPORTED_LANGS, resolveOnboardingLocale, ONBOARDING_LANGS } from '../lib/locale.js';
 import { haptic } from '../lib/haptics.js';
+import { getResolvedProviders } from '../lib/providers-resolver.js';
 
 // 31 top-watching countries — shortlist for v1. Defer TMDB /configuration/countries.
 export const COUNTRY_SHORTLIST = [
@@ -361,15 +362,36 @@ const PRE_SELECTED_IDS = new Set([8, 337, 119]);
 /**
  * Curated platform list for the onboarding UI.
  *
- * TR  → hardcoded priority list (11 entries, BluTV consolidated under HBO Max).
- * else → TMDB fetch, filtered by GLOBAL_POPULAR_PROVIDER_IDS allowlist, sorted
- *        by allowlist priority, capped at 10. Falls back to a static global set
- *        if TMDB returns nothing.
+ * Phase 04.6-01: now delegates to src/lib/providers-resolver.js, which sources
+ * presence + order + preSelected from src/data/region-platforms.js (single
+ * source of truth) and cross-references Streaming-Availability (cached) for
+ * live annotations. Old `TR_CURATED` + `REGIONAL_POPULAR_PROVIDERS` constants
+ * are retained as a TMDB-fallback allowlist (only consulted for regions NOT
+ * in the curated 13-region dict).
  *
- * Returns: [{ id, name, logoUrl, preSelected }]
+ * Returns: [{ id, name, logoUrl, preSelected }]  (back-compat shape)
  */
 export async function getCuratedProviders(country) {
     const cc = (country || '').toUpperCase();
+
+    // Phase 04.6-01: primary path — resolver returns curated entries for the
+    // 13 launch regions. Includes annotation fields (slug/live/source) that
+    // existing callers ignore, so the {id,name,logoUrl,preSelected} contract
+    // is preserved.
+    try {
+        const resolved = await getResolvedProviders(cc, 'movie');
+        if (Array.isArray(resolved) && resolved.length > 0) {
+            return resolved.map((p) => ({
+                id: p.id,
+                name: p.name,
+                logoUrl: p.logoUrl,
+                preSelected: !!p.preSelected,
+            }));
+        }
+    } catch (err) {
+        // Fall through to legacy path on resolver failure (defence in depth).
+        console.warn('[onboarding] resolver fallback:', err?.message);
+    }
 
     if (cc === 'TR') {
         return TR_CURATED.map((p) => ({
