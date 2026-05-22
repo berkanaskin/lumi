@@ -159,14 +159,18 @@ describe('04.6-r1 — Bug 3: Banner picker click chain', () => {
 });
 
 describe('04.6-r1 — Bug 4: Ready CTA visible + functional', () => {
-    it('Ready slide renders sticky CTA with high z-index', () => {
+    it('Ready slide CTA uses margin-top:auto layout (04.6-r2 root cause fix)', () => {
         const css = fs.readFileSync(
             path.resolve(process.cwd(), 'src/styles/onboarding.css'),
             'utf8',
         );
-        // CTA rule must be sticky + z-index >= 2 to sit above confetti/curtain.
-        expect(css).toMatch(/\.onb-slide-ready\s+\.onb-cta-ready[\s\S]*?position:\s*sticky/);
+        // 04.6-r2 — Replaced position:sticky (which fails inside scrolling
+        // ancestors) with flex margin-top:auto to pin CTA to slide bottom.
+        expect(css).toMatch(/\.onb-slide-ready\s+\.onb-cta-ready[\s\S]*?margin-top:\s*auto/);
         expect(css).toMatch(/\.onb-confetti-piece[\s\S]*?pointer-events:\s*none/);
+        // Stage must NOT center-clip slides anymore.
+        expect(css).toMatch(/\.onb-stage[\s\S]*?justify-content:\s*flex-start/);
+        expect(css).toMatch(/\.onb-stage[\s\S]*?overflow-y:\s*auto/);
     });
 
     it('CTA exists, is the only element with pointer-events:auto inside slide, and click triggers close', async () => {
