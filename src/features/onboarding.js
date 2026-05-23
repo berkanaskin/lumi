@@ -875,10 +875,20 @@ function renderWizard(options = {}) {
         pillEls.push(p);
     }
 
-    const topbar = el('div', { class: 'onb-topbar' }, [backBtn, pills, recapHost]);
-    const stage = el('div', { class: 'onb-stage', 'data-onb-stage': '' });
+    const topbar = el('div', { class: 'onb-topbar onb-deck__topbar' }, [backBtn, pills, recapHost]);
+    const stage = el('div', { class: 'onb-stage onb-deck__card', 'data-onb-stage': '' });
 
-    const overlay = el('div', { class: 'onb-overlay' }, [topbar, stage, announcer]);
+    // 04.6-r3 — Guaranteed-visible footer band. Separate flex child of overlay
+    // so the card content (stage) scrolls/animates independently and the CTA
+    // mounted here is always pinned to the viewport bottom (above safe-area).
+    // Slide builders may portal a CTA into this host via portalFooterCta().
+    const footer = el('div', {
+        class: 'onb-deck__footer',
+        'data-testid': 'onb-deck-footer',
+        role: 'contentinfo',
+    });
+
+    const overlay = el('div', { class: 'onb-overlay onb-deck' }, [topbar, stage, footer, announcer]);
 
     root.classList.add('has-parallax');
     root.appendChild(wall); // legacy fallback (CSS hides when .has-parallax)
@@ -1063,30 +1073,17 @@ function renderWizard(options = {}) {
     function buildWelcome() {
         const slide = el('div', { class: 'onb-slide onb-slide-welcome', 'data-dir': state.direction });
 
-        // --- Top app-bar style brand (small, top-left). 04-04-r6:
-        // The giant centered wordmark + tagline pair was replaced with a single
-        // refined "lumi" mark anchored top-left, the way Apple TV / Netflix do.
+        // --- 04.6-r3: CSS text wordmark (NOT image).
+        // Brand consistency with main app's .brand-logo (index_lumi.css line 466).
+        // Same gradient (white → faded white), same letter-spacing, same weight.
+        // This kills the entire image-loading / asset-versioning surface area.
         const brand = el('div', { class: 'onb-brand onb-brand-bar', 'aria-hidden': 'false' });
-        // 04.6-r1 — Replace gradient text wordmark with real logo image.
-        // public/img/lumi-logo.png (copied from assets/lumi-logo-dark.png).
-        // 04.6-r2 — current Lumi logo (Jan 8 2026 neon-spotlight wordmark).
-        // Source: assets/Logotype_design_for_2k_202601082219.jpeg → optimized via
-        // scripts/process-logo.cjs (sharp): trim → 400w PNG (11KB) + 800w retina (61KB).
-        const logoImg = el('img', {
-            class: 'onb-wordmark-img',
-            src: '/img/lumi-logo.png',
-            srcset: '/img/lumi-logo.png 1x, /img/lumi-logo@2x.png 2x',
-            alt: 'Lumi',
-            loading: 'eager',
-            decoding: 'sync',
-            'data-testid': 'onb-logo-img',
+        const wordmark = el('span', {
+            class: 'brand-logo onb-wordmark',
+            'data-testid': 'onb-wordmark',
+            text: 'LUMI',
         });
-        // Fallback: if the image fails to load, swap to the gradient wordmark.
-        logoImg.addEventListener('error', () => {
-            const fallback = el('div', { class: 'onb-wordmark onb-wordmark-bar', text: 'lumi' });
-            try { logoImg.replaceWith(fallback); } catch {}
-        }, { once: true });
-        brand.appendChild(logoImg);
+        brand.appendChild(wordmark);
         slide.appendChild(brand);
 
         // 04.6-03 — Hybrid auto-detect banner. Replaces the dedicated S2 Language
@@ -1176,65 +1173,210 @@ function renderWizard(options = {}) {
         }
 
         slide.appendChild(el('div', { class: 'onb-welcome-spacer' }));
-        slide.appendChild(el('button', {
+        // 04.6-r3 — Welcome CTA portaled to deck footer (guaranteed visible).
+        const welcomeCta = el('button', {
             class: 'onb-cta',
             type: 'button',
+            'data-testid': 'onb-welcome-cta',
             text: t('onboarding.welcome.cta', 'Set the scene'),
             onclick: () => { haptic.tap(); goto(1); },
-        }));
+        });
+        portalFooterCta(welcomeCta);
         return slide;
     }
 
     // ===================================================================
-    // 04.6-03 — Detection banner + bottom-sheet picker (replaces S2/S3)
+    // 04.6-r3 — Inline locale picker (REPLACES r2 bottom-sheet picker)
     // ===================================================================
-    // Auto-detected language + country render as a frosted chip on the
-    // Welcome slide. Tapping the chip opens an inline bottom sheet with
-    // language + country pickers (reuses the r4 accent-fold search filter
-    // — now inlined into the picker). Draft state pattern: changes only
-    // persist on "Save". Cancel/backdrop tap/swipe-down discards.
+    // Rebuild brief: bottom-sheet was the source of 4 regression rounds
+    // (z-index, pointer-events, event delegation, swipe swallow). Killed.
+    //
+    // New pattern: two chips (language + country) below the value pills,
+    // each independently expandable in-place. Tap a chip → that chip's
+    // panel expands downward with a scrollable list. Tap another option
+    // → list collapses, chip label updates. No modal, no overlay, no
+    // z-index — everything in normal document flow. Bulletproof.
+    //
+    // Click handlers call .stopPropagation() on touchstart so swipe
+    // gestures never fire while interacting with the picker.
 
     function buildDetectionBanner() {
-        const langName = LANG_DISPLAY_FULL[state.lang] || LANG_DISPLAY[state.lang] || state.lang;
-        const countryName = COUNTRY_NAMES[state.country] || state.country;
-        const flagEmoji = flag(state.country);
-        const tpl = t('onboarding.banner.detected', 'Detected: {flag} {lang} UI · {country}');
-        const text = tpl
-            .replace('{flag}', flagEmoji)
-            .replace('{lang}', langName)
-            .replace('{country}', countryName);
+        // 04.6-r3 — Inline expandable locale picker. Replaces the r2
+        // bottom-sheet that had 4 patch rounds of click-routing bugs.
+        // Two chips in their own row; each independently expands a panel.
+        const container = el('div', {
+            class: 'onb-locale-inline',
+            'data-testid': 'onb-detection-banner', // keep testid for back-compat
+        });
 
-        const banner = el('button', {
-            class: 'onb-detection-banner',
-            type: 'button',
-            'data-testid': 'onb-detection-banner',
-            'aria-label': `${text}. ${t('onboarding.banner.change', 'Tap to change')}`,
-        }, [
-            el('span', { class: 'onb-banner-text', text }),
-            el('span', { class: 'onb-banner-hint', text: t('onboarding.banner.change', 'Tap to change') }),
-        ]);
-        // 04.6-r2 — direct listener on the button.
-        banner.addEventListener('click', (e) => {
-            e.stopPropagation();
-            haptic.tap();
-            openLocalePicker();
+        // --- Language chip + panel ---
+        const langChip = makeLocaleChip({
+            kind: 'lang',
+            iconText: flag(LANG_TO_FLAG_COUNTRY[state.lang] || 'US'),
+            label: LANG_DISPLAY_FULL[state.lang] || LANG_DISPLAY[state.lang] || state.lang,
+            testid: 'onb-locale-chip-lang',
         });
-        // 04.6-r2 — belt-and-suspenders: also respond to a tap on inner spans
-        // via pointerup (some mobile browsers swallow the click after a
-        // multi-touch start). Guard with a closest() so we only act once.
-        banner.addEventListener('pointerup', (e) => {
-            // Click will fire afterward; only fall through if click was
-            // suppressed (e.g. composed gesture). We do nothing here unless
-            // the click handler didn't run — but since click is reliable on
-            // a real <button>, this is purely defensive logging.
-            if (!banner.isConnected) return;
-            // No-op: kept as an attachment point if click ever breaks.
-            void e;
+        container.appendChild(langChip.wrap);
+
+        // --- Country chip + panel ---
+        const countryChip = makeLocaleChip({
+            kind: 'country',
+            iconText: flag(state.country),
+            label: COUNTRY_NAMES[state.country] || state.country,
+            testid: 'onb-locale-chip-country',
         });
-        return banner;
+        container.appendChild(countryChip.wrap);
+
+        // Mutual collapse — opening one closes the other.
+        langChip.button.addEventListener('click', () => collapse(countryChip));
+        countryChip.button.addEventListener('click', () => collapse(langChip));
+
+        return container;
+
+        function collapse(other) {
+            if (other.wrap.getAttribute('data-expanded') === 'true') {
+                other.wrap.setAttribute('data-expanded', 'false');
+                other.button.setAttribute('aria-expanded', 'false');
+                other.panel.innerHTML = '';
+            }
+        }
     }
 
+    function makeLocaleChip({ kind, iconText, label, testid }) {
+        const wrap = el('div', {
+            class: 'onb-locale-chip-wrap',
+            'data-kind': kind,
+            'data-expanded': 'false',
+        });
+        const button = el('button', {
+            class: 'onb-locale-chip',
+            type: 'button',
+            'aria-expanded': 'false',
+            'data-testid': testid,
+        }, [
+            el('span', { class: 'onb-locale-chip-icon', text: iconText }),
+            el('span', { class: 'onb-locale-chip-label', text: label }),
+            el('span', { class: 'onb-locale-chip-caret', 'aria-hidden': 'true', text: '▾' }),
+        ]);
+        const panel = el('div', {
+            class: 'onb-locale-chip-panel',
+            role: 'listbox',
+            'data-testid': `onb-locale-panel-${kind}`,
+        });
+
+        // 04.6-r3 — Critical: swipe handler must NOT swallow taps when
+        // interacting with chip/panel. stopPropagation on touchstart so the
+        // root touchstart never records a start coord for these gestures.
+        wrap.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+        }, { passive: true });
+        wrap.addEventListener('touchend', (e) => {
+            e.stopPropagation();
+        }, { passive: true });
+
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            haptic.tap();
+            const isOpen = wrap.getAttribute('data-expanded') === 'true';
+            if (isOpen) {
+                wrap.setAttribute('data-expanded', 'false');
+                button.setAttribute('aria-expanded', 'false');
+                panel.innerHTML = '';
+            } else {
+                wrap.setAttribute('data-expanded', 'true');
+                button.setAttribute('aria-expanded', 'true');
+                renderPanel();
+            }
+        });
+
+        wrap.appendChild(button);
+        wrap.appendChild(panel);
+
+        function renderPanel() {
+            panel.innerHTML = '';
+            if (kind === 'lang') {
+                LAUNCH_LANGS.forEach((lng) => {
+                    const opt = el('button', {
+                        class: `onb-locale-opt${state.lang === lng ? ' selected' : ''}`,
+                        type: 'button',
+                        role: 'option',
+                        'aria-selected': state.lang === lng ? 'true' : 'false',
+                        'data-lang': lng,
+                    }, [
+                        el('span', { class: 'onb-opt-flag', text: flag(LANG_TO_FLAG_COUNTRY[lng] || 'US') }),
+                        el('span', { class: 'onb-opt-label', text: LANG_DISPLAY_FULL[lng] || LANG_DISPLAY[lng] || lng }),
+                    ]);
+                    opt.addEventListener('click', (ev) => {
+                        ev.stopPropagation();
+                        haptic.select();
+                        commitLocale({ lang: lng });
+                    });
+                    panel.appendChild(opt);
+                });
+            } else {
+                COUNTRY_SHORTLIST.forEach((cc) => {
+                    const opt = el('button', {
+                        class: `onb-locale-opt${state.country === cc ? ' selected' : ''}`,
+                        type: 'button',
+                        role: 'option',
+                        'aria-selected': state.country === cc ? 'true' : 'false',
+                        'data-cc': cc,
+                    }, [
+                        el('span', { class: 'onb-opt-flag', text: flag(cc) }),
+                        el('span', { class: 'onb-opt-label', text: COUNTRY_NAMES[cc] || cc }),
+                    ]);
+                    opt.addEventListener('click', (ev) => {
+                        ev.stopPropagation();
+                        haptic.select();
+                        commitLocale({ country: cc });
+                    });
+                    panel.appendChild(opt);
+                });
+            }
+        }
+
+        return { wrap, button, panel };
+    }
+
+    function commitLocale({ lang, country }) {
+        const langChanged = lang && lang !== state.lang;
+        const countryChanged = country && country !== state.country;
+        if (lang) state.lang = lang;
+        if (country) state.country = country;
+        try { setLocale({ lang: state.lang, country: state.country }); } catch {}
+        try { completeStep(1, { lang: state.lang }, options); } catch {}
+        try { completeStep(2, { country: state.country }, options); } catch {}
+        if (countryChanged) {
+            state.providers = [];
+            state.providersFailed = false;
+            state.providersLoadedFor = null;
+        }
+        try {
+            if (typeof window !== 'undefined' && window.i18n?.translations?.[state.lang]) {
+                window.i18n.currentLang = state.lang;
+            }
+        } catch {}
+        if (langChanged || countryChanged) {
+            renderCurrentSlide();
+            try { updateRecapChips(); } catch {}
+        }
+        persistProgress();
+    }
+
+    // 04.6-r3 — openLocalePicker LEGACY. The bottom-sheet picker has been
+    // replaced by the inline expandable chips (buildDetectionBanner).
+    // This function is retained only for the window.__onbOpenPicker test
+    // hook — it now opens the language chip's inline panel instead.
     function openLocalePicker() {
+        try {
+            const langBtn = document.querySelector('[data-testid="onb-locale-chip-lang"]');
+            if (langBtn && langBtn.getAttribute('aria-expanded') !== 'true') {
+                langBtn.click();
+            }
+        } catch {}
+        return;
+
+        // eslint-disable-next-line no-unreachable
         if (document.getElementById('onb-locale-picker')) return;
 
         // Draft state — only committed on Save.
@@ -1507,6 +1649,7 @@ function renderWizard(options = {}) {
         const cta = el('button', {
             class: 'onb-cta',
             type: 'button',
+            'data-testid': 'onb-platforms-cta',
             text: t('onboarding.next', 'Devam'),
             onclick: () => {
                 haptic.tap();
@@ -1514,7 +1657,8 @@ function renderWizard(options = {}) {
                 goto(2); // → Premium slide (04.6-03 — 4-slide enum)
             },
         });
-        slide.appendChild(cta);
+        // 04.6-r3 — portal to footer (always visible).
+        portalFooterCta(cta);
         return slide;
     }
 
@@ -1611,7 +1755,7 @@ function renderWizard(options = {}) {
         pricing.appendChild(el('div', { class: 'onb-premium-trial-note', text: p.trial }));
         slide.appendChild(pricing);
 
-        // Primary CTA — opens mock paywall sheet
+        // Primary CTA — opens mock paywall sheet (kept in slide for r1 test)
         slide.appendChild(el('button', {
             class: 'onb-cta onb-cta-premium',
             type: 'button',
@@ -1620,7 +1764,7 @@ function renderWizard(options = {}) {
             onclick: () => { haptic.tap(); openMockPaywall(); },
         }));
 
-        // Secondary skip ghost link
+        // Secondary skip ghost link (kept in slide for r1 test)
         slide.appendChild(el('button', {
             class: 'onboarding-skip-link onb-premium-skip',
             type: 'button',
@@ -1628,6 +1772,17 @@ function renderWizard(options = {}) {
             'data-testid': 'onb-premium-skip',
             onclick: () => { haptic.tap(); goto(3); },  // 04.6-03 — Ready slide (was 5)
         }));
+
+        // 04.6-r3 — Footer continuation CTA (always visible). Forwards to skip
+        // so the user can always advance from S3 without hunting for a button.
+        const premiumContinue = el('button', {
+            class: 'onb-cta',
+            type: 'button',
+            'data-testid': 'onb-premium-continue',
+            text: t('onboarding.next', 'Devam'),
+            onclick: () => { haptic.tap(); goto(3); },
+        });
+        portalFooterCta(premiumContinue);
 
         return slide;
     }
@@ -1875,12 +2030,27 @@ function renderWizard(options = {}) {
             clearOnboardingProgress();
             setTimeout(close, 700);
         });
-        slide.appendChild(readyCta);
+        // 04.6-r3 — Portal the Ready CTA into the always-visible deck footer.
+        // The footer is a separate flex child of the overlay (.onb-deck__footer)
+        // so it can never be scrolled or clipped by the slide content. This
+        // permanently solves the recurring "S4 CTA invisible" bug.
+        portalFooterCta(readyCta);
         return slide;
+    }
+
+    function clearFooter() {
+        if (footer) footer.innerHTML = '';
+    }
+
+    function portalFooterCta(btn) {
+        if (!footer) return;
+        footer.innerHTML = '';
+        footer.appendChild(btn);
     }
 
     function renderCurrentSlide() {
         stage.innerHTML = '';
+        clearFooter();
         let node;
         // 04.6-03 — 4-slide enum: 0 Welcome, 1 Platforms, 2 Premium, 3 Ready.
         switch (state.slide) {
@@ -1985,9 +2155,14 @@ function renderWizard(options = {}) {
         if (target.closest('.onb-list')) return true;
         if (target.closest('.onb-grid')) return true;
         if (target.closest('.onb-paywall-sheet')) return true;
-        // 04.6-r2 — exclude the detection banner + locale picker sheet so taps
-        // there are never swallowed by the swipe-advance handler.
+        // 04.6-r2 — exclude the (legacy) detection banner so taps there were
+        // never swallowed by the swipe-advance handler.
         if (target.closest('.onb-detection-banner')) return true;
+        // 04.6-r3 — inline locale picker chips + panels.
+        if (target.closest('.onb-locale-inline')) return true;
+        if (target.closest('.onb-locale-chip-wrap')) return true;
+        // Retained for any code paths that still mount the legacy sheet
+        // (eg from test fixtures replaying older flows).
         if (target.closest('.onb-picker-sheet')) return true;
         if (target.closest('.onb-picker-backdrop')) return true;
         return false;
@@ -2014,7 +2189,11 @@ function renderWizard(options = {}) {
         if (state.slide === 3) return; // 04.6-03: S4 Ready slide — block both (confetti + tap-isolation)
         if (dx < 0) {
             // Advance: emulate the active CTA on the current slide.
-            const cta = stage.querySelector('.onb-cta:not(.disabled):not([disabled])');
+            // 04.6-r3 — Look in the footer first (where CTAs now live), then
+            // fall back to in-slide CTAs (premium uses both — slide for the
+            // tier paywall, footer for "Devam").
+            const cta = footer.querySelector('.onb-cta:not(.disabled):not([disabled])')
+                || stage.querySelector('.onb-cta:not(.disabled):not([disabled])');
             if (cta) { haptic.tap(); cta.click(); }
         } else {
             if (state.slide > 0) { haptic.tap(); goto(state.slide - 1); }

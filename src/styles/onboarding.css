@@ -2022,3 +2022,157 @@
 .onb-confetti-piece { pointer-events: none !important; }
 /* Cinema curtains overlay document.body — keep them tap-transparent. */
 .onb-curtain { pointer-events: none; }
+
+/* =====================================================================
+   04.6-r3 — Swipe-deck rebuild (Cal AI / Tinder layout)
+   ---------------------------------------------------------------------
+   Three structural classes mirror the brief: topbar / card / footer.
+   They co-exist with legacy .onb-topbar/.onb-stage so the old test
+   selectors still resolve. The KEY architectural shift: footer is a
+   sibling of stage (not inside it), so the CTA can NEVER scroll/clip.
+   ===================================================================== */
+.onb-deck {
+    display: flex;
+    flex-direction: column;
+}
+.onb-deck__topbar {
+    flex: 0 0 auto;
+}
+.onb-deck__card {
+    flex: 1 1 auto;
+    min-height: 0;
+    /* card-level swipe target — root touchstart still works but child
+       elements (chips, panels, paywall) stopPropagation as needed. */
+}
+.onb-deck__footer {
+    flex: 0 0 auto;
+    padding-top: 12px;
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 4px);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: auto;
+    /* Subtle separator so it reads as a footer band on long content. */
+    background: linear-gradient(to top, rgba(0,0,0,0.35), rgba(0,0,0,0));
+}
+.onb-deck__footer:empty {
+    /* Don't reserve space when no CTA portaled (eg unknown slide). */
+    padding: 0;
+    background: none;
+}
+.onb-deck__footer .onb-cta {
+    margin: 0;
+    width: 100%;
+    box-shadow: 0 12px 36px rgba(255, 93, 143, 0.35);
+}
+
+/* =====================================================================
+   04.6-r3 — Wordmark (CSS text). Inherits .brand-logo from index_lumi.css
+   so it visually matches the main app exactly. We only override what the
+   onboarding context needs (slightly smaller, smaller letter-spacing for
+   the inline app-bar slot).
+   ===================================================================== */
+.onb-wordmark.brand-logo {
+    /* Inherit gradient + weight + letter-spacing from .brand-logo;
+       only tune size for the onboarding top-left slot. */
+    font-size: 26px;
+    letter-spacing: 5px;
+    cursor: default;
+    pointer-events: none;
+    /* Ensure the gradient text fill is preserved even if jsdom does not
+       parse -webkit-background-clip — the inherited rule already sets it. */
+}
+
+/* =====================================================================
+   04.6-r3 — Inline locale picker (replaces bottom-sheet picker).
+   Two chips on their own row below value pills; each expands a panel
+   in-place when tapped. No modal, no overlay, no z-index, no portals.
+   ===================================================================== */
+.onb-locale-inline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 16px 0 8px;
+    pointer-events: auto;
+    position: relative;
+    z-index: 4;
+}
+.onb-locale-chip-wrap {
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--onb-glass-border);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: background 0.2s var(--onb-ease);
+    flex: 1 1 140px;
+    min-width: 140px;
+}
+.onb-locale-chip-wrap[data-expanded="true"] {
+    background: rgba(255, 255, 255, 0.12);
+    flex: 1 1 100%;
+}
+.onb-locale-chip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: transparent;
+    border: 0;
+    color: var(--onb-text);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    pointer-events: auto;
+}
+.onb-locale-chip:active { transform: scale(0.97); }
+.onb-locale-chip-icon { font-size: 18px; line-height: 1; }
+.onb-locale-chip-label { flex: 1; }
+.onb-locale-chip-caret {
+    font-size: 12px;
+    opacity: 0.6;
+    transition: transform 0.18s var(--onb-spring);
+}
+.onb-locale-chip-wrap[data-expanded="true"] .onb-locale-chip-caret {
+    transform: rotate(180deg);
+}
+.onb-locale-chip-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.28s var(--onb-spring), padding 0.2s ease;
+    padding: 0 8px;
+    pointer-events: auto;
+}
+.onb-locale-chip-wrap[data-expanded="true"] .onb-locale-chip-panel {
+    max-height: 280px;
+    overflow-y: auto;
+    padding: 4px 8px 10px;
+}
+.onb-locale-opt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    color: var(--onb-text);
+    font-size: 14px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s ease;
+}
+.onb-locale-opt:hover { background: rgba(255, 255, 255, 0.08); }
+.onb-locale-opt.selected {
+    background: rgba(244, 162, 97, 0.18);
+    border-color: rgba(244, 162, 97, 0.6);
+}
+.onb-locale-opt .onb-opt-flag { font-size: 18px; line-height: 1; }
+.onb-locale-opt .onb-opt-label { flex: 1; }
