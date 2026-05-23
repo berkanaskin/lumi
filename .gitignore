@@ -27,3 +27,4 @@ build/
 .agent/
 stitch/
 .tmp/
+.claude/
