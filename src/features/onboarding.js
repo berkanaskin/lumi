@@ -296,7 +296,7 @@ const TR_CURATED = [
     { id: 119,  name: 'Prime Video', logo: '/img/providers/prime-video.png' },
     { id: 1899, name: 'HBO Max',     logo: '/img/providers/hbo-max.png' },
     { id: 350,  name: 'Apple TV+',   logo: '/img/providers/apple-tv-plus.png' },
-    { id: 11,   name: 'MUBI',        logo: '/img/providers/mubi.png' },
+    { id: 11,   name: 'MUBI',        logo: '/img/providers/mubi.svg' },
     { id: 1968, name: 'Gain',        logo: '/img/providers/gain.svg' },
     { id: 1888, name: 'Exxen',       logo: '/img/providers/exxen.svg' },
     { id: 1855, name: 'Tabii',       logo: '/img/providers/tabii.svg' },

@@ -29,7 +29,7 @@ const NETFLIX     = { tmdb_id: 8,    sa_id: 'netflix',     name: 'Netflix',     
 const DISNEY_PLUS = { tmdb_id: 337,  sa_id: 'disney',      name: 'Disney+',     slug: 'disney-plus', logo_path: '/img/providers/disney-plus.png' };
 const PRIME       = { tmdb_id: 119,  sa_id: 'prime',       name: 'Amazon Prime Video', slug: 'prime-video', logo_path: '/img/providers/prime-video.png' };
 const APPLE_TV    = { tmdb_id: 350,  sa_id: 'apple',       name: 'Apple TV+',   slug: 'apple-tv-plus', logo_path: '/img/providers/apple-tv-plus.png' };
-const MUBI        = { tmdb_id: 11,   sa_id: 'mubi',        name: 'MUBI',        slug: 'mubi',        logo_path: '/img/providers/mubi.png' };
+const MUBI        = { tmdb_id: 11,   sa_id: 'mubi',        name: 'MUBI',        slug: 'mubi',        logo_path: '/img/providers/mubi.svg' };
 const CRUNCHYROLL = { tmdb_id: 283,  sa_id: 'crunchyroll', name: 'Crunchyroll', slug: 'crunchyroll', logo_path: '/img/providers/crunchyroll.png' };
 const MAX_GLOBAL  = { tmdb_id: 1899, sa_id: 'hbo',         name: 'Max',         slug: 'max',         logo_path: '/img/providers/max.png' };
 const PARAMOUNT   = { tmdb_id: 531,  sa_id: 'paramount',   name: 'Paramount+',  slug: 'paramount-plus', logo_path: '/img/providers/paramount-plus.png' };
@@ -49,9 +49,9 @@ export const REGION_PLATFORMS = {
         { tmdb_id: 1899, sa_id: 'hbo',     name: 'HBO Max',     slug: 'hbo-max',     logo_path: '/img/providers/hbo-max.png', preSelected: false },
         { ...APPLE_TV,   preSelected: false },
         { ...MUBI,       preSelected: false },
-        { tmdb_id: 1968, sa_id: 'gain',    name: 'Gain',        slug: 'gain',        logo_path: '/img/providers/gain.png',    preSelected: false },
+        { tmdb_id: 1968, sa_id: 'gain',    name: 'Gain',        slug: 'gain',        logo_path: '/img/providers/gain.svg',    preSelected: false },
         { tmdb_id: 1888, sa_id: 'exxen',   name: 'Exxen',       slug: 'exxen',       logo_path: '/img/providers/exxen.png',   preSelected: false },
-        { tmdb_id: 1855, sa_id: 'tabii',   name: 'Tabii',       slug: 'tabii',       logo_path: '/img/providers/tabii.png',   preSelected: false },
+        { tmdb_id: 1855, sa_id: 'tabii',   name: 'Tabii',       slug: 'tabii',       logo_path: '/img/providers/tabii.svg',   preSelected: false },
         { tmdb_id: 2895, sa_id: 'tod',     name: 'TOD',         slug: 'tod',         logo_path: '/img/providers/tod.png',     preSelected: false },
         { tmdb_id: 2864, sa_id: 'puhutv',  name: 'Puhu TV',     slug: 'puhutv',      logo_path: '/img/providers/puhutv.png',  preSelected: false },
     ],
