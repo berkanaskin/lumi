@@ -1,15 +1,17 @@
 /**
- * Phase 04.6-03 — Detection banner + bottom-sheet locale picker tests.
+ * Phase 04.6-r3 — Inline locale picker (REPLACES bottom-sheet from 04.6-03).
+ *
+ * Architectural rebuild: the floating bottom-sheet picker was removed after
+ * 4 rounds of click-routing regressions. The S1 Welcome slide now hosts two
+ * inline chips (language + country) that expand in place. Tests now assert
+ * the inline DOM shape, not the old `#onb-locale-picker` modal.
  *
  * Covers:
- *   1. S1 Welcome renders a frosted detection banner with flag + lang + country
- *   2. Banner text reflects the resolved locale (lumi_locale or navigator)
- *   3. Tapping the banner opens the bottom-sheet picker
- *   4. Picker shows 8 language rows + 31 country rows on first paint
- *   5. Search filter narrows both lists (accent-fold + Turkish ı→i)
- *   6. Selecting + Save persists to lumi_locale + lumi_onboarding (completeStep)
- *   7. Closing without Save (backdrop click) DOES NOT persist
- *   8. 4-slide layout: 4 progress pills, totalSlides reflected in announcer
+ *   1. 4-slide enum (Welcome → Platforms → Premium → Ready)
+ *   2. Inline locale picker — 2 chips below value pills, no floating sheet
+ *   3. Tap chip → aria-expanded=true + panel populated inline
+ *   4. Tap an option → state updates + panel collapses
+ *   5. window.__onbOpenPicker still works (legacy hook → opens lang chip)
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -51,9 +53,7 @@ afterEach(() => {
     global.localStorage = origLocalStorage;
 });
 
-const flushTimers = () => new Promise((r) => setTimeout(r, 120));
-
-describe('04.6-03 — 4-slide layout', () => {
+describe('04.6-r3 — 4-slide layout', () => {
     it('renders exactly 4 progress pills (was 6)', () => {
         startOnboarding();
         const pills = document.querySelectorAll('.onb-pill');
@@ -89,118 +89,114 @@ describe('04.6-03 — 4-slide layout', () => {
     });
 });
 
-describe('04.6-03 — S1 detection banner', () => {
-    it('renders a banner element inside the Welcome slide', async () => {
+describe('04.6-r3 — S1 inline locale picker (replaces bottom sheet)', () => {
+    it('renders inline picker container with both chips inside Welcome slide', async () => {
         startOnboarding();
         await new Promise((r) => setTimeout(r, 10));
-        const banner = document.querySelector('[data-testid="onb-detection-banner"]');
-        expect(banner).toBeTruthy();
-        expect(banner.closest('.onb-slide-welcome')).toBeTruthy();
+        const container = document.querySelector('[data-testid="onb-detection-banner"]');
+        expect(container).toBeTruthy();
+        expect(container.classList.contains('onb-locale-inline')).toBe(true);
+        expect(container.closest('.onb-slide-welcome')).toBeTruthy();
+        // Both chips present (lang + country) in normal flow.
+        expect(document.querySelector('[data-testid="onb-locale-chip-lang"]')).toBeTruthy();
+        expect(document.querySelector('[data-testid="onb-locale-chip-country"]')).toBeTruthy();
     });
 
-    it('banner text contains the language name and country name', async () => {
-        // Seed locale so banner shows German/Germany
+    it('NO floating bottom-sheet exists on initial render', async () => {
+        startOnboarding();
+        await new Promise((r) => setTimeout(r, 10));
+        expect(document.getElementById('onb-locale-picker')).toBeFalsy();
+        expect(document.querySelector('.onb-picker-backdrop')).toBeFalsy();
+    });
+
+    it('lang chip label reflects detected language', async () => {
         localStorage.setItem('lumi_locale', JSON.stringify({ lang: 'de', country: 'DE' }));
         startOnboarding();
         await new Promise((r) => setTimeout(r, 10));
-        const banner = document.querySelector('[data-testid="onb-detection-banner"]');
-        const text = banner.textContent || '';
-        expect(text).toMatch(/Deutsch/);
-        expect(text).toMatch(/Germany/);
+        const langChip = document.querySelector('[data-testid="onb-locale-chip-lang"]');
+        expect(langChip.textContent).toMatch(/Deutsch/);
+        const countryChip = document.querySelector('[data-testid="onb-locale-chip-country"]');
+        expect(countryChip.textContent).toMatch(/Germany/);
     });
 
-    it('banner is keyboard focusable (button element)', async () => {
+    it('tap lang chip → aria-expanded=true and panel populated inline', async () => {
         startOnboarding();
         await new Promise((r) => setTimeout(r, 10));
-        const banner = document.querySelector('[data-testid="onb-detection-banner"]');
-        expect(banner.tagName.toLowerCase()).toBe('button');
+        const langChip = document.querySelector('[data-testid="onb-locale-chip-lang"]');
+        expect(langChip.getAttribute('aria-expanded')).toBe('false');
+        langChip.click();
+        await new Promise((r) => setTimeout(r, 10));
+        expect(langChip.getAttribute('aria-expanded')).toBe('true');
+        const panel = document.querySelector('[data-testid="onb-locale-panel-lang"]');
+        expect(panel).toBeTruthy();
+        const opts = panel.querySelectorAll('.onb-locale-opt');
+        expect(opts.length).toBe(8); // 8 ONBOARDING_LANGS
+    });
+
+    it('tap country chip → 31 country options listed inline', async () => {
+        startOnboarding();
+        await new Promise((r) => setTimeout(r, 10));
+        const countryChip = document.querySelector('[data-testid="onb-locale-chip-country"]');
+        countryChip.click();
+        await new Promise((r) => setTimeout(r, 10));
+        const panel = document.querySelector('[data-testid="onb-locale-panel-country"]');
+        expect(panel).toBeTruthy();
+        const opts = panel.querySelectorAll('.onb-locale-opt');
+        expect(opts.length).toBeGreaterThanOrEqual(30);
+        expect(panel.querySelector('[data-cc="TR"]')).toBeTruthy();
+    });
+
+    it('pick an option → state updates + lumi_locale persisted', async () => {
+        startOnboarding();
+        await new Promise((r) => setTimeout(r, 10));
+        const langChip = document.querySelector('[data-testid="onb-locale-chip-lang"]');
+        langChip.click();
+        await new Promise((r) => setTimeout(r, 10));
+        const trOpt = document.querySelector('[data-testid="onb-locale-panel-lang"] [data-lang="tr"]');
+        expect(trOpt).toBeTruthy();
+        trOpt.click();
+        await new Promise((r) => setTimeout(r, 10));
+        expect(window.__onbState().lang).toBe('tr');
+        const stored = JSON.parse(localStorage.getItem('lumi_locale') || '{}');
+        expect(stored.lang).toBe('tr');
+        // Onboarding storage also mirrored.
+        const onb = JSON.parse(localStorage.getItem('lumi_onboarding') || '{}');
+        expect(onb.lang).toBe('tr');
+    });
+
+    it('window.__onbOpenPicker legacy hook still expands the lang chip', async () => {
+        startOnboarding();
+        await new Promise((r) => setTimeout(r, 10));
+        window.__onbOpenPicker();
+        await new Promise((r) => setTimeout(r, 10));
+        const langChip = document.querySelector('[data-testid="onb-locale-chip-lang"]');
+        expect(langChip.getAttribute('aria-expanded')).toBe('true');
     });
 });
 
-describe('04.6-03 — bottom-sheet locale picker', () => {
-    it('tapping the banner opens the picker sheet', async () => {
+describe('04.6-r3 — Footer CTA always visible', () => {
+    it('deck footer exists at all 4 slides with a CTA inside', async () => {
         startOnboarding();
-        await new Promise((r) => setTimeout(r, 10));
-        const banner = document.querySelector('[data-testid="onb-detection-banner"]');
-        banner.click();
-        await new Promise((r) => setTimeout(r, 20));
-        const sheet = document.getElementById('onb-locale-picker');
-        expect(sheet).toBeTruthy();
+        for (const n of [0, 1, 2, 3]) {
+            window.__onbGoto(n);
+            await new Promise((r) => setTimeout(r, 20));
+            const footer = document.querySelector('[data-testid="onb-deck-footer"]');
+            expect(footer, `footer missing on slide ${n}`).toBeTruthy();
+            const cta = footer.querySelector('.onb-cta');
+            expect(cta, `footer CTA missing on slide ${n}`).toBeTruthy();
+        }
     });
 
-    it('picker renders 8 language rows + 31 country rows', async () => {
+    it('S4 footer CTA click finalizes (sets lumi_onboarding_seen)', async () => {
         startOnboarding();
-        window.__onbOpenPicker();
+        window.__onbGoto(3);
         await new Promise((r) => setTimeout(r, 20));
-        const langRows = document.querySelectorAll('.onb-picker-lang-list .onb-option');
-        const countryRows = document.querySelectorAll('.onb-picker-country-list .onb-option');
-        expect(langRows.length).toBe(8);
-        expect(countryRows.length).toBeGreaterThanOrEqual(30);
-    });
-
-    it('search input filters both lists ("Tu" → Türkçe + Turkey visible)', async () => {
-        startOnboarding();
-        window.__onbOpenPicker();
-        await new Promise((r) => setTimeout(r, 20));
-        const search = document.querySelector('.onb-picker-search');
-        search.value = 'Tu';
-        search.dispatchEvent(new window.Event('input', { bubbles: true }));
-        await flushTimers();
-        const langRows = [...document.querySelectorAll('.onb-picker-lang-list .onb-option')];
-        const countryRows = [...document.querySelectorAll('.onb-picker-country-list .onb-option')];
-        const langTexts = langRows.map((b) => b.textContent || '');
-        const countryCodes = countryRows.map((b) => b.getAttribute('data-cc'));
-        expect(langTexts.some((t) => /Türkçe/.test(t))).toBe(true);
-        expect(countryCodes).toContain('TR');
-    });
-
-    it('Save persists draft to lumi_locale + lumi_onboarding', async () => {
-        startOnboarding();
-        window.__onbOpenPicker();
-        await new Promise((r) => setTimeout(r, 20));
-        // Pick Turkish
-        const trLangRow = [...document.querySelectorAll('.onb-picker-lang-list .onb-option')]
-            .find((b) => b.getAttribute('data-lang') === 'tr');
-        trLangRow.click();
-        // Pick Turkey
-        const trCountryRow = document.querySelector('.onb-picker-country-list .onb-option[data-cc="TR"]');
-        trCountryRow.click();
-        // Save
-        document.querySelector('[data-testid="onb-picker-save"]').click();
-        await new Promise((r) => setTimeout(r, 20));
-        const locale = JSON.parse(localStorage.getItem('lumi_locale'));
-        expect(locale.lang).toBe('tr');
-        expect(locale.country).toBe('TR');
-        const onb = JSON.parse(localStorage.getItem('lumi_onboarding'));
-        expect(onb.lang).toBe('tr');
-        expect(onb.country).toBe('TR');
-    });
-
-    it('backdrop click discards draft (does NOT persist)', async () => {
-        // Seed initial locale
-        localStorage.setItem('lumi_locale', JSON.stringify({ lang: 'en', country: 'US' }));
-        startOnboarding();
-        window.__onbOpenPicker();
-        await new Promise((r) => setTimeout(r, 20));
-        // Select Turkish but DO NOT save
-        const trLangRow = [...document.querySelectorAll('.onb-picker-lang-list .onb-option')]
-            .find((b) => b.getAttribute('data-lang') === 'tr');
-        trLangRow.click();
-        // Close via backdrop
-        document.querySelector('.onb-picker-backdrop').click();
-        await new Promise((r) => setTimeout(r, 280));
-        const locale = JSON.parse(localStorage.getItem('lumi_locale'));
-        expect(locale.lang).toBe('en');
-        expect(locale.country).toBe('US');
-    });
-
-    it('Save closes the sheet', async () => {
-        startOnboarding();
-        window.__onbOpenPicker();
-        await new Promise((r) => setTimeout(r, 20));
-        document.querySelector('[data-testid="onb-picker-save"]').click();
-        await new Promise((r) => setTimeout(r, 280));
-        // After 240ms transition the element should be removed.
-        expect(document.getElementById('onb-locale-picker')).toBeNull();
+        const cta = document.querySelector('[data-testid="onb-deck-footer"] [data-testid="onb-ready-cta"]');
+        expect(cta).toBeTruthy();
+        cta.click();
+        // close() runs after 700ms confetti delay.
+        await new Promise((r) => setTimeout(r, 800));
+        expect(localStorage.getItem('lumi_onboarding_seen')).toBe('true');
+        expect(document.getElementById('onboarding-root')).toBeNull();
     });
 });

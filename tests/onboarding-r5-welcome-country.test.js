@@ -59,18 +59,16 @@ describe('04-04-r5 — S1 Welcome new content', () => {
         const root = document.getElementById('onboarding-root');
         expect(root).toBeTruthy();
 
-        // 04-04-r6: wordmark in top-left brand bar (no tagline).
-        // 04.6-r1: gradient text wordmark replaced by real logo image
-        //          (with the gradient text retained as an error-handler fallback).
-        const logoImg = root.querySelector('img.onb-wordmark-img');
-        const textWordmark = root.querySelector('.onb-wordmark.onb-wordmark-bar');
-        const wordmark = logoImg || textWordmark;
+        // 04.6-r3: CSS text wordmark (NOT image). The image variant
+        //          (lumi-logo.png + srcset) was deleted after Vite/CDN cache
+        //          regressions. Wordmark renders as <span class="onb-wordmark">LUMI</span>.
+        const wordmark = root.querySelector('[data-testid="onb-wordmark"]');
         expect(wordmark).toBeTruthy();
-        if (logoImg) {
-            expect(logoImg.getAttribute('alt')).toMatch(/lumi/i);
-        } else {
-            expect(textWordmark.textContent.trim().toLowerCase()).toBe('lumi');
-        }
+        expect(wordmark.tagName.toLowerCase()).toBe('span');
+        expect(wordmark.textContent.trim().toUpperCase()).toBe('LUMI');
+        // Image wordmark must NOT exist anymore.
+        expect(root.querySelector('img.onb-wordmark-img')).toBeFalsy();
+        expect(root.querySelector('[data-testid="onb-logo-img"]')).toBeFalsy();
         // Tagline pair was removed from S1 (lives on Premium slide instead).
         expect(root.querySelector('.onb-slide-welcome .onb-tagline')).toBeFalsy();
 
@@ -81,7 +79,10 @@ describe('04-04-r5 — S1 Welcome new content', () => {
         expect(root.querySelector('.onb-poster-trio')).toBeTruthy();
         expect(root.querySelectorAll('.onb-trio-poster').length).toBe(3);
 
-        const cta = root.querySelector('.onb-slide-welcome .onb-cta');
+        // 04.6-r3: Welcome CTA is now portaled to the always-visible deck
+        // footer (.onb-deck__footer) instead of living inside the slide.
+        const cta = root.querySelector('.onb-deck__footer .onb-cta')
+            || root.querySelector('[data-testid="onb-welcome-cta"]');
         expect(cta).toBeTruthy();
         // EN canonical is "Set the scene"; TR is "Sahneyi hazırla".
         expect(cta.textContent).toMatch(/scene|Sahne/i);

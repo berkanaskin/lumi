@@ -1,15 +1,19 @@
 /**
- * Phase 04-04-r2 — Country search filter + a11y wiring tests (DOM-level).
+ * Phase 04.6-r3 — A11y wiring + country list (inline picker).
  *
- * Uses a fresh JSDOM per test to bypass tests/setup.js's body-less document
- * mock. See onboarding-premium-slide.test.js for the same pattern.
+ * The r2 search filter (accent-fold + Turkish ı→i) lived in the floating
+ * bottom-sheet picker which was deleted in r3. The inline picker shows the
+ * full 31-country shortlist without a search box (acceptable: 31 items =
+ * ~6 viewport screens, easily scannable). If/when we add search back, it
+ * will be on the inline panel and these tests will be extended.
+ *
+ * Uses a fresh JSDOM per test to bypass tests/setup.js's body-less mock.
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { JSDOM } from 'jsdom';
 
 let startOnboarding;
-let completeStep;
 let origDocument;
 let origWindow;
 let origRAF;
@@ -35,7 +39,6 @@ beforeEach(async () => {
     vi.resetModules();
     const mod = await import('../src/features/onboarding.js');
     startOnboarding = mod.startOnboarding;
-    completeStep = mod.completeStep;
 
     localStorage.clear();
     document.body.innerHTML = '';
@@ -48,66 +51,47 @@ afterEach(() => {
     global.requestAnimationFrame = origRAF;
 });
 
-async function advanceToCountry() {
-    // 04.6-03 — Country selection lives in the S1 bottom-sheet picker.
-    // Open the picker so the search input + country list mount.
+async function openCountryPicker() {
     startOnboarding();
-    if (typeof window.__onbOpenPicker === 'function') {
-        window.__onbOpenPicker();
-        await new Promise((r) => setTimeout(r, 20));
-    } else {
-        document.querySelector('.onb-detection-banner')?.click();
-        await new Promise((r) => setTimeout(r, 20));
-    }
+    await new Promise((r) => setTimeout(r, 10));
+    const countryChip = document.querySelector('[data-testid="onb-locale-chip-country"]');
+    countryChip.click();
+    await new Promise((r) => setTimeout(r, 20));
 }
 
-function flushTimers() {
-    return new Promise((r) => setTimeout(r, 120));
-}
-
-describe('country slide search filter', () => {
-    it('renders a search input + initial 31-country list', async () => {
-        await advanceToCountry();
-        const search = document.querySelector('input.onb-search');
-        expect(search).toBeTruthy();
-        const items = document.querySelectorAll('.onb-list .onb-option');
+describe('04.6-r3 — inline country picker', () => {
+    it('country chip expands to 31-country shortlist inline', async () => {
+        await openCountryPicker();
+        const panel = document.querySelector('[data-testid="onb-locale-panel-country"]');
+        expect(panel).toBeTruthy();
+        const items = panel.querySelectorAll('.onb-locale-opt');
         expect(items.length).toBeGreaterThanOrEqual(30);
     });
 
-    it('filters to a single result when typing an exact code', async () => {
-        await advanceToCountry();
-        const search = document.querySelector('input.onb-search');
-        search.value = 'jp';
-        search.dispatchEvent(new window.Event('input', { bubbles: true }));
-        await flushTimers();
-        const items = document.querySelectorAll('.onb-list .onb-option');
-        expect(items.length).toBe(1);
-        expect(items[0].getAttribute('data-cc')).toBe('JP');
+    it('country list includes major launch markets (TR, US, GB, DE, JP)', async () => {
+        await openCountryPicker();
+        const panel = document.querySelector('[data-testid="onb-locale-panel-country"]');
+        for (const cc of ['TR', 'US', 'GB', 'DE', 'JP']) {
+            expect(panel.querySelector(`[data-cc="${cc}"]`), `missing ${cc}`).toBeTruthy();
+        }
     });
 
-    it('matches name case-insensitively (e.g. "tur" → TR)', async () => {
-        await advanceToCountry();
-        const search = document.querySelector('input.onb-search');
-        search.value = 'TUR';
-        search.dispatchEvent(new window.Event('input', { bubbles: true }));
-        await flushTimers();
-        const items = document.querySelectorAll('.onb-list .onb-option');
-        expect(items.length).toBeGreaterThanOrEqual(1);
-        const codes = [...items].map((i) => i.getAttribute('data-cc'));
-        expect(codes).toContain('TR');
+    it('country options have flag emoji + country name', async () => {
+        await openCountryPicker();
+        const trOpt = document.querySelector('[data-testid="onb-locale-panel-country"] [data-cc="TR"]');
+        expect(trOpt).toBeTruthy();
+        expect(trOpt.querySelector('.onb-opt-flag')).toBeTruthy();
+        expect(trOpt.textContent).toMatch(/Türkiye|Turkey/);
     });
 
-    it('shows empty-state copy when nothing matches', async () => {
-        await advanceToCountry();
-        const search = document.querySelector('input.onb-search');
-        search.value = 'zzzzzz';
-        search.dispatchEvent(new window.Event('input', { bubbles: true }));
-        await flushTimers();
-        const items = document.querySelectorAll('.onb-list .onb-option');
-        expect(items.length).toBe(0);
-        const empty = document.querySelector('.onb-search-empty');
-        expect(empty).toBeTruthy();
-        expect(empty.textContent).toMatch(/no matches|sonuç yok/i);
+    it('tapping an option commits the country to state + localStorage', async () => {
+        await openCountryPicker();
+        const jpOpt = document.querySelector('[data-testid="onb-locale-panel-country"] [data-cc="JP"]');
+        jpOpt.click();
+        await new Promise((r) => setTimeout(r, 20));
+        expect(window.__onbState().country).toBe('JP');
+        const onb = JSON.parse(localStorage.getItem('lumi_onboarding') || '{}');
+        expect(onb.country).toBe('JP');
     });
 });
 
