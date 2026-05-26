@@ -175,9 +175,11 @@ describe('04.6-r3 — S1 inline locale picker (replaces bottom sheet)', () => {
 });
 
 describe('04.6-r3 — Footer CTA always visible', () => {
-    it('deck footer exists at all 4 slides with a CTA inside', async () => {
+    it('deck footer exists with a CTA on S1/S2/S4 (S3 has in-slide primary CTA)', async () => {
         startOnboarding();
-        for (const n of [0, 1, 2, 3]) {
+        // S3 (index 2) intentionally hides the footer — buildPremium renders its
+        // own primary CTA (Premium'u Dene) + ghost skip link inside the slide body.
+        for (const n of [0, 1, 3]) {
             window.__onbGoto(n);
             await new Promise((r) => setTimeout(r, 20));
             const footer = document.querySelector('[data-testid="onb-deck-footer"]');

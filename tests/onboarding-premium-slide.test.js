@@ -91,34 +91,36 @@ describe('Premium teaser slide — 04-04-r1 / 04.6-03', () => {
         await advanceToPremium('US');
         const premium = document.querySelector('.onb-slide-premium');
         expect(premium).toBeTruthy();
-        expect(premium.querySelectorAll('.onb-premium-feature').length).toBe(4);
-        expect(premium.querySelector('.onb-premium-title')?.textContent).toContain('Lumi Premium');
+        // 04.6-r5: 2x2 feature grid uses .onb-feat-cell (was .onb-premium-feature)
+        expect(premium.querySelectorAll('.onb-feat-cell').length).toBe(4);
+        // 04.6-r5: hero (was .onb-premium-title)
+        expect(premium.querySelector('.onb-premium-hero')?.textContent).toContain('Lumi Premium');
     });
 
     it('shows USD pricing for non-TR users', async () => {
         await advanceToPremium('US');
-        const priceLine = document.querySelector('.onb-premium-pricing-line')?.textContent || '';
-        expect(priceLine).toContain('$2.99');
-        expect(priceLine).toContain('$19.99');
-        expect(priceLine).toContain('$49.99');
-        expect(document.querySelector('.onb-premium-pricing')?.getAttribute('data-locale')).toBe('intl');
+        // 04.6-r5: 3 square pricing cards (.onb-psq__price) replace single .onb-premium-pricing-line
+        const prices = Array.from(document.querySelectorAll('.onb-psq__price')).map((n) => n.textContent || '').join(' ');
+        expect(prices).toContain('$2.99');
+        expect(prices).toContain('$19.99');
+        expect(prices).toContain('$49.99');
     });
 
     it('shows ₺ pricing for TR users', async () => {
         await advanceToPremium('TR');
-        const priceLine = document.querySelector('.onb-premium-pricing-line')?.textContent || '';
-        expect(priceLine).toContain('49');
-        expect(priceLine).toContain('299');
-        expect(priceLine).toContain('799');
-        expect(priceLine).toContain('₺');
-        expect(document.querySelector('.onb-premium-pricing')?.getAttribute('data-locale')).toBe('tr');
+        const prices = Array.from(document.querySelectorAll('.onb-psq__price')).map((n) => n.textContent || '').join(' ');
+        expect(prices).toContain('49');
+        expect(prices).toContain('299');
+        expect(prices).toContain('799');
+        expect(prices).toContain('₺');
     });
 
     it('has a LIMITED badge on the pricing block', async () => {
         await advanceToPremium('US');
-        const badge = document.querySelector('.onb-premium-limited-badge');
+        // 04.6-r5: limited badge now on lifetime tier card (.onb-psq__badge.lim)
+        const badge = document.querySelector('.onb-psq__badge.lim');
         expect(badge).toBeTruthy();
-        expect((badge.textContent || '').toLowerCase()).toContain('limit');
+        expect((badge.textContent || '').toLowerCase()).toMatch(/ltd|limit/);
     });
 
     it('"Skip for now" advances to the Ready slide without opening the paywall', async () => {

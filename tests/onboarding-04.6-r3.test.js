@@ -132,15 +132,26 @@ describe('04.6-r3 — Inline locale picker (no floating sheet)', () => {
 });
 
 describe('04.6-r3 — Footer CTA always visible at every slide', () => {
-    it('.onb-deck__footer has a .onb-cta child on every slide', async () => {
+    it('every slide has an advancing CTA (footer for S1/S2/S4, inline Premium CTA for S3)', async () => {
+        // 04.6-r5 — S3 (Premium) owns its own inline CTA instead of portaling
+        // to the footer. The footer host stays present (empty), and the slide
+        // exposes the gradient "Premium'u Dene" button + ghost "Şimdilik geç".
         startOnboarding();
         for (const n of [0, 1, 2, 3]) {
             window.__onbGoto(n);
             await new Promise((r) => setTimeout(r, 20));
             const footer = document.querySelector('.onb-deck__footer');
-            expect(footer, `footer missing on slide ${n}`).toBeTruthy();
-            const cta = footer.querySelector('.onb-cta');
-            expect(cta, `footer .onb-cta missing on slide ${n}`).toBeTruthy();
+            expect(footer, `footer host missing on slide ${n}`).toBeTruthy();
+            if (n === 2) {
+                // S3: inline Premium CTA + ghost skip live inside the slide.
+                const premiumCta = document.querySelector('[data-testid="onb-premium-cta"]');
+                const premiumSkip = document.querySelector('[data-testid="onb-premium-skip"]');
+                expect(premiumCta, 'inline Premium CTA missing on S3').toBeTruthy();
+                expect(premiumSkip, 'inline Premium skip ghost missing on S3').toBeTruthy();
+            } else {
+                const cta = footer.querySelector('.onb-cta');
+                expect(cta, `footer .onb-cta missing on slide ${n}`).toBeTruthy();
+            }
         }
     });
 

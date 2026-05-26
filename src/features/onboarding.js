@@ -1757,7 +1757,7 @@ function renderWizard(options = {}) {
                 yearly: '299 ₺/yıl',
                 lifetime: '799 ₺ ömürlük',
                 full: '49 ₺/ay • 299 ₺/yıl • 799 ₺ ömürlük',
-                trial: t('onboarding.premium.trialNote', 'İlk 7 gün ücretsiz'),
+                trial: t('onboarding.premium.trialNote', 'İlk 3 gün ücretsiz'),
                 savings: '289 ₺',
                 yearlyAmount: '299 ₺',
                 monthlyAmount: '49 ₺',
@@ -1769,7 +1769,7 @@ function renderWizard(options = {}) {
             yearly: '$19.99/yr',
             lifetime: '$49.99 lifetime',
             full: '$2.99/mo • $19.99/yr • $49.99 lifetime',
-            trial: t('onboarding.premium.trialNote', 'First 7 days free'),
+            trial: t('onboarding.premium.trialNote', 'First 3 days free'),
             savings: '$15.89',
             yearlyAmount: '$19.99',
             monthlyAmount: '$2.99',
@@ -1778,87 +1778,150 @@ function renderWizard(options = {}) {
     }
 
     function buildPremium() {
+        // 04.6-r5 — S3 Premium wired to vision-glassmorphic mockup.
+        // - Eyebrow "03 — PREMIUM", hero "Lumi Premium." (Inter 900 gradient),
+        //   Cormorant italic accent "Lumi seninle, her akşam.", gold pill
+        //   "✦ Hepsi her planda dahil", 2x2 feature grid with concrete copy,
+        //   3 square pricing cards (yearly default-selected), 3-day trial line,
+        //   primary "Premium'u Dene" gradient CTA + "Şimdilik geç" ghost.
+        // - Footer CTA portal is intentionally NOT used (S3 owns its CTA).
+        //   CSS hides .onb-deck__footer when [data-slide="2"] is active.
         const slide = el('div', { class: 'onb-slide onb-slide-premium', 'data-dir': state.direction });
 
+        // Recap chips top-right (lang · country · #services from S1/S2)
+        const langName = (typeof LANG_DISPLAY_FULL !== 'undefined' && LANG_DISPLAY_FULL[state.lang])
+            || (typeof LANG_DISPLAY !== 'undefined' && LANG_DISPLAY[state.lang])
+            || state.lang || 'TR';
+        const ctryName = (typeof COUNTRY_NAMES !== 'undefined' && COUNTRY_NAMES[state.country]) || state.country || 'TR';
+        const ctryFlag = (typeof flag === 'function') ? flag(state.country || 'TR') : '🇹🇷';
+        const langFlag = (typeof flag === 'function' && typeof LANG_TO_FLAG_COUNTRY !== 'undefined')
+            ? flag(LANG_TO_FLAG_COUNTRY[state.lang] || 'US') : '🇹🇷';
+        const recap = el('div', { class: 'onb-premium-recap', 'aria-hidden': 'true' });
+        recap.appendChild(el('span', { class: 'onb-premium-rchip', text: `${langFlag} ${langName}` }));
+        recap.appendChild(el('span', { class: 'onb-premium-rchip', text: `${ctryFlag} ${ctryName}` }));
+        recap.appendChild(el('span', { class: 'onb-premium-rchip', text: `${(state.ownedPlatforms || []).length} servis` }));
+        slide.appendChild(recap);
+
+        // Eyebrow
+        slide.appendChild(el('div', {
+            class: 'onb-premium-eyebrow',
+            text: t('onboarding.premium.eyebrow', '03 — PREMIUM'),
+        }));
+
+        // Hero — Inter 900 gradient (NO Cormorant). Heading element kept for a11y.
         slide.appendChild(el('h1', {
-            class: 'onb-hero-title onb-premium-title',
+            class: 'onb-premium-hero',
             id: 'onb-slide-heading',
             'data-onb-heading': '',
-            text: t('onboarding.premium.title', 'Lumi Premium'),
+            text: t('onboarding.premium.hero', 'Lumi Premium.'),
         }));
-        slide.appendChild(el('p', { class: 'onb-hero-sub onb-premium-sub', text: t('onboarding.premium.sub', 'Film Gecesi Asistanın') }));
 
-        // Feature rows
-        const features = el('div', { class: 'onb-premium-features' });
-        const featureDefs = [
-            { emoji: '🎯', titleKey: 'onboarding.premium.feature.decide.title', titleDefault: 'Decide-for-Me', descKey: 'onboarding.premium.feature.decide.desc', descDefault: 'Karar veremediğinde Lumi versin' },
-            { emoji: '👥', titleKey: 'onboarding.premium.feature.pair.title',   titleDefault: 'Pair Mode',     descKey: 'onboarding.premium.feature.pair.desc',   descDefault: 'İki kişi için ortak öneri' },
-            { emoji: '🔔', titleKey: 'onboarding.premium.feature.notif.title',  titleDefault: 'Smart Notifications', descKey: 'onboarding.premium.feature.notif.desc', descDefault: 'Sevdiğin dizilere yeni bölüm geldiğinde haber' },
-            { emoji: '🌙', titleKey: 'onboarding.premium.feature.evening.title', titleDefault: 'Evening Assistant', descKey: 'onboarding.premium.feature.evening.desc', descDefault: "Akşam 8'de bugünlük öneri" },
+        // Cormorant italic accent line (gold)
+        slide.appendChild(el('div', {
+            class: 'onb-premium-accent',
+            text: t('onboarding.premium.accent', 'Lumi seninle, her akşam.'),
+        }));
+
+        // "✦ Hepsi her planda dahil" gold pill
+        slide.appendChild(el('span', {
+            class: 'onb-premium-pill',
+            text: t('onboarding.premium.allIncluded', '✦ Hepsi her planda dahil'),
+        }));
+
+        // 2x2 feature grid — concrete mockup copy via i18n keys
+        const featDefs = [
+            { key: 'decide',  iconSvg: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="7" height="11" rx="1.5"/><rect x="12" y="6" width="7" height="11" rx="1.5"/><rect x="21" y="6" width="7" height="11" rx="1.5"/><path d="M12 23 l3 3 l6 -6" stroke-width="2"/></svg>' },
+            { key: 'pair',    iconSvg: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="12" r="4"/><circle cx="21" cy="12" r="4"/><path d="M4 26c0-4 3-7 7-7s7 3 7 7M14 26c0-4 3-7 7-7s7 3 7 7"/></svg>' },
+            { key: 'bell',    iconSvg: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 24V13a8 8 0 0 1 16 0v11"/><path d="M5 24h22"/><path d="M13 27a3 3 0 0 0 6 0"/><circle cx="24" cy="8" r="3.5" fill="#ff7ab8" stroke="#ff7ab8"/></svg>' },
+            { key: 'evening', iconSvg: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="17" r="10"/><path d="M16 11 v6 l4 2" stroke-width="2"/><path d="M8 5 l-3 3 M24 5 l3 3"/></svg>' },
         ];
-        featureDefs.forEach((f, idx) => {
-            const icon = el('span', { class: 'onb-premium-feature-icon', text: f.emoji, 'aria-hidden': 'true' });
-            // Varied pulse phase per row so the emojis don't all beat in sync.
-            icon.style.setProperty('--pulse-delay', (idx * 0.4) + 's');
-            const row = el('div', { class: 'onb-premium-feature' }, [
-                icon,
-                el('div', { class: 'onb-premium-feature-body' }, [
-                    el('div', { class: 'onb-premium-feature-title', text: t(f.titleKey, f.titleDefault) }),
-                    el('div', { class: 'onb-premium-feature-desc', text: t(f.descKey, f.descDefault) }),
-                ]),
-            ]);
-            // 3D tilt-on-touch (pointer-aware).
-            if (!reduced) {
-                row.addEventListener('pointermove', (e) => {
-                    const r = row.getBoundingClientRect();
-                    const dx = ((e.clientX - r.left) / r.width) - 0.5;
-                    const dy = ((e.clientY - r.top) / r.height) - 0.5;
-                    row.style.transform = `perspective(600px) rotateX(${(-dy * 6).toFixed(2)}deg) rotateY(${(dx * 8).toFixed(2)}deg)`;
-                });
-                row.addEventListener('pointerleave', () => { row.style.transform = ''; });
-            }
-            features.appendChild(row);
+        const featGrid = el('div', { class: 'onb-feat-grid' });
+        featDefs.forEach((f) => {
+            const cell = el('div', { class: 'onb-feat-cell' });
+            const ico = el('div', { class: 'onb-feat-cell__ico', 'aria-hidden': 'true', html: f.iconSvg });
+            cell.appendChild(ico);
+            cell.appendChild(el('div', { class: 'onb-feat-cell__title', text: t(`onboarding.premium.features.${f.key}.title`, f.key) }));
+            cell.appendChild(el('div', { class: 'onb-feat-cell__desc',  text: t(`onboarding.premium.features.${f.key}.desc`,  '') }));
+            featGrid.appendChild(cell);
         });
-        slide.appendChild(features);
+        slide.appendChild(featGrid);
 
-        // Pricing block
-        const p = premiumPricingStrings();
-        const pricing = el('div', { class: 'onb-premium-pricing', 'data-locale': isTRLocale() ? 'tr' : 'intl' });
-        pricing.appendChild(el('div', { class: 'onb-premium-pricing-line', text: p.full }));
-        const lifeBadge = el('span', { class: 'onb-premium-limited-badge', text: t('onboarding.premium.limited', 'Limited') });
-        pricing.appendChild(lifeBadge);
-        pricing.appendChild(el('div', { class: 'onb-premium-trial-note', text: p.trial }));
-        slide.appendChild(pricing);
+        // 3 square pricing cards — yearly is default-selected, gold-bordered
+        // 04.6-r5: pricing values from premiumPricingStrings() so locale (TR vs intl) is correct
+        // without depending on async i18n loading (tests + first-paint).
+        const pricing = premiumPricingStrings();
+        const tiers = [
+            { value: 'monthly',  nameKey: 'tier.monthlyShort',  priceText: pricing.monthlyAmount,  perKey: 'pricePeriodMonthly',  perFallback: isTRLocale() ? '/ay'  : '/mo',  subKey: 'tierSubMonthly',  badge: null,                     badgeCls: '' },
+            { value: 'yearly',   nameKey: 'tier.yearlyShort',   priceText: pricing.yearlyAmount,   perKey: 'pricePeriodYearly',   perFallback: isTRLocale() ? '/yıl' : '/yr',  subKey: 'tierSubYearly',   badge: '⭐ ' + t('onboarding.premium.tier.bestValue', 'BEST'), badgeCls: '' },
+            { value: 'lifetime', nameKey: 'tier.lifetimeShort', priceText: pricing.lifetimeAmount, perKey: null,                  perFallback: isTRLocale() ? 'tek ödeme' : 'lifetime', subKey: 'tierSubLifetime', badge: '🔥 ' + t('onboarding.premium.tier.limited', 'LTD'),   badgeCls: 'lim' },
+        ];
+        // Default selection — yearly (mockup default)
+        state.premiumChoice = state.premiumChoice || 'yearly';
+        const psqGrid = el('div', { class: 'onb-psq-grid', role: 'radiogroup', 'aria-label': t('onboarding.premium.hero', 'Lumi Premium.') });
+        const psqCards = [];
+        tiers.forEach((tier) => {
+            const isSel = state.premiumChoice === tier.value;
+            const card = el('button', {
+                type: 'button',
+                class: `onb-psq${isSel ? ' onb-psq--selected' : ''}`,
+                'data-tier': tier.value,
+                'role': 'radio',
+                'aria-checked': isSel ? 'true' : 'false',
+            });
+            card.appendChild(el('span', { class: 'onb-psq__radio', 'aria-hidden': 'true' }));
+            const top = el('div', { class: 'onb-psq__top' });
+            top.appendChild(el('span', { class: 'onb-psq__name', text: t(`onboarding.premium.${tier.nameKey}`, tier.value.toUpperCase()) }));
+            if (tier.badge) top.appendChild(el('span', { class: `onb-psq__badge${tier.badgeCls ? ' ' + tier.badgeCls : ''}`, text: tier.badge }));
+            card.appendChild(top);
+            const priceWrap = el('div', { class: 'onb-psq__price-wrap' });
+            priceWrap.appendChild(el('div', { class: 'onb-psq__price', text: tier.priceText }));
+            priceWrap.appendChild(el('div', {
+                class: 'onb-psq__period',
+                text: tier.perKey ? t(`onboarding.premium.${tier.perKey}`, tier.perFallback) : tier.perFallback,
+            }));
+            card.appendChild(priceWrap);
+            card.appendChild(el('div', { class: 'onb-psq__sub', text: t(`onboarding.premium.${tier.subKey}`, '') }));
+            card.addEventListener('click', () => {
+                haptic.select && haptic.select();
+                state.premiumChoice = tier.value;
+                psqCards.forEach((c) => {
+                    const sel = c.getAttribute('data-tier') === tier.value;
+                    c.classList.toggle('onb-psq--selected', sel);
+                    c.setAttribute('aria-checked', sel ? 'true' : 'false');
+                });
+                if (typeof persistProgress === 'function') persistProgress();
+            });
+            psqCards.push(card);
+            psqGrid.appendChild(card);
+        });
+        slide.appendChild(psqGrid);
 
-        // Primary CTA — opens mock paywall sheet (kept in slide for r1 test)
+        // Trial line — "3 gün ücretsiz · iptal kolay · 🔒 RevenueCat"
+        slide.appendChild(el('div', {
+            class: 'onb-premium-trial',
+            text: t('onboarding.premium.trialLine', '3 gün ücretsiz · iptal kolay · 🔒 RevenueCat'),
+        }));
+
+        // Primary gradient CTA — opens paywall sheet
         slide.appendChild(el('button', {
-            class: 'onb-cta onb-cta-premium',
+            class: 'onb-premium-cta',
             type: 'button',
-            text: t('onboarding.premium.cta', "Premium'u dene"),
+            text: t('onboarding.premium.ctaTry', "Premium'u Dene"),
             'data-testid': 'onb-premium-cta',
             onclick: () => { haptic.tap(); openMockPaywall(); },
         }));
 
-        // Secondary skip ghost link (kept in slide for r1 test)
+        // Ghost "Şimdilik geç" link — advances to S4 (Ready)
         slide.appendChild(el('button', {
-            class: 'onboarding-skip-link onb-premium-skip',
+            class: 'onb-premium-skip',
             type: 'button',
-            text: t('onboarding.premium.skip', 'Şimdilik geç'),
+            text: t('onboarding.premium.skipNew', t('onboarding.premium.skip', 'Şimdilik geç')),
             'data-testid': 'onb-premium-skip',
-            onclick: () => { haptic.tap(); goto(3); },  // 04.6-03 — Ready slide (was 5)
+            onclick: () => { haptic.tap(); goto(3); },
         }));
 
-        // 04.6-r3 — Footer continuation CTA (always visible). Forwards to skip
-        // so the user can always advance from S3 without hunting for a button.
-        const premiumContinue = el('button', {
-            class: 'onb-cta',
-            type: 'button',
-            'data-testid': 'onb-premium-continue',
-            text: t('onboarding.next', 'Devam'),
-            onclick: () => { haptic.tap(); goto(3); },
-        });
-        portalFooterCta(premiumContinue);
-
+        // NOTE: No portalFooterCta() on S3 — slide owns its primary CTA.
+        // CSS hides .onb-deck__footer for slide index 2 (the Premium slide).
         return slide;
     }
 
@@ -1885,7 +1948,7 @@ function renderWizard(options = {}) {
         });
 
         const title = el('h2', { class: 'onb-paywall-title', text: t('onboarding.premium.title', 'Lumi Premium') });
-        const subtitle = el('p', { class: 'onb-paywall-sub', text: t('onboarding.premium.sub', 'Film Gecesi Asistanın') });
+        const subtitle = el('p', { class: 'onb-paywall-sub', text: t('onboarding.premium.paywallSub', 'İlk 3 gün ücretsiz. İstediğin zaman iptal.') });
 
         // Tier cards (radio group)
         const tiers = el('div', { class: 'onb-paywall-tiers', role: 'radiogroup' });
@@ -1962,7 +2025,7 @@ function renderWizard(options = {}) {
         const notifyCta = el('button', {
             class: 'onb-cta onb-cta-premium onb-paywall-cta',
             type: 'button',
-            text: t('onboarding.premium.notifyCta', 'Premium çıkınca haber ver'),
+            text: t('onboarding.premium.startTrialCta', '3 gün ücretsiz başla'),
             'data-testid': 'onb-paywall-notify',
         });
 

@@ -2624,3 +2624,328 @@
     .onb-plat-region { font-size: 9px; }
 }
 
+/* =====================================================================
+ * === S3 MOCKUP STYLES (04.6-r5) ======================================
+ * Source: .planning/sketches/onboarding-r3/vision-glassmorphic.html
+ *         (PREMIUM section — eyebrow + hero + 2x2 feat grid + 3 square
+ *          pricing cards + trial line + gradient CTA + ghost skip).
+ * Scope: ONLY the premium (S3) slide. Does NOT touch S1/S2/S4 styles.
+ * ===================================================================== */
+
+/* Hide the portaled footer when empty (S3 owns its own CTA inline). */
+.onb-deck .onb-deck__footer:empty { display: none !important; }
+
+/* Recap chips top-right (lang · country · #services) */
+.onb-slide-premium .onb-premium-recap {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+    margin: 0 0 6px;
+}
+.onb-slide-premium .onb-premium-rchip {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: rgba(255, 255, 255, 0.72);
+    padding: 4px 9px;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.055);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    white-space: nowrap;
+}
+
+/* Eyebrow */
+.onb-slide-premium .onb-premium-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.50);
+    margin: 6px 0 8px;
+}
+
+/* Hero — Inter 900 gradient (NO Cormorant) */
+.onb-slide-premium .onb-premium-hero {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-weight: 900;
+    font-style: normal;
+    font-size: 38px;
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    margin: 0 0 6px;
+    background: linear-gradient(135deg, #f5d27a 0%, #ffe5a8 45%, #f4a261 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+@media (max-width: 380px) {
+    .onb-slide-premium .onb-premium-hero { font-size: 34px; }
+}
+
+/* Cormorant italic accent (gold) */
+.onb-slide-premium .onb-premium-accent {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 1.25;
+    color: #f4a261;
+    margin: 0 0 12px;
+    letter-spacing: 0.005em;
+}
+
+/* "✦ Hepsi her planda dahil" gold pill */
+.onb-slide-premium .onb-premium-pill {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #1a1100;
+    padding: 5px 12px;
+    border-radius: 99px;
+    background: linear-gradient(135deg, #f5d27a, #ffd28a);
+    box-shadow: 0 4px 14px -4px rgba(245, 210, 122, 0.55);
+    margin: 0 0 14px;
+}
+
+/* 2x2 feature grid */
+.onb-slide-premium .onb-feat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 0 0 14px;
+}
+.onb-slide-premium .onb-feat-cell {
+    position: relative;
+    padding: 16px 14px 14px;
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    min-height: 128px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.onb-slide-premium .onb-feat-cell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, transparent 45%);
+    pointer-events: none;
+    border-radius: inherit;
+}
+.onb-slide-premium .onb-feat-cell__ico {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(245, 210, 122, 0.20), rgba(245, 210, 122, 0.04));
+    border: 1px solid rgba(245, 210, 122, 0.28);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f5d27a;
+}
+.onb-slide-premium .onb-feat-cell__ico svg {
+    width: 18px;
+    height: 18px;
+}
+.onb-slide-premium .onb-feat-cell__title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-top: 8px;
+    line-height: 1.15;
+    color: #fff;
+}
+.onb-slide-premium .onb-feat-cell__desc {
+    font-size: 11px;
+    line-height: 1.35;
+    color: rgba(255, 255, 255, 0.65);
+    margin-top: 4px;
+    font-weight: 400;
+}
+
+/* 3 square pricing cards */
+.onb-slide-premium .onb-psq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 7px;
+    margin: 0 0 8px;
+}
+.onb-slide-premium .onb-psq {
+    position: relative;
+    padding: 16px 8px 14px;
+    border-radius: 16px;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    min-height: 168px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    gap: 6px;
+    color: #fff;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.3s,
+                background 0.3s,
+                box-shadow 0.3s;
+    -webkit-tap-highlight-color: transparent;
+}
+.onb-slide-premium .onb-psq:active { transform: scale(0.97); }
+.onb-slide-premium .onb-psq__top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+}
+.onb-slide-premium .onb-psq__name {
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.42);
+}
+.onb-slide-premium .onb-psq__badge {
+    font-size: 7.5px;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    padding: 2px 6px;
+    border-radius: 99px;
+    background: linear-gradient(135deg, #f5d27a, #b88a2c);
+    color: #1a1100;
+    white-space: nowrap;
+    box-shadow: 0 3px 8px -2px rgba(245, 210, 122, 0.5);
+}
+.onb-slide-premium .onb-psq__badge.lim {
+    background: linear-gradient(135deg, #ff7ab8, #9b8cff);
+    color: #fff;
+    box-shadow: 0 3px 8px -2px rgba(255, 122, 184, 0.5);
+}
+.onb-slide-premium .onb-psq__price-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+}
+.onb-slide-premium .onb-psq__price {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1;
+    color: #fff;
+    margin: 6px 0 1px;
+}
+.onb-slide-premium .onb-psq__period {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.42);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+.onb-slide-premium .onb-psq__sub {
+    font-size: 9.5px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.55);
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    padding: 0 2px;
+}
+.onb-slide-premium .onb-psq__radio {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255, 255, 255, 0.28);
+    background: transparent;
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.onb-slide-premium .onb-psq--selected {
+    border: 2px solid #f5d27a;
+    background: linear-gradient(135deg, rgba(245, 210, 122, 0.18), rgba(184, 138, 44, 0.08));
+    box-shadow: 0 10px 28px -8px rgba(245, 210, 122, 0.55),
+                0 0 0 3px rgba(245, 210, 122, 0.12);
+    transform: scale(1.02);
+}
+.onb-slide-premium .onb-psq--selected .onb-psq__radio {
+    border-color: #f5d27a;
+    background: radial-gradient(circle, #f5d27a 0 40%, transparent 42%);
+}
+.onb-slide-premium .onb-psq--selected .onb-psq__name { color: #f5d27a; }
+.onb-slide-premium .onb-psq--selected .onb-psq__price { color: #f5d27a; }
+
+/* Trial line */
+.onb-slide-premium .onb-premium-trial {
+    font-size: 11.5px;
+    font-style: italic;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.70);
+    margin: 8px 0 14px;
+    line-height: 1.4;
+    letter-spacing: 0.005em;
+}
+
+/* Primary gradient CTA */
+.onb-slide-premium .onb-premium-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 52px;
+    border-radius: 99px;
+    border: 0;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: #fff;
+    background: linear-gradient(135deg, #f4a261 0%, #ff5d8f 100%);
+    box-shadow: 0 10px 28px -6px rgba(244, 162, 97, 0.55),
+                0 4px 12px -2px rgba(255, 93, 143, 0.40);
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s;
+}
+.onb-slide-premium .onb-premium-cta:active {
+    transform: scale(0.97);
+    box-shadow: 0 6px 18px -6px rgba(244, 162, 97, 0.45);
+}
+
+/* Ghost skip link */
+.onb-slide-premium .onb-premium-skip {
+    display: block;
+    width: 100%;
+    margin: 10px 0 0;
+    padding: 10px 0;
+    background: transparent;
+    border: 0;
+    color: rgba(255, 255, 255, 0.55);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    -webkit-tap-highlight-color: transparent;
+}
+.onb-slide-premium .onb-premium-skip:hover { color: rgba(255, 255, 255, 0.85); }
+
+@media (max-width: 380px) {
+    .onb-slide-premium .onb-psq { min-height: 158px; padding: 14px 6px 12px; }
+    .onb-slide-premium .onb-psq__price { font-size: 22px; }
+    .onb-slide-premium .onb-feat-cell { min-height: 118px; padding: 14px 12px 12px; }
+    .onb-slide-premium .onb-feat-cell__title { font-size: 12.5px; }
+    .onb-slide-premium .onb-feat-cell__desc { font-size: 10.5px; }
+}
+
