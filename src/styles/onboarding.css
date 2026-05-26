@@ -2361,13 +2361,17 @@
 .onb-s1-mockup .onb-s1-hero {
     position: relative;
     z-index: 5;
-    font-size: 48px;
-    line-height: 0.96;
+    font-size: 44px;
+    line-height: 0.98;
     letter-spacing: -0.04em;
     margin: 0 0 6px;
     font-weight: 800;
     color: #fff;
-    max-width: 280px;
+    max-width: 320px;
+    /* Keep whole words intact ("izlesek?" must not break mid-character) */
+    overflow-wrap: break-word;
+    word-break: keep-all;
+    hyphens: none;
 }
 .onb-s1-mockup .onb-hero-accent {
     position: relative;
@@ -2450,19 +2454,34 @@
 }
 /* Force the inline chip container into a 2-col grid inside locale-hero. */
 .onb-locale-hero .onb-locale-inline {
-    display: grid;
+    display: grid !important;
     grid-template-columns: 1fr 1fr;
     gap: 9px;
     margin: 0;
+    width: 100%;
+    pointer-events: auto;
+    position: relative;
+    z-index: 5;
 }
-.onb-locale-hero .onb-locale-chip-wrap { width: 100%; }
+.onb-locale-hero .onb-locale-chip-wrap {
+    display: flex !important;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    visibility: visible;
+    opacity: 1;
+}
 .onb-locale-hero .onb-locale-chip {
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
     width: 100%;
     min-height: 56px;
     padding: 10px 12px;
     border-radius: 14px;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
     border: 1px solid var(--s1-stroke-hi);
+    color: #fff;
     transition: transform 0.25s var(--s1-ease-out), box-shadow 0.25s, border-color 0.25s;
 }
 .onb-locale-hero .onb-locale-chip:hover {
@@ -2535,8 +2554,8 @@
 }
 
 /* --- Small-viewport polish (≤ 360px) --- */
-@media (max-width: 360px) {
-    .onb-s1-mockup .onb-s1-hero { font-size: 40px; max-width: 240px; }
+@media (max-width: 380px) {
+    .onb-s1-mockup .onb-s1-hero { font-size: 38px; max-width: 260px; }
     .onb-poster-pile { width: 150px; height: 180px; top: 100px; }
     .onb-poster-pile__item { width: 68px; height: 102px; }
     .onb-poster-pile__item--p1 { right: 48px; }
