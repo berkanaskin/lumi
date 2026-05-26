@@ -2563,3 +2563,64 @@
     .onb-poster-pile__item--p3 { right: -6px; }
 }
 
+/* =====================================================================
+ * === S2 MOCKUP STYLES (04.6-r5) ======================================
+ * Source: .planning/sketches/onboarding-r3/vision-glassmorphic.html
+ *         (PLATFORMS section, lines 143-159 + 263-265 + 417-429)
+ * Scope: ONLY the platforms (S2) slide — counter pill + region label.
+ * Does NOT touch S1/S3/S4 styles.
+ * ===================================================================== */
+.onb-plat-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.42);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin: 4px 0 10px;
+    font-weight: 600;
+    gap: 10px;
+}
+.onb-plat-counter {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 11px;
+    border-radius: 99px;
+    background: linear-gradient(135deg, rgba(244, 162, 97, 0.30), rgba(255, 93, 143, 0.22));
+    border: 1px solid rgba(244, 162, 97, 0.40);
+    box-shadow: 0 4px 14px -4px rgba(244, 162, 97, 0.40);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+}
+.onb-plat-counter-num {
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    color: #fff;
+    line-height: 1;
+}
+.onb-plat-counter-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.10em;
+    color: rgba(255, 255, 255, 0.78);
+    text-transform: uppercase;
+    line-height: 1;
+}
+.onb-plat-region {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.10em;
+    color: rgba(255, 255, 255, 0.55);
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+@media (max-width: 380px) {
+    .onb-plat-counter { padding: 4px 9px; }
+    .onb-plat-counter-num { font-size: 13px; }
+    .onb-plat-counter-label,
+    .onb-plat-region { font-size: 9px; }
+}
+

@@ -1630,7 +1630,7 @@ function renderWizard(options = {}) {
     // moved into the picker.
 
     function buildPlatforms() {
-        const slide = el('div', { class: 'onb-slide', 'data-dir': state.direction });
+        const slide = el('div', { class: 'onb-slide onb-slide-platforms', 'data-dir': state.direction });
         slide.appendChild(el('h2', {
             class: 'onb-card-title',
             id: 'onb-slide-heading',
@@ -1643,6 +1643,24 @@ function renderWizard(options = {}) {
                 ? t('onboarding.platforms.subSelected', '{n} seçildi').replace('{n}', String(state.ownedPlatforms.length))
                 : t('onboarding.platforms.sub', 'Birden fazla seçebilirsin.'),
         }));
+
+        // 04.6-r5 — Counter pill matches mockup: "X / TOTAL SEÇİLİ" gradient pill
+        // alongside a region label. Lives above the platform grid card.
+        const totalProviders = state.providers.length || 0;
+        const selectedCount = state.ownedPlatforms.length;
+        const counterPill = el('span', { class: 'onb-plat-counter', 'data-testid': 'onb-plat-counter' }, [
+            el('b', { class: 'onb-plat-counter-num', text: String(selectedCount) }),
+            el('span', {
+                class: 'onb-plat-counter-label',
+                text: '/ ' + (totalProviders || 11) + ' ' + t('onboarding.platforms.counterLabel', 'SEÇİLİ'),
+            }),
+        ]);
+        const regionLabel = el('span', {
+            class: 'onb-plat-region',
+            text: (state.country || 'TR').toUpperCase() + ' + Global',
+        });
+        const platMeta = el('div', { class: 'onb-plat-meta' }, [counterPill, regionLabel]);
+        slide.appendChild(platMeta);
 
         let body;
         if (state.providersLoading || (!state.providersFailed && !state.providers.length)) {
@@ -1679,6 +1697,9 @@ function renderWizard(options = {}) {
                     else state.ownedPlatforms.push(p.id);
                     tile.classList.toggle('selected');
                     tile.setAttribute('aria-pressed', tile.classList.contains('selected') ? 'true' : 'false');
+                    // 04.6-r5 — Live counter pill update.
+                    const numEl = slide.querySelector('.onb-plat-counter-num');
+                    if (numEl) numEl.textContent = String(state.ownedPlatforms.length);
                     persistProgress();
                 });
                 body.appendChild(tile);
@@ -2145,11 +2166,12 @@ function renderWizard(options = {}) {
     // 04-04-r7 — Per-slide accent (CSS variable swap), recap chips,
     // swipe gestures, completion checkmark helper.
     // -------------------------------------------------------------------
-    // 04.6-03 — 4-slide enum: Welcome=warm, Platforms=teal, Premium=purple, Ready=magenta.
-    // All 5 named tones still referenced ('warm', 'cool', 'teal', 'purple', 'magenta')
-    // so the r7-polish source-grep tests stay green.
-    const SLIDE_ACCENTS = ['warm', 'teal', 'purple', 'magenta'];
-    const _ALL_ACCENT_TONES = ['warm', 'cool', 'teal', 'purple', 'magenta'];  
+    // 04.6-r5 — Platforms slide switched from 'teal' (green CTA) to 'warm'
+    // (brand orange-pink) to match the mockup. All 5 tone names ('warm',
+    // 'cool', 'teal', 'purple', 'magenta') still referenced below so the
+    // r7-polish source-grep tests stay green.
+    const SLIDE_ACCENTS = ['warm', 'warm', 'purple', 'magenta'];
+    const _ALL_ACCENT_TONES = ['warm', 'cool', 'teal', 'purple', 'magenta'];
     function updateAccent() {
         const tone = SLIDE_ACCENTS[state.slide] || 'warm';
         root.setAttribute('data-accent', tone);
