@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=390, initial-scale=1, viewport-fit=cover" />
+<title>Lumi · Editorial Bold</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+  html,body{font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  body{max-width:390px;margin:0 auto;min-height:844px;overflow:hidden;position:relative;background:#111}
+
+  .stage{width:390px;height:844px;position:relative;overflow:hidden}
+  .slide{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .35s ease}
+  .slide.active{opacity:1;pointer-events:auto}
+
+  .s1{background:linear-gradient(160deg,#FF3D71 0%,#FFB3BA 100%);color:#1a0010}
+  .s2{background:linear-gradient(160deg,#D9F26B 0%,#88E5A1 100%);color:#0a1f0a}
+  .s3{background:linear-gradient(160deg,#2D5BFF 0%,#6EB9FF 100%);color:#fff}
+  .s4{background:linear-gradient(160deg,#FF6B35 0%,#FFD166 100%);color:#1a0c00}
+
+  .top{display:flex;justify-content:space-between;align-items:center;padding:16px 22px 10px;font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase}
+  .dots{display:flex;gap:5px}
+  .dot{width:22px;height:5px;background:currentColor;opacity:.25;border-radius:2px;cursor:pointer;transition:.25s}
+  .dot.active{opacity:1;width:34px}
+
+  .body{flex:1;padding:0 22px;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column}
+  .body::-webkit-scrollbar{display:none}
+  .footer{padding:12px 22px 22px}
+  .cta{width:100%;height:60px;border:3px solid currentColor;background:currentColor;color:#fff;font-family:inherit;font-weight:900;font-size:16px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:transform .12s;display:flex;align-items:center;justify-content:space-between;padding:0 22px;border-radius:0}
+  .s1 .cta{color:#1a0010}.s1 .cta span.t{color:#FFB3BA}
+  .s2 .cta{color:#0a1f0a}.s2 .cta span.t{color:#D9F26B}
+  .s3 .cta{color:#fff;background:#fff}.s3 .cta span.t{color:#2D5BFF}
+  .s4 .cta{color:#1a0c00}.s4 .cta span.t{color:#FFD166}
+  .cta:active{transform:translate(3px,3px)}
+  .ghost{width:100%;background:transparent;border:none;color:inherit;font-family:inherit;font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase;text-decoration:underline;padding:12px 0;cursor:pointer;opacity:.75}
+
+  /* ====== S1 ====== */
+  .s1 .num{font-weight:900;font-size:14px;letter-spacing:.2em;opacity:.55;margin-top:4px}
+  .s1 .wordmark{font-weight:900;font-size:112px;line-height:.82;letter-spacing:-.06em;margin:6px 0 0;background:linear-gradient(120deg,#1a0010 0%,#5a0030 40%,#1a0010 60%,#FF3D71 100%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 5s linear infinite}
+  @keyframes shimmer{0%{background-position:0% 0}100%{background-position:-200% 0}}
+  .s1 .tagline{font-weight:900;font-size:30px;line-height:.95;letter-spacing:-.02em;margin:14px 0 10px}
+  .s1 .body p.lede{font-weight:500;font-size:14px;line-height:1.45;opacity:.78;max-width:300px;margin-bottom:14px}
+  .pull{border-left:4px solid #1a0010;padding:6px 0 6px 12px;margin:8px 0 14px}
+  .pull .q{font-weight:900;font-size:18px;line-height:1.1;letter-spacing:-.01em}
+  .pull .a{font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;opacity:.6;margin-top:4px}
+  .props{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+  .prop{background:rgba(26,0,16,.08);border:2px solid #1a0010;padding:10px 12px}
+  .prop b{display:block;font-weight:900;font-size:13px;letter-spacing:-.01em;margin-bottom:2px}
+  .prop span{font-size:10px;font-weight:700;opacity:.7;letter-spacing:.04em}
+
+  .loc-wrap{margin-top:auto;margin-bottom:6px}
+  .loc-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .loc-block{background:#1a0010;color:#FFB3BA;padding:12px 14px;cursor:pointer;border:none;text-align:left;font-family:inherit;width:100%}
+  .loc-block .label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;opacity:.6;margin-bottom:4px;font-weight:800}
+  .loc-block .val{font-weight:900;font-size:18px;letter-spacing:-.01em;display:flex;align-items:center;justify-content:space-between;gap:6px}
+  .loc-list{display:none;background:#1a0010;color:#FFB3BA;padding:0 14px 12px;max-height:200px;overflow-y:auto;margin-top:-1px}
+  .loc-list.open{display:block}
+  .loc-list::-webkit-scrollbar{display:none}
+  .loc-opt{padding:11px 0;font-weight:800;font-size:14px;border-top:1px solid rgba(255,179,186,.18);cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+  .loc-opt.sel{color:#FFB3BA;background:rgba(255,179,186,.08);padding-left:8px;padding-right:8px;margin:0 -8px}
+  .loc-opt b{font-weight:900}
+
+  /* ====== S2 ====== */
+  .s2 .num{font-weight:900;font-size:14px;letter-spacing:.2em;opacity:.55;margin:4px 0 6px}
+  .s2 h1{font-weight:900;font-size:60px;line-height:.85;letter-spacing:-.04em;margin:4px 0 8px}
+  .s2 .sub{font-weight:700;font-size:14px;opacity:.78;margin-bottom:8px;max-width:300px;line-height:1.35}
+  .s2 .counter{font-weight:900;font-size:11px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:10px;display:flex;justify-content:space-between;align-items:baseline}
+  .s2 .counter b{font-size:28px;display:inline-block;margin-right:4px;vertical-align:-4px}
+  .bento{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:68px;gap:5px;margin-bottom:8px}
+  .tile{background:#0a1f0a;color:#D9F26B;display:flex;align-items:flex-end;padding:7px;font-weight:900;font-size:11px;line-height:1;letter-spacing:-.01em;cursor:pointer;border:3px solid transparent;text-transform:uppercase;position:relative;transition:.18s;overflow:hidden}
+  .tile.sel{background:#D9F26B;color:#0a1f0a;border-color:#0a1f0a;transform:scale(1.03)}
+  .tile.sel::after{content:"✓";position:absolute;top:4px;right:6px;font-size:14px;font-weight:900}
+  .tile.big{grid-column:span 2;font-size:18px}
+
+  /* ====== S3 ====== */
+  .s3 .num{font-weight:900;font-size:14px;letter-spacing:.2em;opacity:.55;margin:4px 0 6px}
+  .s3 .billboard{font-weight:900;font-size:64px;line-height:.85;letter-spacing:-.05em;margin:0 0 2px;text-transform:uppercase}
+  .s3 .sub{font-weight:800;font-size:14px;opacity:.9;margin-bottom:14px;letter-spacing:-.01em}
+  .feat{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:2px solid rgba(255,255,255,.3)}
+  .feat:first-of-type{border-top:none;padding-top:6px}
+  .feat .ico{font-size:22px;width:32px;flex-shrink:0;text-align:center;line-height:1.1}
+  .feat b{display:block;font-weight:900;font-size:14px;letter-spacing:-.01em;margin-bottom:1px;text-transform:uppercase}
+  .feat span{font-size:11px;opacity:.82;font-weight:600;line-height:1.3}
+  .trial{font-weight:900;font-size:11px;letter-spacing:.16em;text-transform:uppercase;background:#fff;color:#2D5BFF;display:inline-block;padding:5px 9px;margin:12px 0 8px;border:2px solid #fff}
+
+  .pricing{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-bottom:6px}
+  .pcard{background:transparent;border:3px solid #fff;padding:9px 6px;cursor:pointer;text-align:center;color:#fff;position:relative;transition:.18s}
+  .pcard.sel{background:#fff;color:#2D5BFF}
+  .pcard .pn{font-weight:900;font-size:10px;letter-spacing:.1em;text-transform:uppercase;opacity:.8}
+  .pcard .pp{font-weight:900;font-size:22px;letter-spacing:-.03em;line-height:1;margin:3px 0}
+  .pcard .pu{font-size:9px;font-weight:700;letter-spacing:.08em;opacity:.7;text-transform:uppercase}
+  .pbadge{position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:#1a0010;color:#FFD166;font-size:8px;font-weight:900;letter-spacing:.12em;padding:2px 6px;white-space:nowrap}
+  .pbadge.lim{background:#FF3D71;color:#fff}
+  .s3 .ghost-row{display:flex;gap:6px;margin-top:4px}
+
+  /* bottom sheet */
+  .sheet-bg{position:absolute;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:.25s;z-index:50}
+  .sheet-bg.open{opacity:1;pointer-events:auto}
+  .sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;color:#2D5BFF;padding:18px 18px 26px;transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1);z-index:60;max-height:90%;overflow-y:auto}
+  .sheet.open{transform:translateY(0)}
+  .sheet::-webkit-scrollbar{display:none}
+  .sheet h2{font-weight:900;font-size:28px;letter-spacing:-.03em;text-transform:uppercase;margin-bottom:2px}
+  .sheet p{font-weight:700;font-size:12px;opacity:.7;margin-bottom:14px}
+  .sheet .close{position:absolute;top:14px;right:14px;width:32px;height:32px;border:2px solid #2D5BFF;background:#fff;color:#2D5BFF;font-weight:900;font-size:18px;cursor:pointer;line-height:1}
+  .sheet .scard{display:flex;justify-content:space-between;align-items:center;padding:14px;border:3px solid #2D5BFF;margin-bottom:8px;cursor:pointer;transition:.15s}
+  .sheet .scard.sel{background:#2D5BFF;color:#fff}
+  .sheet .scard b{display:block;font-weight:900;font-size:15px;letter-spacing:-.01em;text-transform:uppercase}
+  .sheet .scard small{font-size:10px;font-weight:700;opacity:.7;letter-spacing:.08em;text-transform:uppercase}
+  .sheet .scard .amt{font-weight:900;font-size:24px;letter-spacing:-.02em}
+  .sheet .confirm{width:100%;height:54px;background:#2D5BFF;color:#fff;border:none;font-family:inherit;font-weight:900;font-size:15px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;margin-top:8px}
+
+  /* ====== S4 ====== */
+  .s4 .num{font-weight:900;font-size:14px;letter-spacing:.2em;opacity:.55;margin:4px 0 4px}
+  .s4 .ready{font-weight:900;font-size:80px;line-height:.82;letter-spacing:-.05em;margin:0 0 6px;text-transform:uppercase}
+  .s4 .sub{font-weight:700;font-size:15px;opacity:.85;max-width:300px;margin-bottom:14px;line-height:1.3}
+  .recap{background:#1a0c00;color:#FFD166;padding:16px;margin-bottom:14px}
+  .recap .rh{font-weight:900;font-size:10px;letter-spacing:.2em;text-transform:uppercase;opacity:.55;margin-bottom:8px}
+  .recap .rr{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:13px;padding:9px 0;border-bottom:1px dashed rgba(255,209,102,.25)}
+  .recap .rr:last-child{border:none;padding-bottom:0}
+  .recap .rr span{opacity:.65;font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:900}
+  .recap b{font-weight:900;color:#fff;font-size:14px;letter-spacing:-.01em;text-align:right;max-width:200px}
+
+  .confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+  .conf{position:absolute;width:10px;height:14px;animation:fall 5s linear infinite}
+  @keyframes fall{0%{transform:translateY(-30px) rotate(0)}100%{transform:translateY(900px) rotate(720deg)}}
+
+  .success{position:absolute;inset:0;background:#1a0c00;color:#FFD166;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .4s;z-index:80;text-align:center;padding:0 22px}
+  .success.show{opacity:1;pointer-events:auto}
+  .success .check{width:96px;height:96px;border-radius:50%;background:#FFD166;color:#1a0c00;display:flex;align-items:center;justify-content:center;font-size:54px;font-weight:900;margin-bottom:22px;animation:pop .5s cubic-bezier(.22,1.4,.36,1)}
+  @keyframes pop{0%{transform:scale(0)}100%{transform:scale(1)}}
+  .success h3{font-weight:900;font-size:42px;letter-spacing:-.04em;text-transform:uppercase;margin-bottom:8px}
+  .success p{font-weight:700;font-size:14px;opacity:.8}
+
+  .toast{position:absolute;left:22px;right:22px;bottom:80px;background:#1a0c00;color:#FFD166;padding:12px 16px;font-weight:800;font-size:13px;letter-spacing:.04em;border-left:4px solid #FFD166;transform:translateY(40px);opacity:0;pointer-events:none;transition:.3s;z-index:70}
+  .toast.show{transform:translateY(0);opacity:1}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+
+  <!-- ============== S1 ============== -->
+  <section class="slide s1 active">
+    <div class="top"><span>01 / 04 · HOŞ GELDİN</span><div class="dots"><div class="dot active" data-i="0"></div><div class="dot" data-i="1"></div><div class="dot" data-i="2"></div><div class="dot" data-i="3"></div></div></div>
+    <div class="body">
+      <div class="num">— BÖLÜM 01</div>
+      <div class="wordmark">LUMI</div>
+      <div class="tagline">Sinema,<br/>senin dilinde.</div>
+      <p class="lede">Lumi izlediklerini öğrenir, ruh haline göre öneri çıkarır. Akşamına bir film, hafta sonuna bir dizi.</p>
+
+      <div class="pull">
+        <div class="q">"Bu akşam ne izlesem?" sorusuna<br/>son veren asistan.</div>
+        <div class="a">— Lumi nedir</div>
+      </div>
+
+      <div class="props">
+        <div class="prop"><b>200+ ülke</b><span>Yerel katalog</span></div>
+        <div class="prop"><b>8 dil</b><span>Tam çeviri</span></div>
+        <div class="prop"><b>11 platform</b><span>TR + Global</span></div>
+        <div class="prop"><b>0 reklam</b><span>Saf öneri</span></div>
+      </div>
+
+      <div class="loc-wrap">
+        <div class="loc-row">
+          <div>
+            <button class="loc-block" onclick="toggleLoc('lang')">
+              <div class="label">DİL</div>
+              <div class="val" id="langVal"><span>🇹🇷 TÜRKÇE</span><span style="font-size:12px">▼</span></div>
+            </button>
+            <div class="loc-list" id="langList"></div>
+          </div>
+          <div>
+            <button class="loc-block" onclick="toggleLoc('ctry')">
+              <div class="label">ÜLKE</div>
+              <div class="val" id="ctryVal"><span>🇹🇷 TÜRKİYE</span><span style="font-size:12px">▼</span></div>
+            </button>
+            <div class="loc-list" id="ctryList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer"><button class="cta" onclick="next()">SAHNEYİ HAZIRLA<span class="t">→</span></button></div>
+  </section>
+
+  <!-- ============== S2 ============== -->
+  <section class="slide s2">
+    <div class="top"><span>02 / 04 · PLATFORM</span><div class="dots"><div class="dot" data-i="0"></div><div class="dot active" data-i="1"></div><div class="dot" data-i="2"></div><div class="dot" data-i="3"></div></div></div>
+    <div class="body">
+      <div class="num">— BÖLÜM 02</div>
+      <h1>Nerede<br/>izliyorsun?</h1>
+      <p class="sub">Sadece abone olduğun servislerden öneri alalım. İstediğin an değiştirebilirsin.</p>
+      <div class="counter"><span><b id="psCount">3</b>/11 SEÇİLDİ</span><span style="opacity:.6">TR + GLOBAL</span></div>
+
+      <div class="bento" id="plats">
+        <div class="tile big sel" data-n="Netflix">NETFLIX</div>
+        <div class="tile sel" data-n="Disney+">DISNEY+</div>
+        <div class="tile sel" data-n="Prime Video">PRIME</div>
+        <div class="tile" data-n="HBO Max">HBO MAX</div>
+        <div class="tile" data-n="Apple TV+">APPLE TV+</div>
+        <div class="tile" data-n="MUBI">MUBI</div>
+        <div class="tile" data-n="Gain">GAIN</div>
+        <div class="tile" data-n="Exxen">EXXEN</div>
+        <div class="tile" data-n="Tabii">TABII</div>
+        <div class="tile" data-n="TOD">TOD</div>
+        <div class="tile" data-n="Puhu TV">PUHU TV</div>
+      </div>
+      <button class="ghost" onclick="next()">DAHA SONRA EKLERİM →</button>
+    </div>
+    <div class="footer"><button class="cta" onclick="next()">DEVAM<span class="t">→</span></button></div>
+  </section>
+
+  <!-- ============== S3 ============== -->
+  <section class="slide s3">
+    <div class="top"><span>03 / 04 · PREMIUM</span><div class="dots"><div class="dot" data-i="0"></div><div class="dot" data-i="1"></div><div class="dot active" data-i="2"></div><div class="dot" data-i="3"></div></div></div>
+    <div class="body">
+      <div class="num">— BÖLÜM 03</div>
+      <div class="billboard">LUMI<br/>PREMIUM</div>
+      <div class="sub">Film gecesi asistanın.</div>
+
+      <div class="feat"><div class="ico">🎯</div><div><b>Decide-for-Me</b><span>Karar veremediğinde Lumi senin için seçsin.</span></div></div>
+      <div class="feat"><div class="ico">👥</div><div><b>Pair Mode</b><span>İki kişi için ortak öneri — ikinizin de seveceği.</span></div></div>
+      <div class="feat"><div class="ico">🔔</div><div><b>Akıllı Bildirim</b><span>Sevdiğin dizilere yeni bölüm geldiğinde haber.</span></div></div>
+      <div class="feat"><div class="ico">🌙</div><div><b>Akşam Asistanı</b><span>Her akşam 20:00'da bugünlük tek öneri.</span></div></div>
+
+      <span class="trial">★ İLK 7 GÜN ÜCRETSİZ</span>
+
+      <div class="pricing">
+        <div class="pcard" data-n="Aylık" data-p="₺49/AY" onclick="pickTier(this)">
+          <div class="pn">AYLIK</div>
+          <div class="pp">₺49</div>
+          <div class="pu">/ AY</div>
+        </div>
+        <div class="pcard sel" data-n="Yıllık" data-p="₺299/YIL" onclick="pickTier(this)">
+          <span class="pbadge">BEST VALUE</span>
+          <div class="pn">YILLIK</div>
+          <div class="pp">₺299</div>
+          <div class="pu">/ YIL</div>
+        </div>
+        <div class="pcard" data-n="Ömürlük" data-p="₺799 ÖMÜR" onclick="pickTier(this)">
+          <span class="pbadge lim">LIMITED</span>
+          <div class="pn">ÖMÜR</div>
+          <div class="pp">₺799</div>
+          <div class="pu">TEK ÖDEME</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <button class="cta" onclick="openSheet()">PREMIUM'U DENE<span class="t">→</span></button>
+      <button class="ghost" onclick="skipPremium()">ŞİMDİLİK GEÇ</button>
+    </div>
+
+    <div class="sheet-bg" id="sheetBg" onclick="closeSheet()"></div>
+    <div class="sheet" id="sheet">
+      <button class="close" onclick="closeSheet()">×</button>
+      <h2>PLANINI SEÇ</h2>
+      <p>İlk 7 gün ücretsiz. İstediğin zaman iptal.</p>
+
+      <div class="scard" data-n="Aylık" data-p="₺49/AY" onclick="pickSheet(this)">
+        <div><b>AYLIK</b><small>İSTEDİĞİN ZAMAN İPTAL</small></div>
+        <div class="amt">₺49</div>
+      </div>
+      <div class="scard sel" data-n="Yıllık" data-p="₺299/YIL" onclick="pickSheet(this)">
+        <div><b>YILLIK · BEST VALUE</b><small>SADECE ₺24,90 / AY</small></div>
+        <div class="amt">₺299</div>
+      </div>
+      <div class="scard" data-n="Ömürlük" data-p="₺799 ÖMÜR" onclick="pickSheet(this)">
+        <div><b>ÖMÜRLÜK · LIMITED</b><small>TEK ÖDEME, SONSUZA DEK</small></div>
+        <div class="amt">₺799</div>
+      </div>
+      <button class="confirm" onclick="confirmSheet()">7 GÜN ÜCRETSİZ BAŞLA →</button>
+    </div>
+  </section>
+
+  <!-- ============== S4 ============== -->
+  <section class="slide s4">
+    <div class="confetti" id="confetti"></div>
+    <div class="top"><span>04 / 04 · HAZIR</span><div class="dots"><div class="dot" data-i="0"></div><div class="dot" data-i="1"></div><div class="dot" data-i="2"></div><div class="dot active" data-i="3"></div></div></div>
+    <div class="body">
+      <div class="num">— FINAL</div>
+      <div class="ready">IŞIKLAR.<br/>KAMERA.<br/>LUMI.</div>
+      <p class="sub">Tercihlerin kaydedildi. İlk önerin 5 saniye sonra.</p>
+
+      <div class="recap">
+        <div class="rh">SAHNE ÖZETİ</div>
+        <div class="rr"><span>DİL</span><b id="rLang">Türkçe</b></div>
+        <div class="rr"><span>ÜLKE</span><b id="rCtry">Türkiye</b></div>
+        <div class="rr"><span>SERVİSLER</span><b id="rPlat">Netflix · Disney+ · Prime</b></div>
+        <div class="rr"><span>PLAN</span><b id="rPlan">Yıllık · ₺299</b></div>
+      </div>
+
+      <div class="pull" style="border-left-color:#1a0c00">
+        <div class="q">Hazır mısın? Perde açılıyor.</div>
+        <div class="a">— Lumi</div>
+      </div>
+    </div>
+    <div class="footer"><button class="cta" onclick="finish()">LUMI'Yİ KEŞFET<span class="t">→</span></button></div>
+
+    <div class="toast" id="toast">✓ Tercihler kaydedildi</div>
+    <div class="success" id="success">
+      <div class="check">✓</div>
+      <h3>HOŞ GELDİN</h3>
+      <p>Lumi senin için 12 film hazırlıyor...</p>
+    </div>
+  </section>
+</div>
+
+<script>
+  // ===== locale data =====
+  const LANGS=[
+    ['🇹🇷','Türkçe','TR'],['🇬🇧','English','EN'],['🇩🇪','Deutsch','DE'],
+    ['🇫🇷','Français','FR'],['🇪🇸','Español','ES'],['🇮🇹','Italiano','IT'],
+    ['🇯🇵','日本語','JA'],['🇰🇷','한국어','KO']
+  ];
+  const CTRYS=[
+    ['🇹🇷','Türkiye'],['🇺🇸','Amerika'],['🇬🇧','Birleşik Krallık'],['🇩🇪','Almanya'],
+    ['🇫🇷','Fransa'],['🇪🇸','İspanya'],['🇮🇹','İtalya'],['🇳🇱','Hollanda'],
+    ['🇸🇪','İsveç'],['🇳🇴','Norveç'],['🇩🇰','Danimarka'],['🇫🇮','Finlandiya'],
+    ['🇵🇱','Polonya'],['🇦🇹','Avusturya'],['🇨🇭','İsviçre'],['🇧🇪','Belçika'],
+    ['🇮🇪','İrlanda'],['🇵🇹','Portekiz'],['🇬🇷','Yunanistan'],['🇨🇿','Çekya'],
+    ['🇯🇵','Japonya'],['🇰🇷','Güney Kore'],['🇨🇦','Kanada'],['🇲🇽','Meksika'],
+    ['🇧🇷','Brezilya'],['🇦🇷','Arjantin'],['🇦🇺','Avustralya'],['🇳🇿','Y. Zelanda'],
+    ['🇮🇳','Hindistan'],['🇦🇪','BAE']
+  ];
+  let curLang=LANGS[0], curCtry=CTRYS[0];
+
+  const langList=document.getElementById('langList');
+  LANGS.forEach((l,i)=>{
+    const d=document.createElement('div');d.className='loc-opt'+(i===0?' sel':'');
+    d.innerHTML=`<span>${l[0]} <b>${l[1]}</b> · ${l[2]}</span><span>${i===0?'✓':''}</span>`;
+    d.onclick=()=>pickLang(l,d);langList.appendChild(d);
+  });
+  const ctryList=document.getElementById('ctryList');
+  CTRYS.forEach((c,i)=>{
+    const d=document.createElement('div');d.className='loc-opt'+(i===0?' sel':'');
+    d.innerHTML=`<span>${c[0]} <b>${c[1]}</b></span><span>${i===0?'✓':''}</span>`;
+    d.onclick=()=>pickCtry(c,d);ctryList.appendChild(d);
+  });
+
+  function toggleLoc(which){
+    const l=document.getElementById(which==='lang'?'langList':'ctryList');
+    const o=document.getElementById(which==='lang'?'ctryList':'langList');
+    o.classList.remove('open');l.classList.toggle('open');
+  }
+  function pickLang(l,el){
+    curLang=l;
+    langList.querySelectorAll('.loc-opt').forEach(o=>{o.classList.remove('sel');o.lastElementChild.textContent=''});
+    el.classList.add('sel');el.lastElementChild.textContent='✓';
+    document.getElementById('langVal').innerHTML=`<span>${l[0]} ${l[1].toUpperCase()}</span><span style="font-size:12px">▼</span>`;
+    langList.classList.remove('open');syncRecap();
+  }
+  function pickCtry(c,el){
+    curCtry=c;
+    ctryList.querySelectorAll('.loc-opt').forEach(o=>{o.classList.remove('sel');o.lastElementChild.textContent=''});
+    el.classList.add('sel');el.lastElementChild.textContent='✓';
+    document.getElementById('ctryVal').innerHTML=`<span>${c[0]} ${c[1].toUpperCase()}</span><span style="font-size:12px">▼</span>`;
+    ctryList.classList.remove('open');syncRecap();
+  }
+
+  // ===== slides =====
+  let idx=0;
+  const slides=[...document.querySelectorAll('.slide')];
+  const allDots=[...document.querySelectorAll('.dot')];
+  function go(i){
+    idx=Math.max(0,Math.min(3,i));
+    slides.forEach((s,k)=>s.classList.toggle('active',k===idx));
+    allDots.forEach(d=>{const di=+d.dataset.i;d.classList.toggle('active',di===idx)});
+    syncRecap();
+  }
+  function next(){if(idx<3)go(idx+1)}
+  function prev(){if(idx>0)go(idx-1)}
+  allDots.forEach(d=>d.addEventListener('click',()=>go(+d.dataset.i)));
+
+  let sx=0;
+  document.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});
+  document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40){dx<0?next():prev()}});
+  let mx=null;document.addEventListener('mousedown',e=>{mx=e.clientX});
+  document.addEventListener('mouseup',e=>{if(mx!==null){const dx=e.clientX-mx;if(Math.abs(dx)>40)dx<0?next():prev();mx=null}});
+
+  // ===== platforms =====
+  document.querySelectorAll('.tile').forEach(t=>t.addEventListener('click',()=>{t.classList.toggle('sel');syncRecap()}));
+
+  // ===== premium =====
+  let curTier={n:'Yıllık',p:'₺299/YIL'};
+  function pickTier(el){
+    document.querySelectorAll('.pcard').forEach(p=>p.classList.remove('sel'));
+    el.classList.add('sel');curTier={n:el.dataset.n,p:el.dataset.p};syncRecap();
+  }
+  function openSheet(){document.getElementById('sheetBg').classList.add('open');document.getElementById('sheet').classList.add('open')}
+  function closeSheet(){document.getElementById('sheetBg').classList.remove('open');document.getElementById('sheet').classList.remove('open')}
+  function pickSheet(el){
+    document.querySelectorAll('.scard').forEach(p=>p.classList.remove('sel'));
+    el.classList.add('sel');curTier={n:el.dataset.n,p:el.dataset.p};
+    document.querySelectorAll('.pcard').forEach(p=>{p.classList.toggle('sel',p.dataset.n===curTier.n)});
+    syncRecap();
+  }
+  function confirmSheet(){closeSheet();setTimeout(next,300)}
+  function skipPremium(){curTier={n:'Free',p:'Ücretsiz'};syncRecap();next()}
+
+  function syncRecap(){
+    const sel=[...document.querySelectorAll('.tile.sel')].map(t=>t.dataset.n);
+    document.getElementById('psCount').textContent=sel.length;
+    document.getElementById('rLang').textContent=curLang[1]+' · '+curLang[2];
+    document.getElementById('rCtry').textContent=curCtry[1];
+    document.getElementById('rPlat').textContent=sel.length?sel.slice(0,3).join(' · ')+(sel.length>3?` +${sel.length-3}`:''):'Hiçbiri';
+    document.getElementById('rPlan').textContent=curTier.n+' · '+curTier.p.split('/')[0];
+  }
+
+  // ===== confetti =====
+  const conf=document.getElementById('confetti');
+  const cols=['#1a0c00','#FF3D71','#D9F26B','#2D5BFF','#fff'];
+  for(let i=0;i<22;i++){
+    const c=document.createElement('div');c.className='conf';
+    c.style.left=(Math.random()*100)+'%';
+    c.style.background=cols[i%cols.length];
+    c.style.animationDelay=(Math.random()*5)+'s';
+    c.style.animationDuration=(3.5+Math.random()*3)+'s';
+    conf.appendChild(c);
+  }
+
+  // ===== finish =====
+  function finish(){
+    const t=document.getElementById('toast');t.classList.add('show');
+    setTimeout(()=>{document.getElementById('success').classList.add('show')},400);
+  }
+
+  syncRecap();
+</script>
+</body>
+</html>
