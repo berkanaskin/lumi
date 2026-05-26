@@ -52,7 +52,7 @@ afterEach(() => {
 });
 
 describe('04-04-r5 — S1 Welcome new content', () => {
-    it('renders refined wordmark bar, asymmetric poster trio, value props and CTA', async () => {
+    it('renders refined wordmark bar, poster pile, stats strip and CTA', async () => {
         startOnboarding();
         await new Promise((r) => setTimeout(r, 20));
 
@@ -72,12 +72,15 @@ describe('04-04-r5 — S1 Welcome new content', () => {
         // Tagline pair was removed from S1 (lives on Premium slide instead).
         expect(root.querySelector('.onb-slide-welcome .onb-tagline')).toBeFalsy();
 
-        const pills = root.querySelectorAll('.onb-value-pill');
-        expect(pills.length).toBe(3);
+        // 04.6-r5: Mockup S1 — value-pills replaced by stats-strip (3 cells)
+        // and poster-trio replaced by 3-poster pile.
+        const stats = root.querySelector('[data-testid="onb-stats-strip"]');
+        expect(stats).toBeTruthy();
+        expect(stats.querySelectorAll('.onb-stat').length).toBe(3);
 
-        // 04-04-r6: single rotating poster replaced by a 3-poster asymmetric pile.
-        expect(root.querySelector('.onb-poster-trio')).toBeTruthy();
-        expect(root.querySelectorAll('.onb-trio-poster').length).toBe(3);
+        const pile = root.querySelector('[data-testid="onb-poster-pile"]');
+        expect(pile).toBeTruthy();
+        expect(pile.querySelectorAll('.onb-poster-pile__item').length).toBe(3);
 
         // 04.6-r3: Welcome CTA is now portaled to the always-visible deck
         // footer (.onb-deck__footer) instead of living inside the slide.

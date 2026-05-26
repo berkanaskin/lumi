@@ -2176,3 +2176,371 @@
 }
 .onb-locale-opt .onb-opt-flag { font-size: 18px; line-height: 1; }
 .onb-locale-opt .onb-opt-label { flex: 1; }
+
+/* =====================================================================
+ * === S1 MOCKUP STYLES (04.6-r5) ======================================
+ * Source: .planning/sketches/onboarding-r3/vision-glassmorphic.html
+ * Scope: ONLY the welcome (S1) slide. Does NOT touch S2/S3/S4 styles.
+ * ===================================================================== */
+
+/* --- S1 root scope -- per-slide accent vars (cyan/purple s0 palette) --- */
+.onb-slide.onb-s1-mockup {
+    --s1-ink: #fff;
+    --s1-ink-dim: rgba(255, 255, 255, 0.72);
+    --s1-ink-faint: rgba(255, 255, 255, 0.42);
+    --s1-ink-mute: rgba(255, 255, 255, 0.55);
+    --s1-stroke: rgba(255, 255, 255, 0.10);
+    --s1-stroke-hi: rgba(255, 255, 255, 0.18);
+    --s1-gold: #f5d27a;
+    --s1-accent: #9b8cff;
+    --s1-accent2: #5cd6ff;
+    --s1-bg0: #08041a;
+    --s1-g1: #c8b9ff;
+    --s1-g2: #7be1ff;
+    --s1-accent-glow: rgba(92, 214, 255, 0.65);
+    --s1-orbA: #5cd6ff;
+    --s1-orbB: #9b8cff;
+    --s1-orbC: #ff7ab8;
+    --s1-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --s1-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    overflow: hidden;
+    background: var(--s1-bg0);
+    padding: 0 18px 24px;
+}
+
+/* --- (1) Poster wall backdrop --- */
+.onb-poster-wall {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    background: var(--s1-bg0);
+}
+.onb-poster-wall-grid {
+    position: absolute;
+    inset: -12% -12%;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 1fr;
+    gap: 4px;
+    transform: scale(1.02);
+    filter: blur(28px) saturate(135%);
+    animation: onbS1Burns 25s ease-in-out infinite alternate;
+}
+.onb-poster-wall-cell {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    border-radius: 6px;
+    background-size: cover;
+    background-position: center;
+    background-color: rgba(255, 255, 255, 0.04);
+    opacity: 0.95;
+}
+.onb-poster-wall::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(at 30% 20%, transparent 0%, rgba(8, 4, 26, 0.55) 55%, rgba(8, 4, 26, 0.9) 100%),
+        linear-gradient(180deg, transparent 0%, rgba(8, 4, 26, 0.55) 60%, rgba(8, 4, 26, 0.97) 100%);
+}
+@keyframes onbS1Burns {
+    from { transform: scale(1.0) translate(0, 0); }
+    to   { transform: scale(1.06) translate(-1.5%, -2.5%); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .onb-poster-wall-grid { animation: none; }
+}
+
+/* --- (2) Ambient orbs --- */
+.onb-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.55;
+    pointer-events: none;
+    z-index: 1;
+    mix-blend-mode: screen;
+}
+.onb-orb--cyan {
+    width: 340px; height: 340px;
+    background: radial-gradient(circle, var(--s1-orbA), transparent 60%);
+    top: -80px; left: -100px;
+    animation: onbS1Drift1 18s ease-in-out infinite alternate;
+}
+.onb-orb--purple {
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, var(--s1-orbB), transparent 60%);
+    bottom: -60px; right: -120px;
+    animation: onbS1Drift2 22s ease-in-out infinite alternate;
+}
+.onb-orb--magenta {
+    width: 240px; height: 240px;
+    background: radial-gradient(circle, var(--s1-orbC), transparent 60%);
+    top: 38%; right: -90px; opacity: 0.4;
+    animation: onbS1Drift3 26s ease-in-out infinite alternate;
+}
+@keyframes onbS1Drift1 { to { transform: translate(60px, 80px)  scale(1.15); } }
+@keyframes onbS1Drift2 { to { transform: translate(-50px, -40px) scale(0.92); } }
+@keyframes onbS1Drift3 { to { transform: translate(-80px, 40px)  scale(1.10); } }
+@media (prefers-reduced-motion: reduce) {
+    .onb-orb { animation: none; }
+}
+
+/* --- (3) iOS status bar --- */
+.onb-status-bar {
+    position: relative;
+    z-index: 5;
+    height: 32px;
+    margin: 4px -18px 0;
+    padding: 8px 22px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: -0.01em;
+}
+.onb-status-icons { display: inline-flex; gap: 5px; align-items: center; opacity: 0.95; }
+.onb-status-icons svg { display: block; }
+
+/* --- (4) Wordmark + (5) Progress line wrap above the hero --- */
+.onb-s1-mockup .onb-s1-brand {
+    position: relative;
+    z-index: 5;
+    margin: 6px 0 6px;
+}
+.onb-s1-wordmark {
+    font-weight: 800;
+    font-size: 24px;
+    letter-spacing: 0.02em;
+    background: linear-gradient(135deg, #f4a261 0%, #ff5d8f 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: none;
+}
+
+.onb-progress-line {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    gap: 5px;
+    margin: 0 0 14px;
+}
+.onb-progress-dash {
+    width: 18px; height: 3px;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.18);
+    transition: all 0.35s var(--s1-ease-out);
+}
+.onb-progress-dash.active {
+    background: #fff;
+    width: 32px;
+    box-shadow: 0 0 14px var(--s1-accent-glow);
+}
+
+/* --- (6) Eyebrow --- */
+.onb-s1-mockup .onb-s1-eyebrow {
+    position: relative;
+    z-index: 5;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--s1-ink-faint);
+    margin: 0 0 10px;
+    font-weight: 600;
+    opacity: 0.7;
+}
+
+/* --- (7) Hero copy --- */
+.onb-s1-mockup .onb-s1-hero {
+    position: relative;
+    z-index: 5;
+    font-size: 48px;
+    line-height: 0.96;
+    letter-spacing: -0.04em;
+    margin: 0 0 6px;
+    font-weight: 800;
+    color: #fff;
+    max-width: 280px;
+}
+.onb-s1-mockup .onb-hero-accent {
+    position: relative;
+    z-index: 5;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 1.2;
+    color: #f4a261;
+    margin: 4px 0 10px;
+}
+
+/* --- (8) Body copy --- */
+.onb-s1-mockup .onb-s1-body {
+    position: relative;
+    z-index: 5;
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--s1-ink-mute);
+    opacity: 0.85;
+    margin: 0 0 14px;
+    max-width: 300px;
+    font-weight: 400;
+}
+
+/* --- (9) 3-poster pile (top-right cluster) --- */
+.onb-poster-pile {
+    position: absolute;
+    top: 110px;
+    right: -8px;
+    width: 170px;
+    height: 200px;
+    z-index: 4;
+    pointer-events: none;
+}
+.onb-poster-pile__item {
+    position: absolute;
+    width: 80px;
+    height: 120px;
+    border-radius: 12px;
+    background-size: cover;
+    background-position: center;
+    background-color: rgba(255, 255, 255, 0.05);
+    box-shadow:
+        0 22px 50px -10px rgba(0, 0, 0, 0.75),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+.onb-poster-pile__item--p1 { top: 0;   right: 56px; transform: rotate(-4deg); z-index: 1; }
+.onb-poster-pile__item--p2 { top: 10px; right: 18px; transform: rotate(2deg);  z-index: 2; }
+.onb-poster-pile__item--p3 { top: 30px; right: -8px; transform: rotate(-1deg); z-index: 3; }
+
+/* --- (10) Locale-hero glass panel --- */
+.onb-locale-hero {
+    position: relative;
+    z-index: 5;
+    margin: 6px 0 12px;
+    padding: 13px 14px 14px;
+    border-radius: 20px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+    backdrop-filter: blur(50px) saturate(180%);
+    -webkit-backdrop-filter: blur(50px) saturate(180%);
+    border: 1px solid var(--s1-stroke);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.08) inset,
+        0 24px 60px -16px rgba(0, 0, 0, 0.6),
+        0 2px 8px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+}
+.onb-locale-hero-head {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--s1-gold);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+/* Force the inline chip container into a 2-col grid inside locale-hero. */
+.onb-locale-hero .onb-locale-inline {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+    margin: 0;
+}
+.onb-locale-hero .onb-locale-chip-wrap { width: 100%; }
+.onb-locale-hero .onb-locale-chip {
+    width: 100%;
+    min-height: 56px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+    border: 1px solid var(--s1-stroke-hi);
+    transition: transform 0.25s var(--s1-ease-out), box-shadow 0.25s, border-color 0.25s;
+}
+.onb-locale-hero .onb-locale-chip:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px -10px rgba(0, 0, 0, 0.65);
+}
+.onb-locale-hero .onb-locale-chip-icon { font-size: 18px; line-height: 1; }
+.onb-locale-hero .onb-locale-chip-label {
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: -0.01em;
+    color: #fff;
+}
+.onb-locale-hero .onb-locale-chip-caret {
+    font-size: 14px;
+    color: var(--s1-accent2);
+    margin-left: auto;
+    transition: transform 0.3s;
+}
+.onb-locale-hero .onb-locale-chip-wrap[data-expanded="true"] .onb-locale-chip-caret {
+    transform: rotate(180deg);
+}
+
+/* --- (11) Stats strip --- */
+.onb-stats-strip {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 0;
+    margin: 6px 0 12px;
+    padding: 10px 4px;
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+    border: 1px solid var(--s1-stroke);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+.onb-stats-strip .onb-stat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    position: relative;
+    padding: 0 6px;
+}
+.onb-stats-strip .onb-stat + .onb-stat::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 18%; bottom: 18%;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.08);
+}
+.onb-stats-strip .onb-stat-num {
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #fff;
+    line-height: 1;
+}
+.onb-stats-strip .onb-stat-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--s1-ink-faint);
+    margin-top: 3px;
+}
+
+/* --- Small-viewport polish (≤ 360px) --- */
+@media (max-width: 360px) {
+    .onb-s1-mockup .onb-s1-hero { font-size: 40px; max-width: 240px; }
+    .onb-poster-pile { width: 150px; height: 180px; top: 100px; }
+    .onb-poster-pile__item { width: 68px; height: 102px; }
+    .onb-poster-pile__item--p1 { right: 48px; }
+    .onb-poster-pile__item--p2 { right: 16px; }
+    .onb-poster-pile__item--p3 { right: -6px; }
+}
+

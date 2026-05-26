@@ -1071,114 +1071,166 @@ function renderWizard(options = {}) {
 
     // ----- Slide renderers -------------------------------------------------
     function buildWelcome() {
-        const slide = el('div', { class: 'onb-slide onb-slide-welcome', 'data-dir': state.direction });
+        // 04.6-r5 — Mockup S1 (vision-glassmorphic). Rebuilt to match the
+        // poster-wall / 3-poster-pile / locale-hero / stats-strip composition
+        // from .planning/sketches/onboarding-r3/vision-glassmorphic.html.
+        const slide = el('div', { class: 'onb-slide onb-slide-welcome onb-s1-mockup', 'data-dir': state.direction, 'data-testid': 'onb-slide-welcome' });
 
-        // --- 04.6-r3: CSS text wordmark (NOT image).
-        // Brand consistency with main app's .brand-logo (index_lumi.css line 466).
-        // Same gradient (white → faded white), same letter-spacing, same weight.
-        // This kills the entire image-loading / asset-versioning surface area.
-        const brand = el('div', { class: 'onb-brand onb-brand-bar', 'aria-hidden': 'false' });
-        const wordmark = el('span', {
-            class: 'brand-logo onb-wordmark',
+        // --- (1) 3-layer poster wall backdrop (ken-burns + vignette via CSS) ---
+        const WALL_TMDB = [
+            27205, 157336, 155, 13, 680, 76341,        // movies (row 1-2)
+            550, 24428, 299536, 122, 49026, 1726,      // movies
+            66732, 1399, 60735, 1396, 4614, 1402,      // tv
+            597, 120, 121, 122, 603, 11,               // movies (filler)
+        ];
+        const wall = el('div', { class: 'onb-poster-wall', 'aria-hidden': 'true', 'data-testid': 'onb-poster-wall' });
+        const wallGrid = el('div', { class: 'onb-poster-wall-grid' });
+        for (let i = 0; i < 24; i++) {
+            const cell = el('div', { class: 'onb-poster-wall-cell', 'data-idx': String(i) });
+            wallGrid.appendChild(cell);
+        }
+        wall.appendChild(wallGrid);
+        slide.appendChild(wall);
+
+        // Lazy-fetch wall posters (best-effort, silent on failure).
+        (async () => {
+            const cells = wallGrid.querySelectorAll('.onb-poster-wall-cell');
+            await Promise.all(WALL_TMDB.map(async (id, i) => {
+                try {
+                    const r = await fetch(`/api/tmdb?endpoint=/movie/${id}`);
+                    if (!r || !r.ok) return;
+                    const d = await r.json();
+                    if (d?.poster_path && cells[i]) {
+                        cells[i].style.backgroundImage = `url("https://image.tmdb.org/t/p/w342${d.poster_path}")`;
+                    }
+                } catch {}
+            }));
+        })();
+
+        // --- (2) Ambient drift orbs (cyan / purple / magenta) ---
+        if (!prefersReducedMotion()) {
+            slide.appendChild(el('div', { class: 'onb-orb onb-orb--cyan',    'aria-hidden': 'true' }));
+            slide.appendChild(el('div', { class: 'onb-orb onb-orb--purple',  'aria-hidden': 'true' }));
+            slide.appendChild(el('div', { class: 'onb-orb onb-orb--magenta', 'aria-hidden': 'true' }));
+        }
+
+        // --- (3) iOS status bar (decorative) ---
+        const statusBar = el('div', { class: 'onb-status-bar', 'aria-hidden': 'true' }, [
+            el('span', { class: 'onb-status-time', text: '12:34' }),
+            el('span', { class: 'onb-status-icons', html:
+                '<svg width="18" height="11" viewBox="0 0 18 11"><path d="M1 9h2v2H1zM5 7h2v4H5zM9 5h2v6H9zM13 3h2v8h-2z" fill="#fff"/></svg>' +
+                '<svg width="16" height="11" viewBox="0 0 16 11"><path d="M8 10.5c1 0 1.8-.8 1.8-1.8S9 6.9 8 6.9s-1.8.8-1.8 1.8.8 1.8 1.8 1.8zm0-7.5c1.9 0 3.6.7 4.9 1.9l1.4-1.4C12.6 1.7 10.4.7 8 .7S3.4 1.7 1.7 3.5l1.4 1.4C4.4 3.7 6.1 3 8 3z" fill="#fff"/></svg>' +
+                '<svg width="26" height="11" viewBox="0 0 26 11"><rect x=".5" y=".5" width="22" height="10" rx="2.5" stroke="#fff" fill="none" opacity=".5"/><rect x="2" y="2" width="18" height="7" rx="1.2" fill="#fff"/><rect x="23" y="3.5" width="2" height="4" rx="1" fill="#fff" opacity=".5"/></svg>'
+            }),
+        ]);
+        slide.appendChild(statusBar);
+
+        // --- (4) Wordmark (top-left, gradient text) ---
+        const brand = el('div', { class: 'onb-brand onb-brand-bar onb-s1-brand', 'aria-hidden': 'false' });
+        brand.appendChild(el('span', {
+            class: 'brand-logo onb-wordmark onb-s1-wordmark',
             'data-testid': 'onb-wordmark',
             text: 'LUMI',
-        });
-        brand.appendChild(wordmark);
+        }));
         slide.appendChild(brand);
 
-        // 04.6-03 — Hybrid auto-detect banner. Replaces the dedicated S2 Language
-        // + S3 Country slides with a single confirmable chip. Tap opens the
-        // bottom-sheet picker (language + country override + r4 search filter).
-        slide.appendChild(buildDetectionBanner());
+        // --- (5) Progress line — 4 dashes, first filled ---
+        const progress = el('div', { class: 'onb-progress-line', 'aria-hidden': 'true', 'data-testid': 'onb-progress-line' });
+        for (let i = 0; i < 4; i++) {
+            progress.appendChild(el('span', { class: `onb-progress-dash${i === 0 ? ' active' : ''}` }));
+        }
+        slide.appendChild(progress);
 
-        // --- Asymmetric poster trio (foreground hero). 04-04-r6:
-        // Single rotating poster replaced with a 3-poster "pile" — different
-        // sizes, slight rotation, shadow-stacked. Posters resolve via TMDB.
-        const TRIO_TMDB = [
-            { id: 27205,  type: 'movie' }, // Inception (left, back)
-            { id: 157336, type: 'movie' }, // Interstellar (center, front)
-            { id: 66732,  type: 'tv' },    // Stranger Things (right, mid)
+        // --- (6) Eyebrow + (7) Hero copy with serif italic accent ---
+        slide.appendChild(el('div', { class: 'onb-eyebrow onb-s1-eyebrow', text: t('onboarding.welcome.eyebrow', '01 — HOŞ GELDIN') }));
+
+        const hero = el('h1', {
+            class: 'onb-hero-title onb-s1-hero',
+            id: 'onb-slide-heading',
+            'data-onb-heading': '',
+            text: t('onboarding.welcome.title', 'Sinemanın rehberi.'),
+        });
+        slide.appendChild(hero);
+        requestAnimationFrame(() => applyLetterTypeOn(hero));
+
+        slide.appendChild(el('div', {
+            class: 'onb-hero-accent',
+            text: t('onboarding.welcome.accent', 'Film. Bir tıkla.'),
+        }));
+
+        // --- (8) Body copy ---
+        slide.appendChild(el('p', {
+            class: 'onb-body onb-s1-body',
+            text: t('onboarding.welcome.sub', 'Lumi izlediklerini öğrenir, ruh haline göre öneri çıkarır.'),
+        }));
+
+        // --- (9) 3-poster pile (Inception / Interstellar / Stranger Things) ---
+        const PILE_TMDB = [
+            { id: 27205,  type: 'movie', cls: 'p1' }, // Inception
+            { id: 157336, type: 'movie', cls: 'p2' }, // Interstellar
+            { id: 66732,  type: 'tv',    cls: 'p3' }, // Stranger Things
         ];
-        const trio = el('div', { class: 'onb-poster-trio', 'aria-hidden': 'true' });
-        TRIO_TMDB.forEach((_, idx) => {
-            trio.appendChild(el('div', {
-                class: `onb-trio-poster onb-trio-poster-${idx}`,
-                'data-idx': String(idx),
+        const pile = el('div', { class: 'onb-poster-pile', 'aria-hidden': 'true', 'data-testid': 'onb-poster-pile' });
+        PILE_TMDB.forEach((item) => {
+            pile.appendChild(el('div', {
+                class: `onb-poster-pile__item onb-poster-pile__item--${item.cls}`,
+                'data-idx': item.cls,
             }));
         });
-        slide.appendChild(trio);
+        slide.appendChild(pile);
 
-        // Lazy-load poster paths via TMDB; gracefully no-op on failure.
         (async () => {
-            const urls = await Promise.all(TRIO_TMDB.map(async (item) => {
+            const urls = await Promise.all(PILE_TMDB.map(async (item) => {
                 try {
                     const r = await fetch(`/api/tmdb?endpoint=/${item.type}/${item.id}`);
                     if (!r || !r.ok) return null;
                     const d = await r.json();
                     return d?.poster_path
-                        ? `https://image.tmdb.org/t/p/w500${d.poster_path}`
+                        ? `https://image.tmdb.org/t/p/w342${d.poster_path}`
                         : null;
                 } catch { return null; }
             }));
-            trio.querySelectorAll('.onb-trio-poster').forEach((p, i) => {
+            pile.querySelectorAll('.onb-poster-pile__item').forEach((p, i) => {
                 if (urls[i]) p.style.backgroundImage = `url("${urls[i]}")`;
             });
         })();
 
-        // --- Hero copy (mega headline + body) ---
-        const hero = el('h1', {
-            class: 'onb-hero-title onb-hero-typeon',
-            id: 'onb-slide-heading',
-            'data-onb-heading': '',
-            text: t('onboarding.welcome.title', 'What should we watch tonight?'),
-        });
-        slide.appendChild(hero);
-        requestAnimationFrame(() => applyLetterTypeOn(hero));
-        slide.appendChild(el('p', {
-            class: 'onb-hero-sub',
-            text: t('onboarding.welcome.sub', 'Lumi reads your mood and surfaces the right film in seconds. 200+ countries, 10+ languages, one perfect pick.'),
+        // --- (10) Locale-hero glass panel containing the existing inline chips ---
+        const localeHero = el('div', { class: 'onb-locale-hero glass', 'data-testid': 'onb-locale-hero' });
+        localeHero.appendChild(el('div', {
+            class: 'onb-locale-hero-head',
+            text: t('onboarding.welcome.localeHead', '● DİL VE BÖLGE'),
         }));
+        // Reuse the existing inline locale picker (chips with expand-in-place
+        // panels). buildDetectionBanner preserves all testids + swipe guards.
+        localeHero.appendChild(buildDetectionBanner());
+        slide.appendChild(localeHero);
 
-        // --- 3-up value props (frosted pills) ---
-        const props = el('div', { class: 'onb-value-props', role: 'list' });
-        const valueRows = [
-            { icon: '🎯', title: t('onboarding.welcome.prop1.title', "Tonight's pick"),         body: t('onboarding.welcome.prop1.body', 'One right film') },
-            { icon: '⚡', title: t('onboarding.welcome.prop2.title', 'In seconds'),             body: t('onboarding.welcome.prop2.body', 'Picked in 5s') },
-            { icon: '🌍', title: t('onboarding.welcome.prop3.title', 'Anywhere, any language'), body: t('onboarding.welcome.prop3.body', '200+ countries, 10+ langs') },
-        ];
-        valueRows.forEach((row) => {
-            const pill = el('div', { class: 'onb-value-pill', role: 'listitem' }, [
-                el('span', { class: 'onb-value-icon', text: row.icon }),
-                el('div', { class: 'onb-value-text' }, [
-                    el('div', { class: 'onb-value-title', text: row.title }),
-                    el('div', { class: 'onb-value-body',  text: row.body }),
-                ]),
-            ]);
-            props.appendChild(pill);
-        });
-        slide.appendChild(props);
-
-        // --- Particle dust field (decorative, low-intensity per r6 brief) ---
-        if (!prefersReducedMotion()) {
-            const dust = el('div', { class: 'onb-dust', 'aria-hidden': 'true' });
-            for (let i = 0; i < 3; i++) {
-                const m = el('span', { class: 'onb-dust-mote' });
-                m.style.setProperty('--mx', (Math.random() * 100) + '%');
-                m.style.setProperty('--dur', (8 + Math.random() * 6) + 's');
-                m.style.setProperty('--delay', (Math.random() * 4) + 's');
-                m.style.setProperty('--hue', i % 2 ? '#f4a261' : '#ff5d8f');
-                dust.appendChild(m);
-            }
-            slide.appendChild(dust);
-        }
+        // --- (11) Stats strip — 3 columns with dividers ---
+        const stats = el('div', { class: 'onb-stats-strip', 'data-testid': 'onb-stats-strip' }, [
+            el('div', { class: 'onb-stat' }, [
+                el('b',    { class: 'onb-stat-num',   text: '200+' }),
+                el('span', { class: 'onb-stat-label', text: t('onboarding.welcome.statCountries', 'Ülke') }),
+            ]),
+            el('div', { class: 'onb-stat' }, [
+                el('b',    { class: 'onb-stat-num',   text: '11' }),
+                el('span', { class: 'onb-stat-label', text: t('onboarding.welcome.statPlatforms', 'Platform') }),
+            ]),
+            el('div', { class: 'onb-stat' }, [
+                el('b',    { class: 'onb-stat-num',   text: '0' }),
+                el('span', { class: 'onb-stat-label', text: t('onboarding.welcome.statAds', 'Reklam') }),
+            ]),
+        ]);
+        slide.appendChild(stats);
 
         slide.appendChild(el('div', { class: 'onb-welcome-spacer' }));
-        // 04.6-r3 — Welcome CTA portaled to deck footer (guaranteed visible).
+
+        // --- (12) Footer CTA — portaled to deck footer ---
         const welcomeCta = el('button', {
             class: 'onb-cta',
             type: 'button',
             'data-testid': 'onb-welcome-cta',
-            text: t('onboarding.welcome.cta', 'Set the scene'),
+            text: t('onboarding.welcome.cta', 'Sahneyi Hazırla'),
             onclick: () => { haptic.tap(); goto(1); },
         });
         portalFooterCta(welcomeCta);
