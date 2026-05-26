@@ -1374,9 +1374,11 @@ function renderWizard(options = {}) {
                 langBtn.click();
             }
         } catch {}
-        return;
+    }
 
-        // eslint-disable-next-line no-unreachable
+    // Legacy bottom-sheet picker DOM (removed in r3 — replaced by inline chips).
+    // openLocalePicker above now delegates to the inline chip click.
+    function _legacyPickerRemoved() {
         if (document.getElementById('onb-locale-picker')) return;
 
         // Draft state — only committed on Save.
