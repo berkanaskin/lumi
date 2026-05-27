@@ -1358,8 +1358,13 @@ function renderWizard(options = {}) {
             const select = () => {
                 haptic.select();
                 state.premiumChoice = tier.name;
-                psqGrid.querySelectorAll('.psq').forEach((p) => p.classList.remove('sel'));
+                psqGrid.querySelectorAll('.psq').forEach((p) => {
+                    p.classList.remove('sel');
+                    p.classList.remove('popping');
+                });
                 card.classList.add('sel');
+                card.classList.add('popping');
+                setTimeout(() => card.classList.remove('popping'), 400);
                 persistProgress();
             };
             card.addEventListener('click', select);
@@ -1549,8 +1554,9 @@ function renderWizard(options = {}) {
         });
     }
 
-    // ---- Swipe gestures ----
+    // ---- Swipe gestures (with live drag feedback — 04.6-r7) ----
     let touchStartX = 0, touchStartY = 0, touchStartT = 0, swipeBlocked = false;
+    let dragActiveSlide = null, dragAxisLocked = false, dragIsHorizontal = false;
     function isInScrollable(target) {
         if (!target || typeof target.closest !== 'function') return false;
         if (target.closest('.loc-card')) return true;
@@ -1560,19 +1566,53 @@ function renderWizard(options = {}) {
         if (target.closest('.recap')) return true;
         return false;
     }
+    function clearDrag() {
+        if (dragActiveSlide) {
+            dragActiveSlide.classList.remove('dragging');
+            dragActiveSlide.style.removeProperty('--tx');
+            dragActiveSlide = null;
+        }
+        if (slidesHost) slidesHost.classList.remove('dragging-active');
+        dragAxisLocked = false; dragIsHorizontal = false;
+    }
     root.addEventListener('touchstart', (e) => {
         if (!e.touches || !e.touches.length) return;
         swipeBlocked = isInScrollable(e.target);
         const t0 = e.touches[0];
         touchStartX = t0.clientX; touchStartY = t0.clientY; touchStartT = Date.now();
+        dragActiveSlide = slidesHost ? slidesHost.querySelector('.slide.active') : null;
+        dragAxisLocked = false; dragIsHorizontal = false;
+    }, { passive: true });
+    root.addEventListener('touchmove', (e) => {
+        if (swipeBlocked || !dragActiveSlide || !e.touches || !e.touches.length) return;
+        if (state.slide === 3) return;
+        const t0 = e.touches[0];
+        const dx = t0.clientX - touchStartX;
+        const dy = t0.clientY - touchStartY;
+        if (!dragAxisLocked) {
+            if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+            dragIsHorizontal = Math.abs(dx) > Math.abs(dy);
+            dragAxisLocked = true;
+            if (dragIsHorizontal) {
+                dragActiveSlide.classList.add('dragging');
+                slidesHost.classList.add('dragging-active');
+            }
+        }
+        if (!dragIsHorizontal) return;
+        // Resistance at the boundaries (S1, S4)
+        let tx = dx;
+        if (dx > 0 && state.slide === 0) tx = dx * 0.25;
+        if (dx < 0 && state.slide >= 3) tx = dx * 0.25;
+        dragActiveSlide.style.setProperty('--tx', tx + 'px');
     }, { passive: true });
     root.addEventListener('touchend', (e) => {
-        if (swipeBlocked) return;
+        if (swipeBlocked) { clearDrag(); return; }
         const t0 = (e.changedTouches && e.changedTouches[0]) || null;
-        if (!t0) return;
+        if (!t0) { clearDrag(); return; }
         const dx = t0.clientX - touchStartX;
         const dy = t0.clientY - touchStartY;
         const dt = Date.now() - touchStartT;
+        clearDrag();
         if (dt > 800) return;
         if (Math.abs(dx) < 40 || Math.abs(dy) > 50) return;
         if (dx > 0 && state.slide === 0) return;
@@ -1586,6 +1626,7 @@ function renderWizard(options = {}) {
             if (state.slide > 0) { haptic.tap(); goto(state.slide - 1); }
         }
     }, { passive: true });
+    root.addEventListener('touchcancel', clearDrag, { passive: true });
 
     // Test hooks
     try {
