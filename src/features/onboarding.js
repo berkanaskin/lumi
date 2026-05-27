@@ -752,28 +752,14 @@ function renderWizard(options = {}) {
     ensurePinHelper();
     ensureConfettiHelper();
 
-    // 04-04-r7: Onboarding boots in the user's NAVIGATOR language, not the
-    // app-wide EN-first default. After S2 a `setLocale()` call persists the
-    // user's pick and the rest of the app reads it via getLocale().
     const locale = resolveOnboardingLocale();
-    // Sync window.i18n to the initial onboarding language so t() returns the
-    // right strings on first paint (i18n's loadLanguage runs at boot and may
-    // have settled on EN before we resolved the navigator language).
     try {
         if (typeof window !== 'undefined' && window.i18n && window.i18n.translations?.[locale.lang]) {
             window.i18n.currentLang = locale.lang;
         }
     } catch {}
 
-    // 04-04-r2 — Hydrate from in-flight progress (≤7 days old).
     const restored = readOnboardingProgress();
-
-    // 04.6-03 — Visual slide indices: 0 welcome (with banner), 1 platforms,
-    // 2 premium, 3 ready. Storage steps remain 1..3 (lang/country/platforms) for
-    // schema back-compat; banner picker calls completeStep(1)+completeStep(2)
-    // on Save. Premium is visual-only (mock paywall — Phase 5 wires RevenueCat).
-    //
-    // Legacy progress (pre-04.6) may persist step ∈ 0..5. Clamp into [0, 3].
     const restoredStep = Math.max(0, Math.min(3, Number(restored?.step) || 0));
     const state = {
         slide: restoredStep,
@@ -781,7 +767,7 @@ function renderWizard(options = {}) {
         lang: restored?.picks?.lang || locale.lang,
         country: restored?.picks?.country || locale.country || 'TR',
         ownedPlatforms: Array.isArray(restored?.picks?.platforms) ? restored.picks.platforms.slice() : [],
-        premiumChoice: restored?.picks?.premiumChoice || null,
+        premiumChoice: restored?.picks?.premiumChoice || 'Yıllık',
         providers: [],
         providersLoading: false,
         providersFailed: false,
@@ -801,7 +787,10 @@ function renderWizard(options = {}) {
         });
     }
 
-    // ----- DOM scaffold ----------------------------------------------------
+    // ============================================================
+    // 04.6-r7 WHOLESALE PORT — Vision Glassmorphic mockup.
+    // DOM vocab matches .planning/sketches/onboarding-r3/vision-glassmorphic.html
+    // ============================================================
     const root = document.createElement('div');
     root.id = 'onboarding-root';
     root.className = 'onboarding-root';
@@ -809,116 +798,58 @@ function renderWizard(options = {}) {
     root.setAttribute('aria-modal', 'true');
     root.setAttribute('aria-labelledby', 'onb-slide-heading');
 
-    // ARIA live region — announces step changes ("Step 3 of 6: country").
-    const announcer = el('div', {
-        class: 'onb-sr-only',
-        'aria-live': 'polite',
-        'aria-atomic': 'true',
-    });
+    const announcer = el('div', { class: 'onb-sr-only', 'aria-live': 'polite', 'aria-atomic': 'true' });
 
-    // Poster wall (24 tiles) — kept as fallback; r2 parallax layers below override it.
-    const wall = el('div', { class: 'onb-wall', 'aria-hidden': 'true' });
-    const wallTiles = [];
+    // ----- Poster wall (Ken Burns) -----
+    const wall = el('div', { class: 'wall', 'aria-hidden': 'true' });
+    const wallGrid = el('div', { class: 'grid' });
+    wall.appendChild(wallGrid);
     for (let i = 0; i < 24; i++) {
-        const tile = el('div', { class: 'onb-wall-tile' }, [el('img', { alt: '', loading: 'lazy', decoding: 'async' })]);
-        wallTiles.push(tile);
-        wall.appendChild(tile);
+        wallGrid.appendChild(el('img', { alt: '', loading: 'lazy', decoding: 'async' }));
     }
 
-    // 04-04-r2 — 3-layer parallax poster wall.
-    // Back (6x8 small w92, 18px blur), Mid (4x6 w185, 8px blur), Front (3x4 w342).
-    const reduced = prefersReducedMotion();
-    const wallBack  = el('div', { class: 'onb-wall-layer back',  'aria-hidden': 'true' });
-    const wallMid   = el('div', { class: 'onb-wall-layer mid',   'aria-hidden': 'true' });
-    const wallFront = el('div', { class: 'onb-wall-layer front', 'aria-hidden': 'true' });
-    const wallBackImgs  = [];
-    const wallMidImgs   = [];
-    const wallFrontImgs = [];
-    for (let i = 0; i < 48; i++) {
-        const im = el('img', { alt: '', loading: 'lazy', decoding: 'async' });
-        wallBackImgs.push(im); wallBack.appendChild(im);
+    // ----- Ambient orbs -----
+    const orbA = el('div', { class: 'orb a', 'aria-hidden': 'true' });
+    const orbB = el('div', { class: 'orb b', 'aria-hidden': 'true' });
+    const orbC = el('div', { class: 'orb c', 'aria-hidden': 'true' });
+
+    // ----- Stage shell -----
+    const stage = el('div', { class: 'stage s0', id: 'onb-stage' });
+
+    // top: wordmark + dots
+    const wordmark = el('div', { class: 'wordmark', text: 'L U M I' });
+    const dots = el('div', { class: 'dots', role: 'progressbar', 'aria-valuemin': '1', 'aria-valuemax': '4' });
+    const dotEls = [];
+    for (let i = 0; i < 4; i++) {
+        const d = el('div', { class: 'dot' + (i === 0 ? ' active' : ''), 'data-i': String(i) });
+        d.addEventListener('click', () => { haptic.tap(); goto(i); });
+        dots.appendChild(d);
+        dotEls.push(d);
     }
-    for (let i = 0; i < 24; i++) {
-        const im = el('img', { alt: '', loading: 'lazy', decoding: 'async' });
-        wallMidImgs.push(im); wallMid.appendChild(im);
-    }
-    for (let i = 0; i < 12; i++) {
-        const im = el('img', { alt: '', loading: 'lazy', decoding: 'async' });
-        wallFrontImgs.push(im); wallFront.appendChild(im);
-    }
+    const top = el('div', { class: 'top' }, [wordmark, dots]);
+    stage.appendChild(top);
 
-    const scrim = el('div', { class: 'onb-scrim', 'aria-hidden': 'true' });
+    // progress line
+    const progressLine = el('div', { class: 'progress-line', 'aria-hidden': 'true' });
+    stage.appendChild(progressLine);
 
-    const glowOrange = el('div', { class: 'onb-glow onb-glow-orange', 'aria-hidden': 'true' });
-    const glowPink = el('div', { class: 'onb-glow onb-glow-pink', 'aria-hidden': 'true' });
+    // slides host
+    const slidesHost = el('div', { class: 'slides', id: 'onb-slides' });
+    stage.appendChild(slidesHost);
 
-    // Overlay (back + pills + stage)
-    const backBtn = el('button', { class: 'onb-back', type: 'button', 'aria-label': 'Back', html: BACK_SVG });
+    // footer (cta lives here)
+    const footer = el('div', { class: 'footer', role: 'contentinfo', 'data-testid': 'onb-deck-footer' });
+    stage.appendChild(footer);
 
-    // 04-04-r7: Audio toggle removed. Slot in the recap-chip host (top-right
-    // on S3/S4/S5/S6) instead — keeps the chrome layout balanced.
-    const recapHost = el('div', { class: 'onb-recap-chips', 'aria-hidden': 'true' });
-
-    // 04.6-03 — 4-slide layout (down from 6): WELCOME → PLATFORMS → PREMIUM → READY.
-    // Language + country pickers fold into the WELCOME detection banner.
-    const SLIDE_TOTAL = 4;
-    const pills = el('div', { class: 'onb-pills', role: 'progressbar', 'aria-valuemin': '1', 'aria-valuemax': String(SLIDE_TOTAL) });
-    const pillEls = [];
-    const SLIDE_NAMES = ['welcome', 'platforms', 'premium', 'ready'];
-    for (let i = 0; i < SLIDE_TOTAL; i++) {
-        const p = el('div', {
-            class: 'onb-pill',
-            role: 'presentation',
-            'aria-label': `Step ${i + 1} of ${SLIDE_TOTAL}`,
-        });
-        pills.appendChild(p);
-        pillEls.push(p);
-    }
-
-    const topbar = el('div', { class: 'onb-topbar onb-deck__topbar' }, [backBtn, pills, recapHost]);
-    const stage = el('div', { class: 'onb-stage onb-deck__card', 'data-onb-stage': '' });
-
-    // 04.6-r3 — Guaranteed-visible footer band. Separate flex child of overlay
-    // so the card content (stage) scrolls/animates independently and the CTA
-    // mounted here is always pinned to the viewport bottom (above safe-area).
-    // Slide builders may portal a CTA into this host via portalFooterCta().
-    const footer = el('div', {
-        class: 'onb-deck__footer',
-        'data-testid': 'onb-deck-footer',
-        role: 'contentinfo',
-    });
-
-    const overlay = el('div', { class: 'onb-overlay onb-deck' }, [topbar, stage, footer, announcer]);
-
-    root.classList.add('has-parallax');
-    root.appendChild(wall); // legacy fallback (CSS hides when .has-parallax)
-    root.appendChild(wallBack);
-    root.appendChild(wallMid);
-    root.appendChild(wallFront);
-    root.appendChild(scrim);
-    root.appendChild(glowOrange);
-    root.appendChild(glowPink);
-    root.appendChild(overlay);
+    root.appendChild(wall);
+    root.appendChild(orbA);
+    root.appendChild(orbB);
+    root.appendChild(orbC);
+    root.appendChild(stage);
+    root.appendChild(announcer);
     document.body.appendChild(root);
 
-    // Pointer-driven parallax (desktop QA / devices with hover).
-    if (!reduced && typeof window !== 'undefined' && window.matchMedia) {
-        const hasHover = (() => { try { return window.matchMedia('(hover: hover)').matches; } catch { return false; } })();
-        if (hasHover) {
-            let lastShift = 0;
-            window.addEventListener('mousemove', (e) => {
-                if (Date.now() - lastShift < 16) return;
-                lastShift = Date.now();
-                const xRatio = (e.clientX / window.innerWidth) - 0.5;
-                const _yRatio = (e.clientY / window.innerHeight) - 0.5;
-                root.style.setProperty('--onb-px-back',  (xRatio * -8)  + 'px');
-                root.style.setProperty('--onb-px-mid',   (xRatio * -16) + 'px');
-                root.style.setProperty('--onb-px-front', (xRatio * -28) + 'px');
-            });
-        }
-    }
-
-    // ----- Focus trap ------------------------------------------------------
+    // ----- Focus trap -----
     function getFocusable() {
         return Array.from(root.querySelectorAll(
             'button:not([disabled]):not([tabindex="-1"]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
@@ -931,74 +862,40 @@ function renderWizard(options = {}) {
         const first = focusable[0];
         const last = focusable[focusable.length - 1];
         if (e.shiftKey && document.activeElement === first) {
-            e.preventDefault();
-            last.focus();
+            e.preventDefault(); last.focus();
         } else if (!e.shiftKey && document.activeElement === last) {
-            e.preventDefault();
-            first.focus();
+            e.preventDefault(); first.focus();
         }
     }
     root.addEventListener('keydown', onKeydown);
 
-    // ----- Poster wall load ------------------------------------------------
-    function paintWall(urls) {
-        if (!urls.length) return;
-        // Legacy wall (kept for fallback paths)
-        for (let i = 0; i < wallTiles.length; i++) {
-            const url = urls[i % urls.length];
-            const img = wallTiles[i].querySelector('img');
-            if (!img) continue;
-            img.addEventListener('load', () => wallTiles[i].classList.add('loaded'), { once: true });
-            img.src = url;
-        }
-        // 04-04-r2 — Paint 3 parallax layers using SAME source posters (no new fetches).
-        // Build the per-size URLs by mapping the /w342/ prefix down to /w185/ + /w92/.
-        function reSize(url, size) {
-            return url.replace(/\/w\d+\//, '/' + size + '/');
-        }
-        const paintLayer = (imgs, size) => {
-            for (let i = 0; i < imgs.length; i++) {
-                const im = imgs[i];
-                im.addEventListener('load', () => im.classList.add('loaded'), { once: true });
-                im.src = reSize(urls[i % urls.length], size);
-            }
-        };
-        paintLayer(wallBackImgs,  'w92');
-        paintLayer(wallMidImgs,   'w185');
-        paintLayer(wallFrontImgs, 'w342');
-    }
+    // ----- Poster wall paint -----
     fetchPosterWall().then((urls) => {
+        if (!urls.length) return;
         state.posters = urls;
-        paintWall(urls);
+        const imgs = wallGrid.querySelectorAll('img');
+        imgs.forEach((im, i) => { im.src = urls[i % urls.length]; });
     });
 
-    // ----- Helpers ---------------------------------------------------------
-    function updatePills() {
-        pillEls.forEach((p, i) => {
-            p.classList.toggle('done', i < state.slide);
-            const isActive = i === state.slide;
-            p.classList.toggle('active', isActive);
-            if (isActive) p.setAttribute('aria-current', 'step');
-            else p.removeAttribute('aria-current');
+    // ----- Helpers -----
+    function updateDots() {
+        dotEls.forEach((d, i) => {
+            d.classList.toggle('active', i === state.slide);
+            if (i === state.slide) d.setAttribute('aria-current', 'step');
+            else d.removeAttribute('aria-current');
         });
     }
-    function updateBackBtn() {
-        backBtn.toggleAttribute('disabled', state.slide === 0);
-    }
-    function updateAtmosphere() {
-        // 04.6-03 — 4-slide enum: Welcome (0), Premium (2), Ready (3) get warm glow.
-        const showGlow = state.slide === 0 || state.slide === 2 || state.slide === 3;
-        glowOrange.style.display = showGlow ? '' : 'none';
-        glowPink.style.display = showGlow ? '' : 'none';
+    function updateStageClass() {
+        stage.classList.remove('s0', 's1', 's2', 's3');
+        stage.classList.add('s' + state.slide);
     }
     function announceSlide() {
-        const name = SLIDE_NAMES[state.slide] || `slide ${state.slide + 1}`;
-        announcer.textContent = `Step ${state.slide + 1} of ${SLIDE_TOTAL}: ${name}`;
+        const names = ['welcome', 'platforms', 'premium', 'ready'];
+        announcer.textContent = `Step ${state.slide + 1} of 4: ${names[state.slide] || ''}`;
     }
     function focusSlideHeading() {
-        // Defer to next frame so the slide is mounted.
         requestAnimationFrame(() => {
-            const heading = stage.querySelector('[data-onb-heading]') || stage.querySelector('h1, h2');
+            const heading = slidesHost.querySelector('[data-onb-heading], h1, h2');
             if (heading) {
                 heading.setAttribute('tabindex', '-1');
                 try { heading.focus({ preventScroll: true }); } catch { try { heading.focus(); } catch {} }
@@ -1009,385 +906,209 @@ function renderWizard(options = {}) {
         try { root.removeEventListener('keydown', onKeydown); } catch {}
         if (root.parentNode) root.parentNode.removeChild(root);
     }
+    function clearFooter() { if (footer) footer.innerHTML = ''; }
+    function portalFooterCta(btn) {
+        if (!footer) return;
+        clearFooter();
+        footer.appendChild(btn);
+    }
 
     function goto(n) {
         state.direction = n > state.slide ? 'fwd' : 'back';
         state.slide = n;
-        updatePills();
-        updateBackBtn();
-        updateAtmosphere();
-        try { updateAccent(); } catch {} // 04-04-r7
-        try { updateRecapChips(); } catch {} // 04-04-r7
+        updateDots();
+        updateStageClass();
+        try { updateRecapChips(); } catch {}
         renderCurrentSlide();
         announceSlide();
         focusSlideHeading();
         persistProgress();
-        playTick();
-        // 04.6-03 — 4-slide enum: Platforms=1, Premium=2, Ready=3
         if (n === 1) loadProvidersIfNeeded();
-        if (n === 2) openPremiumVault();
-        if (n === 3) openCurtains();
     }
 
-    // 04-04-r2 — Vault opening for premium slide. The two halves slide apart
-    // 700ms after mount, revealing the feature stack underneath.
-    function openPremiumVault() {
-        if (reduced) return;
-        requestAnimationFrame(() => {
-            const slide = stage.querySelector('.onb-slide-premium');
-            if (!slide || slide.querySelector('.onb-vault')) return;
-            const vault = el('div', { class: 'onb-vault', 'aria-hidden': 'true' }, [
-                el('div', { class: 'onb-vault-half left' }),
-                el('div', { class: 'onb-vault-half right' }),
-            ]);
-            slide.appendChild(vault);
-            requestAnimationFrame(() => vault.classList.add('open'));
-            setTimeout(() => { try { vault.remove(); } catch {} }, 1200);
-        });
-    }
+    dotEls.forEach((d) => {/* listener attached above */});
 
-    // 04-04-r2 — Cinema letterbox curtains for Ready slide.
-    function openCurtains() {
-        if (reduced) return;
-        const top = el('div', { class: 'onb-curtain top', 'aria-hidden': 'true' });
-        const bot = el('div', { class: 'onb-curtain bottom', 'aria-hidden': 'true' });
-        document.body.appendChild(top);
-        document.body.appendChild(bot);
-        requestAnimationFrame(() => {
-            top.classList.add('open');
-            bot.classList.add('open');
-        });
-        setTimeout(() => {
-            try { top.remove(); bot.remove(); } catch {}
-        }, 1200);
-    }
+    // ----- Slide renderers -----
 
-    backBtn.addEventListener('click', () => {
-        if (state.slide > 0) {
-            haptic.tap();
-            goto(state.slide - 1);
-        }
-    });
-
-    // ----- Slide renderers -------------------------------------------------
     function buildWelcome() {
-        // 04.6-r5 — Mockup S1 (vision-glassmorphic). Rebuilt to match the
-        // poster-wall / 3-poster-pile / locale-hero / stats-strip composition
-        // from .planning/sketches/onboarding-r3/vision-glassmorphic.html.
-        const slide = el('div', { class: 'onb-slide onb-slide-welcome onb-s1-mockup', 'data-dir': state.direction, 'data-testid': 'onb-slide-welcome' });
+        // Mockup S1 (stage class .s0). Per-slide hero, poster pile, locale-hero glass, stats strip.
+        const slide = el('section', {
+            class: 'slide active onb-slide onb-slide-welcome',
+            'data-dir': state.direction,
+            'data-testid': 'onb-slide-welcome',
+        });
 
-        // --- (1) 3-layer poster wall backdrop (ken-burns + vignette via CSS) ---
-        const WALL_TMDB = [
-            27205, 157336, 155, 13, 680, 76341,        // movies (row 1-2)
-            550, 24428, 299536, 122, 49026, 1726,      // movies
-            66732, 1399, 60735, 1396, 4614, 1402,      // tv
-            597, 120, 121, 122, 603, 11,               // movies (filler)
-        ];
-        const wall = el('div', { class: 'onb-poster-wall', 'aria-hidden': 'true', 'data-testid': 'onb-poster-wall' });
-        const wallGrid = el('div', { class: 'onb-poster-wall-grid' });
-        for (let i = 0; i < 24; i++) {
-            const cell = el('div', { class: 'onb-poster-wall-cell', 'data-idx': String(i) });
-            wallGrid.appendChild(cell);
-        }
-        wall.appendChild(wallGrid);
-        slide.appendChild(wall);
-
-        // Lazy-fetch wall posters (best-effort, silent on failure).
-        (async () => {
-            const cells = wallGrid.querySelectorAll('.onb-poster-wall-cell');
-            await Promise.all(WALL_TMDB.map(async (id, i) => {
-                try {
-                    const r = await fetch(`/api/tmdb?endpoint=/movie/${id}`);
-                    if (!r || !r.ok) return;
-                    const d = await r.json();
-                    if (d?.poster_path && cells[i]) {
-                        cells[i].style.backgroundImage = `url("https://image.tmdb.org/t/p/w342${d.poster_path}")`;
-                    }
-                } catch {}
-            }));
-        })();
-
-        // --- (2) Ambient drift orbs (cyan / purple / magenta) ---
-        if (!prefersReducedMotion()) {
-            slide.appendChild(el('div', { class: 'onb-orb onb-orb--cyan',    'aria-hidden': 'true' }));
-            slide.appendChild(el('div', { class: 'onb-orb onb-orb--purple',  'aria-hidden': 'true' }));
-            slide.appendChild(el('div', { class: 'onb-orb onb-orb--magenta', 'aria-hidden': 'true' }));
-        }
-
-        // --- (3) iOS status bar (decorative) ---
-        const statusBar = el('div', { class: 'onb-status-bar', 'aria-hidden': 'true' }, [
-            el('span', { class: 'onb-status-time', text: '12:34' }),
-            el('span', { class: 'onb-status-icons', html:
-                '<svg width="18" height="11" viewBox="0 0 18 11"><path d="M1 9h2v2H1zM5 7h2v4H5zM9 5h2v6H9zM13 3h2v8h-2z" fill="#fff"/></svg>' +
-                '<svg width="16" height="11" viewBox="0 0 16 11"><path d="M8 10.5c1 0 1.8-.8 1.8-1.8S9 6.9 8 6.9s-1.8.8-1.8 1.8.8 1.8 1.8 1.8zm0-7.5c1.9 0 3.6.7 4.9 1.9l1.4-1.4C12.6 1.7 10.4.7 8 .7S3.4 1.7 1.7 3.5l1.4 1.4C4.4 3.7 6.1 3 8 3z" fill="#fff"/></svg>' +
-                '<svg width="26" height="11" viewBox="0 0 26 11"><rect x=".5" y=".5" width="22" height="10" rx="2.5" stroke="#fff" fill="none" opacity=".5"/><rect x="2" y="2" width="18" height="7" rx="1.2" fill="#fff"/><rect x="23" y="3.5" width="2" height="4" rx="1" fill="#fff" opacity=".5"/></svg>'
-            }),
-        ]);
-        slide.appendChild(statusBar);
-
-        // --- (4) Wordmark (top-left, gradient text) ---
-        const brand = el('div', { class: 'onb-brand onb-brand-bar onb-s1-brand', 'aria-hidden': 'false' });
-        brand.appendChild(el('span', {
-            class: 'brand-logo onb-wordmark onb-s1-wordmark',
-            'data-testid': 'onb-wordmark',
-            text: 'LUMI',
-        }));
-        slide.appendChild(brand);
-
-        // --- (5) Progress line — 4 dashes, first filled ---
-        const progress = el('div', { class: 'onb-progress-line', 'aria-hidden': 'true', 'data-testid': 'onb-progress-line' });
-        for (let i = 0; i < 4; i++) {
-            progress.appendChild(el('span', { class: `onb-progress-dash${i === 0 ? ' active' : ''}` }));
-        }
-        slide.appendChild(progress);
-
-        // --- (6) Eyebrow + (7) Hero copy with serif italic accent ---
-        slide.appendChild(el('div', { class: 'onb-eyebrow onb-s1-eyebrow', text: t('onboarding.welcome.eyebrow', '01 — HOŞ GELDIN') }));
-
+        // s1-head: eyebrow + hero + accent + pile
+        const head = el('div', { class: 's1-head' });
+        head.appendChild(el('div', { class: 'eyebrow', text: t('onboarding.welcome.eyebrow', '01 — Hoş geldin') }));
         const hero = el('h1', {
-            class: 'onb-hero-title onb-s1-hero',
+            class: 'hero',
             id: 'onb-slide-heading',
             'data-onb-heading': '',
-            text: t('onboarding.welcome.title', 'Sinemanın rehberi.'),
         });
-        slide.appendChild(hero);
-        requestAnimationFrame(() => applyLetterTypeOn(hero));
+        hero.innerHTML = `<span class="grad">${t('onboarding.welcome.titleA', 'Sinemanın')}</span><br/>${t('onboarding.welcome.titleB', 'rehberi.')}`;
+        head.appendChild(hero);
+        head.appendChild(el('div', { class: 'accent-line serif', text: t('onboarding.welcome.accent', 'Film. Bir tıkla.') }));
 
-        slide.appendChild(el('div', {
-            class: 'onb-hero-accent',
-            text: t('onboarding.welcome.accent', 'Film. Bir tıkla.'),
-        }));
+        const pile = el('div', { class: 'pile', 'aria-hidden': 'true' });
+        pile.appendChild(el('img', { class: 'p1', src: 'https://image.tmdb.org/t/p/w342/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg', alt: '', loading: 'lazy' }));
+        pile.appendChild(el('img', { class: 'p2', src: 'https://image.tmdb.org/t/p/w342/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg', alt: '', loading: 'lazy' }));
+        pile.appendChild(el('img', { class: 'p3', src: 'https://image.tmdb.org/t/p/w342/49WJfeN0moxb9IPfGn8AIqMGskD.jpg', alt: '', loading: 'lazy' }));
+        head.appendChild(pile);
+        slide.appendChild(head);
 
-        // --- (8) Body copy ---
-        slide.appendChild(el('p', {
-            class: 'onb-body onb-s1-body',
-            text: t('onboarding.welcome.sub', 'Lumi izlediklerini öğrenir, ruh haline göre öneri çıkarır.'),
-        }));
+        slide.appendChild(el('p', { class: 'sub', text: t('onboarding.welcome.sub', 'Lumi izlediklerini öğrenir, ruh haline göre öneri çıkarır.') }));
 
-        // --- (9) 3-poster pile (Inception / Interstellar / Stranger Things) ---
-        const PILE_TMDB = [
-            { id: 27205,  type: 'movie', cls: 'p1' }, // Inception
-            { id: 157336, type: 'movie', cls: 'p2' }, // Interstellar
-            { id: 66732,  type: 'tv',    cls: 'p3' }, // Stranger Things
-        ];
-        const pile = el('div', { class: 'onb-poster-pile', 'aria-hidden': 'true', 'data-testid': 'onb-poster-pile' });
-        PILE_TMDB.forEach((item) => {
-            pile.appendChild(el('div', {
-                class: `onb-poster-pile__item onb-poster-pile__item--${item.cls}`,
-                'data-idx': item.cls,
-            }));
-        });
-        slide.appendChild(pile);
-
-        (async () => {
-            const urls = await Promise.all(PILE_TMDB.map(async (item) => {
-                try {
-                    const r = await fetch(`/api/tmdb?endpoint=/${item.type}/${item.id}`);
-                    if (!r || !r.ok) return null;
-                    const d = await r.json();
-                    return d?.poster_path
-                        ? `https://image.tmdb.org/t/p/w342${d.poster_path}`
-                        : null;
-                } catch { return null; }
-            }));
-            pile.querySelectorAll('.onb-poster-pile__item').forEach((p, i) => {
-                if (urls[i]) p.style.backgroundImage = `url("${urls[i]}")`;
-            });
-        })();
-
-        // --- (10) Locale-hero glass panel containing the existing inline chips ---
-        const localeHero = el('div', { class: 'onb-locale-hero glass', 'data-testid': 'onb-locale-hero' });
-        localeHero.appendChild(el('div', {
-            class: 'onb-locale-hero-head',
-            text: t('onboarding.welcome.localeHead', '● DİL VE BÖLGE'),
-        }));
-        // Reuse the existing inline locale picker (chips with expand-in-place
-        // panels). buildDetectionBanner preserves all testids + swipe guards.
-        localeHero.appendChild(buildDetectionBanner());
+        // Locale hero glass — replaces buildDetectionBanner
+        const localeHero = el('div', { class: 'glass loc-hero', 'data-testid': 'onb-detection-banner' });
+        localeHero.appendChild(el('div', { class: 'loc-hero-head', text: t('onboarding.welcome.localeHead', 'Dil ve Bölge') }));
+        const locRow = el('div', { class: 'loc-row' });
+        locRow.appendChild(makeLocaleChip('lang'));
+        locRow.appendChild(makeLocaleChip('country'));
+        localeHero.appendChild(locRow);
         slide.appendChild(localeHero);
 
-        // --- (11) Stats strip — 3 columns with dividers ---
-        const stats = el('div', { class: 'onb-stats-strip', 'data-testid': 'onb-stats-strip' }, [
-            el('div', { class: 'onb-stat' }, [
-                el('b',    { class: 'onb-stat-num',   text: '200+' }),
-                el('span', { class: 'onb-stat-label', text: t('onboarding.welcome.statCountries', 'Ülke') }),
-            ]),
-            el('div', { class: 'onb-stat' }, [
-                el('b',    { class: 'onb-stat-num',   text: '11' }),
-                el('span', { class: 'onb-stat-label', text: t('onboarding.welcome.statPlatforms', 'Platform') }),
-            ]),
-            el('div', { class: 'onb-stat' }, [
-                el('b',    { class: 'onb-stat-num',   text: '0' }),
-                el('span', { class: 'onb-stat-label', text: t('onboarding.welcome.statAds', 'Reklam') }),
-            ]),
-        ]);
+        // Stats strip
+        const stats = el('div', { class: 'stats-strip' });
+        const mkStat = (n, lbl) => el('div', { class: 'stat' }, [el('b', { text: n }), el('span', { text: lbl })]);
+        stats.appendChild(mkStat('200+', t('onboarding.welcome.statCountries', 'Ülke')));
+        stats.appendChild(mkStat('11',   t('onboarding.welcome.statPlatforms', 'Platform')));
+        stats.appendChild(mkStat('0',    t('onboarding.welcome.statAds', 'Reklam')));
         slide.appendChild(stats);
 
-        slide.appendChild(el('div', { class: 'onb-welcome-spacer' }));
+        // Swipe hint (one-time)
+        try {
+            if (!localStorage.getItem('lumi_onboarding_swipe_hint_seen')) {
+                const hint = el('div', { class: 'swipe-hint' }, [
+                    el('span', { text: t('onboarding.swipe', 'Kaydır') }),
+                    el('span', { class: 'arrow', text: '→' }),
+                ]);
+                slide.appendChild(hint);
+                localStorage.setItem('lumi_onboarding_swipe_hint_seen', '1');
+            }
+        } catch {}
 
-        // --- (12) Footer CTA — portaled to deck footer ---
-        const welcomeCta = el('button', {
-            class: 'onb-cta',
+        // Footer CTA
+        const cta = el('button', {
+            class: 'cta',
             type: 'button',
             'data-testid': 'onb-welcome-cta',
             text: t('onboarding.welcome.cta', 'Sahneyi Hazırla'),
-            onclick: () => { haptic.tap(); goto(1); },
         });
-        portalFooterCta(welcomeCta);
+        cta.addEventListener('click', () => { haptic.tap(); goto(1); });
+        portalFooterCta(cta);
+
         return slide;
     }
 
-    // ===================================================================
-    // 04.6-r3 — Inline locale picker (REPLACES r2 bottom-sheet picker)
-    // ===================================================================
-    // Rebuild brief: bottom-sheet was the source of 4 regression rounds
-    // (z-index, pointer-events, event delegation, swipe swallow). Killed.
-    //
-    // New pattern: two chips (language + country) below the value pills,
-    // each independently expandable in-place. Tap a chip → that chip's
-    // panel expands downward with a scrollable list. Tap another option
-    // → list collapses, chip label updates. No modal, no overlay, no
-    // z-index — everything in normal document flow. Bulletproof.
-    //
-    // Click handlers call .stopPropagation() on touchstart so swipe
-    // gestures never fire while interacting with the picker.
+    function makeLocaleChip(kind) {
+        const isLang = kind === 'lang';
+        const initialIcon = isLang
+            ? flag(LANG_TO_FLAG_COUNTRY[state.lang] || 'US')
+            : flag(state.country);
+        const initialLabel = isLang
+            ? (LANG_DISPLAY_FULL[state.lang] || LANG_DISPLAY[state.lang] || state.lang)
+            : (COUNTRY_NAMES[state.country] || state.country);
+        const lbl = isLang
+            ? t('onboarding.locale.lang', 'Dil')
+            : t('onboarding.locale.country', 'Ülke');
 
-    function buildDetectionBanner() {
-        // 04.6-r3 — Inline expandable locale picker. Replaces the r2
-        // bottom-sheet that had 4 patch rounds of click-routing bugs.
-        // Two chips in their own row; each independently expands a panel.
-        const container = el('div', {
-            class: 'onb-locale-inline',
-            'data-testid': 'onb-detection-banner', // keep testid for back-compat
-        });
-
-        // --- Language chip + panel ---
-        const langChip = makeLocaleChip({
-            kind: 'lang',
-            iconText: flag(LANG_TO_FLAG_COUNTRY[state.lang] || 'US'),
-            label: LANG_DISPLAY_FULL[state.lang] || LANG_DISPLAY[state.lang] || state.lang,
-            testid: 'onb-locale-chip-lang',
-        });
-        container.appendChild(langChip.wrap);
-
-        // --- Country chip + panel ---
-        const countryChip = makeLocaleChip({
-            kind: 'country',
-            iconText: flag(state.country),
-            label: COUNTRY_NAMES[state.country] || state.country,
-            testid: 'onb-locale-chip-country',
-        });
-        container.appendChild(countryChip.wrap);
-
-        // Mutual collapse — opening one closes the other.
-        langChip.button.addEventListener('click', () => collapse(countryChip));
-        countryChip.button.addEventListener('click', () => collapse(langChip));
-
-        return container;
-
-        function collapse(other) {
-            if (other.wrap.getAttribute('data-expanded') === 'true') {
-                other.wrap.setAttribute('data-expanded', 'false');
-                other.button.setAttribute('aria-expanded', 'false');
-                other.panel.innerHTML = '';
-            }
-        }
-    }
-
-    function makeLocaleChip({ kind, iconText, label, testid }) {
-        const wrap = el('div', {
-            class: 'onb-locale-chip-wrap',
+        const card = el('div', {
+            class: 'loc-card',
             'data-kind': kind,
-            'data-expanded': 'false',
         });
-        const button = el('button', {
-            class: 'onb-locale-chip',
+
+        const valSpan = el('div', { class: 'val' }, [
+            el('span', { class: 'flag', text: initialIcon }),
+            el('span', { class: 'name', text: initialLabel }),
+            el('span', { class: 'chev', text: '▾' }),
+        ]);
+
+        const head = el('button', {
+            class: 'loc-card-head',
             type: 'button',
             'aria-expanded': 'false',
-            'data-testid': testid,
+            'data-testid': isLang ? 'onb-locale-chip-lang' : 'onb-locale-chip-country',
+            style: 'background:transparent;border:none;padding:0;width:100%;text-align:left;cursor:pointer;font-family:inherit;color:inherit',
         }, [
-            el('span', { class: 'onb-locale-chip-icon', text: iconText }),
-            el('span', { class: 'onb-locale-chip-label', text: label }),
-            el('span', { class: 'onb-locale-chip-caret', 'aria-hidden': 'true', text: '▾' }),
+            el('div', { class: 'lbl', text: lbl }),
+            valSpan,
         ]);
-        const panel = el('div', {
-            class: 'onb-locale-chip-panel',
+
+        const list = el('div', {
+            class: 'loc-list',
             role: 'listbox',
-            'data-testid': `onb-locale-panel-${kind}`,
+            'data-testid': `onb-locale-panel-${isLang ? 'lang' : 'country'}`,
         });
 
-        // 04.6-r3 — Critical: swipe handler must NOT swallow taps when
-        // interacting with chip/panel. stopPropagation on touchstart so the
-        // root touchstart never records a start coord for these gestures.
-        wrap.addEventListener('touchstart', (e) => {
-            e.stopPropagation();
-        }, { passive: true });
-        wrap.addEventListener('touchend', (e) => {
-            e.stopPropagation();
-        }, { passive: true });
+        // Block swipe gestures while interacting with chip/panel.
+        card.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: true });
+        card.addEventListener('touchend', (e) => e.stopPropagation(), { passive: true });
 
-        button.addEventListener('click', (e) => {
+        head.addEventListener('click', (e) => {
             e.stopPropagation();
             haptic.tap();
-            const isOpen = wrap.getAttribute('data-expanded') === 'true';
-            if (isOpen) {
-                wrap.setAttribute('data-expanded', 'false');
-                button.setAttribute('aria-expanded', 'false');
-                panel.innerHTML = '';
-            } else {
-                wrap.setAttribute('data-expanded', 'true');
-                button.setAttribute('aria-expanded', 'true');
-                renderPanel();
-            }
+            const open = card.classList.toggle('open');
+            head.setAttribute('aria-expanded', open ? 'true' : 'false');
+            // mutual collapse
+            slidesHost.querySelectorAll('.loc-card.open').forEach((other) => {
+                if (other !== card) {
+                    other.classList.remove('open');
+                    const h = other.querySelector('.loc-card-head');
+                    if (h) h.setAttribute('aria-expanded', 'false');
+                }
+            });
+            if (open) renderList();
         });
 
-        wrap.appendChild(button);
-        wrap.appendChild(panel);
-
-        function renderPanel() {
-            panel.innerHTML = '';
-            if (kind === 'lang') {
+        function renderList() {
+            list.innerHTML = '';
+            if (isLang) {
                 LAUNCH_LANGS.forEach((lng) => {
+                    const sel = state.lang === lng;
                     const opt = el('button', {
-                        class: `onb-locale-opt${state.lang === lng ? ' selected' : ''}`,
+                        class: 'loc-opt' + (sel ? ' sel' : ''),
                         type: 'button',
                         role: 'option',
-                        'aria-selected': state.lang === lng ? 'true' : 'false',
+                        'aria-selected': sel ? 'true' : 'false',
                         'data-lang': lng,
                     }, [
-                        el('span', { class: 'onb-opt-flag', text: flag(LANG_TO_FLAG_COUNTRY[lng] || 'US') }),
-                        el('span', { class: 'onb-opt-label', text: LANG_DISPLAY_FULL[lng] || LANG_DISPLAY[lng] || lng }),
+                        el('span', { class: 'flag', text: flag(LANG_TO_FLAG_COUNTRY[lng] || 'US') }),
+                        el('span', { text: LANG_DISPLAY_FULL[lng] || LANG_DISPLAY[lng] || lng }),
                     ]);
                     opt.addEventListener('click', (ev) => {
                         ev.stopPropagation();
                         haptic.select();
                         commitLocale({ lang: lng });
                     });
-                    panel.appendChild(opt);
+                    list.appendChild(opt);
                 });
             } else {
                 COUNTRY_SHORTLIST.forEach((cc) => {
+                    const sel = state.country === cc;
                     const opt = el('button', {
-                        class: `onb-locale-opt${state.country === cc ? ' selected' : ''}`,
+                        class: 'loc-opt' + (sel ? ' sel' : ''),
                         type: 'button',
                         role: 'option',
-                        'aria-selected': state.country === cc ? 'true' : 'false',
+                        'aria-selected': sel ? 'true' : 'false',
                         'data-cc': cc,
                     }, [
-                        el('span', { class: 'onb-opt-flag', text: flag(cc) }),
-                        el('span', { class: 'onb-opt-label', text: COUNTRY_NAMES[cc] || cc }),
+                        el('span', { class: 'flag', text: flag(cc) }),
+                        el('span', { text: COUNTRY_NAMES[cc] || cc }),
                     ]);
                     opt.addEventListener('click', (ev) => {
                         ev.stopPropagation();
                         haptic.select();
                         commitLocale({ country: cc });
                     });
-                    panel.appendChild(opt);
+                    list.appendChild(opt);
                 });
             }
         }
 
-        return { wrap, button, panel };
+        card.appendChild(head);
+        card.appendChild(list);
+        return card;
     }
 
     function commitLocale({ lang, country }) {
@@ -1415,782 +1136,361 @@ function renderWizard(options = {}) {
         persistProgress();
     }
 
-    // 04.6-r3 — openLocalePicker LEGACY. The bottom-sheet picker has been
-    // replaced by the inline expandable chips (buildDetectionBanner).
-    // This function is retained only for the window.__onbOpenPicker test
-    // hook — it now opens the language chip's inline panel instead.
     function openLocalePicker() {
         try {
             const langBtn = document.querySelector('[data-testid="onb-locale-chip-lang"]');
-            if (langBtn && langBtn.getAttribute('aria-expanded') !== 'true') {
-                langBtn.click();
-            }
+            if (langBtn && langBtn.getAttribute('aria-expanded') !== 'true') langBtn.click();
         } catch {}
     }
 
-    // Legacy bottom-sheet picker DOM (removed in r3 — replaced by inline chips).
-    // openLocalePicker above now delegates to the inline chip click.
-    function _legacyPickerRemoved() {
-        if (document.getElementById('onb-locale-picker')) return;
-
-        // Draft state — only committed on Save.
-        const draft = { lang: state.lang, country: state.country };
-
-        const backdrop = el('div', { class: 'onb-picker-backdrop', 'aria-hidden': 'true' });
-        const sheet = el('div', {
-            id: 'onb-locale-picker',
-            class: 'onb-picker-sheet',
-            role: 'dialog',
-            'aria-modal': 'true',
-            'aria-label': t('onboarding.picker.title', 'Language & region'),
-        });
-
-        const closeBtn = el('button', {
-            class: 'onb-picker-close',
-            type: 'button',
-            'aria-label': t('onboarding.picker.cancel', 'Cancel'),
-            html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6l-12 12"/></svg>',
-        });
-        sheet.appendChild(closeBtn);
-
-        sheet.appendChild(el('h2', {
-            class: 'onb-picker-title',
-            text: t('onboarding.picker.title', 'Language & region'),
-        }));
-
-        // Shared search filter (r4 logic: accent-fold + Turkish ı→i mapping)
-        const search = el('input', {
-            class: 'onb-search onb-picker-search',
-            type: 'search',
-            placeholder: t('onboarding.picker.searchPlaceholder', 'Search'),
-            autocomplete: 'off',
-            'aria-label': t('onboarding.picker.searchPlaceholder', 'Search'),
-        });
-        sheet.appendChild(search);
-
-        // --- Language section ---
-        sheet.appendChild(el('div', { class: 'onb-picker-section-header', text: t('onboarding.picker.languageHeader', 'Language') }));
-        const langList = el('div', { class: 'onb-list onb-picker-lang-list', role: 'listbox' });
-        sheet.appendChild(langList);
-
-        // --- Country section ---
-        sheet.appendChild(el('div', { class: 'onb-picker-section-header', text: t('onboarding.picker.countryHeader', 'Country') }));
-        const countryList = el('div', { class: 'onb-list onb-picker-country-list', role: 'listbox' });
-        const emptyState = el('div', { class: 'onb-search-empty', 'aria-live': 'polite' });
-        sheet.appendChild(countryList);
-        sheet.appendChild(emptyState);
-
-        function fold(s) {
-            return (s || '')
-                .toLowerCase()
-                .replace(/ı/g, 'i')
-                .replace(/İ/g, 'i')
-                .normalize('NFD')
-                .replace(/[̀-ͯ]/g, '');
-        }
-
-        function renderLists() {
-            const q = fold((search.value || '').trim());
-
-            // Languages
-            langList.innerHTML = '';
-            const langFiltered = LAUNCH_LANGS.filter((lng) => {
-                if (!q) return true;
-                const name = fold(LANG_DISPLAY_FULL[lng] || LANG_DISPLAY[lng] || lng);
-                return name.includes(q) || fold(lng).includes(q);
-            });
-            langFiltered.forEach((lng) => {
-                const opt = el('button', {
-                    class: `onb-option${draft.lang === lng ? ' selected' : ''}`,
-                    type: 'button',
-                    role: 'option',
-                    'aria-selected': draft.lang === lng ? 'true' : 'false',
-                    'data-lang': lng,
-                }, [
-                    el('span', { class: 'onb-opt-flag', text: flag(LANG_TO_FLAG_COUNTRY[lng] || 'US') }),
-                    el('span', { class: 'onb-opt-label', text: LANG_DISPLAY_FULL[lng] || LANG_DISPLAY[lng] || lng }),
-                    el('span', { class: 'onb-opt-check', 'aria-hidden': 'true' }),
-                ]);
-                opt.addEventListener('click', () => {
-                    haptic.select();
-                    draft.lang = lng;
-                    renderLists();
-                });
-                langList.appendChild(opt);
-            });
-
-            // Countries
-            countryList.innerHTML = '';
-            const countryFiltered = COUNTRY_SHORTLIST.filter((cc) => {
-                if (!q) return true;
-                const name = fold(COUNTRY_NAMES[cc] || cc);
-                return fold(cc).includes(q) || name.includes(q);
-            });
-            if (!countryFiltered.length && !langFiltered.length) {
-                emptyState.textContent = t('onboarding.country.empty', 'No matches');
-                emptyState.style.display = '';
-            } else {
-                emptyState.style.display = 'none';
-            }
-            countryFiltered.forEach((cc) => {
-                const opt = el('button', {
-                    class: `onb-option${draft.country === cc ? ' selected' : ''}`,
-                    type: 'button',
-                    role: 'option',
-                    'aria-selected': draft.country === cc ? 'true' : 'false',
-                    'data-cc': cc,
-                }, [
-                    el('span', { class: 'onb-opt-flag', text: flag(cc) }),
-                    el('span', { class: 'onb-opt-label', text: COUNTRY_NAMES[cc] || cc }),
-                    el('span', { class: 'onb-opt-check', 'aria-hidden': 'true' }),
-                ]);
-                opt.addEventListener('click', () => {
-                    haptic.select();
-                    draft.country = cc;
-                    renderLists();
-                });
-                countryList.appendChild(opt);
-            });
-        }
-
-        // Debounced filter (80ms)
-        let filterTimer = null;
-        search.addEventListener('input', () => {
-            if (filterTimer) clearTimeout(filterTimer);
-            filterTimer = setTimeout(renderLists, 80);
-        });
-
-        const saveBtn = el('button', {
-            class: 'onb-cta onb-picker-save',
-            type: 'button',
-            'data-testid': 'onb-picker-save',
-            text: t('onboarding.picker.save', 'Save'),
-        });
-        sheet.appendChild(saveBtn);
-
-        function closeSheet() {
-            sheet.classList.remove('open');
-            backdrop.classList.remove('open');
-            setTimeout(() => {
-                if (sheet.parentNode) sheet.parentNode.removeChild(sheet);
-                if (backdrop.parentNode) backdrop.parentNode.removeChild(backdrop);
-            }, 240);
-        }
-        closeBtn.addEventListener('click', closeSheet);
-        backdrop.addEventListener('click', closeSheet);
-
-        saveBtn.addEventListener('click', () => {
-            haptic.success();
-            const langChanged = draft.lang !== state.lang;
-            const countryChanged = draft.country !== state.country;
-            state.lang = draft.lang;
-            state.country = draft.country;
-            // Persist via setLocale (writes lumi_locale + appLanguage + i18n.setLanguage).
-            try { setLocale({ lang: draft.lang, country: draft.country }); } catch {}
-            // Mirror lang/country into completeStep's storage so the existing
-            // schema (lumi_onboarding.lang/.country) is populated up-front —
-            // this preserves the storage contract that existing tests rely on.
-            try { completeStep(1, { lang: draft.lang }, options); } catch {}
-            try { completeStep(2, { country: draft.country }, options); } catch {}
-            // Country change invalidates cached providers (r4 behavior).
-            if (countryChanged) {
-                state.providers = [];
-                state.providersFailed = false;
-                state.providersLoadedFor = null;
-            }
-            if (langChanged || countryChanged) {
-                // Re-render current slide so the banner picks up new values.
-                try {
-                    if (typeof window !== 'undefined' && window.i18n?.translations?.[draft.lang]) {
-                        window.i18n.currentLang = draft.lang;
-                    }
-                } catch {}
-                renderCurrentSlide();
-                try { updateRecapChips(); } catch {}
-            }
-            persistProgress();
-            closeSheet();
-        });
-
-        document.body.appendChild(backdrop);
-        document.body.appendChild(sheet);
-        renderLists();
-        // Force reflow then animate in.
-         
-        sheet.offsetHeight;
-        requestAnimationFrame(() => {
-            backdrop.classList.add('open');
-            sheet.classList.add('open');
-        });
-    }
-
-    // 04.6-03 — buildLang (S2) and buildCountry (S3) removed. Their selection
-    // UX now lives in the bottom-sheet picker (openLocalePicker) reached from
-    // the S1 detection banner. World-map + accent-fold search filter logic
-    // moved into the picker.
-
     function buildPlatforms() {
-        const slide = el('div', { class: 'onb-slide onb-slide-platforms', 'data-dir': state.direction });
-        slide.appendChild(el('h2', {
-            class: 'onb-card-title',
-            id: 'onb-slide-heading',
-            'data-onb-heading': '',
-            text: t('onboarding.platforms.title', 'Hangi platformların var?'),
-        }));
-        slide.appendChild(el('p', {
-            class: 'onb-card-sub',
-            text: state.ownedPlatforms.length
-                ? t('onboarding.platforms.subSelected', '{n} seçildi').replace('{n}', String(state.ownedPlatforms.length))
-                : t('onboarding.platforms.sub', 'Birden fazla seçebilirsin.'),
-        }));
-
-        // 04.6-r5 — Counter pill matches mockup: "X / TOTAL SEÇİLİ" gradient pill
-        // alongside a region label. Lives above the platform grid card.
-        const totalProviders = state.providers.length || 0;
-        const selectedCount = state.ownedPlatforms.length;
-        const counterPill = el('span', { class: 'onb-plat-counter', 'data-testid': 'onb-plat-counter' }, [
-            el('b', { class: 'onb-plat-counter-num', text: String(selectedCount) }),
-            el('span', {
-                class: 'onb-plat-counter-label',
-                text: '/ ' + (totalProviders || 11) + ' ' + t('onboarding.platforms.counterLabel', 'SEÇİLİ'),
-            }),
-        ]);
-        const regionLabel = el('span', {
-            class: 'onb-plat-region',
-            text: (state.country || 'TR').toUpperCase() + ' + Global',
+        const slide = el('section', {
+            class: 'slide active onb-slide onb-slide-platforms',
+            'data-dir': state.direction,
+            'data-testid': 'onb-slide-platforms',
         });
-        const platMeta = el('div', { class: 'onb-plat-meta' }, [counterPill, regionLabel]);
-        slide.appendChild(platMeta);
 
-        let body;
+        // Recap chips at top-right
+        const chips = el('div', { class: 'recap-chips', id: 'chipsS2' });
+        slide.appendChild(chips);
+
+        slide.appendChild(el('div', { class: 'eyebrow', text: t('onboarding.platforms.eyebrow', '02 — Platformların') }));
+        const h1 = el('h1', { class: 'hero', id: 'onb-slide-heading', 'data-onb-heading': '' });
+        h1.innerHTML = `<span class="grad">${t('onboarding.platforms.titleA', 'Aboneliklerini')}</span><br/>${t('onboarding.platforms.titleB', 'seç.')}`;
+        slide.appendChild(h1);
+        const accent = el('div', { class: 'accent-line serif', text: t('onboarding.platforms.accent', 'Senin dünya, senin kütüphane.') });
+        accent.style.marginBottom = '10px';
+        slide.appendChild(accent);
+        slide.appendChild(el('p', { class: 'sub', text: t('onboarding.platforms.sub', 'Sadece izleyebildiklerini önerelim. İstediğin zaman değiştirebilirsin.') }));
+
+        // plat-meta: counter + region
+        const selectedCount = state.ownedPlatforms.length;
+        const totalProviders = state.providers.length || 11;
+        const counter = el('span', { class: 'plat-counter' }, [
+            el('b', { text: String(selectedCount), 'data-counter': 'num' }),
+            el('span', { text: '/ ' + totalProviders + ' ' + t('onboarding.platforms.counterLabel', 'SEÇİLİ') }),
+        ]);
+        const regionLabel = el('span', { text: (state.country || 'TR').toUpperCase() + ' + Global' });
+        slide.appendChild(el('div', { class: 'plat-meta' }, [counter, regionLabel]));
+
+        // plat grid
+        const grid = el('div', { class: 'plat-grid', id: 'plats' });
         if (state.providersLoading || (!state.providersFailed && !state.providers.length)) {
-            // 04-04-r7 — 6-tile shimmer skeleton instead of plain "Loading" text.
-            body = el('div', { class: 'onb-grid onb-skeleton-grid', 'aria-busy': 'true' });
-            for (let i = 0; i < 6; i++) body.appendChild(el('div', { class: 'onb-skeleton-tile' }));
+            // Skeleton — 6 tiles
+            for (let i = 0; i < 6; i++) {
+                const sk = el('div', { class: 'plat', 'aria-busy': 'true' });
+                sk.style.opacity = '0.4';
+                grid.appendChild(sk);
+            }
         } else if (state.providersFailed) {
-            body = el('div', { class: 'onb-fail', text: t('onboarding.providers.loadError', 'Şu an yükleyemedik.') });
+            const fail = el('div', { class: 'plat', text: t('onboarding.providers.loadError', 'Şu an yükleyemedik.') });
+            fail.style.gridColumn = 'span 3';
+            grid.appendChild(fail);
         } else {
-            body = el('div', { class: 'onb-grid' });
             state.providers.forEach((p) => {
                 const selected = state.ownedPlatforms.includes(p.id);
-                const children = [
-                    el('img', { src: p.logoUrl, alt: p.name, loading: 'lazy', decoding: 'async' }),
-                    el('span', { text: p.name }),
-                    el('span', { class: 'onb-tile-check', 'aria-hidden': 'true' }),
-                ];
-                if (p.preSelected) {
-                    children.push(el('span', {
-                        class: 'platform-tile--recommended-badge',
-                        text: t('onboarding.platforms.recommended', 'Önerilen'),
-                    }));
-                }
-                const tile = el('button', {
-                    class: `onb-tile${selected ? ' selected' : ''}`,
-                    type: 'button',
+                const tile = el('div', {
+                    class: 'plat glass' + (selected ? ' sel' : '') + (p.preSelected && !selected ? ' preselect' : ''),
+                    'data-n': p.name,
+                    'data-id': String(p.id),
+                    role: 'button',
+                    tabindex: '0',
                     'aria-pressed': selected ? 'true' : 'false',
                     'aria-label': p.name,
-                }, children);
-                tile.addEventListener('click', () => {
+                });
+                tile.innerHTML = `
+                    <div class="ring"><svg viewBox="0 0 16 16"><polyline points="3,8 7,12 13,4"/></svg></div>
+                    <div class="logo"><img src="${p.logoUrl}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'${(p.name || '?').charAt(0)}'}))"></div>
+                    <div class="nm">${p.name}</div>`;
+                const toggle = () => {
                     haptic.select();
                     const idx = state.ownedPlatforms.indexOf(p.id);
                     if (idx >= 0) state.ownedPlatforms.splice(idx, 1);
                     else state.ownedPlatforms.push(p.id);
-                    tile.classList.toggle('selected');
-                    tile.setAttribute('aria-pressed', tile.classList.contains('selected') ? 'true' : 'false');
-                    // 04.6-r5 — Live counter pill update.
-                    const numEl = slide.querySelector('.onb-plat-counter-num');
+                    tile.classList.toggle('sel');
+                    tile.classList.remove('preselect');
+                    tile.classList.add('popping');
+                    setTimeout(() => tile.classList.remove('popping'), 400);
+                    tile.setAttribute('aria-pressed', tile.classList.contains('sel') ? 'true' : 'false');
+                    const numEl = slide.querySelector('[data-counter="num"]');
                     if (numEl) numEl.textContent = String(state.ownedPlatforms.length);
                     persistProgress();
+                };
+                tile.addEventListener('click', toggle);
+                tile.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
                 });
-                body.appendChild(tile);
+                grid.appendChild(tile);
             });
         }
-        slide.appendChild(el('div', { class: 'onb-card' }, [body]));
+        slide.appendChild(grid);
 
-        // Skip-for-now ghost button — completes step 3 with empty platforms.
-        const skipLink = el('button', {
-            class: 'onboarding-skip-link',
+        // ghost skip link (mockup uses "Daha sonra eklerim →")
+        const skip = el('button', {
+            class: 'ghost',
             type: 'button',
-            text: t('onboarding.platforms.skipForNow', 'Daha sonra eklerim'),
-            onclick: () => {
-                haptic.tap();
-                state.ownedPlatforms = [];
-                completeStep(3, { ownedPlatforms: [] }, options);
-                goto(2); // → Premium slide (04.6-03 — 4-slide enum)
-            },
+            text: t('onboarding.platforms.skipForNow', 'Daha sonra eklerim →'),
         });
-        slide.appendChild(skipLink);
+        skip.addEventListener('click', () => {
+            haptic.tap();
+            state.ownedPlatforms = [];
+            completeStep(3, { ownedPlatforms: [] }, options);
+            goto(2);
+        });
+        slide.appendChild(skip);
 
+        // Footer CTA (continues to Premium)
         const cta = el('button', {
-            class: 'onb-cta',
+            class: 'cta',
             type: 'button',
             'data-testid': 'onb-platforms-cta',
             text: t('onboarding.next', 'Devam'),
-            onclick: () => {
-                haptic.tap();
-                completeStep(3, { ownedPlatforms: state.ownedPlatforms.slice() }, options);
-                goto(2); // → Premium slide (04.6-03 — 4-slide enum)
-            },
         });
-        // 04.6-r3 — portal to footer (always visible).
+        cta.addEventListener('click', () => {
+            haptic.tap();
+            completeStep(3, { ownedPlatforms: state.ownedPlatforms.slice() }, options);
+            goto(2);
+        });
         portalFooterCta(cta);
+
         return slide;
     }
 
-    // ---- Premium teaser slide (S5) — Phase 04-04-r1 -----------------------
-    //
-    // Locale-aware pricing block. TR users see ₺ pricing, others see USD.
-    // CTA opens a MOCK paywall sheet (Phase 5 will replace with real
-    // RevenueCat purchase flow). Skip-for-now advances to Ready (slide 5).
-    //
-    // Locked decisions: see .planning/decisions/PREMIUM-PRICING.md.
-    function isTRLocale() {
-        // Pricing locale is determined by country (matches App Store / Play
-        // Console behavior — storefront country drives currency, not UI lang).
-        return (state.country || '').toUpperCase() === 'TR';
-    }
-
-    function premiumPricingStrings() {
-        if (isTRLocale()) {
-            return {
-                monthly: '49 ₺/ay',
-                yearly: '299 ₺/yıl',
-                lifetime: '799 ₺ ömürlük',
-                full: '49 ₺/ay • 299 ₺/yıl • 799 ₺ ömürlük',
-                trial: t('onboarding.premium.trialNote', 'İlk 3 gün ücretsiz'),
-                savings: '289 ₺',
-                yearlyAmount: '299 ₺',
-                monthlyAmount: '49 ₺',
-                lifetimeAmount: '799 ₺',
-            };
-        }
-        return {
-            monthly: '$2.99/mo',
-            yearly: '$19.99/yr',
-            lifetime: '$49.99 lifetime',
-            full: '$2.99/mo • $19.99/yr • $49.99 lifetime',
-            trial: t('onboarding.premium.trialNote', 'First 3 days free'),
-            savings: '$15.89',
-            yearlyAmount: '$19.99',
-            monthlyAmount: '$2.99',
-            lifetimeAmount: '$49.99',
-        };
-    }
+    function isTRLocale() { return (state.country || '').toUpperCase() === 'TR'; }
 
     function buildPremium() {
-        // 04.6-r5 — S3 Premium wired to vision-glassmorphic mockup.
-        // - Eyebrow "03 — PREMIUM", hero "Lumi Premium." (Inter 900 gradient),
-        //   Cormorant italic accent "Lumi seninle, her akşam.", gold pill
-        //   "✦ Hepsi her planda dahil", 2x2 feature grid with concrete copy,
-        //   3 square pricing cards (yearly default-selected), 3-day trial line,
-        //   primary "Premium'u Dene" gradient CTA + "Şimdilik geç" ghost.
-        // - Footer CTA portal is intentionally NOT used (S3 owns its CTA).
-        //   CSS hides .onb-deck__footer when [data-slide="2"] is active.
-        const slide = el('div', { class: 'onb-slide onb-slide-premium', 'data-dir': state.direction });
+        const slide = el('section', {
+            class: 'slide active onb-slide onb-slide-premium',
+            'data-dir': state.direction,
+            'data-testid': 'onb-slide-premium',
+        });
 
-        // Recap chips top-right (lang · country · #services from S1/S2)
-        const langName = (typeof LANG_DISPLAY_FULL !== 'undefined' && LANG_DISPLAY_FULL[state.lang])
-            || (typeof LANG_DISPLAY !== 'undefined' && LANG_DISPLAY[state.lang])
-            || state.lang || 'TR';
-        const ctryName = (typeof COUNTRY_NAMES !== 'undefined' && COUNTRY_NAMES[state.country]) || state.country || 'TR';
-        const ctryFlag = (typeof flag === 'function') ? flag(state.country || 'TR') : '🇹🇷';
-        const langFlag = (typeof flag === 'function' && typeof LANG_TO_FLAG_COUNTRY !== 'undefined')
-            ? flag(LANG_TO_FLAG_COUNTRY[state.lang] || 'US') : '🇹🇷';
-        const recap = el('div', { class: 'onb-premium-recap', 'aria-hidden': 'true' });
-        recap.appendChild(el('span', { class: 'onb-premium-rchip', text: `${langFlag} ${langName}` }));
-        recap.appendChild(el('span', { class: 'onb-premium-rchip', text: `${ctryFlag} ${ctryName}` }));
-        recap.appendChild(el('span', { class: 'onb-premium-rchip', text: `${(state.ownedPlatforms || []).length} servis` }));
-        slide.appendChild(recap);
+        // recap chips top-right
+        slide.appendChild(el('div', { class: 'recap-chips', id: 'chipsS3' }));
 
-        // Eyebrow
-        slide.appendChild(el('div', {
-            class: 'onb-premium-eyebrow',
-            text: t('onboarding.premium.eyebrow', '03 — PREMIUM'),
-        }));
-
-        // Hero — Inter 900 gradient (NO Cormorant). Heading element kept for a11y.
-        slide.appendChild(el('h1', {
-            class: 'onb-premium-hero',
+        slide.appendChild(el('div', { class: 'eyebrow', text: t('onboarding.premium.eyebrow', '03 — Premium') }));
+        const premHero = el('div', {
+            class: 'premium-hero',
             id: 'onb-slide-heading',
             'data-onb-heading': '',
-            text: t('onboarding.premium.hero', 'Lumi Premium.'),
-        }));
-
-        // Cormorant italic accent line (gold)
-        slide.appendChild(el('div', {
-            class: 'onb-premium-accent',
-            text: t('onboarding.premium.accent', 'Lumi seninle, her akşam.'),
-        }));
-
-        // "✦ Hepsi her planda dahil" gold pill
-        slide.appendChild(el('span', {
-            class: 'onb-premium-pill',
-            text: t('onboarding.premium.allIncluded', '✦ Hepsi her planda dahil'),
-        }));
-
-        // 2x2 feature grid — concrete mockup copy via i18n keys
-        const featDefs = [
-            { key: 'decide',  iconSvg: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="7" height="11" rx="1.5"/><rect x="12" y="6" width="7" height="11" rx="1.5"/><rect x="21" y="6" width="7" height="11" rx="1.5"/><path d="M12 23 l3 3 l6 -6" stroke-width="2"/></svg>' },
-            { key: 'pair',    iconSvg: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="12" r="4"/><circle cx="21" cy="12" r="4"/><path d="M4 26c0-4 3-7 7-7s7 3 7 7M14 26c0-4 3-7 7-7s7 3 7 7"/></svg>' },
-            { key: 'bell',    iconSvg: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 24V13a8 8 0 0 1 16 0v11"/><path d="M5 24h22"/><path d="M13 27a3 3 0 0 0 6 0"/><circle cx="24" cy="8" r="3.5" fill="#ff7ab8" stroke="#ff7ab8"/></svg>' },
-            { key: 'evening', iconSvg: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="17" r="10"/><path d="M16 11 v6 l4 2" stroke-width="2"/><path d="M8 5 l-3 3 M24 5 l3 3"/></svg>' },
-        ];
-        const featGrid = el('div', { class: 'onb-feat-grid' });
-        featDefs.forEach((f) => {
-            const cell = el('div', { class: 'onb-feat-cell' });
-            const ico = el('div', { class: 'onb-feat-cell__ico', 'aria-hidden': 'true', html: f.iconSvg });
-            cell.appendChild(ico);
-            cell.appendChild(el('div', { class: 'onb-feat-cell__title', text: t(`onboarding.premium.features.${f.key}.title`, f.key) }));
-            cell.appendChild(el('div', { class: 'onb-feat-cell__desc',  text: t(`onboarding.premium.features.${f.key}.desc`,  '') }));
-            featGrid.appendChild(cell);
         });
-        slide.appendChild(featGrid);
+        premHero.innerHTML = `<span class="grad">${t('onboarding.premium.titleA', 'Lumi')}</span> ${t('onboarding.premium.titleB', 'Premium.')}`;
+        slide.appendChild(premHero);
+        slide.appendChild(el('div', { class: 'accent-line serif', text: t('onboarding.premium.accent', 'Lumi seninle, her akşam.') }));
 
-        // 3 square pricing cards — yearly is default-selected, gold-bordered
-        // 04.6-r5: pricing values from premiumPricingStrings() so locale (TR vs intl) is correct
-        // without depending on async i18n loading (tests + first-paint).
-        const pricing = premiumPricingStrings();
-        const tiers = [
-            { value: 'monthly',  nameKey: 'tier.monthlyShort',  priceText: pricing.monthlyAmount,  perKey: 'pricePeriodMonthly',  perFallback: isTRLocale() ? '/ay'  : '/mo',  subKey: 'tierSubMonthly',  badge: null,                     badgeCls: '' },
-            { value: 'yearly',   nameKey: 'tier.yearlyShort',   priceText: pricing.yearlyAmount,   perKey: 'pricePeriodYearly',   perFallback: isTRLocale() ? '/yıl' : '/yr',  subKey: 'tierSubYearly',   badge: '⭐ ' + t('onboarding.premium.tier.bestValue', 'BEST'), badgeCls: '' },
-            { value: 'lifetime', nameKey: 'tier.lifetimeShort', priceText: pricing.lifetimeAmount, perKey: null,                  perFallback: isTRLocale() ? 'tek ödeme' : 'lifetime', subKey: 'tierSubLifetime', badge: '🔥 ' + t('onboarding.premium.tier.limited', 'LTD'),   badgeCls: 'lim' },
+        slide.appendChild(el('span', { class: 'feat-panel-pill', text: '✦ ' + t('onboarding.premium.featPill', 'Hepsi her planda dahil') }));
+
+        // 2x2 feat-grid
+        const fg = el('div', { class: 'feat-grid' });
+        const mkFeat = (svg, title, desc) => {
+            const cell = el('div', { class: 'feat-cell' });
+            const ico = el('div', { class: 'fc-ico' });
+            ico.innerHTML = svg;
+            cell.appendChild(ico);
+            cell.appendChild(el('div', { class: 'fc-title', text: title }));
+            cell.appendChild(el('div', { class: 'fc-desc', text: desc }));
+            return cell;
+        };
+        fg.appendChild(mkFeat(
+            '<svg viewBox="0 0 32 32"><rect x="3" y="6" width="7" height="11" rx="1.5"/><rect x="12" y="6" width="7" height="11" rx="1.5"/><rect x="21" y="6" width="7" height="11" rx="1.5"/><path d="M12 23 l3 3 l6 -6" stroke-width="2"/></svg>',
+            t('onboarding.premium.feat1Title', 'Decide-for-Me'),
+            t('onboarding.premium.feat1Desc', '30 saniyede karar — Lumi senin için seçer.'),
+        ));
+        fg.appendChild(mkFeat(
+            '<svg viewBox="0 0 32 32"><circle cx="11" cy="12" r="4"/><circle cx="21" cy="12" r="4"/><path d="M4 26c0-4 3-7 7-7s7 3 7 7M14 26c0-4 3-7 7-7s7 3 7 7"/></svg>',
+            t('onboarding.premium.feat2Title', 'Pair Mode'),
+            t('onboarding.premium.feat2Desc', 'İkiniz için ortak liste, ortak karar.'),
+        ));
+        fg.appendChild(mkFeat(
+            '<svg viewBox="0 0 32 32"><path d="M8 24V13a8 8 0 0 1 16 0v11"/><path d="M5 24h22"/><path d="M13 27a3 3 0 0 0 6 0"/><circle cx="24" cy="8" r="3.5" fill="#ff7ab8" stroke="#ff7ab8"/></svg>',
+            t('onboarding.premium.feat3Title', 'Akıllı Bildirimler'),
+            t('onboarding.premium.feat3Desc', 'ST5 çıktığında ilk sen bil.'),
+        ));
+        fg.appendChild(mkFeat(
+            '<svg viewBox="0 0 32 32"><circle cx="16" cy="17" r="10"/><path d="M16 11 v6 l4 2" stroke-width="2"/><path d="M8 5 l-3 3 M24 5 l3 3"/></svg>',
+            t('onboarding.premium.feat4Title', 'Akşam Asistanı'),
+            t('onboarding.premium.feat4Desc', '20:00 çağrı — her gün tek doğru öneri.'),
+        ));
+        slide.appendChild(fg);
+
+        // 3 pricing square cards
+        const tr = isTRLocale();
+        const TIERS = tr ? [
+            { name: 'Aylık',    price: '₺49',  per: '/ay',         sub: '3 gün ücretsiz', key: 'monthly' },
+            { name: 'Yıllık',   price: '₺299', per: '/yıl',        sub: '₺289 tasarruf',  key: 'yearly',   badge: '⭐ BEST' },
+            { name: 'Ömürlük',  price: '₺799', per: 'tek ödeme',   sub: 'Sonsuza dek',    key: 'lifetime', badge: '🔥 LTD', limited: true },
+        ] : [
+            { name: 'Monthly',  price: '$2.99',  per: '/mo',       sub: '3 days free',    key: 'monthly' },
+            { name: 'Yearly',   price: '$19.99', per: '/yr',       sub: 'Save $15',       key: 'yearly',   badge: '⭐ BEST' },
+            { name: 'Lifetime', price: '$49.99', per: 'one-time',  sub: 'Forever',        key: 'lifetime', badge: '🔥 LTD', limited: true },
         ];
-        // Default selection — yearly (mockup default)
-        state.premiumChoice = state.premiumChoice || 'yearly';
-        const psqGrid = el('div', { class: 'onb-psq-grid', role: 'radiogroup', 'aria-label': t('onboarding.premium.hero', 'Lumi Premium.') });
-        const psqCards = [];
-        tiers.forEach((tier) => {
-            const isSel = state.premiumChoice === tier.value;
-            const card = el('button', {
-                type: 'button',
-                class: `onb-psq${isSel ? ' onb-psq--selected' : ''}`,
-                'data-tier': tier.value,
-                'role': 'radio',
-                'aria-checked': isSel ? 'true' : 'false',
+
+        const psqGrid = el('div', { class: 'psq-grid', id: 'ppills' });
+        TIERS.forEach((tier) => {
+            const isSelected = state.premiumChoice === tier.name || (state.premiumChoice == null && tier.key === 'yearly');
+            if (isSelected) state.premiumChoice = tier.name;
+            const card = el('div', {
+                class: 'psq' + (isSelected ? ' sel' : ''),
+                'data-n': tier.name,
+                'data-key': tier.key,
+                role: 'button',
+                tabindex: '0',
             });
-            card.appendChild(el('span', { class: 'onb-psq__radio', 'aria-hidden': 'true' }));
-            const top = el('div', { class: 'onb-psq__top' });
-            top.appendChild(el('span', { class: 'onb-psq__name', text: t(`onboarding.premium.${tier.nameKey}`, tier.value.toUpperCase()) }));
-            if (tier.badge) top.appendChild(el('span', { class: `onb-psq__badge${tier.badgeCls ? ' ' + tier.badgeCls : ''}`, text: tier.badge }));
-            card.appendChild(top);
-            const priceWrap = el('div', { class: 'onb-psq__price-wrap' });
-            priceWrap.appendChild(el('div', { class: 'onb-psq__price', text: tier.priceText }));
-            priceWrap.appendChild(el('div', {
-                class: 'onb-psq__period',
-                text: tier.perKey ? t(`onboarding.premium.${tier.perKey}`, tier.perFallback) : tier.perFallback,
-            }));
-            card.appendChild(priceWrap);
-            card.appendChild(el('div', { class: 'onb-psq__sub', text: t(`onboarding.premium.${tier.subKey}`, '') }));
-            card.addEventListener('click', () => {
-                haptic.select && haptic.select();
-                state.premiumChoice = tier.value;
-                psqCards.forEach((c) => {
-                    const sel = c.getAttribute('data-tier') === tier.value;
-                    c.classList.toggle('onb-psq--selected', sel);
-                    c.setAttribute('aria-checked', sel ? 'true' : 'false');
-                });
-                if (typeof persistProgress === 'function') persistProgress();
+            const topRow = el('div', { class: 'psq-top' }, [
+                el('span', { class: 'psq-name', text: tier.name }),
+            ]);
+            if (tier.badge) topRow.appendChild(el('span', { class: 'psq-badge' + (tier.limited ? ' lim' : ''), text: tier.badge }));
+            const priceBlock = el('div', {}, [
+                el('div', { class: 'psq-price', text: tier.price }),
+                el('div', { class: 'psq-per', text: tier.per }),
+            ]);
+            card.appendChild(el('span', { class: 'psq-radio' }));
+            card.appendChild(topRow);
+            card.appendChild(priceBlock);
+            card.appendChild(el('div', { class: 'psq-sub', text: tier.sub }));
+
+            const select = () => {
+                haptic.select();
+                state.premiumChoice = tier.name;
+                psqGrid.querySelectorAll('.psq').forEach((p) => p.classList.remove('sel'));
+                card.classList.add('sel');
+                persistProgress();
+            };
+            card.addEventListener('click', select);
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(); }
             });
-            psqCards.push(card);
             psqGrid.appendChild(card);
         });
         slide.appendChild(psqGrid);
 
-        // Trial line — "3 gün ücretsiz · iptal kolay · 🔒 RevenueCat"
-        slide.appendChild(el('div', {
-            class: 'onb-premium-trial',
-            text: t('onboarding.premium.trialLine', '3 gün ücretsiz · iptal kolay · 🔒 RevenueCat'),
-        }));
+        slide.appendChild(el('div', { class: 'price-intro', html: '<b>' + t('onboarding.premium.trial', '3 gün ücretsiz') + '</b> · ' + t('onboarding.premium.cancel', 'iptal kolay') + ' · 🔒 RevenueCat' }));
 
-        // Primary gradient CTA — opens paywall sheet
-        slide.appendChild(el('button', {
-            class: 'onb-premium-cta',
+        // Footer: primary CTA + ghost skip
+        const cta = el('button', {
+            class: 'cta',
             type: 'button',
-            text: t('onboarding.premium.ctaTry', "Premium'u Dene"),
             'data-testid': 'onb-premium-cta',
-            onclick: () => { haptic.tap(); openMockPaywall(); },
-        }));
+            text: t('onboarding.premium.cta', 'Sahneyi Hazırla'),
+        });
+        cta.addEventListener('click', () => {
+            haptic.tap();
+            goto(3);
+        });
 
-        // Ghost "Şimdilik geç" link — advances to S4 (Ready)
-        slide.appendChild(el('button', {
-            class: 'onb-premium-skip',
+        const ghost = el('button', {
+            class: 'ghost',
             type: 'button',
-            text: t('onboarding.premium.skipNew', t('onboarding.premium.skip', 'Şimdilik geç')),
             'data-testid': 'onb-premium-skip',
-            onclick: () => { haptic.tap(); goto(3); },
-        }));
+            text: t('onboarding.premium.skip', 'Şimdilik geç'),
+        });
+        ghost.addEventListener('click', () => {
+            haptic.tap();
+            goto(3);
+        });
 
-        // NOTE: No portalFooterCta() on S3 — slide owns its primary CTA.
-        // CSS hides .onb-deck__footer for slide index 2 (the Premium slide).
+        clearFooter();
+        footer.appendChild(cta);
+        footer.appendChild(ghost);
+
         return slide;
     }
 
-    // Mock paywall bottom sheet — Phase 5 will replace with real RevenueCat flow.
-    function openMockPaywall() {
-        if (document.getElementById('onb-paywall-sheet')) return;
-
-        const p = premiumPricingStrings();
-        const backdrop = el('div', { class: 'onb-paywall-backdrop', 'aria-hidden': 'true' });
-        const sheet = el('div', {
-            id: 'onb-paywall-sheet',
-            class: 'onb-paywall-sheet',
-            role: 'dialog',
-            'aria-modal': 'true',
-            'aria-label': t('onboarding.premium.title', 'Lumi Premium'),
-        });
-
-        // Close (X)
-        const closeBtn = el('button', {
-            class: 'onb-paywall-close',
-            type: 'button',
-            'aria-label': t('common.close', 'Kapat'),
-            html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6l-12 12"/></svg>',
-        });
-
-        const title = el('h2', { class: 'onb-paywall-title', text: t('onboarding.premium.title', 'Lumi Premium') });
-        const subtitle = el('p', { class: 'onb-paywall-sub', text: t('onboarding.premium.paywallSub', 'İlk 3 gün ücretsiz. İstediğin zaman iptal.') });
-
-        // Tier cards (radio group)
-        const tiers = el('div', { class: 'onb-paywall-tiers', role: 'radiogroup' });
-        const selected = { value: 'yearly' };
-
-        const tierDefs = [
-            {
-                value: 'monthly',
-                title: t('onboarding.premium.tier.monthly', 'Aylık'),
-                price: p.monthlyAmount,
-                period: isTRLocale() ? '/ay' : '/mo',
-                badge: null,
-                note: p.trial,
-            },
-            {
-                value: 'yearly',
-                title: t('onboarding.premium.tier.yearly', 'Yıllık'),
-                price: p.yearlyAmount,
-                period: isTRLocale() ? '/yıl' : '/yr',
-                badge: t('onboarding.premium.bestValue', 'BEST VALUE'),
-                note: t('onboarding.premium.savings', '{amount} saved vs monthly').replace('{amount}', p.savings),
-            },
-            {
-                value: 'lifetime',
-                title: t('onboarding.premium.tier.lifetime', 'Ömürlük'),
-                price: p.lifetimeAmount,
-                period: '',
-                badge: t('onboarding.premium.limited', 'LIMITED'),
-                badgeClass: 'limited',
-                note: null,
-            },
-        ];
-
-        const tierCards = [];
-        tierDefs.forEach((t_) => {
-            const card = el('label', {
-                class: `onb-paywall-tier${selected.value === t_.value ? ' selected' : ''}${t_.badgeClass ? ' ' + t_.badgeClass : ''}`,
-                'data-tier': t_.value,
-            });
-            const input = el('input', {
-                type: 'radio',
-                name: 'onb-paywall-tier',
-                value: t_.value,
-            });
-            if (selected.value === t_.value) input.setAttribute('checked', '');
-            input.addEventListener('change', () => {
-                haptic.select();
-                selected.value = t_.value;
-                state.premiumChoice = t_.value;
-                tierCards.forEach((c) => c.classList.toggle('selected', c.getAttribute('data-tier') === t_.value));
-                persistProgress();
-            });
-            card.appendChild(input);
-
-            const head = el('div', { class: 'onb-paywall-tier-head' }, [
-                el('span', { class: 'onb-paywall-tier-title', text: t_.title }),
-                t_.badge ? el('span', { class: `onb-paywall-tier-badge${t_.badgeClass ? ' ' + t_.badgeClass : ''}`, text: t_.badge }) : null,
-            ]);
-            card.appendChild(head);
-
-            const price = el('div', { class: 'onb-paywall-tier-price' }, [
-                el('span', { class: 'onb-paywall-tier-amount', text: t_.price }),
-                t_.period ? el('span', { class: 'onb-paywall-tier-period', text: t_.period }) : null,
-            ]);
-            card.appendChild(price);
-
-            if (t_.note) card.appendChild(el('div', { class: 'onb-paywall-tier-note', text: t_.note }));
-
-            tiers.appendChild(card);
-            tierCards.push(card);
-        });
-
-        // Bottom CTA — Phase 5 will wire real purchase. For now: notify-me toast.
-        const notifyCta = el('button', {
-            class: 'onb-cta onb-cta-premium onb-paywall-cta',
-            type: 'button',
-            text: t('onboarding.premium.startTrialCta', '3 gün ücretsiz başla'),
-            'data-testid': 'onb-paywall-notify',
-        });
-
-        // Restore Purchases — Phase 5 wires.
-        const restore = el('button', {
-            class: 'onb-paywall-restore',
-            type: 'button',
-            text: t('onboarding.premium.restore', 'Satın alımları geri yükle'),
-        });
-
-        function closeSheet() {
-            sheet.classList.remove('open');
-            backdrop.classList.remove('open');
-            setTimeout(() => {
-                if (sheet.parentNode) sheet.parentNode.removeChild(sheet);
-                if (backdrop.parentNode) backdrop.parentNode.removeChild(backdrop);
-            }, 240);
-        }
-        closeBtn.addEventListener('click', closeSheet);
-        backdrop.addEventListener('click', closeSheet);
-        notifyCta.addEventListener('click', () => {
-            const toastMsg = t('onboarding.premium.notifyAdded', 'Eklendi');
-            try {
-                if (typeof window !== 'undefined' && typeof window.showToast === 'function') {
-                    window.showToast(toastMsg);
-                }
-            } catch {}
-            // Visual confirmation inline as fallback (some apps don't expose showToast yet).
-            notifyCta.textContent = '✓ ' + toastMsg;
-            notifyCta.disabled = true;
-            setTimeout(closeSheet, 700);
-        });
-        restore.addEventListener('click', () => {
-            // Phase 5 will wire real RevenueCat.restorePurchases().
-            try {
-                if (typeof window !== 'undefined' && typeof window.showToast === 'function') {
-                    window.showToast(t('onboarding.premium.restoreSoon', 'Phase 5 ile aktif olacak'));
-                }
-            } catch {}
-        });
-
-        sheet.appendChild(closeBtn);
-        sheet.appendChild(title);
-        sheet.appendChild(subtitle);
-        sheet.appendChild(tiers);
-        sheet.appendChild(notifyCta);
-        sheet.appendChild(restore);
-
-        document.body.appendChild(backdrop);
-        document.body.appendChild(sheet);
-        // Force reflow then trigger slide-up animation.
-         
-        sheet.offsetHeight;
-        requestAnimationFrame(() => {
-            backdrop.classList.add('open');
-            sheet.classList.add('open');
-        });
-    }
-
     function buildReady() {
-        // 04.6-03 — S4 Ready CTA isolation fix.
-        //
-        // Bug report: "no continue button, randomly tapping advances to app".
-        // Root cause: the r5 confetti + curtain decoration appends nodes to
-        // document.body (curtains overlay the viewport for 1.2s; confetti
-        // pieces appear at fixed positions on burst). With swipe-end advance
-        // active and the Ready slide being long, a small drag was being
-        // interpreted as an advance-swipe.
-        //
-        // Fixes:
-        //   1. Swipe handler now hard-blocks both directions on slide=3 (Ready)
-        //      — see touchend handler (state.slide === 3 short-circuit).
-        //   2. The advance handler is scoped EXCLUSIVELY to the CTA button.
-        //   3. CSS defense in depth: `.onb-slide-ready` body content uses
-        //      pointer-events:none; only `.onb-cta-ready` opts back into
-        //      pointer-events:auto. (See src/styles/onboarding.css.)
-        const slide = el('div', { class: 'onb-slide onb-slide-ready', 'data-dir': state.direction });
-        slide.appendChild(el('h1', {
-            class: 'onb-hero-title',
+        const slide = el('section', {
+            class: 'slide active onb-slide onb-slide-ready',
+            'data-dir': state.direction,
+            'data-testid': 'onb-slide-ready',
+        });
+
+        // Constellation
+        const starsEl = el('div', { class: 'stars', 'aria-hidden': 'true' });
+        for (let i = 0; i < 14; i++) {
+            const s = el('div', { class: 'star' + (i % 4 === 0 ? ' big' : '') });
+            s.style.left = (5 + Math.random() * 90) + '%';
+            s.style.top  = (Math.random() * 70) + '%';
+            s.style.animationDelay    = (Math.random() * 2.5) + 's';
+            s.style.animationDuration = (2 + Math.random() * 2) + 's';
+            starsEl.appendChild(s);
+        }
+        slide.appendChild(starsEl);
+
+        // Shards
+        const sh = el('div', { class: 'shards', 'aria-hidden': 'true' });
+        for (let i = 0; i < 14; i++) {
+            const d = el('div', { class: 'shard' });
+            d.style.left = (Math.random() * 100) + '%';
+            d.style.animationDelay    = (Math.random() * 4) + 's';
+            d.style.animationDuration = (3 + Math.random() * 3) + 's';
+            sh.appendChild(d);
+        }
+        slide.appendChild(sh);
+
+        slide.appendChild(el('div', { class: 'recap-chips', id: 'chipsS4' }));
+
+        slide.appendChild(el('div', { class: 'eyebrow', text: t('onboarding.ready.eyebrow', '04 — Hazırsın') }));
+        const h1 = el('h1', {
+            class: 'hero',
             id: 'onb-slide-heading',
             'data-onb-heading': '',
-            text: t('onboarding.ready.title', 'Hazırız.'),
-        }));
-        slide.appendChild(el('p', { class: 'onb-hero-sub', text: t('onboarding.ready.sub', 'Sana özel seçimler hazır.') }));
+            style: 'font-size:44px;line-height:.98',
+        });
+        h1.innerHTML = `<span class="grad">${t('onboarding.ready.titleA', 'Işıklar.')}</span><br/>${t('onboarding.ready.titleB', 'Kamera.')}<br/>${t('onboarding.ready.titleC', 'Lumi.')}`;
+        slide.appendChild(h1);
+        slide.appendChild(el('div', { class: 'accent-line serif', text: t('onboarding.ready.accent', 'Sahne hazır. Perdeyi aç.') }));
+        slide.appendChild(el('p', { class: 'sub', text: t('onboarding.ready.sub', 'Tercihlerin kaydedildi. İlk önerin 5 saniye sonra.') }));
 
-        // 04-04-r7 — vertical 3-row recap card (replaces inline chip strip).
+        // Recap glass
+        const recap = el('div', { class: 'glass recap' });
+        recap.appendChild(el('div', { class: 'rh', text: t('onboarding.ready.recapHead', 'Sahne Özeti') }));
+
         const langName = LANG_DISPLAY_FULL[state.lang] || LANG_DISPLAY[state.lang] || state.lang;
         const countryName = COUNTRY_NAMES[state.country] || state.country;
-        // Resolve picked provider names from the curated providers list.
         const idToName = new Map((state.providers || []).map((p) => [p.id, p.name]));
         const pickedNames = state.ownedPlatforms.map((id) => idToName.get(id)).filter(Boolean);
         const platformLine = pickedNames.length === 0
-            ? t('onboarding.ready.noPlatforms', 'Not yet')
+            ? t('onboarding.ready.noPlatforms', 'Henüz yok')
             : (pickedNames.length <= 3
-                ? pickedNames.join(', ')
-                : `${pickedNames.slice(0, 3).join(', ')} + ${pickedNames.length - 3} more`);
+                ? pickedNames.join(' · ')
+                : `${pickedNames.slice(0, 3).join(' · ')} +${pickedNames.length - 3}`);
 
-        const card = el('div', { class: 'onb-recap-card' });
-        const row = (labelKey, labelDefault, icon, text) => {
-            return el('div', { class: 'onb-recap-row' }, [
-                el('div', { class: 'onb-recap-row-label', text: t(labelKey, labelDefault) }),
-                el('div', { class: 'onb-recap-row-value' }, [
-                    el('span', { class: 'onb-recap-row-icon', text: icon }),
-                    el('span', { class: 'onb-recap-row-text', text }),
-                ]),
-            ]);
+        const mkRow = (lbl, val) => {
+            const r = el('div', { class: 'recap-row' });
+            r.appendChild(el('span', { text: lbl }));
+            r.appendChild(el('span', { text: val }));
+            return r;
         };
-        card.appendChild(row('onboarding.ready.langLabel', 'Language', flag(LANG_TO_FLAG_COUNTRY[state.lang] || 'US'), langName));
-        card.appendChild(row('onboarding.ready.countryLabel', 'Country', flag(state.country), countryName));
-        card.appendChild(row('onboarding.ready.servicesLabel', 'Services', '📺', platformLine));
-        slide.appendChild(card);
+        recap.appendChild(mkRow(t('onboarding.ready.langLabel', 'Dil'), langName));
+        recap.appendChild(mkRow(t('onboarding.ready.countryLabel', 'Ülke'), countryName));
+        recap.appendChild(mkRow(t('onboarding.ready.servicesLabel', 'Servisler'), platformLine));
+        if (state.premiumChoice) {
+            recap.appendChild(mkRow(t('onboarding.ready.planLabel', 'Plan'), state.premiumChoice));
+        }
+        slide.appendChild(recap);
 
-        // Keep the inline chip strip for screen readers (hidden visually).
-        const chips = el('div', { class: 'onb-recap onb-sr-only' });
-        chips.appendChild(el('span', { class: 'onb-chip', text: langName }));
-        chips.appendChild(el('span', { class: 'onb-chip', text: `${flag(state.country)} ${countryName}` }));
-        const platTpl = t('onboarding.ready.platforms', '{n} platform');
-        chips.appendChild(el('span', { class: 'onb-chip', text: platTpl.replace('{n}', state.ownedPlatforms.length) }));
-        slide.appendChild(chips);
-
-        // 04.6-r2 — empty flex:1 spacer removed. The CTA now uses
-        // `margin-top: auto` (see .onb-slide-ready .onb-cta-ready in CSS)
-        // which pushes it to the bottom of the slide column without a sibling
-        // spacer interfering with stagger animations.
-
-        // 04.6-03 — CTA-only advance. Listener attached via addEventListener
-        // with explicit currentTarget guard so taps anywhere else (confetti,
-        // curtain, slide body) never trigger close().
-        const readyCta = el('button', {
-            class: 'onb-cta onb-cta-pulse onb-cta-ready',
+        // Footer CTA — "Lumi'yi keşfet"
+        const cta = el('button', {
+            class: 'cta',
             type: 'button',
             'data-testid': 'onb-ready-cta',
             text: t('onboarding.ready.cta', "Lumi'yi keşfet"),
         });
-        readyCta.addEventListener('click', (e) => {
-            // Belt-and-suspenders: ignore synthetic events not from the CTA.
-            if (e.currentTarget !== readyCta) return;
+        cta.addEventListener('click', (e) => {
+            if (e.currentTarget !== cta) return;
             haptic.success();
-            try { window.__onbConfettiBurst?.(readyCta); } catch {}
+            try { window.__onbConfettiBurst?.(cta); } catch {}
             clearOnboardingProgress();
             setTimeout(close, 700);
         });
-        // 04.6-r3 — Portal the Ready CTA into the always-visible deck footer.
-        // The footer is a separate flex child of the overlay (.onb-deck__footer)
-        // so it can never be scrolled or clipped by the slide content. This
-        // permanently solves the recurring "S4 CTA invisible" bug.
-        portalFooterCta(readyCta);
+        portalFooterCta(cta);
+
         return slide;
     }
 
-    function clearFooter() {
-        if (footer) footer.innerHTML = '';
-    }
-
-    function portalFooterCta(btn) {
-        if (!footer) return;
-        footer.innerHTML = '';
-        footer.appendChild(btn);
-    }
-
     function renderCurrentSlide() {
-        stage.innerHTML = '';
+        slidesHost.innerHTML = '';
         clearFooter();
         let node;
-        // 04.6-03 — 4-slide enum: 0 Welcome, 1 Platforms, 2 Premium, 3 Ready.
         switch (state.slide) {
             case 0: node = buildWelcome(); break;
             case 1: node = buildPlatforms(); break;
@@ -2198,11 +1498,10 @@ function renderWizard(options = {}) {
             case 3: node = buildReady(); break;
             default: node = buildWelcome();
         }
-        stage.appendChild(node);
+        slidesHost.appendChild(node);
     }
 
     async function loadProvidersIfNeeded() {
-        // 04-04-r4: re-fetch when country changed since last load.
         const cc = (state.country || '').toUpperCase();
         if (state.providersLoading) return;
         if (state.providers.length && state.providersLoadedFor === cc) return;
@@ -2213,7 +1512,6 @@ function renderWizard(options = {}) {
             const list = await getCuratedProviders(state.country);
             state.providers = list;
             state.providersFailed = list.length === 0;
-            // Auto-select the curated "Recommended" tiles on first paint.
             if (list.length && state.ownedPlatforms.length === 0) {
                 state.ownedPlatforms = list.filter((p) => p.preSelected).map((p) => p.id);
             }
@@ -2225,94 +1523,40 @@ function renderWizard(options = {}) {
         }
     }
 
-    // -------------------------------------------------------------------
-    // 04-04-r7 — Per-slide accent (CSS variable swap), recap chips,
-    // swipe gestures, completion checkmark helper.
-    // -------------------------------------------------------------------
-    // 04.6-r5 — Platforms slide switched from 'teal' (green CTA) to 'warm'
-    // (brand orange-pink) to match the mockup. All 5 tone names ('warm',
-    // 'cool', 'teal', 'purple', 'magenta') still referenced below so the
-    // r7-polish source-grep tests stay green.
-    const SLIDE_ACCENTS = ['warm', 'warm', 'purple', 'magenta'];
-    const _ALL_ACCENT_TONES = ['warm', 'cool', 'teal', 'purple', 'magenta'];
-    function updateAccent() {
-        const tone = SLIDE_ACCENTS[state.slide] || 'warm';
-        root.setAttribute('data-accent', tone);
-    }
-
     function updateRecapChips() {
-        // 04.6-03 — Recap chips show from Platforms (S2 in 4-slide layout) onward.
-        // Lang+country are committed by the S1 detection banner so both chips
-        // are visible together one step earlier than in the legacy 6-slide flow.
-        if (state.slide < 1) {
-            recapHost.innerHTML = '';
-            recapHost.setAttribute('aria-hidden', 'true');
-            return;
-        }
-        recapHost.setAttribute('aria-hidden', 'false');
-        const chips = [];
-        if (state.lang) {
-            chips.push({ icon: flag(LANG_TO_FLAG_COUNTRY[state.lang] || 'US'), text: LANG_DISPLAY_FULL[state.lang] || state.lang });
-        }
-        if (state.country) {
-            chips.push({ icon: flag(state.country), text: COUNTRY_NAMES[state.country] || state.country });
-        }
-        recapHost.innerHTML = '';
-        chips.forEach((c) => {
-            const chip = el('span', { class: 'onb-recap-chip' }, [
-                el('span', { class: 'onb-recap-chip-icon', text: c.icon }),
-                el('span', { class: 'onb-recap-chip-text', text: c.text }),
+        const hosts = root.querySelectorAll('.recap-chips');
+        hosts.forEach((host) => {
+            host.innerHTML = '';
+            if (state.slide < 1) return;
+            const mkChip = (txt, accent) => el('span', { class: 'rchip' + (accent ? ' accent' : '') }, [
+                el('span', { text: txt }),
             ]);
-            recapHost.appendChild(chip);
+            const langTxt = `${flag(LANG_TO_FLAG_COUNTRY[state.lang] || 'US')} ${LANG_DISPLAY_FULL[state.lang] || state.lang}`;
+            const ctryTxt = `${flag(state.country)} ${COUNTRY_NAMES[state.country] || state.country}`;
+            host.appendChild(mkChip(langTxt));
+            host.appendChild(mkChip(ctryTxt));
+            if (state.slide >= 2 && state.ownedPlatforms.length) {
+                host.appendChild(mkChip(`${state.ownedPlatforms.length} ` + t('onboarding.recap.platforms', 'platform'), true));
+            }
         });
     }
 
-    // Completion checkmark — slides in from top with scale punch.
-    function _spawnCheckmark(anchor) {
-        if (!anchor) return;
-        if (prefersReducedMotion()) return; // no animation when reduced
-        try {
-            const r = anchor.getBoundingClientRect();
-            const badge = document.createElement('div');
-            badge.className = 'onb-completion-check';
-            badge.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-            badge.style.left = (r.left + r.width - 18) + 'px';
-            badge.style.top = (r.top - 8) + 'px';
-            document.body.appendChild(badge);
-            requestAnimationFrame(() => badge.classList.add('in'));
-            setTimeout(() => { try { badge.remove(); } catch {} }, 700);
-        } catch {}
-    }
-
-    // ---- Swipe gestures (touch only — pointer/mouse left alone) ----
-    const SWIPE_HINT_KEY = 'lumi_onboarding_swipe_hint_seen';
+    // ---- Swipe gestures ----
     let touchStartX = 0, touchStartY = 0, touchStartT = 0, swipeBlocked = false;
     function isInScrollable(target) {
         if (!target || typeof target.closest !== 'function') return false;
-        // Search input or scrollable lists should NOT trigger advance/back.
-        if (target.closest('.onb-search')) return true;
-        if (target.closest('.onb-list')) return true;
-        if (target.closest('.onb-grid')) return true;
-        if (target.closest('.onb-paywall-sheet')) return true;
-        // 04.6-r2 — exclude the (legacy) detection banner so taps there were
-        // never swallowed by the swipe-advance handler.
-        if (target.closest('.onb-detection-banner')) return true;
-        // 04.6-r3 — inline locale picker chips + panels.
-        if (target.closest('.onb-locale-inline')) return true;
-        if (target.closest('.onb-locale-chip-wrap')) return true;
-        // Retained for any code paths that still mount the legacy sheet
-        // (eg from test fixtures replaying older flows).
-        if (target.closest('.onb-picker-sheet')) return true;
-        if (target.closest('.onb-picker-backdrop')) return true;
+        if (target.closest('.loc-card')) return true;
+        if (target.closest('.loc-list')) return true;
+        if (target.closest('.plat-grid')) return true;
+        if (target.closest('.psq-grid')) return true;
+        if (target.closest('.recap')) return true;
         return false;
     }
     root.addEventListener('touchstart', (e) => {
         if (!e.touches || !e.touches.length) return;
         swipeBlocked = isInScrollable(e.target);
         const t0 = e.touches[0];
-        touchStartX = t0.clientX;
-        touchStartY = t0.clientY;
-        touchStartT = Date.now();
+        touchStartX = t0.clientX; touchStartY = t0.clientY; touchStartT = Date.now();
     }, { passive: true });
     root.addEventListener('touchend', (e) => {
         if (swipeBlocked) return;
@@ -2323,59 +1567,34 @@ function renderWizard(options = {}) {
         const dt = Date.now() - touchStartT;
         if (dt > 800) return;
         if (Math.abs(dx) < 40 || Math.abs(dy) > 50) return;
-        // Disable advance-swipe on S1 if the wizard is restoring (no back).
-        if (dx > 0 && state.slide === 0) return; // S1 back-swipe blocked (no back)
-        if (state.slide === 3) return; // 04.6-03: S4 Ready slide — block both (confetti + tap-isolation)
+        if (dx > 0 && state.slide === 0) return;
+        if (state.slide === 3) return;
         if (dx < 0) {
-            // Advance: emulate the active CTA on the current slide.
-            // 04.6-r3 — Look in the footer first (where CTAs now live), then
-            // fall back to in-slide CTAs (premium uses both — slide for the
-            // tier paywall, footer for "Devam").
-            const cta = footer.querySelector('.onb-cta:not(.disabled):not([disabled])')
-                || stage.querySelector('.onb-cta:not(.disabled):not([disabled])');
+            const cta = footer.querySelector('.cta:not(.disabled):not([disabled])');
             if (cta) { haptic.tap(); cta.click(); }
         } else {
             if (state.slide > 0) { haptic.tap(); goto(state.slide - 1); }
         }
     }, { passive: true });
 
-    // One-time wiggle hint on S1.
-    function maybeShowSwipeHint() {
-        if (state.slide !== 0) return;
-        if (prefersReducedMotion()) return;
-        try {
-            if (localStorage.getItem(SWIPE_HINT_KEY)) return;
-            localStorage.setItem(SWIPE_HINT_KEY, '1');
-        } catch {}
-        setTimeout(() => {
-            const slide = stage.querySelector('.onb-slide');
-            if (!slide) return;
-            slide.classList.add('onb-swipe-hint');
-            setTimeout(() => slide.classList.remove('onb-swipe-hint'), 700);
-        }, 800);
-    }
-
-    // 04.6-03 — Expose minimal test hooks on window so jsdom integration tests
-    // can navigate the wizard without scripting every CTA click.
+    // Test hooks
     try {
         if (typeof window !== 'undefined') {
             window.__onbGoto = (n) => { try { goto(n); } catch {} };
             window.__onbOpenPicker = () => { try { openLocalePicker(); } catch {} };
-            window.__onbState = () => ({ slide: state.slide, lang: state.lang, country: state.country, total: SLIDE_TOTAL });
+            window.__onbState = () => ({ slide: state.slide, lang: state.lang, country: state.country, total: 4 });
         }
     } catch {}
 
     // Initial paint
-    updatePills();
-    updateBackBtn();
-    updateAtmosphere();
-    updateAccent();
+    updateDots();
+    updateStageClass();
     updateRecapChips();
     renderCurrentSlide();
     announceSlide();
     focusSlideHeading();
     persistProgress();
-    maybeShowSwipeHint();
+    if (state.slide === 1) loadProvidersIfNeeded();
 }
 
 // Map onboarding lang → country code for the recap flag chip.
