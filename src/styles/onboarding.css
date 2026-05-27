@@ -295,6 +295,43 @@
 /* SR-only utility */
 .onboarding-root .onb-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
+/* === 04.6-r7 RESPONSIVE FIXES (S1 pile overlap, S2 hero wrap, S4 color, safe-area) === */
+
+/* Bug 4 — Respect OS status bar (real device renders its own) */
+.onboarding-root{padding-top:env(safe-area-inset-top, 0px)}
+
+/* Bug 1 — S1 poster pile: smaller, top-right, content reserves right gutter */
+.onboarding-root .s1-head{padding-right:124px;min-height:200px}
+.onboarding-root .pile{top:8px;right:-4px;width:140px;height:180px}
+.onboarding-root .pile img{width:88px;height:130px;border-radius:10px}
+.onboarding-root .pile .p1{top:0;right:40px}
+.onboarding-root .pile .p2{top:10px;right:14px}
+.onboarding-root .pile .p3{top:26px;right:-6px}
+/* sub text on S1 must also clear the pile zone on its top edge */
+.onboarding-root .onb-slide-welcome > .sub{max-width:240px}
+
+/* Bug 2 — S2 hero ("Aboneliklerini seç.") must not break the second word onto its own line awkwardly */
+.onboarding-root .stage.s1 h1.hero{font-size:38px;line-height:1.02;letter-spacing:-.03em;text-wrap:balance;overflow-wrap:break-word;word-break:normal;max-width:320px}
+
+/* Bug 3 — S4 hero: all three lines uniform white (the .grad gradient was painting "Işıklar." mint green) */
+.onboarding-root .stage.s3 h1.hero,
+.onboarding-root .stage.s3 h1.hero .grad{
+  background:none !important;
+  -webkit-background-clip:initial !important;
+  background-clip:initial !important;
+  -webkit-text-fill-color:#fff !important;
+  color:#fff !important;
+  animation:none !important;
+}
+
+/* Narrow viewport (<=360px) extra room for S1 */
+@media (max-width:360px){
+  .onboarding-root .s1-head{padding-right:108px}
+  .onboarding-root .pile{width:120px;height:160px}
+  .onboarding-root .pile img{width:78px;height:116px}
+  .onboarding-root .stage.s1 h1.hero{font-size:34px}
+}
+
 /* Reduced-motion guards */
 @media (prefers-reduced-motion: reduce){
   .onboarding-root *,
