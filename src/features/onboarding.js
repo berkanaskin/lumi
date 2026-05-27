@@ -1047,18 +1047,24 @@ function renderWizard(options = {}) {
 
         head.addEventListener('click', (e) => {
             e.stopPropagation();
+            e.preventDefault();
             haptic.tap();
-            const open = card.classList.toggle('open');
-            head.setAttribute('aria-expanded', open ? 'true' : 'false');
-            // mutual collapse
-            slidesHost.querySelectorAll('.loc-card.open').forEach((other) => {
-                if (other !== card) {
-                    other.classList.remove('open');
-                    const h = other.querySelector('.loc-card-head');
-                    if (h) h.setAttribute('aria-expanded', 'false');
-                }
+            // 04.6-r7 fix: chips are independent + mutually exclusive.
+            // 1) Snapshot whether *this* card is currently open.
+            // 2) Close ALL panels first (sibling + self) — clean slate.
+            // 3) If this card was NOT open before, open it + populate its list.
+            const wasOpen = card.classList.contains('open');
+            const allCards = slidesHost.querySelectorAll('.loc-card');
+            allCards.forEach((c) => {
+                c.classList.remove('open');
+                const h = c.querySelector('.loc-card-head');
+                if (h) h.setAttribute('aria-expanded', 'false');
             });
-            if (open) renderList();
+            if (!wasOpen) {
+                renderList(); // populate BEFORE adding .open so anim plays with content
+                card.classList.add('open');
+                head.setAttribute('aria-expanded', 'true');
+            }
         });
 
         function renderList() {
