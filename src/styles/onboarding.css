@@ -297,8 +297,11 @@
 
 /* === 04.6-r7 RESPONSIVE FIXES (S1 pile overlap, S2 hero wrap, S4 color, safe-area) === */
 
-/* Bug 4 — Respect OS status bar (real device renders its own) */
-.onboarding-root{padding-top:env(safe-area-inset-top, 0px)}
+/* Bug 4 — Respect OS status bar without shifting the footer.
+   Apply safe-area-top to the top chrome row only (back/dots/recap-chips).
+   The .footer keeps its padding-bottom: env(safe-area-inset-bottom) so the
+   CTA stays anchored to the true bottom of the viewport. */
+.onboarding-root .stage > .top{padding-top:calc(14px + env(safe-area-inset-top, 0px))}
 
 /* Bug 1 — S1 poster pile: smaller, top-right, content reserves right gutter */
 .onboarding-root .s1-head{padding-right:124px;min-height:200px}
