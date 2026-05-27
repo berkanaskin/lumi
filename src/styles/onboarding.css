@@ -2358,20 +2358,31 @@
 }
 
 /* --- (7) Hero copy --- */
-.onb-s1-mockup .onb-s1-hero {
+/* r6-S1-finalfix: word "izlesek?" was splitting mid-character because
+   font-size 44px overflowed the 342px content box. Reduce to 36px and
+   force word-boundary wrap with !important to beat the legacy
+   .onb-slide-welcome .onb-hero-title rule (line 1475) that sets 38px. */
+.onb-s1-mockup .onb-s1-hero,
+.onb-slide-welcome.onb-s1-mockup .onb-hero-title {
     position: relative;
     z-index: 5;
-    font-size: 44px;
-    line-height: 0.98;
-    letter-spacing: -0.04em;
-    margin: 0 0 6px;
-    font-weight: 800;
-    color: #fff;
-    max-width: 320px;
-    /* Keep whole words intact ("izlesek?" must not break mid-character) */
-    overflow-wrap: break-word;
-    word-break: keep-all;
-    hyphens: none;
+    font-size: 36px !important;
+    line-height: 1.02 !important;
+    letter-spacing: -0.035em !important;
+    margin: 0 0 6px !important;
+    font-weight: 800 !important;
+    color: #fff !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    text-align: left !important;
+    /* Keep whole words intact ("izlesek?" must not break mid-character).
+       overflow-wrap:break-word allows the word to wrap to next line if it
+       doesn't fit; word-break:normal lets the browser respect word
+       boundaries (keep-all only helps CJK and was preventing wraps). */
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    hyphens: none !important;
+    text-wrap: balance;
 }
 .onb-s1-mockup .onb-hero-accent {
     position: relative;
@@ -2555,12 +2566,111 @@
 
 /* --- Small-viewport polish (≤ 360px) --- */
 @media (max-width: 380px) {
-    .onb-s1-mockup .onb-s1-hero { font-size: 38px; max-width: 260px; }
+    .onb-s1-mockup .onb-s1-hero,
+    .onb-slide-welcome.onb-s1-mockup .onb-hero-title {
+        font-size: 30px !important;
+        max-width: 100% !important;
+        line-height: 1.05 !important;
+    }
     .onb-poster-pile { width: 150px; height: 180px; top: 100px; }
     .onb-poster-pile__item { width: 68px; height: 102px; }
     .onb-poster-pile__item--p1 { right: 48px; }
     .onb-poster-pile__item--p2 { right: 16px; }
     .onb-poster-pile__item--p3 { right: -6px; }
+}
+
+/* =====================================================================
+ * === r6-S1-finalfix (04.6-r6) — Bugs 2 & 3 forced fixes
+ * ===================================================================== */
+
+/* Bug 3: S1 was rendering inside a smaller framed card because:
+ *   (a) parent .onb-deck__topbar renders the wrapper progress bar ABOVE
+ *       the slide card while S1 ALSO renders its own decorative
+ *       .onb-status-bar + .onb-progress-line inside the slide → "extra
+ *       progress bar above the card" visual.
+ *   (b) .onb-slide has gap:18px between children, plus S1 sets
+ *       padding:0 18px 24px which made content appear inset vs S2/S3/S4.
+ * Fix: hide the duplicate decorative bars (parent deck owns chrome) and
+ * remove S1 internal padding so it sits flush like other slides. */
+.onb-s1-mockup > .onb-status-bar,
+.onb-s1-mockup > .onb-progress-line {
+    display: none !important;
+}
+.onb-slide.onb-s1-mockup {
+    padding: 0 !important;
+    gap: 12px;
+}
+/* The brand wordmark + eyebrow + hero etc. need a side gutter since
+   their parent no longer pads. Give them their own inline padding. */
+.onb-s1-mockup > .onb-s1-brand,
+.onb-s1-mockup > .onb-s1-eyebrow,
+.onb-s1-mockup > .onb-s1-hero,
+.onb-s1-mockup > .onb-hero-accent,
+.onb-s1-mockup > .onb-s1-body,
+.onb-s1-mockup > .onb-locale-hero,
+.onb-s1-mockup > .onb-stats-strip,
+.onb-s1-mockup > .onb-welcome-spacer {
+    margin-left: 18px;
+    margin-right: 18px;
+}
+
+/* Bug 2: locale chips invisible — root cause was the .onb-locale-hero
+ * panel applied overflow:hidden which combined with insufficient
+ * min-height clipped the chip wrap row. Also the .onb-locale-inline
+ * grid inside the hero must guarantee min-height so the two chip
+ * buttons (min-height 56px each) actually paint. Force all visibility
+ * properties explicitly so no cascade can hide the chips. */
+.onb-s1-mockup .onb-locale-hero {
+    overflow: visible !important;
+    min-height: 110px;
+}
+.onb-s1-mockup .onb-locale-hero .onb-locale-inline {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 9px !important;
+    width: 100% !important;
+    min-height: 56px;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+.onb-s1-mockup .onb-locale-hero .onb-locale-chip-wrap {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 56px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    /* Override legacy line 2100 rule that sets glass background +
+       overflow:hidden — inside the hero we want a transparent wrap. */
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 14px !important;
+    overflow: visible !important;
+}
+.onb-s1-mockup .onb-locale-hero .onb-locale-chip {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    width: 100% !important;
+    min-height: 56px !important;
+    padding: 10px 12px !important;
+    border-radius: 14px !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.04)) !important;
+    border: 1px solid var(--s1-stroke-hi) !important;
+    color: #fff !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+.onb-s1-mockup .onb-locale-hero .onb-locale-chip-icon,
+.onb-s1-mockup .onb-locale-hero .onb-locale-chip-label,
+.onb-s1-mockup .onb-locale-hero .onb-locale-chip-caret {
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: #fff !important;
 }
 
 /* =====================================================================
