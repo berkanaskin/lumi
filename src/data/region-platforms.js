@@ -51,7 +51,9 @@ export const REGION_PLATFORMS = {
         { ...MUBI,       preSelected: false },
         { tmdb_id: 1968, sa_id: 'gain',    name: 'Gain',        slug: 'gain',        logo_path: '/img/providers/gain.webp',   preSelected: false },
         { tmdb_id: 1888, sa_id: 'exxen',   name: 'Exxen',       slug: 'exxen',       logo_path: '/img/providers/exxen.webp',  preSelected: false },
+        // tabii: SVG lettermark placeholder — Brandfetch has no real Tabii logo as of 2026-05-26.
         { tmdb_id: 1855, sa_id: 'tabii',   name: 'Tabii',       slug: 'tabii',       logo_path: '/img/providers/tabii.svg',   preSelected: false },
+        // tod: SVG lettermark placeholder — tod.com Brandfetch fallback was 426B placeholder, not kept.
         { tmdb_id: 2895, sa_id: 'tod',     name: 'TOD',         slug: 'tod',         logo_path: '/img/providers/tod.svg',     preSelected: false },
         { tmdb_id: 2864, sa_id: 'puhutv',  name: 'Puhu TV',     slug: 'puhutv',      logo_path: '/img/providers/puhutv.webp', preSelected: false },
     ],
