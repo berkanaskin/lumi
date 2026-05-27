@@ -1,14 +1,9 @@
 /**
- * Phase 04.6-r3 — Inline locale picker (REPLACES bottom-sheet from 04.6-03).
- *
- * Architectural rebuild: the floating bottom-sheet picker was removed after
- * 4 rounds of click-routing regressions. The S1 Welcome slide now hosts two
- * inline chips (language + country) that expand in place. Tests now assert
- * the inline DOM shape, not the old `#onb-locale-picker` modal.
+ * Phase 04.6-r7 — Inline locale picker tests (mockup .loc-card vocab).
  *
  * Covers:
  *   1. 4-slide enum (Welcome → Platforms → Premium → Ready)
- *   2. Inline locale picker — 2 chips below value pills, no floating sheet
+ *   2. Inline locale picker — 2 chips, no floating sheet
  *   3. Tap chip → aria-expanded=true + panel populated inline
  *   4. Tap an option → state updates + panel collapses
  *   5. window.__onbOpenPicker still works (legacy hook → opens lang chip)
@@ -53,12 +48,12 @@ afterEach(() => {
     global.localStorage = origLocalStorage;
 });
 
-describe('04.6-r3 — 4-slide layout', () => {
-    it('renders exactly 4 progress pills (was 6)', () => {
+describe('04.6-r7 — 4-slide layout', () => {
+    it('renders exactly 4 progress dots (was 6)', () => {
         startOnboarding();
-        const pills = document.querySelectorAll('.onb-pill');
-        expect(pills.length).toBe(4);
-        expect(document.querySelector('.onb-pills')?.getAttribute('aria-valuemax')).toBe('4');
+        const dots = document.querySelectorAll('.dots .dot');
+        expect(dots.length).toBe(4);
+        expect(document.querySelector('.dots')?.getAttribute('aria-valuemax')).toBe('4');
     });
 
     it('slide enum advances Welcome → Platforms → Premium → Ready', async () => {
@@ -66,7 +61,7 @@ describe('04.6-r3 — 4-slide layout', () => {
         expect(window.__onbState().slide).toBe(0);
         window.__onbGoto(1);
         await new Promise((r) => setTimeout(r, 20));
-        expect(document.querySelector('.onb-slide .onb-tile, .onb-skeleton-grid, .onb-grid, .onb-card')).toBeTruthy();
+        expect(document.querySelector('.onb-slide-platforms, .plat-grid')).toBeTruthy();
         window.__onbGoto(2);
         await new Promise((r) => setTimeout(r, 20));
         expect(document.querySelector('.onb-slide-premium')).toBeTruthy();
@@ -89,15 +84,15 @@ describe('04.6-r3 — 4-slide layout', () => {
     });
 });
 
-describe('04.6-r3 — S1 inline locale picker (replaces bottom sheet)', () => {
+describe('04.6-r7 — S1 inline locale picker (mockup .loc-card)', () => {
     it('renders inline picker container with both chips inside Welcome slide', async () => {
         startOnboarding();
         await new Promise((r) => setTimeout(r, 10));
         const container = document.querySelector('[data-testid="onb-detection-banner"]');
         expect(container).toBeTruthy();
-        expect(container.classList.contains('onb-locale-inline')).toBe(true);
+        // r7: container is the .loc-hero glass panel from the mockup.
+        expect(container.classList.contains('loc-hero')).toBe(true);
         expect(container.closest('.onb-slide-welcome')).toBeTruthy();
-        // Both chips present (lang + country) in normal flow.
         expect(document.querySelector('[data-testid="onb-locale-chip-lang"]')).toBeTruthy();
         expect(document.querySelector('[data-testid="onb-locale-chip-country"]')).toBeTruthy();
     });
@@ -129,7 +124,7 @@ describe('04.6-r3 — S1 inline locale picker (replaces bottom sheet)', () => {
         expect(langChip.getAttribute('aria-expanded')).toBe('true');
         const panel = document.querySelector('[data-testid="onb-locale-panel-lang"]');
         expect(panel).toBeTruthy();
-        const opts = panel.querySelectorAll('.onb-locale-opt');
+        const opts = panel.querySelectorAll('.loc-opt');
         expect(opts.length).toBe(8); // 8 ONBOARDING_LANGS
     });
 
@@ -141,7 +136,7 @@ describe('04.6-r3 — S1 inline locale picker (replaces bottom sheet)', () => {
         await new Promise((r) => setTimeout(r, 10));
         const panel = document.querySelector('[data-testid="onb-locale-panel-country"]');
         expect(panel).toBeTruthy();
-        const opts = panel.querySelectorAll('.onb-locale-opt');
+        const opts = panel.querySelectorAll('.loc-opt');
         expect(opts.length).toBeGreaterThanOrEqual(30);
         expect(panel.querySelector('[data-cc="TR"]')).toBeTruthy();
     });
@@ -159,7 +154,6 @@ describe('04.6-r3 — S1 inline locale picker (replaces bottom sheet)', () => {
         expect(window.__onbState().lang).toBe('tr');
         const stored = JSON.parse(localStorage.getItem('lumi_locale') || '{}');
         expect(stored.lang).toBe('tr');
-        // Onboarding storage also mirrored.
         const onb = JSON.parse(localStorage.getItem('lumi_onboarding') || '{}');
         expect(onb.lang).toBe('tr');
     });
@@ -174,17 +168,15 @@ describe('04.6-r3 — S1 inline locale picker (replaces bottom sheet)', () => {
     });
 });
 
-describe('04.6-r3 — Footer CTA always visible', () => {
-    it('deck footer exists with a CTA on S1/S2/S4 (S3 has in-slide primary CTA)', async () => {
+describe('04.6-r7 — Footer CTA always visible', () => {
+    it('deck footer exists with a CTA on every slide', async () => {
         startOnboarding();
-        // S3 (index 2) intentionally hides the footer — buildPremium renders its
-        // own primary CTA (Premium'u Dene) + ghost skip link inside the slide body.
-        for (const n of [0, 1, 3]) {
+        for (const n of [0, 1, 2, 3]) {
             window.__onbGoto(n);
             await new Promise((r) => setTimeout(r, 20));
             const footer = document.querySelector('[data-testid="onb-deck-footer"]');
             expect(footer, `footer missing on slide ${n}`).toBeTruthy();
-            const cta = footer.querySelector('.onb-cta');
+            const cta = footer.querySelector('.cta');
             expect(cta, `footer CTA missing on slide ${n}`).toBeTruthy();
         }
     });
@@ -196,7 +188,6 @@ describe('04.6-r3 — Footer CTA always visible', () => {
         const cta = document.querySelector('[data-testid="onb-deck-footer"] [data-testid="onb-ready-cta"]');
         expect(cta).toBeTruthy();
         cta.click();
-        // close() runs after 700ms confetti delay.
         await new Promise((r) => setTimeout(r, 800));
         expect(localStorage.getItem('lumi_onboarding_seen')).toBe('true');
         expect(document.getElementById('onboarding-root')).toBeNull();

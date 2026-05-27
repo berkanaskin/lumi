@@ -275,6 +275,15 @@
 
 /* === PRODUCTION UTILITIES (preserved from prior rounds) === */
 
+/* 04.6-03 — S4 (Ready) CTA isolation. Non-CTA content is non-interactive so
+   accidental taps on the slide body / confetti / curtains can't close the
+   wizard. The explicit Ready CTA opts back in. */
+.onboarding-root .onb-slide-ready { pointer-events: none; }
+.onboarding-root .onb-slide-ready .onb-cta-ready { pointer-events: auto; }
+.onboarding-root .onb-slide-ready button { pointer-events: auto; }
+.onboarding-root .onb-slide-ready .recap { pointer-events: auto; }
+
+
 /* Focus ring for keyboard navigation */
 .onboarding-root :focus-visible{outline:2px solid var(--accent2);outline-offset:2px;border-radius:8px}
 .onboarding-root .cta:focus-visible,

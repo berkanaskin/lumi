@@ -1468,18 +1468,20 @@ function renderWizard(options = {}) {
         }
         slide.appendChild(recap);
 
-        // Footer CTA — "Lumi'yi keşfet"
+        // Footer CTA — "Lumi'yi keşfet" (r7: .onb-cta-ready kept for s4 isolation hooks)
         const cta = el('button', {
-            class: 'cta',
+            class: 'cta onb-cta-ready',
             type: 'button',
             'data-testid': 'onb-ready-cta',
             text: t('onboarding.ready.cta', "Lumi'yi keşfet"),
         });
         cta.addEventListener('click', (e) => {
+            // 04.6-03 — Belt-and-suspenders: ignore synthetic events not from the CTA.
             if (e.currentTarget !== cta) return;
             haptic.success();
             try { window.__onbConfettiBurst?.(cta); } catch {}
             clearOnboardingProgress();
+            try { localStorage.setItem('lumi_onboarding_seen', 'true'); } catch {}
             setTimeout(close, 700);
         });
         portalFooterCta(cta);
@@ -1568,6 +1570,8 @@ function renderWizard(options = {}) {
         if (dt > 800) return;
         if (Math.abs(dx) < 40 || Math.abs(dy) > 50) return;
         if (dx > 0 && state.slide === 0) return;
+        // 04.6-03 — state.slide === 3 (Ready) hard-blocks both directions to
+        // prevent confetti / curtain decorations from being read as swipes.
         if (state.slide === 3) return;
         if (dx < 0) {
             const cta = footer.querySelector('.cta:not(.disabled):not([disabled])');

@@ -139,7 +139,7 @@ describe('04-04-r7 — audio toggle removed', () => {
     });
 });
 
-describe('04-04-r7 — swipe + accent (source assertions)', () => {
+describe('04.6-r7 — swipe handler (source assertions, updated for mockup vocab)', () => {
     let src;
     beforeEach(async () => {
         const fs = await import('node:fs');
@@ -155,21 +155,19 @@ describe('04-04-r7 — swipe + accent (source assertions)', () => {
         expect(src).toMatch(/root\.addEventListener\(['"]touchend['"]/);
     });
 
-    it('swipe handler guards against .onb-list / .onb-grid / .onb-search', () => {
-        expect(src).toMatch(/\.closest\(['"]\.onb-search['"]\)/);
-        expect(src).toMatch(/\.closest\(['"]\.onb-list['"]\)/);
-        expect(src).toMatch(/\.closest\(['"]\.onb-grid['"]\)/);
+    it('swipe handler guards against mockup-vocab interactive surfaces', () => {
+        // r7 wholesale port: legacy guards (.onb-list/.onb-grid/.onb-search) replaced
+        // by mockup vocab. Picker is .loc-card/.loc-list, grids are .plat-grid/.psq-grid.
+        expect(src).toMatch(/\.closest\(['"]\.loc-card['"]\)/);
+        expect(src).toMatch(/\.closest\(['"]\.loc-list['"]\)/);
+        expect(src).toMatch(/\.closest\(['"]\.plat-grid['"]\)/);
+        expect(src).toMatch(/\.closest\(['"]\.psq-grid['"]\)/);
     });
 
-    it('per-slide accent attribute is set via SLIDE_ACCENTS map', () => {
-        expect(src).toMatch(/SLIDE_ACCENTS/);
-        expect(src).toMatch(/data-accent/);
-        // 5 distinct tones declared.
-        expect(src).toMatch(/['"]warm['"]/);
-        expect(src).toMatch(/['"]cool['"]/);
-        expect(src).toMatch(/['"]teal['"]/);
-        expect(src).toMatch(/['"]purple['"]/);
-        expect(src).toMatch(/['"]magenta['"]/);
+    it('per-slide accent uses mockup stage classes (.s0..s3) — CSS variable swap', () => {
+        // r7: SLIDE_ACCENTS JS map replaced by stage.classList = "stage s{n}"
+        // and CSS rules .stage.s0..s3 set --accent-glow / --ctaA / --orbA tints.
+        expect(src).toMatch(/stage\.classList\.add\(['"]s['"]/);
     });
 
     it('swipe hint key is set in localStorage', () => {
@@ -177,30 +175,30 @@ describe('04-04-r7 — swipe + accent (source assertions)', () => {
     });
 });
 
-describe('04-04-r7 — accent CSS variables defined', () => {
-    it('onboarding.css defines all 5 accent gradients', async () => {
+describe('04.6-r7 — accent CSS variables defined (mockup per-slide tints)', () => {
+    it('onboarding.css defines per-slide stage tints (.stage.s0..s3)', async () => {
         const fs = await import('node:fs');
         const path = await import('node:path');
         const css = fs.readFileSync(
             path.resolve(process.cwd(), 'src/styles/onboarding.css'),
             'utf8',
         );
-        expect(css).toMatch(/--accent-warm:/);
-        expect(css).toMatch(/--accent-cool:/);
-        expect(css).toMatch(/--accent-teal:/);
-        expect(css).toMatch(/--accent-purple:/);
-        expect(css).toMatch(/--accent-magenta:/);
-        expect(css).toMatch(/--accent-current/);
+        // r7 mockup tints — per-stage CSS variable blocks set --accent-glow + --orbA + --ctaA.
+        expect(css).toMatch(/\.stage\.s0/);
+        expect(css).toMatch(/\.stage\.s1/);
+        expect(css).toMatch(/\.stage\.s2/);
+        expect(css).toMatch(/\.stage\.s3/);
+        expect(css).toMatch(/--accent-glow/);
+        expect(css).toMatch(/--ctaA/);
     });
 
-    it('skeleton tile + shimmer animation declared', () => {
+    it('mockup CTA shimmer animation declared', () => {
         const fs = require('node:fs');
         const path = require('node:path');
         const css = fs.readFileSync(
             path.resolve(process.cwd(), 'src/styles/onboarding.css'),
             'utf8',
         );
-        expect(css).toMatch(/\.onb-skeleton-tile/);
         expect(css).toMatch(/@keyframes onb-shimmer/);
     });
 });

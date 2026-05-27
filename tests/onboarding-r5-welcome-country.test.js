@@ -59,35 +59,28 @@ describe('04-04-r5 — S1 Welcome new content', () => {
         const root = document.getElementById('onboarding-root');
         expect(root).toBeTruthy();
 
-        // 04.6-r3: CSS text wordmark (NOT image). The image variant
-        //          (lumi-logo.png + srcset) was deleted after Vite/CDN cache
-        //          regressions. Wordmark renders as <span class="onb-wordmark">LUMI</span>.
-        const wordmark = root.querySelector('[data-testid="onb-wordmark"]');
+        // 04.6-r7: Wordmark is .wordmark text (mockup vocab — was onb-wordmark span).
+        const wordmark = root.querySelector('.wordmark');
         expect(wordmark).toBeTruthy();
-        expect(wordmark.tagName.toLowerCase()).toBe('span');
-        expect(wordmark.textContent.trim().toUpperCase()).toBe('LUMI');
+        expect(wordmark.textContent.replace(/\s+/g, '').toUpperCase()).toBe('LUMI');
         // Image wordmark must NOT exist anymore.
         expect(root.querySelector('img.onb-wordmark-img')).toBeFalsy();
         expect(root.querySelector('[data-testid="onb-logo-img"]')).toBeFalsy();
-        // Tagline pair was removed from S1 (lives on Premium slide instead).
-        expect(root.querySelector('.onb-slide-welcome .onb-tagline')).toBeFalsy();
 
-        // 04.6-r5: Mockup S1 — value-pills replaced by stats-strip (3 cells)
-        // and poster-trio replaced by 3-poster pile.
-        const stats = root.querySelector('[data-testid="onb-stats-strip"]');
+        // 04.6-r7: Mockup vocab — .stats-strip with .stat children.
+        const stats = root.querySelector('.stats-strip');
         expect(stats).toBeTruthy();
-        expect(stats.querySelectorAll('.onb-stat').length).toBe(3);
+        expect(stats.querySelectorAll('.stat').length).toBe(3);
 
-        const pile = root.querySelector('[data-testid="onb-poster-pile"]');
+        // 04.6-r7: Mockup pile vocab — .pile with .p1/.p2/.p3 children.
+        const pile = root.querySelector('.pile');
         expect(pile).toBeTruthy();
-        expect(pile.querySelectorAll('.onb-poster-pile__item').length).toBe(3);
+        expect(pile.querySelectorAll('img').length).toBe(3);
 
-        // 04.6-r3: Welcome CTA is now portaled to the always-visible deck
-        // footer (.onb-deck__footer) instead of living inside the slide.
-        const cta = root.querySelector('.onb-deck__footer .onb-cta')
+        // 04.6-r7: Welcome CTA is in the deck footer (mockup vocab .footer .cta).
+        const cta = root.querySelector('[data-testid="onb-deck-footer"] .cta')
             || root.querySelector('[data-testid="onb-welcome-cta"]');
         expect(cta).toBeTruthy();
-        // EN canonical is "Set the scene"; TR is "Sahneyi hazırla".
         expect(cta.textContent).toMatch(/scene|Sahne/i);
     });
 });

@@ -64,7 +64,7 @@ describe('04.6-r3 — inline country picker', () => {
         await openCountryPicker();
         const panel = document.querySelector('[data-testid="onb-locale-panel-country"]');
         expect(panel).toBeTruthy();
-        const items = panel.querySelectorAll('.onb-locale-opt');
+        const items = panel.querySelectorAll('.loc-opt');
         expect(items.length).toBeGreaterThanOrEqual(30);
     });
 
@@ -80,7 +80,7 @@ describe('04.6-r3 — inline country picker', () => {
         await openCountryPicker();
         const trOpt = document.querySelector('[data-testid="onb-locale-panel-country"] [data-cc="TR"]');
         expect(trOpt).toBeTruthy();
-        expect(trOpt.querySelector('.onb-opt-flag')).toBeTruthy();
+        expect(trOpt.querySelector('.flag')).toBeTruthy();
         expect(trOpt.textContent).toMatch(/Türkiye|Turkey/);
     });
 
