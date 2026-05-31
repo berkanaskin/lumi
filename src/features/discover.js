@@ -10,6 +10,8 @@ import { showLoading, hideLoading } from '../ui/loading.js';
 import { DAILY_REC_KEY, DAILY_REC_CATEGORIES, getGenreName } from '../lib/constants.js';
 // Side-effect import: registers the 'lumi:paywall' listener + pulls paywall styles (Phase 05-02).
 import '../ui/paywall-sheet.js';
+// Side-effect import: injects the Agent hub FAB + registers it (Phase 05-03).
+import './agent-hub.js';
 
 // ============================================
 // POETIC PLACEHOLDERS
