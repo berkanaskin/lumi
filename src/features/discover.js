@@ -236,6 +236,39 @@ export function extractMovieKeywords(query) {
 // ============================================
 
 /**
+ * Phase 05-01: consume one free-tier AI query against the server-side gate
+ * (POST /api/quota) BEFORE running the costly hybrid search.
+ *
+ * Returns { blocked:true } only on an explicit 429 (the 6th free query of the day).
+ * Every other path — premium, allowed, no token, or any infra error — returns
+ * { blocked:false } so a Firestore/network hiccup can never block a legitimate
+ * (or paying) user. This mirrors the fail-open behavior of api/quota.js.
+ */
+export async function consumeAiQuota() {
+    try {
+        const idToken = window.AuthService ? await window.AuthService.getIdToken() : null;
+        if (!idToken) return { blocked: false, degraded: true };
+
+        let tz = 'UTC';
+        try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'; } catch { /* keep UTC */ }
+
+        const res = await fetch('/api/quota', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idToken, tz }),
+        });
+
+        if (res.status === 429) return { blocked: true };
+        if (!res.ok) return { blocked: false, degraded: true };
+
+        const data = await res.json().catch(() => ({}));
+        return { blocked: false, remaining: data.remaining, premium: data.premium };
+    } catch {
+        return { blocked: false, degraded: true };
+    }
+}
+
+/**
  * Handle AI-powered search using hybrid search endpoint
  */
 export async function handleAISearch() {
@@ -260,6 +293,22 @@ export async function handleAISearch() {
     try {
         // Get userId for personalization
         const userId = window.AuthService?.currentUser?.uid || 'anonymous';
+
+        // Phase 05-01: server-side free-tier gate. Consume one daily AI query BEFORE the
+        // costly hybrid search. Premium bypasses; the 6th free query of the day is blocked
+        // and we open the paywall hook (05-02 listens for 'lumi:paywall') instead.
+        const gate = await consumeAiQuota();
+        if (gate.blocked) {
+            hideLoading(spinner);
+            window.dispatchEvent(new CustomEvent('lumi:paywall', { detail: { trigger: 'quota' } }));
+            renderSearchEmptyState(
+                'Günlük AI hakkın doldu',
+                'Bugünlük 5 ücretsiz "Öner Bana" hakkını kullandın. Sınırsız öneri + 4 proaktif özellik için Premium\'a geç.',
+                query,
+            );
+            showToast('Günlük AI hakkın doldu');
+            return;
+        }
 
         // Call hybrid search endpoint (single attempt — no silent retry)
         const response = await SearchService.hybridSearch(query, userId);

@@ -1,29 +1,72 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Users collection — auth-gated with email verification
-    match /users/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null
-        && request.auth.uid == userId
+
+    // ── helpers ───────────────────────────────────────────────────────────────
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+    function cleanDisplayName() {
+      return !('displayName' in request.resource.data)
+        || !request.resource.data.displayName.matches('.*(?i)(admin|moderator|lumi|fuck|shit|ass|dick|pussy|siktir|amk|orospu|yarrak|piç|sikik|göt|bok|pezevenk).*');
+    }
+    // A verified author = the owner signed in with Google or a verified email.
+    function verifiedAuthor(userId) {
+      return isOwner(userId)
         && (
           request.auth.token.firebase.sign_in_provider == 'google.com'
           || request.auth.token.email_verified == true
-        )
-        && (!('displayName' in request.resource.data) || !request.resource.data.displayName.matches('.*(?i)(admin|moderator|lumi|fuck|shit|ass|dick|pussy|siktir|amk|orospu|yarrak|piç|sikik|göt|bok|pezevenk).*'));
+        );
+    }
+    // `premium` is SERVER-authoritative (api/quota.js / RevenueCat webhook in Phase 6).
+    // Clients may never create it true, nor change its value. Uses .get(...,false) so a
+    // missing field compares safely (merge writes that don't touch premium are allowed).
+    function premiumNotCreated() {
+      return request.resource.data.get('premium', false) == false;
+    }
+    function premiumUnchanged() {
+      return request.resource.data.get('premium', false) == resource.data.get('premium', false);
     }
 
-    // Watchlist — private per user
+    // ── users (profile) ───────────────────────────────────────────────────────
+    match /users/{userId} {
+      allow read: if request.auth != null;
+
+      // Owners (incl. anonymous guests + freshly-registered email users) may create
+      // their own bare profile doc, but can NEVER seed `premium`.
+      allow create: if isOwner(userId)
+        && cleanDisplayName()
+        && premiumNotCreated();
+
+      // Updates still require a verified author (unchanged gate) and can never flip
+      // `premium` — that closes the bypass where a verified user wrote premium directly.
+      allow update: if verifiedAuthor(userId)
+        && cleanDisplayName()
+        && premiumUnchanged();
+
+      allow delete: if false;
+    }
+
+    // ── free-tier usage counter (Phase 05-01) ─────────────────────────────────
+    // Server-only: written exclusively by api/quota.js with the Admin SDK (which
+    // bypasses these rules). Denying all client access is what makes the 5/day cap
+    // un-forgeable from the browser.
+    match /users/{userId}/usage/{dateKey} {
+      allow read, write: if false;
+    }
+
+    // ── private per-user lists (anon-compatible: uid match, no email gate) ─────
     match /users/{userId}/watchlist/{itemId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if isOwner(userId);
     }
-
-    // Favorites — private per user
     match /users/{userId}/favorites/{itemId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if isOwner(userId);
+    }
+    match /users/{userId}/notifications/{notifId} {
+      allow read, write: if isOwner(userId);
     }
 
-    // Ratings — authenticated users only
+    // ── ratings (public read, owner-write) ─────────────────────────────────────
     match /ratings/{ratingId} {
       allow read: if true;
       allow create: if request.auth != null
@@ -32,18 +75,23 @@ service cloud.firestore {
         && resource.data.userId == request.auth.uid;
     }
 
-    // Streaming cache — server-written, public read
+    // ── Pair Mode (Phase 05-04 baseline) ──────────────────────────────────────
+    // Only members of a pair can read/modify it. Full pairing-code semantics land
+    // in 05-04; this baseline keeps pair docs private to their two members.
+    match /pairs/{pairId} {
+      allow read, update, delete: if request.auth != null
+        && request.auth.uid in resource.data.members;
+      allow create: if request.auth != null
+        && request.auth.uid in request.resource.data.members;
+    }
+
+    // ── streaming cache — server-written, public read ─────────────────────────
     match /streamingCache/{cacheId} {
       allow read: if true;
       allow write: if false;
     }
 
-    // Notifications — private per user
-    match /users/{userId}/notifications/{notifId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-
-    // Deny everything else
+    // ── deny everything else ──────────────────────────────────────────────────
     match /{document=**} {
       allow read, write: if false;
     }

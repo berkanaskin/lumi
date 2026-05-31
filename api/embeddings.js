@@ -8,7 +8,7 @@
 
 import { embedMany } from 'ai';
 import { openai } from '@ai-sdk/openai';
-import { initializeApp, cert } from 'firebase-admin/app';
+import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 
 export const config = {
@@ -27,9 +27,11 @@ function initializeFirebase() {
         }
 
         const serviceAccount = JSON.parse(serviceAccountJson);
-        const app = initializeApp({
-            credential: cert(serviceAccount),
-        });
+        // Reuse the existing app on warm invocations — initializeApp() throws
+        // 'duplicate-app' if called twice in the same isolate.
+        const app = getApps().length
+            ? getApps()[0]
+            : initializeApp({ credential: cert(serviceAccount) });
 
         return getFirestore(app);
     } catch (error) {

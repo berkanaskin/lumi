@@ -125,7 +125,10 @@ export async function requireAuth({ action } = {}) {
         ? window.firebase.auth()
         : null;
     const current = auth?.currentUser;
-    if (current) return current;
+    // Phase 05-01: an anonymous guest is NOT logged in — social actions (rating,
+    // commenting) must still open the auth modal so the guest signs in for real
+    // (which upgrades the anon account in place via linkWithCredential).
+    if (current && !current.isAnonymous) return current;
 
     return new Promise((resolve, reject) => {
         activeResolve = resolve;

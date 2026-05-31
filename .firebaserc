@@ -1,5 +1,7 @@
 {
-  "projects": {},
+  "projects": {
+    "default": "lumi-film-app"
+  },
   "targets": {},
   "etags": {}
 }

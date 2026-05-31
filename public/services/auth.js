@@ -26,10 +26,25 @@ class AuthService {
                 // Listen for auth state changes
                 this.auth.onAuthStateChanged((user) => {
                     this.firebaseUser = user;
-                    if (user) {
+                    // Phase 05-01: an ANONYMOUS user is our silent quota/identity backer,
+                    // not a real login. Keep firebaseUser (so getIdToken() can mint a token
+                    // for the server-side quota gate) but treat the app-level user as a
+                    // guest — identical to the signed-out branch — so optional auth, the
+                    // login wall, and requireAuth() social-gating behave exactly as before.
+                    if (user && !user.isAnonymous) {
                         this.syncUserToLocal(user);
                     } else {
                         this.currentUser = this.loadLocalUser();
+                        // No real user signed in → silently establish an anonymous identity
+                        // so every guest has a stable UID + ID token for the free-tier gate.
+                        // Guard on `!user` so we don't loop once the anon user arrives, and
+                        // never clobber a real session. Best-effort: failure just leaves the
+                        // guest tokenless and the gate fails open.
+                        if (!user && typeof this.auth.signInAnonymously === 'function') {
+                            this.auth.signInAnonymously().catch((err) => {
+                                console.warn('[auth] anonymous sign-in failed:', err?.code || err);
+                            });
+                        }
                     }
                     this.isInitialized = true;
                     window.dispatchEvent(new CustomEvent('authStateChanged', { detail: { user: this.currentUser } }));
@@ -111,6 +126,20 @@ class AuthService {
         provider.addScope('email');
 
         try {
+            // Phase 05-01: if the user is currently an anonymous guest, UPGRADE that
+            // account in place so its UID (and any server-side state) carries over. Any
+            // link failure (e.g. this Google account already exists) falls back to a normal
+            // sign-in so login is never blocked — favorites still survive via the
+            // localStorage→Firestore migration that runs on the real UID.
+            const current = this.auth.currentUser;
+            if (current && current.isAnonymous) {
+                try {
+                    const linked = await current.linkWithPopup(provider);
+                    return linked.user;
+                } catch (linkErr) {
+                    console.warn('[auth] google link failed, signing in fresh:', linkErr?.code || linkErr);
+                }
+            }
             const result = await this.auth.signInWithPopup(provider);
             return result.user;
         } catch (error) {
@@ -135,19 +164,46 @@ class AuthService {
 
     async registerWithEmail(email, password, displayName) {
         try {
-            const result = await this.auth.createUserWithEmailAndPassword(email, password);
+            // Phase 05-01: upgrade an anonymous guest in place (linkWithCredential) so its
+            // UID carries over; otherwise create a fresh account. If the email already
+            // belongs to another account, surface a DISTINGUISHABLE error (code preserved)
+            // so the UI can guide the user to sign in instead of showing a generic failure.
+            let result;
+            const current = this.auth.currentUser;
+            if (current && current.isAnonymous) {
+                try {
+                    const cred = firebase.auth.EmailAuthProvider.credential(email, password);
+                    result = await current.linkWithCredential(cred);
+                } catch (linkErr) {
+                    console.warn('[auth] register link failed, creating fresh:', linkErr?.code || linkErr);
+                }
+            }
+            if (!result) {
+                try {
+                    result = await this.auth.createUserWithEmailAndPassword(email, password);
+                } catch (createErr) {
+                    if (createErr?.code === 'auth/email-already-in-use') {
+                        const e = new Error('Bu e-posta zaten kayıtlı. Lütfen giriş yap.');
+                        e.code = 'auth/email-already-in-use';
+                        throw e;
+                    }
+                    throw createErr;
+                }
+            }
 
             // Update profile with display name
             await result.user.updateProfile({ displayName });
 
-            // Create user document in Firestore
+            // Create user document in Firestore (merge tolerates a pre-existing doc on the
+            // linked UID). `premium` is NEVER written client-side — it is server-authoritative
+            // (api/quota.js / RevenueCat webhook in Phase 6).
             if (this.db) {
                 await this.db.collection('users').doc(result.user.uid).set({
                     email,
                     displayName,
                     tier: 'free',
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
+                }, { merge: true });
             }
 
             return result.user;
@@ -274,7 +330,20 @@ class AuthService {
         return this.currentUser;
     }
 
+    // Phase 05-01: mint a Firebase ID token for the server-side quota gate (/api/quota).
+    // Works for anonymous guests too. Returns null if Firebase/user is unavailable so
+    // callers can degrade gracefully (the gate fails open).
+    async getIdToken() {
+        try {
+            const u = this.auth && this.auth.currentUser;
+            return u ? await u.getIdToken() : null;
+        } catch {
+            return null;
+        }
+    }
+
     isLoggedIn() {
+        // Anonymous guests are NOT "logged in" for app purposes (see onAuthStateChanged).
         return !!this.currentUser;
     }
 

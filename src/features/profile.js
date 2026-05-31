@@ -248,7 +248,13 @@ async function handleEmailLogin(e) {
         }
     } catch (error) {
         console.error('[Email Login] Error:', error);
-        showLoginError('Authentication failed: ' + (error.message || 'Unknown error'));
+        // Surface known, user-actionable errors verbatim (e.g. the Phase 05-01
+        // "email already registered, sign in instead" guidance); otherwise generic.
+        const known = ['auth/email-already-in-use', 'auth/wrong-password', 'auth/invalid-email'];
+        const friendly = known.includes(error?.code)
+            ? error.message
+            : ('Authentication failed: ' + (error.message || 'Unknown error'));
+        showLoginError(friendly);
     } finally {
         if (submitBtn) {
             submitBtn.textContent = 'Continue with Email';
