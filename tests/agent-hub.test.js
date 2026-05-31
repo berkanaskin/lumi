@@ -1,19 +1,41 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { openAgentHub } from '../src/features/agent-hub.js';
-import { PREMIUM_KEY } from '../src/lib/entitlements.js';
+/**
+ * Phase 05-03 — Agent hub. Real JSDOM (see paywall-sheet.test.js note).
+ */
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { JSDOM } from 'jsdom';
+
+let openAgentHub, PREMIUM_KEY;
+let origDocument, origWindow, origLocalStorage;
+
+beforeEach(async () => {
+    origDocument = global.document;
+    origWindow = global.window;
+    origLocalStorage = global.localStorage;
+
+    const dom = new JSDOM('<!doctype html><html><head></head><body></body></html>', {
+        url: 'http://localhost/',
+        pretendToBeVisual: true,
+    });
+    global.document = dom.window.document;
+    global.window = dom.window;
+    global.localStorage = dom.window.localStorage;
+
+    vi.resetModules();
+    const ent = await import('../src/lib/entitlements.js');
+    PREMIUM_KEY = ent.PREMIUM_KEY;
+    const hub = await import('../src/features/agent-hub.js');
+    openAgentHub = hub.openAgentHub;
+    localStorage.clear();
+});
+
+afterEach(() => {
+    global.document = origDocument;
+    global.window = origWindow;
+    global.localStorage = origLocalStorage;
+    vi.resetModules();
+});
 
 describe('agent-hub — Movie Night Agent center (Phase 05-03)', () => {
-    beforeEach(() => {
-        localStorage.clear();
-        document.getElementById('agent-overlay')?.remove();
-        document.getElementById('pw-overlay')?.remove();
-    });
-    afterEach(() => {
-        document.getElementById('agent-overlay')?.remove();
-        document.getElementById('pw-overlay')?.remove();
-        localStorage.clear();
-    });
-
     it('injects the launcher FAB on import', () => {
         expect(document.getElementById('agent-fab')).toBeTruthy();
     });

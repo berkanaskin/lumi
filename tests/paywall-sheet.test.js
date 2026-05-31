@@ -1,22 +1,47 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { openPaywall, closePaywall } from '../src/ui/paywall-sheet.js';
-import { isPremium, PREMIUM_KEY } from '../src/lib/entitlements.js';
+/**
+ * Phase 05-02 — in-app paywall sheet. Uses a real JSDOM (the repo's mock `document`
+ * in tests/setup.js cannot render/query a built DOM), mirroring the onboarding tests.
+ */
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { JSDOM } from 'jsdom';
+
+let openPaywall, closePaywall, isPremium, PREMIUM_KEY;
+let origDocument, origWindow, origLocalStorage;
+
+beforeEach(async () => {
+    origDocument = global.document;
+    origWindow = global.window;
+    origLocalStorage = global.localStorage;
+
+    const dom = new JSDOM('<!doctype html><html><head></head><body></body></html>', {
+        url: 'http://localhost/',
+        pretendToBeVisual: true,
+    });
+    global.document = dom.window.document;
+    global.window = dom.window;
+    global.localStorage = dom.window.localStorage;
+
+    vi.resetModules();
+    const ent = await import('../src/lib/entitlements.js');
+    isPremium = ent.isPremium;
+    PREMIUM_KEY = ent.PREMIUM_KEY;
+    const pw = await import('../src/ui/paywall-sheet.js');
+    openPaywall = pw.openPaywall;
+    closePaywall = pw.closePaywall;
+    localStorage.clear();
+});
+
+afterEach(() => {
+    global.document = origDocument;
+    global.window = origWindow;
+    global.localStorage = origLocalStorage;
+    vi.resetModules();
+});
 
 describe('paywall-sheet — in-app premium sheet (Phase 05-02)', () => {
-    beforeEach(() => {
-        localStorage.clear();
-        document.body.innerHTML = '';
-        closePaywall();
-    });
-    afterEach(() => {
-        closePaywall();
-        localStorage.clear();
-    });
-
     it('renders 4 features, 3 tiers, and a 3-day trial', () => {
         openPaywall({ trigger: 'feature' });
-        const sheet = document.querySelector('[data-testid="paywall-sheet"]');
-        expect(sheet).toBeTruthy();
+        expect(document.querySelector('[data-testid="paywall-sheet"]')).toBeTruthy();
         expect(document.querySelectorAll('[data-testid="pw-feature"]').length).toBe(4);
         expect(document.querySelectorAll('[data-testid="pw-tier"]').length).toBe(3);
         expect(document.querySelector('.pw-trial').textContent).toMatch(/3/);
@@ -31,7 +56,6 @@ describe('paywall-sheet — in-app premium sheet (Phase 05-02)', () => {
     });
 
     it('in dev, the CTA flips the entitlement (mock unlock) and closes the sheet', () => {
-        // vitest runs with import.meta.env.DEV === true
         openPaywall({ trigger: 'quota' });
         const cta = document.querySelector('[data-testid="pw-cta"]');
         expect(cta.getAttribute('data-mode')).toBe('dev-unlock');
@@ -54,7 +78,7 @@ describe('paywall-sheet — in-app premium sheet (Phase 05-02)', () => {
     });
 
     it('opens in response to the lumi:paywall event (self-registered listener)', () => {
-        window.dispatchEvent(new CustomEvent('lumi:paywall', { detail: { trigger: 'quota' } }));
+        window.dispatchEvent(new window.CustomEvent('lumi:paywall', { detail: { trigger: 'quota' } }));
         expect(document.querySelector('[data-testid="paywall-sheet"]')).toBeTruthy();
         expect(document.querySelector('.pw-quota-lead')).toBeTruthy();
     });
