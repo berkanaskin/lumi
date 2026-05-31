@@ -12,6 +12,8 @@ import { DAILY_REC_KEY, DAILY_REC_CATEGORIES, getGenreName } from '../lib/consta
 import '../ui/paywall-sheet.js';
 // Side-effect import: injects the Agent hub FAB + registers it (Phase 05-03).
 import './agent-hub.js';
+// Side-effect import: syncs Firestore premium flag → client entitlement mirror (Phase 05-01).
+import '../lib/entitlements-sync.js';
 
 // ============================================
 // POETIC PLACEHOLDERS
