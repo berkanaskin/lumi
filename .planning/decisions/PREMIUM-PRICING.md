@@ -12,8 +12,8 @@ This document captures every pricing, market, and platform decision locked on 20
 
 | Tier         | US$    | TR        | Free Trial | Notes                                              |
 | ------------ | ------ | --------- | ---------- | -------------------------------------------------- |
-| **Monthly**  | $2.99  | 49 ₺      | 7 days     | Auto-renewable subscription                        |
-| **Annual**   | $19.99 | 299 ₺     | 7 days     | Auto-renewable subscription; "Best Value"          |
+| **Monthly**  | $2.99  | 49 ₺      | 3 days     | Auto-renewable subscription                        |
+| **Annual**   | $19.99 | 299 ₺     | 3 days     | Auto-renewable subscription; "Best Value"          |
 | **Lifetime** | $49.99 | 799 ₺     | **None**   | One-time purchase, **LIMITED launch offer** — see §5 |
 
 Yearly savings versus monthly (US): `($2.99 × 12) − $19.99 = $15.89/year saved`.
@@ -124,12 +124,12 @@ All Premium features sync across iOS + Android via RevenueCat receipt validation
 
 ## 8. Free Trial Mechanics
 
-- **7 days**, available **ONLY on subscription tiers** (monthly + yearly).
+- **3 days**, available **ONLY on subscription tiers** (monthly + yearly).
 - **Lifetime = NO trial** (single purchase, immediate access).
 - Trial offered via:
   - **iOS**: RevenueCat introductory offer linked to a StoreKit free-trial offer.
   - **Android**: RevenueCat introductory offer linked to a Google Play promotional offer.
-- During the 7-day trial, the user's RevenueCat entitlement is `premium = active`. After 7 days:
+- During the 7-day trial, the user's RevenueCat entitlement is `premium = active`. After 3 days:
   - If subscription auto-renews → entitlement stays active.
   - If user cancels before day 7 → entitlement flips to `inactive` at trial end.
 

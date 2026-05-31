@@ -8,6 +8,8 @@ import { TMDBService, SearchService, EmbeddingService } from '../services/api.js
 import { showToast } from '../ui/toast.js';
 import { showLoading, hideLoading } from '../ui/loading.js';
 import { DAILY_REC_KEY, DAILY_REC_CATEGORIES, getGenreName } from '../lib/constants.js';
+// Side-effect import: registers the 'lumi:paywall' listener + pulls paywall styles (Phase 05-02).
+import '../ui/paywall-sheet.js';
 
 // ============================================
 // POETIC PLACEHOLDERS
@@ -308,6 +310,11 @@ export async function handleAISearch() {
             );
             showToast('Günlük AI hakkın doldu');
             return;
+        }
+
+        // Low-quota nudge toward Premium (free users, last couple of picks).
+        if (!gate.premium && typeof gate.remaining === 'number' && gate.remaining >= 0 && gate.remaining <= 2) {
+            showToast(`${gate.remaining} ücretsiz AI hakkın kaldı`);
         }
 
         // Call hybrid search endpoint (single attempt — no silent retry)
