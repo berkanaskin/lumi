@@ -43,6 +43,7 @@ export function isEveningBucket(tz, now = Date.now(), hour = EVENING_HOUR) {
 
 /**
  * From a premium-user list, select those at local 20:00 NOW and NOT already served today.
+ * (Used by the hourly-bucket design — kept for Phase 6 when a Pro plan unlocks hourly crons.)
  * @param {Array<{uid:string, tz?:string, lastEveningPick?:string}>} users
  */
 export function selectEveningUsers(users, now = Date.now()) {
@@ -51,6 +52,23 @@ export function selectEveningUsers(users, now = Date.now()) {
         const tz = u?.tz || 'UTC';
         if (!isEveningBucket(tz, now)) continue;
         if (u.lastEveningPick && u.lastEveningPick === localDateKey(tz, now)) continue; // idempotent
+        out.push(u);
+    }
+    return out;
+}
+
+/**
+ * Daily-cron variant (Vercel Hobby allows only daily crons). The cron fires once at a fixed
+ * UTC hour (17:00 UTC ≈ local 20:00 for the TR primary market); select EVERY premium user not
+ * already served today (idempotency keyed by THEIR local date). Other timezones get an
+ * approximate evening delivery until Phase 6 (Pro plan) restores per-tz hourly buckets.
+ * @param {Array<{uid:string, tz?:string, lastEveningPick?:string}>} users
+ */
+export function selectEveningUsersDaily(users, now = Date.now()) {
+    const out = [];
+    for (const u of users || []) {
+        const tz = u?.tz || 'UTC';
+        if (u.lastEveningPick && u.lastEveningPick === localDateKey(tz, now)) continue; // idempotent per local day
         out.push(u);
     }
     return out;

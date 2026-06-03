@@ -3,6 +3,7 @@ import {
     localHour,
     isEveningBucket,
     selectEveningUsers,
+    selectEveningUsersDaily,
     parseEveningTitles,
     buildEveningPickEvent,
     localDateKey,
@@ -49,6 +50,25 @@ describe('evening-core — tz-bucketed Evening Assistant logic (Phase 05-05)', (
             ];
             const sel = selectEveningUsers(users, at1700Z);
             expect(sel.map((u) => u.uid)).toEqual(['e']);
+        });
+    });
+
+    describe('selectEveningUsersDaily (Vercel Hobby daily cron)', () => {
+        it('selects ALL premium users regardless of tz (single daily fire)', () => {
+            const users = [
+                { uid: 'a', tz: 'Europe/Istanbul' },
+                { uid: 'b', tz: 'America/New_York' },
+                { uid: 'c', tz: 'Asia/Tokyo' },
+            ];
+            expect(selectEveningUsersDaily(users, at1700Z).map((u) => u.uid).sort()).toEqual(['a', 'b', 'c']);
+        });
+        it('still skips a user already served today (per their local date)', () => {
+            const today = localDateKey('Europe/Istanbul', at1700Z);
+            const users = [
+                { uid: 'a', tz: 'Europe/Istanbul', lastEveningPick: today },
+                { uid: 'e', tz: 'Europe/Istanbul' },
+            ];
+            expect(selectEveningUsersDaily(users, at1700Z).map((u) => u.uid)).toEqual(['e']);
         });
     });
 

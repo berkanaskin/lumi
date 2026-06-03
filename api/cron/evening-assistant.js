@@ -13,7 +13,7 @@
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import {
-    selectEveningUsers,
+    selectEveningUsersDaily,
     localDateKey,
     parseEveningTitles,
     buildEveningPickEvent,
@@ -86,7 +86,9 @@ export default async function handler(req, res) {
         summary.premium = premiumSnap.size;
 
         const users = premiumSnap.docs.map((d) => ({ uid: d.id, ref: d.ref, ...d.data() }));
-        const selected = selectEveningUsers(users, now);
+        // Daily cron (Vercel Hobby): fires once at 17:00 UTC (≈ TR local 20:00). Serve every
+        // premium user not already served today. Phase 6 (Pro plan) restores hourly tz buckets.
+        const selected = selectEveningUsersDaily(users, now);
         summary.selected = selected.length;
 
         for (const u of selected) {

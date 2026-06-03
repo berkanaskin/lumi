@@ -12,7 +12,7 @@
   ],
   "crons": [
     { "path": "/api/cron/detect-changes", "schedule": "0 9 * * *" },
-    { "path": "/api/cron/evening-assistant", "schedule": "0 * * * *" }
+    { "path": "/api/cron/evening-assistant", "schedule": "0 17 * * *" }
   ],
   "headers": [
     {
