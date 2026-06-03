@@ -14,6 +14,9 @@ import '../ui/paywall-sheet.js';
 import './agent-hub.js';
 // Side-effect import: syncs Firestore premium flag → client entitlement mirror (Phase 05-01).
 import '../lib/entitlements-sync.js';
+// Side-effect import: wires the header bell to the Firestore notification inbox (Phase 05-05).
+import './notifications.js';
+import '../styles/notifications.css';
 
 // ============================================
 // POETIC PLACEHOLDERS
@@ -268,12 +271,15 @@ export async function consumeAiQuota() {
 
     let tz = 'UTC';
     try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'; } catch { /* keep UTC */ }
+    // Region for the Smart-Notifications cron (best-effort; stored on the user doc).
+    let country = '';
+    try { country = (localStorage.getItem('lumi_country') || '').toLowerCase(); } catch { /* ignore */ }
 
     try {
         const res = await fetch('/api/quota', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ idToken, tz }),
+            body: JSON.stringify({ idToken, tz, country }),
         });
 
         if (res.status === 429) return { blocked: true, reason: 'quota' };

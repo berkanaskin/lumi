@@ -1,0 +1,51 @@
+/* LUMI — Notification Center (Phase 05-05). Wires the existing header bell. */
+
+.notification-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: #ff3b5c;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 16px;
+    text-align: center;
+    box-shadow: 0 0 0 2px rgba(10, 10, 16, 0.9);
+}
+
+#notifications-list .notification-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+    padding: 11px 12px;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: none;
+    color: #fff;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.14s;
+}
+#notifications-list .notification-item:hover { background: rgba(255, 255, 255, 0.04); }
+#notifications-list .notification-item.unread { background: rgba(255, 102, 179, 0.08); }
+#notifications-list .notification-item.unread::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    width: 6px;
+    height: 6px;
+    margin-top: 6px;
+    border-radius: 50%;
+    background: #ff66b3;
+}
+
+.notif-ico { font-size: 18px; line-height: 1.2; flex-shrink: 0; }
+.notif-text { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.notif-title { font-size: 13px; font-weight: 700; }
+.notif-body { font-size: 11.5px; color: rgba(255, 255, 255, 0.62); line-height: 1.35; }
+.notif-time { font-size: 10px; color: rgba(255, 255, 255, 0.4); flex-shrink: 0; }

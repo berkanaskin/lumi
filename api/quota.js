@@ -67,7 +67,7 @@ export default async function handler(req, res) {
             return;
         }
         const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
-        const { idToken, tz } = body;
+        const { idToken, tz, country } = body;
         if (!idToken) {
             res.status(401).json({ error: 'missing_token' });
             return;
@@ -89,10 +89,12 @@ export default async function handler(req, res) {
         // fail OPEN (rare deep outage — never punish a possibly-paying user).
         let premium = false;
         let storedTz = null;
+        let storedCountry = null;
         try {
             const userData = (await userRef.get()).data() || {};
             premium = userData.premium === true;
             storedTz = userData.tz || null;
+            storedCountry = userData.country || null;
         } catch (readErr) {
             console.error('[Quota] user read failed, failing open:', readErr?.message || readErr);
             res.status(200).json({ allow: true, premium: false, remaining: null, degraded: true });
@@ -101,11 +103,15 @@ export default async function handler(req, res) {
 
         const effectiveTz = tz || storedTz || 'UTC';
 
-        // Persist tz once (drives local-midnight reset + Evening Assistant local 20:00).
-        // Swallow + log so a tz write hiccup never blocks the quota check.
-        if (tz && storedTz !== tz) {
-            userRef.set({ tz }, { merge: true }).catch((e) => {
-                console.warn('[Quota] tz persistence failed:', e?.message || e);
+        // Persist tz + country (drives local-midnight reset, Evening Assistant local 20:00,
+        // and the detect-changes cron's region SA lookup). Swallow + log so a write hiccup
+        // never blocks the quota check.
+        const patch = {};
+        if (tz && storedTz !== tz) patch.tz = tz;
+        if (country && storedCountry !== country) patch.country = String(country).toLowerCase();
+        if (Object.keys(patch).length) {
+            userRef.set(patch, { merge: true }).catch((e) => {
+                console.warn('[Quota] tz/country persistence failed:', e?.message || e);
             });
         }
 

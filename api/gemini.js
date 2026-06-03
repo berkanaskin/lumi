@@ -59,7 +59,11 @@ export default async function handler(request) {
 
     try {
         const body = await request.json();
-        const { prompt } = body;
+        const { prompt, feature } = body;
+
+        // Phase 05-05: the 'evening' feature uses a higher-diversity sampling but otherwise
+        // shares this proxy. The branch only tweaks generation; the request shape is unchanged.
+        const isEvening = feature === 'evening';
 
         if (!prompt) {
             return new Response(
@@ -90,9 +94,11 @@ export default async function handler(request) {
             body: JSON.stringify({
                 contents: [{ parts: [{ text: localizedPrompt }] }],
                 generationConfig: {
-                    temperature: 0.9,
+                    // Evening picks want a short, varied list → slightly higher temperature,
+                    // tighter token budget. Default search behavior is unchanged.
+                    temperature: isEvening ? 1.0 : 0.9,
                     topP: 0.95,
-                    maxOutputTokens: 2048,
+                    maxOutputTokens: isEvening ? 256 : 2048,
                 },
             }),
         });

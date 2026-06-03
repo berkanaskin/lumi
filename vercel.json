@@ -10,6 +10,10 @@
       "destination": "/api/$1"
     }
   ],
+  "crons": [
+    { "path": "/api/cron/detect-changes", "schedule": "0 9 * * *" },
+    { "path": "/api/cron/evening-assistant", "schedule": "0 * * * *" }
+  ],
   "headers": [
     {
       "source": "/(.*)",
