@@ -11,6 +11,13 @@ class AuthService {
         this.firebaseUser = null;
         this.isInitialized = false;
 
+        // Phase 05-A1: a promise that resolves as soon as SOME firebase user exists
+        // (anonymous guest or real). consumeAiQuota() awaits this so a guest who searches
+        // in the first ~100-500ms (before silent anon sign-in completes) still gets a token
+        // instead of racing past the quota gate.
+        this._firstUser = null;
+        this._tokenReady = new Promise((resolve) => { this._firstUserResolve = resolve; });
+
         // Initialize Firebase
         this.initFirebase();
     }
@@ -26,6 +33,12 @@ class AuthService {
                 // Listen for auth state changes
                 this.auth.onAuthStateChanged((user) => {
                     this.firebaseUser = user;
+                    // Phase 05-A1: signal token-readiness the first time any user arrives.
+                    if (user && this._firstUserResolve) {
+                        this._firstUser = user;
+                        this._firstUserResolve(user);
+                        this._firstUserResolve = null;
+                    }
                     // Phase 05-01: an ANONYMOUS user is our silent quota/identity backer,
                     // not a real login. Keep firebaseUser (so getIdToken() can mint a token
                     // for the server-side quota gate) but treat the app-level user as a
@@ -337,6 +350,21 @@ class AuthService {
         try {
             const u = this.auth && this.auth.currentUser;
             return u ? await u.getIdToken() : null;
+        } catch {
+            return null;
+        }
+    }
+
+    // Phase 05-A1: wait until some firebase user exists (anon or real), then mint a token.
+    // Bounds the wait so a never-arriving auth can't hang the UI; resolves to a token or null.
+    // This closes the race where a guest searches before silent anon sign-in completes.
+    async waitForToken(timeoutMs = 4000) {
+        try {
+            if (this.auth && this.auth.currentUser) return await this.getIdToken();
+            const timeout = new Promise((resolve) => setTimeout(() => resolve('__timeout__'), timeoutMs));
+            const winner = await Promise.race([this._tokenReady, timeout]);
+            if (winner === '__timeout__') return await this.getIdToken(); // last-chance read
+            return await this.getIdToken();
         } catch {
             return null;
         }

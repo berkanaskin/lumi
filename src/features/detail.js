@@ -1328,7 +1328,7 @@ function _buildPremiumSectionHTML() {
                 </div>
                 <div class="detail-premium-cta-layer">
                     <p class="detail-premium-cta-text">Trivia, goofs ve özel içeriklere erişmek için</p>
-                    <button class="detail-premium-cta-btn" onclick="window.showPremiumModal && window.showPremiumModal()">
+                    <button class="detail-premium-cta-btn" onclick="window.openPaywall && window.openPaywall({trigger:'feature'})">
                         <span>Premium'a Geç</span>
                         <span>✨</span>
                     </button>

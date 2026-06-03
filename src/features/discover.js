@@ -242,36 +242,72 @@ export function extractMovieKeywords(query) {
 // ============================================
 
 /**
- * Phase 05-01: consume one free-tier AI query against the server-side gate
+ * Phase 05-01 / 05-A1: consume one free-tier AI query against the server-side gate
  * (POST /api/quota) BEFORE running the costly hybrid search.
  *
- * Returns { blocked:true } only on an explicit 429 (the 6th free query of the day).
- * Every other path — premium, allowed, no token, or any infra error — returns
- * { blocked:false } so a Firestore/network hiccup can never block a legitimate
- * (or paying) user. This mirrors the fail-open behavior of api/quota.js.
+ * Security posture (revised 05-A1 after the live bypass):
+ *  - 429                → { blocked:true, reason:'quota' }  (daily cap hit → paywall)
+ *  - NO token / 401     → { blocked:true, reason:'auth' }   FAIL-CLOSED. A guest must have
+ *                          a real anonymous token before any AI search counts — otherwise the
+ *                          gate is trivially bypassed by searching before sign-in completes.
+ *                          We first AWAIT waitForToken() to close the startup race.
+ *  - 5xx / network after a valid token existed → { blocked:false, degraded:true }  FAIL-OPEN
+ *                          (don't punish a possibly-paying user for an infra blip; the server
+ *                          is the real enforcer and already failed open on its side).
  */
 export async function consumeAiQuota() {
+    // Close the startup race: wait (bounded) for the anonymous/real user's token.
+    let idToken = null;
     try {
-        const idToken = window.AuthService ? await window.AuthService.getIdToken() : null;
-        if (!idToken) return { blocked: false, degraded: true };
+        if (window.AuthService?.waitForToken) idToken = await window.AuthService.waitForToken();
+        else if (window.AuthService?.getIdToken) idToken = await window.AuthService.getIdToken();
+    } catch { idToken = null; }
 
-        let tz = 'UTC';
-        try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'; } catch { /* keep UTC */ }
+    // No token even after waiting → fail CLOSED (auth not ready / unavailable).
+    if (!idToken) return { blocked: true, reason: 'auth' };
 
+    let tz = 'UTC';
+    try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'; } catch { /* keep UTC */ }
+
+    try {
         const res = await fetch('/api/quota', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ idToken, tz }),
         });
 
-        if (res.status === 429) return { blocked: true };
-        if (!res.ok) return { blocked: false, degraded: true };
+        if (res.status === 429) return { blocked: true, reason: 'quota' };
+        if (res.status === 401) return { blocked: true, reason: 'auth' }; // bad/expired token
+        if (!res.ok) return { blocked: false, degraded: true };           // 5xx → fail open
 
         const data = await res.json().catch(() => ({}));
         return { blocked: false, remaining: data.remaining, premium: data.premium };
     } catch {
+        // Network error AFTER we had a valid token → fail open (infra blip).
         return { blocked: false, degraded: true };
     }
+}
+
+/**
+ * Shared gate front-end for all AI search entry points (05-A1). Runs consumeAiQuota and,
+ * on a block, opens the paywall (quota) or shows a soft retry (auth not ready). Returns
+ * true when the caller should STOP (blocked), false when it may proceed.
+ */
+async function aiGateBlocks() {
+    const gate = await consumeAiQuota();
+    if (gate.blocked && gate.reason === 'quota') {
+        window.dispatchEvent(new CustomEvent('lumi:paywall', { detail: { trigger: 'quota' } }));
+        showToast('Günlük AI hakkın doldu');
+        return true;
+    }
+    if (gate.blocked) { // reason: 'auth' — token not ready yet
+        showToast('Bir saniye… tekrar dene');
+        return true;
+    }
+    if (!gate.premium && typeof gate.remaining === 'number' && gate.remaining >= 0 && gate.remaining <= 2) {
+        showToast(`${gate.remaining} ücretsiz AI hakkın kaldı`);
+    }
+    return false;
 }
 
 /**
@@ -300,19 +336,23 @@ export async function handleAISearch() {
         // Get userId for personalization
         const userId = window.AuthService?.currentUser?.uid || 'anonymous';
 
-        // Phase 05-01: server-side free-tier gate. Consume one daily AI query BEFORE the
-        // costly hybrid search. Premium bypasses; the 6th free query of the day is blocked
-        // and we open the paywall hook (05-02 listens for 'lumi:paywall') instead.
+        // Phase 05-01 / 05-A1: server-side free-tier gate BEFORE the costly hybrid search.
+        // Premium bypasses; the 6th free query opens the paywall; no-token fails closed.
         const gate = await consumeAiQuota();
         if (gate.blocked) {
             hideLoading(spinner);
-            window.dispatchEvent(new CustomEvent('lumi:paywall', { detail: { trigger: 'quota' } }));
-            renderSearchEmptyState(
-                'Günlük AI hakkın doldu',
-                'Bugünlük 5 ücretsiz "Öner Bana" hakkını kullandın. Sınırsız öneri + 4 proaktif özellik için Premium\'a geç.',
-                query,
-            );
-            showToast('Günlük AI hakkın doldu');
+            if (gate.reason === 'quota') {
+                window.dispatchEvent(new CustomEvent('lumi:paywall', { detail: { trigger: 'quota' } }));
+                renderSearchEmptyState(
+                    'Günlük AI hakkın doldu',
+                    'Bugünlük 5 ücretsiz "Öner Bana" hakkını kullandın. Sınırsız öneri + 4 proaktif özellik için Premium\'a geç.',
+                    query,
+                );
+                showToast('Günlük AI hakkın doldu');
+            } else {
+                // auth not ready yet — soft retry, no paywall.
+                showToast('Bir saniye… tekrar dene');
+            }
             return;
         }
 
@@ -519,6 +559,9 @@ function renderSearchEmptyState(title, body, lastQuery = '') {
  * Handle wizard-based search
  */
 export async function handleWizardSearch() {
+    // 05-A1: wizard searches are AI-driven too — count them against the daily free cap.
+    if (await aiGateBlocks()) return;
+
     const activeChip = document.querySelector('.mood-chip.active');
     const mood = activeChip?.dataset.mood || '';
     const genre = activeChip?.dataset.genre || '';
@@ -540,6 +583,9 @@ export async function handleWizardSearch() {
  * Handle surprise me
  */
 export async function handleSurpriseMe() {
+    // 05-A1: surprise picks are AI-driven too — count them against the daily free cap.
+    if (await aiGateBlocks()) return;
+
     showToast('Sürpriz hazırlanıyor! 🎲');
 
     await showDiscoverResults({

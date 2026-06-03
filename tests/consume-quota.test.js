@@ -16,22 +16,31 @@ describe('consumeAiQuota — client free-tier gate', () => {
         delete globalThis.fetch;
     });
 
-    it('fails open when there is no AuthService / no token (guest before anon ready)', async () => {
-        globalThis.AuthService = { getIdToken: async () => null };
+    it('fails CLOSED when no token is available even after waiting (05-A1)', async () => {
+        globalThis.AuthService = { waitForToken: async () => null };
         const r = await consumeAiQuota();
-        expect(r.blocked).toBe(false);
-        expect(r.degraded).toBe(true);
+        expect(r.blocked).toBe(true);
+        expect(r.reason).toBe('auth');
     });
 
-    it('blocks ONLY on an explicit 429', async () => {
-        globalThis.AuthService = { getIdToken: async () => 'tok' };
+    it('blocks with reason=quota on an explicit 429', async () => {
+        globalThis.AuthService = { waitForToken: async () => 'tok' };
         globalThis.fetch = vi.fn().mockResolvedValue({ status: 429, ok: false });
         const r = await consumeAiQuota();
         expect(r.blocked).toBe(true);
+        expect(r.reason).toBe('quota');
+    });
+
+    it('blocks with reason=auth on a 401 (bad/expired token)', async () => {
+        globalThis.AuthService = { waitForToken: async () => 'tok' };
+        globalThis.fetch = vi.fn().mockResolvedValue({ status: 401, ok: false });
+        const r = await consumeAiQuota();
+        expect(r.blocked).toBe(true);
+        expect(r.reason).toBe('auth');
     });
 
     it('allows and surfaces remaining on a 200 response', async () => {
-        globalThis.AuthService = { getIdToken: async () => 'tok' };
+        globalThis.AuthService = { waitForToken: async () => 'tok' };
         globalThis.fetch = vi.fn().mockResolvedValue({
             status: 200,
             ok: true,
@@ -43,19 +52,28 @@ describe('consumeAiQuota — client free-tier gate', () => {
         expect(r.premium).toBe(false);
     });
 
-    it('fails open on a non-429 server error (e.g. 503 degraded)', async () => {
-        globalThis.AuthService = { getIdToken: async () => 'tok' };
+    it('fails OPEN on a 5xx server error AFTER a valid token (infra blip)', async () => {
+        globalThis.AuthService = { waitForToken: async () => 'tok' };
         globalThis.fetch = vi.fn().mockResolvedValue({ status: 503, ok: false });
         const r = await consumeAiQuota();
         expect(r.blocked).toBe(false);
         expect(r.degraded).toBe(true);
     });
 
-    it('fails open when fetch itself throws (network down)', async () => {
-        globalThis.AuthService = { getIdToken: async () => 'tok' };
+    it('fails OPEN when fetch throws after a valid token (network down)', async () => {
+        globalThis.AuthService = { waitForToken: async () => 'tok' };
         globalThis.fetch = vi.fn().mockRejectedValue(new Error('network'));
         const r = await consumeAiQuota();
         expect(r.blocked).toBe(false);
         expect(r.degraded).toBe(true);
+    });
+
+    it('falls back to getIdToken when waitForToken is absent (older AuthService)', async () => {
+        globalThis.AuthService = { getIdToken: async () => 'tok' };
+        globalThis.fetch = vi.fn().mockResolvedValue({
+            status: 200, ok: true, json: async () => ({ allow: true, remaining: 5, premium: false }),
+        });
+        const r = await consumeAiQuota();
+        expect(r.blocked).toBe(false);
     });
 });

@@ -153,21 +153,30 @@ export function openAgentHub() {
 
     const body = el('div', { class: 'agent-body' });
 
+    const premium = isPremium();
+    // Phase 05-A3: make the free-user state explicit so a locked card → paywall reads clearly.
+    if (!premium) {
+        body.appendChild(el('div', { class: 'agent-locked-banner' }, [
+            el('span', { class: 'agent-locked-ico', text: '🔒' }),
+            el('span', { text: T('Premium özellikleri — dokun ve kilidi aç', 'Premium features — tap to unlock') }),
+        ]));
+    }
+
     const cards = el('div', { class: 'agent-cards' });
     FEATURES.forEach((f) => {
-        const card = el('button', { class: 'agent-card', type: 'button', 'data-feature': f.key, 'data-testid': 'agent-card' }, [
+        const card = el('button', { class: 'agent-card' + (premium ? '' : ' locked'), type: 'button', 'data-feature': f.key, 'data-testid': 'agent-card' }, [
             el('span', { class: 'agent-card-ico', text: f.icon }),
             el('span', { class: 'agent-card-title', text: isTR() ? f.tr : f.en }),
             el('span', { class: 'agent-card-desc', text: isTR() ? f.dtr : f.den }),
         ]);
-        if (!isPremium()) card.appendChild(el('span', { class: 'agent-card-lock', text: '🔒' }));
+        if (!premium) card.appendChild(el('span', { class: 'agent-card-lock', text: '🔒' }));
         card.addEventListener('click', () => openFeature(f.key, body));
         cards.appendChild(card);
     });
     body.appendChild(cards);
 
     // Default to the Decide panel for premium users; showcase for free users.
-    if (isPremium()) renderDecidePanel(body);
+    if (premium) renderDecidePanel(body);
 
     panel.appendChild(body);
     overlay.appendChild(panel);
@@ -179,11 +188,45 @@ export function openAgentHub() {
 export function initAgentHub() {
     if (typeof document === 'undefined') return;
     if (document.getElementById('agent-fab')) return;
-    const fab = el('button', { id: 'agent-fab', class: 'agent-fab', type: 'button', 'aria-label': T('Lumi Agent', 'Lumi Agent'), 'data-testid': 'agent-fab', text: '✨' });
-    fab.addEventListener('click', openAgentHub);
-    const mount = () => { if (!document.getElementById('agent-fab')) document.body.appendChild(fab); };
+    // Phase 05-A3: a labelled pill (not a bare ✨) so it's obvious what the button does.
+    const fab = el('button', {
+        id: 'agent-fab',
+        class: 'agent-fab',
+        type: 'button',
+        'aria-label': T('Lumi Agent — öneri asistanı', 'Lumi Agent — your pick assistant'),
+        'data-testid': 'agent-fab',
+    }, [
+        el('span', { class: 'agent-fab-ico', text: '✨' }),
+        el('span', { class: 'agent-fab-label', text: T('Lumi Agent', 'Lumi Agent') }),
+    ]);
+    fab.addEventListener('click', () => { dismissCoachmark(); openAgentHub(); });
+
+    const mount = () => {
+        if (document.getElementById('agent-fab')) return;
+        document.body.appendChild(fab);
+        maybeShowCoachmark(fab);
+    };
     if (document.body) mount();
     else document.addEventListener('DOMContentLoaded', mount);
+}
+
+const COACHMARK_KEY = 'lumi_agent_coachmark_seen';
+
+function dismissCoachmark() {
+    document.getElementById('agent-coachmark')?.remove();
+    try { localStorage.setItem(COACHMARK_KEY, '1'); } catch { /* ignore */ }
+}
+
+// One-time tooltip pointing at the FAB so first-time users understand it.
+function maybeShowCoachmark(fab) {
+    try { if (localStorage.getItem(COACHMARK_KEY)) return; } catch { return; }
+    const tip = el('div', { id: 'agent-coachmark', class: 'agent-coachmark', role: 'status' }, [
+        el('span', { text: T('✨ Ne izleyeceğine Lumi karar versin — dene', '✨ Let Lumi pick what to watch — try it') }),
+        (() => { const x = el('button', { class: 'agent-coachmark-x', type: 'button', 'aria-label': 'kapat', text: '✕' }); x.addEventListener('click', dismissCoachmark); return x; })(),
+    ]);
+    document.body.appendChild(tip);
+    // Auto-dismiss after a while so it never lingers.
+    setTimeout(() => dismissCoachmark(), 8000);
 }
 
 // Self-init on import + expose for inline/other plans.

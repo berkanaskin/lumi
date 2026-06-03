@@ -1215,7 +1215,8 @@
           .getElementById("premium-trigger")
           ?.addEventListener("click", () => {
             closeAllDropdowns();
-            if (typeof showPremiumModal === "function") showPremiumModal();
+            // Phase 05-A2: wire to the real paywall (showPremiumModal never existed).
+            if (window.openPaywall) window.openPaywall({ trigger: "upgrade" });
           });
 
         // ============================================

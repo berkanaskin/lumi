@@ -63,4 +63,22 @@ describe('agent-hub — Movie Night Agent center (Phase 05-03)', () => {
         openAgentHub();
         expect(document.querySelectorAll('[data-testid="agent-hub"]').length).toBe(1);
     });
+
+    it('FAB carries a visible text label, not a bare icon (05-A3)', () => {
+        const fab = document.getElementById('agent-fab');
+        expect(fab.querySelector('.agent-fab-label')?.textContent).toMatch(/Agent/i);
+    });
+
+    it('free user sees the explicit locked banner in the hub (05-A3)', () => {
+        openAgentHub();
+        expect(document.querySelector('.agent-locked-banner')).toBeTruthy();
+        expect(document.querySelectorAll('.agent-card.locked').length).toBe(3);
+    });
+
+    it('premium user sees no locked banner (05-A3)', () => {
+        localStorage.setItem(PREMIUM_KEY, 'true');
+        openAgentHub();
+        expect(document.querySelector('.agent-locked-banner')).toBeFalsy();
+        expect(document.querySelectorAll('.agent-card.locked').length).toBe(0);
+    });
 });

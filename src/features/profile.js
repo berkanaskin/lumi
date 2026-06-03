@@ -398,9 +398,8 @@ function setupUserMenuHandlers() {
                     document.querySelector('.nav-item[data-page="favorites"]')?.click();
                     break;
                 case 'upgrade':
-                    if (window.showPremiumModal) {
-                        window.showPremiumModal();
-                    }
+                    // Phase 05-A2: wire to the real paywall (showPremiumModal never existed).
+                    window.openPaywall?.({ trigger: 'upgrade' });
                     break;
                 case 'logout':
                     handleLogout();
