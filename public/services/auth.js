@@ -56,6 +56,10 @@ class AuthService {
                         if (!user && typeof this.auth.signInAnonymously === 'function') {
                             this.auth.signInAnonymously().catch((err) => {
                                 console.warn('[auth] anonymous sign-in failed:', err?.code || err);
+                                // 05-final: if anon sign-in is disabled/fails, RESOLVE the
+                                // token-ready promise (with null) so waitForToken() doesn't hang
+                                // for the full timeout — it falls through to a fast null.
+                                if (this._firstUserResolve) { this._firstUserResolve(null); this._firstUserResolve = null; }
                             });
                         }
                     }
@@ -66,11 +70,15 @@ class AuthService {
                 console.warn('Firebase config not found, using local auth');
                 this.currentUser = this.loadLocalUser();
                 this.isInitialized = true;
+                // No Firebase → no token will ever arrive; unblock waitForToken immediately.
+                if (this._firstUserResolve) { this._firstUserResolve(null); this._firstUserResolve = null; }
             }
         } catch (error) {
             console.error('Firebase init error:', error);
             this.currentUser = this.loadLocalUser();
             this.isInitialized = true;
+            // Init failed → unblock waitForToken so callers fail fast instead of hanging.
+            if (this._firstUserResolve) { this._firstUserResolve(null); this._firstUserResolve = null; }
         }
     }
 
@@ -360,11 +368,12 @@ class AuthService {
     // This closes the race where a guest searches before silent anon sign-in completes.
     async waitForToken(timeoutMs = 4000) {
         try {
-            if (this.auth && this.auth.currentUser) return await this.getIdToken();
+            // No Firebase at all → no token will ever arrive; fail fast (don't race a 4s timeout).
+            if (!this.auth) return null;
+            if (this.auth.currentUser) return await this.getIdToken();
             const timeout = new Promise((resolve) => setTimeout(() => resolve('__timeout__'), timeoutMs));
-            const winner = await Promise.race([this._tokenReady, timeout]);
-            if (winner === '__timeout__') return await this.getIdToken(); // last-chance read
-            return await this.getIdToken();
+            await Promise.race([this._tokenReady, timeout]);
+            return await this.getIdToken(); // works whether the user arrived or we timed out
         } catch {
             return null;
         }

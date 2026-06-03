@@ -30,7 +30,8 @@ function firebase() {
 
 function authorized(req) {
     const secret = process.env.CRON_SECRET;
-    if (!secret) return true;
+    // 05-final: fail-secure — with no secret, only Vercel's own cron caller is allowed.
+    if (!secret) return !!req.headers['x-vercel-cron'];
     return req.headers.authorization === `Bearer ${secret}`;
 }
 
@@ -89,15 +90,36 @@ export default async function handler(req, res) {
         summary.selected = selected.length;
 
         for (const u of selected) {
-            const lang = (u.lang || (String(u.country).toLowerCase() === 'tr' ? 'tr' : 'en'));
-            const taste = await tasteFor(u.ref);
-            const text = await askGemini(base, eveningPrompt(taste, lang), lang);
-            const picks = parseEveningTitles(text || '');
-            if (!picks.length) continue;
-            const ev = buildEveningPickEvent(picks, lang);
-            await u.ref.collection('notifications').add({ ...ev, createdAt: now });
-            await u.ref.set({ lastEveningPick: localDateKey(u.tz || 'UTC', now) }, { merge: true });
-            summary.delivered++;
+            try {
+                const today = localDateKey(u.tz || 'UTC', now);
+                // 05-final: PESSIMISTIC lock — atomically claim today's slot BEFORE the Gemini
+                // call. A transaction that re-checks lastEveningPick prevents two concurrent
+                // cron invocations (or a same-hour retry) from both delivering / double-spending
+                // the 1-call-per-day budget. If already claimed, skip.
+                const claimed = await db.runTransaction(async (tx) => {
+                    const fresh = (await tx.get(u.ref)).data() || {};
+                    if (fresh.lastEveningPick === today) return false;
+                    tx.set(u.ref, { lastEveningPick: today }, { merge: true });
+                    return true;
+                });
+                if (!claimed) continue;
+
+                const lang = (u.lang || (String(u.country).toLowerCase() === 'tr' ? 'tr' : 'en'));
+                const taste = await tasteFor(u.ref);
+                const text = await askGemini(base, eveningPrompt(taste, lang), lang);
+                const picks = parseEveningTitles(text || '');
+                // 05-final: require a full set of 3; on a degraded model response, release the
+                // claim so the user can be retried next hour rather than served a partial pick.
+                if (picks.length !== 3) {
+                    await u.ref.set({ lastEveningPick: null }, { merge: true }).catch(() => {});
+                    continue;
+                }
+                const ev = buildEveningPickEvent(picks, lang);
+                await u.ref.collection('notifications').add({ ...ev, createdAt: now });
+                summary.delivered++;
+            } catch (userErr) {
+                console.error(`[evening-assistant] user ${u.uid} failed:`, userErr?.message || userErr);
+            }
         }
 
         res.status(200).json({ ok: true, ...summary });

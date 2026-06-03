@@ -35,7 +35,9 @@ function firebase() {
 
 function authorized(req) {
     const secret = process.env.CRON_SECRET;
-    if (!secret) return true; // not configured → allow (dev); set it in prod.
+    // 05-final: fail-secure. With no secret set, only allow Vercel's own cron caller
+    // (which sets x-vercel-cron); reject arbitrary public callers.
+    if (!secret) return !!req.headers['x-vercel-cron'];
     return req.headers.authorization === `Bearer ${secret}`;
 }
 
@@ -68,54 +70,72 @@ export default async function handler(req, res) {
         summary.premium = premiumSnap.size;
 
         for (const userDoc of premiumSnap.docs) {
-            const uid = userDoc.id;
-            const country = (userDoc.data().country || '').toLowerCase();
-            const wlSnap = await userDoc.ref.collection('watchlist').get();
-            if (wlSnap.empty) continue;
-            const items = wlSnap.docs.map((d) => ({ _ref: d.ref, ...d.data() }));
+            // 05-final: per-user isolation — one user's Firestore error must not abort the run.
+            try {
+                const country = (userDoc.data().country || '').toLowerCase();
+                const wlSnap = await userDoc.ref.collection('watchlist').get();
+                if (wlSnap.empty) continue;
+                const items = wlSnap.docs.map((d) => ({ _ref: d.ref, ...d.data() }));
 
-            // ── Platform diff (cache-first, one SA fetch per region group) ──────────
-            if (country) {
-                const groups = groupItemsByRegionType(items, country);
-                for (const [key, groupItems] of Object.entries(groups)) {
-                    const type = key.endsWith(':series') ? 'series' : 'movie';
-                    const sa = await getCachedSAProviders(country, type, {
-                        fetchFn: (u, o) => fetch(u.startsWith('http') ? u : `${base}${u}`, o),
-                    });
-                    if (!sa) continue; // SA degraded → skip platform diff this run
-                    const currIds = extractSAServiceIds(sa);
-                    for (const item of groupItems) {
-                        summary.scannedItems++;
-                        const prior = item.saSnapshot?.ids ?? null;
-                        const ev = detectPlatformGain(prior, currIds, item, country);
-                        if (ev) {
-                            await userDoc.ref.collection('notifications').add({ ...ev, createdAt: Date.now() });
-                            summary.events++;
+                // ── Platform diff (cache-first, one SA fetch per region group) ──────
+                if (country) {
+                    const groups = groupItemsByRegionType(items, country);
+                    for (const [key, groupItems] of Object.entries(groups)) {
+                        const type = key.endsWith(':series') ? 'series' : 'movie';
+                        const sa = await getCachedSAProviders(country, type, {
+                            fetchFn: (u, o) => fetch(u.startsWith('http') ? u : `${base}${u}`, o),
+                        });
+                        if (!sa) {
+                            // 05-final: SA degraded → stamp a dated marker so we don't re-fetch
+                            // this region every run, but DON'T corrupt the real saSnapshot.ids.
+                            for (const item of groupItems) {
+                                await item._ref.set({ saDegradedAt: Date.now() }, { merge: true }).catch(() => {});
+                            }
+                            continue;
                         }
-                        if (prior == null) summary.seeded++;
-                        await item._ref.set(
-                            { saSnapshot: { ids: Array.from(currIds), fetchedAt: Date.now() }, saCountry: country },
-                            { merge: true },
-                        );
+                        const currIds = extractSAServiceIds(sa);
+                        for (const item of groupItems) {
+                            summary.scannedItems++;
+                            const prior = item.saSnapshot?.ids ?? null;
+                            // 05-final: persist the snapshot BEFORE writing the event, so a crash
+                            // can't leave a notification with a stale (null) snapshot that re-fires.
+                            await item._ref.set(
+                                { saSnapshot: { ids: Array.from(currIds), fetchedAt: Date.now() }, saCountry: country },
+                                { merge: true },
+                            ).catch((e) => console.error('[detect-changes] sa snapshot write failed', e?.message));
+                            if (prior == null) { summary.seeded++; continue; }
+                            const ev = detectPlatformGain(prior, currIds, item, country);
+                            if (ev) {
+                                await userDoc.ref.collection('notifications').add({ ...ev, createdAt: Date.now() })
+                                    .then(() => { summary.events++; })
+                                    .catch((e) => console.error('[detect-changes] notif write failed', e?.message));
+                            }
+                        }
+                    }
+                } else {
+                    summary.skippedNoCountry++;
+                }
+
+                // ── Episode diff (per TV item) ──────────────────────────────────────
+                for (const item of items) {
+                    if (item.media_type !== 'tv') continue;
+                    const nextEp = await fetchNextEpisode(base, item.id);
+                    const prior = item.nextEpSnapshot ?? null;
+                    // 05-final: always persist current state (incl. "no upcoming episode" → null)
+                    // BEFORE the event, so the snapshot never goes stale and can't re-fire.
+                    await item._ref.set(
+                        { nextEpSnapshot: nextEp?.air_date ? { airDate: nextEp.air_date } : null },
+                        { merge: true },
+                    ).catch((e) => console.error('[detect-changes] ep snapshot write failed', e?.message));
+                    const ev = detectEpisodeChange(prior, nextEp, item);
+                    if (ev) {
+                        await userDoc.ref.collection('notifications').add({ ...ev, createdAt: Date.now() })
+                            .then(() => { summary.events++; })
+                            .catch((e) => console.error('[detect-changes] notif write failed', e?.message));
                     }
                 }
-            } else {
-                summary.skippedNoCountry++;
-            }
-
-            // ── Episode diff (per TV item) ──────────────────────────────────────────
-            for (const item of items) {
-                if (item.media_type !== 'tv') continue;
-                const nextEp = await fetchNextEpisode(base, item.id);
-                const prior = item.nextEpSnapshot ?? null;
-                const ev = detectEpisodeChange(prior, nextEp, item);
-                if (ev) {
-                    await userDoc.ref.collection('notifications').add({ ...ev, createdAt: Date.now() });
-                    summary.events++;
-                }
-                if (nextEp?.air_date) {
-                    await item._ref.set({ nextEpSnapshot: { airDate: nextEp.air_date } }, { merge: true });
-                }
+            } catch (userErr) {
+                console.error(`[detect-changes] user ${userDoc.id} failed:`, userErr?.message || userErr);
             }
         }
 

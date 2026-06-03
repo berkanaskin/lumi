@@ -76,12 +76,18 @@ service cloud.firestore {
     }
 
     // ── Pair Mode (Phase 05-04) ───────────────────────────────────────────────
-    // Pair docs are private to their two members.
+    // Pair docs are private to their two members. Creation + membership changes happen
+    // ONLY server-side (api/pair.js, Admin SDK) after the code-exchange consent flow:
+    //   - create: false → a client can't fabricate a pair naming a victim (no consent).
+    //   - update: members[] is immutable from the client (can't swap/add a partner);
+    //     members may still write other fields if any are added later.
     match /pairs/{pairId} {
-      allow read, update, delete: if request.auth != null
+      allow read, delete: if request.auth != null
         && request.auth.uid in resource.data.members;
-      allow create: if request.auth != null
-        && request.auth.uid in request.resource.data.members;
+      allow create: if false;
+      allow update: if request.auth != null
+        && request.auth.uid in resource.data.members
+        && request.resource.data.members == resource.data.members;
     }
 
     // Pairing codes are written + redeemed ONLY by the server (api/pair.js, Admin SDK).

@@ -1112,8 +1112,12 @@
         // NOTIFICATION SYSTEM WIRING
         // ============================================
 
-        // Mark all read button
+        // Mark all read button (legacy localStorage fallback).
+        // Phase 05-05: for PREMIUM users the Firestore-backed handler in
+        // src/features/notifications.js owns this button; this legacy handler bails out
+        // for them to avoid a double-fire that races the Firestore write.
         document.getElementById("mark-all-read")?.addEventListener("click", () => {
+          try { if (localStorage.getItem("lumi_premium") === "true") return; } catch {}
           const items = document.querySelectorAll("#notifications-list .notification-item");
           items.forEach((item) => item.classList.remove("unread"));
           // Hide the unread badge

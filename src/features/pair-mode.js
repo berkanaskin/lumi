@@ -11,6 +11,7 @@
 import { SearchService } from '../services/api.js';
 import { getSeenSet, getTasteProfile } from '../lib/seen.js';
 import { buildPairPrompt } from '../lib/pairing-core.js';
+import { consumeAiQuota } from './discover.js';
 
 const IMG = 'https://image.tmdb.org/t/p/w342';
 
@@ -119,6 +120,13 @@ function renderPaired(body, partner) {
 async function runPairRecommend(body, go, partner) {
     go.disabled = true; go.textContent = T('Lumi düşünüyor…', 'Lumi is thinking…');
     try {
+        // Defense-in-depth (review 05-final): pair recs are AI searches — pass the quota gate.
+        const gate = await consumeAiQuota();
+        if (gate.blocked) {
+            go.disabled = false; go.textContent = T('İkiniz için öner', 'Recommend for you two');
+            if (gate.reason === 'quota') window.openPaywall?.({ trigger: 'quota' });
+            return;
+        }
         const myTaste = getTasteProfile();
         // The partner's full taste lives under their UID server-side; for the prompt we use
         // our taste + a request for the overlap. (A future pass can fetch the partner's

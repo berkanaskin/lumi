@@ -74,6 +74,13 @@ async function runDecideFlow(body, go) {
     go.textContent = T('Lumi düşünüyor…', 'Lumi is thinking…');
     try {
         const pick = await runDecide({ mood: activeMood });
+        // Quota gate blocked (free user hit the daily cap, or auth not ready).
+        if (pick && pick.blocked) {
+            go.disabled = false;
+            go.textContent = T('Karar Ver ✨', 'Decide ✨');
+            if (pick.reason === 'quota') openPaywall({ trigger: 'quota' });
+            return;
+        }
         if (!pick) {
             go.disabled = false;
             go.textContent = T('Tekrar dene', 'Try again');

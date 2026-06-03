@@ -10,6 +10,7 @@
  */
 import { SearchService } from '../services/api.js';
 import { getSeenSet, getTasteProfile } from '../lib/seen.js';
+import { consumeAiQuota } from './discover.js';
 
 export const MOODS = [
     { key: 'cozy', tr: 'Rahatlatıcı', en: 'Cozy', emoji: '☕' },
@@ -85,6 +86,12 @@ export function readOwnedPlatforms() {
  * @param {{mood?:string}} opts
  */
 export async function runDecide({ mood = null } = {}) {
+    // Defense-in-depth (review 05-final): Decide-for-Me is an AI search too — it MUST pass the
+    // server-side quota gate, even though the hub already premium-gates the UI. A blocked gate
+    // returns a sentinel the caller turns into a paywall/retry. Premium users bypass server-side.
+    const gate = await consumeAiQuota();
+    if (gate.blocked) return { blocked: true, reason: gate.reason };
+
     const taste = getTasteProfile();
     const lang = window.i18n?.currentLang || (String(navigator.language || 'en').startsWith('tr') ? 'tr' : 'en');
     const prompt = buildDecidePrompt({

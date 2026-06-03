@@ -109,10 +109,10 @@ function onItemClick(ev) {
     const uid = currentUid();
     if (uid && !ev.read) markRead(uid, ev.id).catch(() => {});
     const p = ev.payload || {};
-    if (p.tmdbId && (typeof window.openDetail === 'function' || typeof window.renderDetailPage === 'function')) {
+    if (p.tmdbId && typeof window.openDetail === 'function') {
         const type = p.mediaType === 'tv' ? 'tv' : (p.mediaType || 'movie');
         document.getElementById('notifications-dropdown')?.classList.remove('active');
-        (window.openDetail || window.renderDetailPage)(p.tmdbId, type);
+        window.openDetail(p.tmdbId, type);
     } else if (ev.type === 'evening_pick' && typeof window.openAgentHub === 'function') {
         document.getElementById('notifications-dropdown')?.classList.remove('active');
         window.openAgentHub();

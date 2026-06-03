@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { inferTimeOfDay, buildDecidePrompt, MOODS } from '../src/features/decide-for-me.js';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { inferTimeOfDay, buildDecidePrompt, MOODS, runDecide } from '../src/features/decide-for-me.js';
 
 describe('decide-for-me — pure logic (Phase 05-03)', () => {
     describe('inferTimeOfDay', () => {
@@ -59,6 +59,25 @@ describe('decide-for-me — pure logic (Phase 05-03)', () => {
             const p = buildDecidePrompt({ time });
             expect(p.toLowerCase()).toContain('weekend');
             expect(p.toLowerCase()).toContain('evening');
+        });
+    });
+
+    describe('runDecide quota gate (05-final defense-in-depth)', () => {
+        beforeEach(() => { globalThis.window = globalThis; });
+        afterEach(() => { vi.restoreAllMocks(); delete globalThis.AuthService; delete globalThis.fetch; });
+
+        it('returns a blocked sentinel when the quota gate blocks (no AI search runs)', async () => {
+            // waitForToken → token, /api/quota → 429
+            globalThis.AuthService = { waitForToken: async () => 'tok', currentUser: { uid: 'u' } };
+            globalThis.fetch = vi.fn().mockResolvedValue({ status: 429, ok: false });
+            const r = await runDecide({ mood: null });
+            expect(r).toEqual({ blocked: true, reason: 'quota' });
+        });
+
+        it('blocks with reason auth when no token is available', async () => {
+            globalThis.AuthService = { waitForToken: async () => null };
+            const r = await runDecide({ mood: null });
+            expect(r).toMatchObject({ blocked: true, reason: 'auth' });
         });
     });
 });
