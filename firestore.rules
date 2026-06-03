@@ -75,14 +75,19 @@ service cloud.firestore {
         && resource.data.userId == request.auth.uid;
     }
 
-    // ── Pair Mode (Phase 05-04 baseline) ──────────────────────────────────────
-    // Only members of a pair can read/modify it. Full pairing-code semantics land
-    // in 05-04; this baseline keeps pair docs private to their two members.
+    // ── Pair Mode (Phase 05-04) ───────────────────────────────────────────────
+    // Pair docs are private to their two members.
     match /pairs/{pairId} {
       allow read, update, delete: if request.auth != null
         && request.auth.uid in resource.data.members;
       allow create: if request.auth != null
         && request.auth.uid in request.resource.data.members;
+    }
+
+    // Pairing codes are written + redeemed ONLY by the server (api/pair.js, Admin SDK).
+    // Denying all client access prevents code enumeration / brute-force from the browser.
+    match /pairCodes/{code} {
+      allow read, write: if false;
     }
 
     // ── streaming cache — server-written, public read ─────────────────────────

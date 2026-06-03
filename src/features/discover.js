@@ -12,6 +12,8 @@ import { DAILY_REC_KEY, DAILY_REC_CATEGORIES, getGenreName } from '../lib/consta
 import '../ui/paywall-sheet.js';
 // Side-effect import: injects the Agent hub FAB + registers it (Phase 05-03).
 import './agent-hub.js';
+// Side-effect import: registers the Pair Mode hub hook (Phase 05-04).
+import './pair-mode.js';
 // Side-effect import: syncs Firestore premium flag → client entitlement mirror (Phase 05-01).
 import '../lib/entitlements-sync.js';
 // Side-effect import: wires the header bell to the Firestore notification inbox (Phase 05-05).
