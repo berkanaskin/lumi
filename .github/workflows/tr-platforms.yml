@@ -1,0 +1,66 @@
+# Phase 05.5-11 — TR yerel platform kataloğu aylık tazeleme.
+#
+# Gain/Puhu/Tabii sitemap'lerini scrape eder, TMDB'ye eşler ve değişiklik
+# varsa PR açar. İnsan dokunuşu = ayda bir PR'a göz atmak.
+#
+# Güvenlik mandalları:
+# - Scraper bir platformda %50+ içerik düşüşü görürse exit 2 → workflow
+#   KIRMIZI düşer (PR açılmaz) → GitHub bildirimi gelir, sessiz çürüme yok.
+# - Bulanık eşleşmeler katalogdaki _unverified alanında; PR gövdesinde
+#   "şüpheli" özeti görünür.
+#
+# Gerekli secret: TMDB_API_KEY (Repo → Settings → Secrets → Actions).
+
+name: TR platform catalog refresh
+
+on:
+  schedule:
+    - cron: '0 3 1 * *' # her ayın 1'i, 03:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Scrape + TMDB eşleme
+        env:
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+        run: node scripts/scrape-tr-platforms.mjs | tee scrape-summary.txt
+
+      - name: PR gövdesini hazırla
+        id: body
+        run: |
+          {
+            echo 'BODY<<EOF'
+            echo '## TR platform kataloğu aylık tazeleme'
+            echo
+            echo '```'
+            cat scrape-summary.txt
+            echo '```'
+            echo
+            echo 'Şüpheli (eşlenemeyen) girişler katalogdaki `_unverified` alanında.'
+            echo 'Birebir başlık eşleşmeleri otomatik kabul edildi; merge etmeden önce şüphelilere göz at.'
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: PR aç (değişiklik varsa)
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: 'chore(data): TR platform kataloğu aylık tazeleme'
+          title: 'TR platform kataloğu — aylık tazeleme'
+          body: ${{ steps.body.outputs.BODY }}
+          branch: chore/tr-platform-refresh
+          delete-branch: true
+          add-paths: |
+            src/data/turkish-platform-catalog.json
+            scripts/tr-platforms-cache.json

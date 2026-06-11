@@ -1,0 +1,6424 @@
+{
+  "_doc": "scrape-tr-platforms.mjs pipeline cache — client bundle'ına GİRMEZ.",
+  "_slugMap": {
+    "puhutv:bahar-bayrami-galasi-2026": null,
+    "puhutv:cinde-buz-ve-kar-festivali": null,
+    "puhutv:haydi-cine-gel-koy-muhtari-ol": null,
+    "puhutv:gq-men-of-the-year-2025-odul-toreni": null,
+    "puhutv:dcso-cumhuriyet-bayrami-konseri": null,
+    "puhutv:pekin-hizmet-hatti": null,
+    "puhutv:megali-idea": null,
+    "puhutv:savarona-zor-gunler": null,
+    "puhutv:miras-koruyucusu": null,
+    "puhutv:nehirle-buyuyenler": null,
+    "puhutv:colun-tatli-kokusu": null,
+    "puhutv:ipek-yolunun-batik-hazineleri": null,
+    "puhutv:mavi-ile-yesilin-bulusmasi": null,
+    "puhutv:yangtzenin-gulumseyen-melekleri": null,
+    "puhutv:kadim-ezgilerin-yankisi-cin-calgilarinin-sanati": null,
+    "puhutv:cindeki-dunya-miraslari-pingyao": null,
+    "puhutv:kulturlerin-kesisme-noktasi-ipek-yolunun-mirasi": null,
+    "puhutv:yue-operasi-yeniden-yaratilan-miras": null,
+    "puhutv:miao-nakisi-dikislerle-anlatilan-tarih": null,
+    "puhutv:2025-cin-medya-grubu-bahar-bayrami-galasi": null,
+    "puhutv:pazar-hikayeleri": null,
+    "puhutv:6063-numarali-qinling-treni": null,
+    "puhutv:esenlik-yolu": null,
+    "puhutv:gq-men-of-the-year-2024-odul-toreni": null,
+    "puhutv:cgtn-documentary-canli-yayin": null,
+    "puhutv:https://puhutv.com/atanin-sevdigi-yemekler": null,
+    "puhutv:geri-sayim-basladi-cinde-iklim-degisikligi": null,
+    "puhutv:yaban-hayati-cenneti-cin": null,
+    "puhutv:yolumuz-acik-cin-laos-demiryolu-hayatlari-nasil-degistirdi": null,
+    "puhutv:ipek-yolunun-cagrisi": null,
+    "puhutv:cesitlilikler-ulkesi": null,
+    "puhutv:hong-kong-saglam-bir-bagin-izinde": null,
+    "puhutv:gorevimiz-dunya-zirvesi": null,
+    "puhutv:colde-bir-mucevher-dunhuang": null,
+    "puhutv:insanin-karbon-ayak-izi": null,
+    "puhutv:yolcu-kalmasin-guneydogu-asyanin-ilk-yuksek-hizli-treni": null,
+    "puhutv:baris-icin-savasanlar-anlatiyor": null,
+    "puhutv:tibet-yollarinda": null,
+    "puhutv:2024-cin-medya-grubu-bahar-bayrami-galasi": null,
+    "puhutv:bir-daha-yasanmasin-diye": null,
+    "puhutv:97-yillik-mucadele-tarihi-mit": null,
+    "puhutv:halkin-sanati-sergi-paneli": null,
+    "puhutv:leziz-istanbul": null,
+    "puhutv:29-ekim-cumhuriyet-bayrami": null,
+    "puhutv:bir-avuc-guzel-insan": null,
+    "puhutv:galataport-istanbul-dunyaya-denizden-acilan-kapi": null,
+    "puhutv:gecmis-olsun-turkiye": null,
+    "puhutv:zafere-goturen-milli-sir": null,
+    "puhutv:dcso-23-nisan-galataport-istanbul-ozel-konseri": null,
+    "puhutv:sari-posetli-kiz": null,
+    "puhutv:denizlerin-koruyuculari": null,
+    "puhutv:bir-umut-marmara": "movie:1068466",
+    "puhutv:belkis-ozener-saygi-konseri": null,
+    "puhutv:mavi-gelecek": null,
+    "puhutv:dcso-cumhuriyet-bayrami-galataport-istanbul-ozel-konseri": null,
+    "puhutv:ruzgarin-cocuklari": "movie:25631",
+    "puhutv:start-your-impossible": null,
+    "puhutv:var-ettiniz-var-olun": null,
+    "puhutv:istanbul-kafasi-galataport": null,
+    "puhutv:kapadokya-mevsimi": null,
+    "puhutv:darulaceze-asirlik-sefkat-yuvasi": null,
+    "puhutv:ara-guler-islik-calan-adam": null,
+    "puhutv:bandirma-vapuru-kurtulusa-yolculuk": null,
+    "puhutv:mozartin-sihirli-dunyasi": null,
+    "puhutv:caykovski-aydinliktan-karanliga-konseri": null,
+    "puhutv:yeni-yila-merhaba-konseri": null,
+    "puhutv:dogus-cocuk-senfoni-orkestrasi": null,
+    "puhutv:anadolu-atesi-aspendos-gosterisi": null,
+    "puhutv:cirkin": "tv:315179",
+    "puhutv:sevdigim-sensin": "tv:306215",
+    "puhutv:sahtekarlar": "tv:301693",
+    "puhutv:carpinti": "tv:297751",
+    "puhutv:baska-bir-gun": "tv:282224",
+    "puhutv:kral-kaybederse": "tv:280777",
+    "puhutv:sen-aglama-istanbul": "tv:277856",
+    "puhutv:uzak-sehir": "tv:274556",
+    "puhutv:sahipsizler": "tv:271548",
+    "puhutv:leyla": null,
+    "puhutv:deha": "tv:256400",
+    "puhutv:yan-oda": "tv:248557",
+    "puhutv:sakla-beni": "tv:238711",
+    "puhutv:yuz-yillik-mucize": "tv:222899",
+    "puhutv:dokuz-oguz": "tv:218922",
+    "puhutv:omer": "tv:217980",
+    "puhutv:cop-adam": "tv:215275",
+    "puhutv:toprak-ile-fidan": "tv:213664",
+    "puhutv:yali-capkini": "tv:210865",
+    "puhutv:gecenin-ucunda": "tv:211714",
+    "puhutv:duy-beni": "tv:205588",
+    "puhutv:ah-nerede": "tv:205204",
+    "puhutv:emanet": "tv:100868",
+    "puhutv:annemizi-saklarken": "tv:152500",
+    "puhutv:kaderimin-oyunu": "tv:152326",
+    "puhutv:benim-hayatim": "tv:137659",
+    "puhutv:sana-soz": "tv:137519",
+    "puhutv:my-brilliant-friend": "tv:78154",
+    "puhutv:yalanci": "tv:133020",
+    "puhutv:icimizden-biri": "tv:132961",
+    "puhutv:seyyar": "tv:126115",
+    "puhutv:kazara-ask": "tv:126300",
+    "puhutv:kagit-ev": "tv:123732",
+    "puhutv:akrep": "tv:114973",
+    "puhutv:seni-cok-bekledim": "tv:117578",
+    "puhutv:sol-yanim": "tv:113720",
+    "puhutv:iyi-gunde-kotu-gunde": "tv:109535",
+    "puhutv:gun-on4": "tv:105152",
+    "puhutv:guvercin": "tv:95679",
+    "puhutv:sevgili-gecmis": "tv:94935",
+    "puhutv:sefirin-kizi": "tv:96305",
+    "puhutv:sevdim-seni-bir-kere": "tv:93666",
+    "puhutv:cocuk": "tv:93196",
+    "puhutv:kuzey-yildizi-ilk-ask": "tv:93216",
+    "puhutv:benim-tatli-yalanim": "tv:90271",
+    "puhutv:kardes-cocuklari": "tv:85606",
+    "puhutv:nefes-nefese": "tv:81312",
+    "puhutv:meleklerin-aski": "tv:80331",
+    "puhutv:darisi-basimiza": "tv:80387",
+    "puhutv:kalbimin-sultani": "tv:80164",
+    "puhutv:erkenci-kus": "tv:80411",
+    "puhutv:sahsiyet": "tv:77994",
+    "puhutv:jet-sosyete": "tv:76542",
+    "puhutv:adini-sen-koy": "tv:83964",
+    "puhutv:klavye-delikanlilari": "tv:75360",
+    "puhutv:siyah-inci": "tv:79125",
+    "puhutv:ruya": "tv:84626",
+    "puhutv:atesbocegi": "tv:72893",
+    "puhutv:turk-mali": "tv:48660",
+    "puhutv:fazilet-hanim-ve-kizlari": "tv:76560",
+    "puhutv:fi": "tv:71036",
+    "puhutv:yeni-gelin": "tv:71591",
+    "puhutv:deniz-yildizi": "tv:205351",
+    "puhutv:istanbullu-gelin": "tv:70798",
+    "puhutv:yildizlar-sahidim": "tv:71558",
+    "puhutv:hayat-bazen-tatlidir": "tv:50541",
+    "puhutv:genis-aile": "tv:32090",
+    "puhutv:candan-ote": "tv:49030",
+    "puhutv:son-bahar": "tv:49809",
+    "puhutv:kopru": "tv:194990",
+    "puhutv:iki-aile": "tv:214440",
+    "puhutv:sahane-damat": "tv:69336",
+    "puhutv:cennetin-sirlari": null,
+    "puhutv:paramparca": "tv:69238",
+    "puhutv:kucuk-kadinlar": "tv:49598",
+    "puhutv:bir-cocuk-sevdim": "tv:52558",
+    "puhutv:yuksek-sosyete": "tv:67611",
+    "puhutv:izmir-cetesi": "tv:50588",
+    "puhutv:serce-sarayi": "tv:50528",
+    "puhutv:benden-baba-olmaz": "tv:49577",
+    "puhutv:kaybolan-yillar": "tv:50529",
+    "puhutv:aile-reisi": "tv:50729",
+    "puhutv:yalanci-yarim": "tv:49855",
+    "puhutv:papatyam": "tv:48548",
+    "puhutv:askin-bedeli": null,
+    "puhutv:duruye-nin-gugumleri": "tv:203858",
+    "puhutv:aramizda-kalsin": "tv:202122",
+    "puhutv:baba-ocagi": "tv:210403",
+    "puhutv:sevgili-dunurum": "tv:50491",
+    "puhutv:cumbur-cemaat-aile": "tv:124563",
+    "puhutv:anneler-ile-kizlari": "tv:203188",
+    "puhutv:ay-tutulmasi": "tv:254783",
+    "puhutv:kucuk-sirlar": "tv:48513",
+    "puhutv:benim-annem-bir-melek": "tv:51431",
+    "puhutv:beni-affet": "tv:119693",
+    "puhutv:koyu-kirmizi": "tv:49834",
+    "puhutv:evlerden-biri": "tv:48635",
+    "puhutv:kucuk-hesaplar": "tv:51152",
+    "puhutv:acayip-hikayeler": "tv:43577",
+    "puhutv:hanim-koylu": "tv:109101",
+    "puhutv:goc-zamani": "tv:109914",
+    "puhutv:cilek-kokusu": "tv:69322",
+    "puhutv:tatli-kucuk-yalancilar": "tv:64000",
+    "puhutv:hatirla-gonul": "tv:82131",
+    "puhutv:kalbim-4-mevsim": "tv:271403",
+    "puhutv:benim-hala-umudum-var": null,
+    "puhutv:agir-roman-yeni-dunya": "tv:194871",
+    "puhutv:firar": "tv:51408",
+    "puhutv:sudan-bikmis-baliklar": "tv:49399",
+    "puhutv:iffet": "tv:50734",
+    "puhutv:ibret-i-ailem": "tv:48729",
+    "puhutv:ben-de-ozledim": "tv:66154",
+    "puhutv:guzel-koylu": "tv:89349",
+    "puhutv:dila-hanim": "tv:49887",
+    "puhutv:isler-gucler": "tv:48162",
+    "puhutv:behzat-c": null,
+    "gain:53-61": "tv:196463",
+    "gain:bizi-ayiran-cizgi": "tv:124125",
+    "gain:sarki-hikayeleri": "tv:138439",
+    "gain:esencilis": "movie:1231754",
+    "gain:ne-yasandi": "tv:207211",
+    "gain:oyunbozan": "movie:13680",
+    "gain:gida-israfi": null,
+    "gain:cok-yakin-cok-uzak": "tv:203173",
+    "gain:i-am-istanbullu": null,
+    "gain:konusmamiz-lazim": "tv:296740",
+    "gain:ankara-apartmanlari": "tv:198065",
+    "gain:yas-evi": null,
+    "gain:istanbula-surgun": "movie:1231756",
+    "gain:idil-yazar-ile-hizli-ve-lezzetli": "tv:244785",
+    "gain:ve-hayatim-degisti": "tv:245507",
+    "gain:ozgurluk-kac-m2": null,
+    "gain:sahne-arkasi": null,
+    "gain:mirgun-cabas-ile-yeni-dunya": "tv:208215",
+    "gain:imkansizi-yasayanlar": "tv:126009",
+    "gain:k-pop-turkiye": "tv:157038",
+    "gain:yoldan-gonullu-ciktim": "tv:245513",
+    "gain:cumhuriyete-dogru-son-99-saat": "movie:1063949",
+    "gain:ses-ve-ofke": "movie:287636",
+    "gain:93-yazi": "movie:438634",
+    "gain:mucize-kadinlar": null,
+    "gain:mor-ve-otesi": null,
+    "gain:gain-sahne": null,
+    "gain:komplo-19": "tv:156028",
+    "gain:sokopop-portreler-harika-avci": "tv:153860",
+    "gain:4x4": "movie:575769",
+    "gain:istanbul-apartmanlari": "tv:302725",
+    "gain:sokopop-portreler-banu-alkan": "tv:123037",
+    "gain:yemek-hazir": "movie:818342",
+    "gain:ben-varim": "tv:126796",
+    "gain:sakin": "tv:123229",
+    "gain:hic-bilmiyordum": "tv:194867",
+    "gain:iki": "movie:610039",
+    "gain:ele-gune-karsi": "tv:115819",
+    "gain:covid-on9": "tv:127033",
+    "gain:ah-sanal-dunya": "tv:129785",
+    "gain:teoman-mirgun-cabas-soylesisi": null,
+    "gain:ilber-ortayli-ile-zaman-makinesi": "tv:125352",
+    "gain:ucan-dedektif": "tv:129027",
+    "gain:sokopop-portreler-zeki-muren": "tv:123036",
+    "gain:sokopop-portreler-duygu-asena": "tv:201696",
+    "gain:pnc": "tv:279801",
+    "gain:sokopop-portreler-hulya-avsar": "tv:137088",
+    "gain:dalga-karadenizin-gizli-gucu": "tv:214185",
+    "gain:ankapark-bir-ankara-dosyasi": "movie:1231739",
+    "gain:ozelden-yuruyenler": "tv:121168",
+    "gain:electro-monolog": "tv:122737",
+    "gain:ailem": "tv:301970",
+    "gain:ara-akim-medya": null,
+    "gain:oyunlar-holding": "tv:115821",
+    "gain:beyaz-yaka": "tv:125645",
+    "gain:800-derece": "tv:227662",
+    "gain:sokopop-portreler-megastar-tarkan": "tv:127538",
+    "gain:kirik-dokuk": "movie:1231759",
+    "gain:pazar-klasigi": null,
+    "gain:yatirim-tavsiyesi-degildir": "tv:194936",
+    "gain:gorunenden-fazlasi": "tv:157039",
+    "gain:cag-yangini": "tv:136611",
+    "gain:mazhar-alanson-ile-misafir": "tv:271943",
+    "gain:gor-beni": "tv:252452",
+    "gain:heykel-mi": "tv:203751",
+    "gain:yeni-gurmeler": "tv:129138",
+    "gain:julide-ates-ile-40": "tv:123717",
+    "gain:assa": "movie:1439102",
+    "gain:kurtulus-lisesi": "tv:243959",
+    "gain:istanbul-hesabi": "tv:115818",
+    "gain:turkiyeyi-sarsan-davalar": "tv:210507",
+    "gain:aslinda-ozgursun": "tv:201694",
+    "gain:arjen": null,
+    "gain:deli-dolu-masa": "tv:128189",
+    "gain:hokkabaz": "movie:13296",
+    "gain:sen-kimsin": "movie:109856",
+    "gain:can-dostlar": "movie:24363",
+    "gain:salur-kazan-zoraki-kahraman": null,
+    "gain:munasaka": "movie:921802",
+    "gain:ege-evleri": "tv:207137",
+    "gain:kral-sakir-oyun-zamani": "movie:578210",
+    "gain:bucur": "movie:576745",
+    "gain:alarga": "tv:270686",
+    "gain:teoman-ozel-konser": null,
+    "gain:cekcek": "movie:1142029",
+    "gain:duran": "tv:155367",
+    "gain:dayi-sov-ekstra": null,
+    "gain:dayi-sov": "tv:133340",
+    "gain:yarin-yokmus-gibi": "movie:587792",
+    "gain:dogu-demirkol": null,
+    "gain:vizontele": "movie:57892",
+    "gain:deli-dumrul": "movie:474712",
+    "gain:haybeden-gercek-ustu-ask": null,
+    "gain:vizontele-tuuba": "movie:92834",
+    "gain:ata-demirer-tek-kisilik-dev-kadro-1": null,
+    "gain:gora": "tv:153871",
+    "gain:deliha-2": "movie:496748",
+    "gain:deliha": "movie:309853",
+    "gain:neseli-hayat": "movie:52667",
+    "gain:dugun-dernek": "movie:246524",
+    "gain:ata-demirer-gazinosu": "movie:781696",
+    "gain:kara-bela": "movie:361181",
+    "gain:berlin-kaplani": "movie:85782",
+    "gain:yol-arkadasim-2": "movie:549650",
+    "gain:kelebegin-ruyasi": "movie:171160",
+    "gain:gorumce": "movie:429235",
+    "gain:bizim-koyun-sarkisi": "movie:528364",
+    "gain:eksi-elmalar": "movie:422991",
+    "gain:incir-receli-2": "movie:313822",
+    "gain:istanbul-kirmizisi": "movie:443486",
+    "gain:eyyvah-eyvah-3": "movie:265505",
+    "gain:eyyvah-eyvah-2": "movie:53325",
+    "gain:sen-kiminle-dans-ediyorsun": "movie:477297",
+    "gain:kolonya-cumhuriyeti": "movie:453596",
+    "gain:eyyvah-eyvah": "movie:48763",
+    "gain:cinar-agaci": "movie:67077",
+    "gain:bayi-toplantisi": "movie:674349",
+    "gain:tatlim-tatlim": "movie:447447",
+    "gain:organize-isler-sazan-sarmali": "movie:577990",
+    "gain:dugum-salonu": "movie:505544",
+    "gain:organize-isler": "movie:30634",
+    "gain:niyazi-gul-dortnala": "movie:340426",
+    "gain:oldur-beni-sevgilim": "movie:1232943",
+    "gain:kurtulus-son-durak": "movie:101682",
+    "gain:hayat-opucugu": "movie:393478",
+    "gain:kucuk-esnaf": "movie:391649",
+    "gain:hedefim-sensin": "movie:566067",
+    "gain:aile-arasinda": "movie:477313",
+    "gain:olanlar-oldu": "movie:433138",
+    "gain:hukumet-kadin": "movie:171158",
+    "gain:hukumet-kadin-2": "movie:255156",
+    "gain:firildak-ailesi": null,
+    "gain:mirgun-cabas-ile-orda-rahat-misin": null,
+    "gain:dunya-kadar-sade": "tv:131950",
+    "gain:elcin-sangu-ile-101": "tv:291653",
+    "gain:duraktan-duraga": "tv:121341",
+    "gain:bir-daha-asla": "movie:1508482",
+    "gain:mevzular-acik-mikrofon": "tv:210956",
+    "gain:yasima-basima-bakmadan": "tv:156274",
+    "gain:kimin-umurunda": "movie:862420",
+    "gain:hatiran-yeter": "tv:289951",
+    "gain:cocuklar-sana-emanet": "movie:507297",
+    "gain:mazlum-kuzey": "movie:367217",
+    "gain:ikinci-sans": "movie:13949",
+    "gain:her-sey-asktan": "movie:442392",
+    "gain:ruzgar": "movie:511586",
+    "gain:oteki-taraf": "movie:61341",
+    "gain:sevimli-tehlikeli": "movie:325134",
+    "gain:ulak": "movie:52147",
+    "gain:yer-gok-ask": "tv:47923",
+    "gain:550-mil": null,
+    "gain:cuneyt-ozdemir-belgeselleri": "tv:236117",
+    "gain:ask-adasi": "movie:27902",
+    "gain:bkm-mutfak-stand-up": "tv:135727",
+    "gain:komedi-kulubu": "tv:245058",
+    "gain:esas-oglan": "tv:275228",
+    "gain:dogu": "tv:122186",
+    "gain:modern-kadin": "tv:294338",
+    "gain:ex-askim": "tv:121169",
+    "gain:ru": "tv:253645",
+    "gain:etkileyici": "tv:139705",
+    "gain:dengeler-biri-olmak": "tv:251317",
+    "gain:gise-memuru": "movie:66574",
+    "gain:cezailer": "tv:211181",
+    "gain:dugun-dernek-2-sunnet": "movie:371153",
+    "gain:patron-mutlu-son-istiyor": "movie:258310",
+    "gain:10suz-yapamam": "tv:129732",
+    "gain:tebessum": "movie:1038522",
+    "gain:kocan-kadar-konus-dirilis": "movie:376436",
+    "gain:aynasiz-haluk": "movie:971378",
+    "gain:kocan-kadar-konus": "movie:332788",
+    "gain:8-saniye": "movie:348750",
+    "gain:anons": "movie:538102",
+    "gain:aykut-eniste": "movie:606413",
+    "gain:aykut-eniste-2": "movie:911306",
+    "gain:yildizlar-da-kayar": "movie:581319",
+    "gain:bizi-hatirla": "movie:540845",
+    "gain:yol-arkadasim": "movie:778106",
+    "gain:bana-masal-anlatma": "movie:332534",
+    "gain:terapist": "movie:22640",
+    "gain:cok-filim-hareketler-bunlar": "movie:46733",
+    "gain:el-degmemis-ask": "movie:435792",
+    "gain:johnny-ve-amber-nasil-basladi-nasil-bitti": "tv:204530",
+    "gain:500t": "tv:138440",
+    "gain:beynelmilel": "movie:49834",
+    "gain:bir-baba-hindu": "movie:419530",
+    "gain:dedemin-fisi": "movie:380333",
+    "gain:sakli-yuzler": "movie:257942",
+    "gain:annemin-yarasi": "movie:386591",
+    "gain:silsile": "movie:314462",
+    "gain:cici-babam": "movie:522828",
+    "gain:sir-ayet-3-olu-dogan": null,
+    "gain:mucbir-yilbasi": null,
+    "gain:senkron": "tv:122630",
+    "gain:beni-kendimden-koru": "tv:121511",
+    "gain:iki-kapi-arasinda": null,
+    "gain:sinirsiz": "movie:1078231",
+    "gain:sir-ayet-2": "movie:797565",
+    "gain:dunya-bu": "tv:222533",
+    "gain:guzelligin-portresi": "movie:654795",
+    "gain:hamlet": "movie:10549",
+    "gain:arif-olmak": "movie:1439100",
+    "gain:bir-sifa-bagimlisinin-itiraflari": "tv:126590",
+    "gain:aci-tatli-eksi": "movie:474720",
+    "gain:alice-muzikali": "movie:1056234",
+    "gain:lale-devri": "tv:47918",
+    "gain:gamonya-hayaller-ulkesi": "movie:663194",
+    "gain:senem-aydinla-hadi-anlat": "tv:256265",
+    "gain:mahsun-j": "tv:244557",
+    "gain:son-kare": "tv:303453",
+    "gain:fer": "tv:303450",
+    "gain:sokopop": "tv:124147",
+    "gain:ayak-isleri": "tv:125412",
+    "gain:10-bin-adim": "tv:115597",
+    "gain:kral-sakir-korsanlar-diyari": "movie:639251",
+    "gain:final-gate": "tv:305437",
+    "gain:garez": "movie:11838",
+    "gain:kayip-zamanlar": null,
+    "gain:bir-ruya-icin-agit": "movie:641",
+    "gain:dikkat-bebek-var": "movie:76494",
+    "gain:karadayi": "tv:47745",
+    "gain:after-ayrilik": "movie:744275",
+    "gain:after-mutluluk": "movie:744276",
+    "gain:korkunun-sesi": null,
+    "gain:koruyucu": "movie:72387",
+    "gain:ask-engel-tanimaz": "movie:509",
+    "gain:yildiz-haritasi": "movie:157851",
+    "gain:askin-izi": "movie:1078600",
+    "gain:biz-boyleyiz": "movie:645292",
+    "gain:ogretmenler-odasi": "movie:998022",
+    "gain:savunmada-yerli-devrim-turkiyenin-hikayesi": null,
+    "gain:evim-sensin": "movie:141901",
+    "gain:su-ve-ates": "movie:271954",
+    "gain:after-paramparca": "movie:613504",
+    "gain:bisikletler": "movie:568066",
+    "gain:kediler": "movie:513386",
+    "gain:tamircikler-robotcuklara-karsi": "movie:579893",
+    "gain:dipdip-bir-okyanus-macerasi": "movie:430474",
+    "gain:ayi-kardesler-dunyaya-donus": "movie:931404",
+    "gain:aya-sihirli-yolculuk": "movie:809717",
+    "gain:sevimli-ejderha-kokonat-ormanda-senlik": "movie:544052",
+    "gain:ayi-kardesler-fantastik-dunyalar": "movie:462927",
+    "gain:ikizler-takimi": "movie:1208491",
+    "gain:ayi-kardesler-macera-parki": "movie:796039",
+    "gain:ayi-kardesler-sirkte-curcuna": "movie:401791",
+    "gain:super-kahramanlar-sihirli-dunya": null,
+    "gain:ayi-kardesler-zamanda-yolculuk": "movie:581218",
+    "gain:ayi-kardesler-eyvah-ayilar-kuculdu": "movie:529426",
+    "gain:buyulu-prenses": null,
+    "gain:kediler-muzede": "movie:923579",
+    "gain:vahsi-dostum": "movie:498248",
+    "gain:kucuk-kahraman-super-kahramanlarin-en-kucugu": null,
+    "gain:uyumsuz": "movie:157350",
+    "gain:kahraman-ordek": "movie:377878",
+    "gain:tas-devri-firarda": "movie:387592",
+    "gain:zipir-dedektif-ve-altin-ari-kovani": "movie:1017129",
+    "gain:yuva": "movie:545237",
+    "gain:testere-x": "movie:951491",
+    "gain:altin-gaga-ve-macera-cetesi": "movie:879913",
+    "gain:acemi-ksifler-gorevimiz-kocaayak": null,
+    "gain:tavsan-okulu-cilgin-yumurtalar": "movie:888322",
+    "gain:super-ajanlar": "movie:550738",
+    "gain:super-aile": "movie:947507",
+    "gain:super-kahraman-ve-yaramaz-lister": "movie:844391",
+    "gain:hopper-ve-cilgin-cetesi-buyuk-macera": "movie:778855",
+    "gain:dedektif-sun-ve-ekibi-kurtarma-operasyonu": "movie:987750",
+    "gain:yumurtalar-firarda-afrika-macerasi": "movie:573164",
+    "gain:siddet-eylemleri": "movie:479040",
+    "gain:arinma": "movie:1041613",
+    "gain:babam-ve-oglum": "movie:13393",
+    "gain:cennet-koyu": "movie:790894",
+    "gain:elveda": "movie:565310",
+    "gain:fareler-de-cennete-gider": null,
+    "gain:roborexin-maceralari": null,
+    "gain:cesur-gergedan-riki": "movie:666875",
+    "gain:shaun-the-sheep-the-movie": null,
+    "gain:metot": "movie:21043",
+    "gain:damali-ninja": "movie:523536",
+    "gain:italo": "movie:318364",
+    "gain:foxcatcher-takimi": "movie:87492",
+    "gain:gergedan-mevsimi": "movie:110391",
+    "gain:ask-bu-mu": "movie:613976",
+    "gain:aclik-oyunlari": "movie:70160",
+    "gain:aclik-oyunlari-2-atesi-yakalamak": null,
+    "gain:testere": "movie:176",
+    "gain:kana-kan": "movie:10222",
+    "gain:kickboxer-iii": null,
+    "gain:kickboxer-ii": null,
+    "gain:herrhausen-the-banker-and-the-bomb": null,
+    "gain:ilk-kursun": "movie:410554",
+    "gain:cebimdeki-yabanci": "movie:497179",
+    "gain:sans-tanricasi": "movie:606952",
+    "gain:karisik-kaset": "movie:320035",
+    "gain:cambaz": "movie:1226578",
+    "gain:insanlar-ikiye-ayrilir": "movie:745534",
+    "gain:tereddut": "movie:412200",
+    "gain:masa-ile-koca-ayi": "tv:46080",
+    "gain:yasamin-kiyisinda": "movie:334541",
+    "gain:ali-cevlik": "movie:1065000",
+    "gain:ben-tonya": "movie:389015",
+    "gain:araf": "movie:129119",
+    "gain:minari": "movie:615643",
+    "gain:47-metre-derinde-kafes": "movie:480105",
+    "gain:kovboy-cocuklar": "movie:1154304",
+    "gain:kucuk-prens-karlar-ulkesi": "movie:579884",
+    "gain:supa-strikas": "tv:74866",
+    "gain:hayat-okulu": "movie:35320",
+    "gain:emilynin-sihirli-yolculugu": "movie:734624",
+    "gain:kuzular-firarda-uzay-parki": "movie:422803",
+    "gain:kopekler-firarda": "movie:1112357",
+    "gain:neseli-ciftlik": "movie:557642",
+    "gain:axel-2-uzay-cocuklarinin-seruvenleri": null,
+    "gain:kurt-cocugun-gercek-hikyesi": null,
+    "gain:kucuk-allen-ve-galaksi-yolcusu": "movie:885021",
+    "gain:cesur-balina-katak": "movie:1052152",
+    "gain:kayara": "movie:666154",
+    "gain:ihtiyar-adam-ve-silah": "movie:429203",
+    "gain:turu-ve-sirk-maceralari": "movie:653247",
+    "gain:tavus-kusu": "movie:1245728",
+    "gain:asktan-kacinilmaz": null,
+    "gain:salinger-yilim": "movie:619594",
+    "gain:baba": "movie:238",
+    "gain:yangin-yeri": "movie:1191876",
+    "gain:sokagin-sonundaki-ev": "movie:82505",
+    "gain:popeye-the-slayer-man": "movie:1388366",
+    "gain:sihirbazin-balonlari": "movie:502259",
+    "gain:lassie-yepyeni-bir-macera": "movie:1088563",
+    "gain:kirpi-latte-ve-buyulu-tas": "movie:586954",
+    "gain:yaramazlar-takimi-zaman-yolculari": "movie:506752",
+    "gain:buyulu-kanatlar": "movie:482586",
+    "gain:muhtesem-kedi-maurice": "movie:676710",
+    "gain:samsam": "tv:62206",
+    "gain:nuhun-gemisi": "movie:1192209",
+    "gain:puloi-asla-yalniz-ucmayacaksin": "movie:506596",
+    "gain:prenses-ve-ejderha": "movie:518604",
+    "gain:biciriklar-yeni-yuvamiz": "movie:1020905",
+    "gain:asteriks-sihirli-iksirin-sirri": "movie:527729",
+    "gain:iki-kafadar": "movie:518601",
+    "gain:sevgili-dostum-sebastian": null,
+    "gain:kaptan-sabertooth-ve-minik-korsanlar-kayip-elmas-pesinde": "movie:606149",
+    "gain:cesur-dostum": null,
+    "gain:kocaayak-ve-ailesi": "movie:702525",
+    "gain:leo-da-vinci-mona-lisa-macerasi": "movie:486072",
+    "gain:siyah-beyaz-ask": "tv:76530",
+    "gain:kirpi-ve-saksagan-sevimli-uzay-kahramanlari": null,
+    "gain:cesur-cocuk-elveda-canavar": null,
+    "gain:sihirli-muze": "movie:508710",
+    "gain:kitap-kurdu": null,
+    "gain:kirmizi-pabuclar-ve-yedi-cuceler": "movie:486589",
+    "gain:panda-ve-sevimli-canavarlar": "movie:1643487",
+    "gain:troll-kuyruklu-macera": "movie:475351",
+    "gain:robinson-crusoe": "movie:368940",
+    "gain:kutsal-geyigin-olumu": "movie:399057",
+    "gain:prensim": "movie:329805",
+    "gain:little-angel": "tv:219004",
+    "gain:asla-gozlerini-kacirma": "movie:423612",
+    "gain:balina": "movie:785084",
+    "gain:neon-seytan": "movie:301365",
+    "gain:paramparca": "tv:69238",
+    "gain:oddbods": null,
+    "gain:neseli-ciftlik-tren-kalkiyor": "movie:1069806",
+    "gain:en-sevdigim-pastam": "movie:1234591",
+    "gain:denizde-dehset": "movie:403119",
+    "gain:new-yorkta-sonbahar": "movie:10641",
+    "gain:guzel-bir-takim": null,
+    "gain:buyukbaba-bakici": null,
+    "gain:sahsiyet": "tv:77994",
+    "gain:aci-kahve": "movie:1368334",
+    "gain:icerde": "tv:68388",
+    "gain:can-dostum": "movie:77338",
+    "gain:esitlik-savascisi": "movie:339380",
+    "gain:warrior": "tv:73544",
+    "gain:jeanne-du-barry": "movie:921452",
+    "gain:kurye": "movie:522241",
+    "gain:goklerin-hakimi": "movie:2567",
+    "gain:suphe": "movie:491584",
+    "gain:sibirya": "movie:438689",
+    "gain:new-york-ceteleri": "movie:3131",
+    "gain:gaslit": "tv:107407",
+    "gain:marilyn-ile-bir-hafta": "movie:75900",
+    "gain:yarim-kalan-hayat": null,
+    "gain:gelis": "movie:329865",
+    "gain:ash-vs-evil-dead": "tv:62264",
+    "gain:joy-ride": "movie:10866",
+    "gain:yalanci": "movie:14583",
+    "gain:juste-la-fin-du-monde": "movie:338189",
+    "gain:bay-ve-bayan-smith": "movie:787",
+    "gain:dunya-kupasi-katar-2022-buyuk-turnuvanin-gizemi": null,
+    "gain:it-came-from-the-desert": "movie:408490",
+    "gain:after": "movie:537915",
+    "gain:ip-man-kung-fu-ustasi": "movie:658009",
+    "gain:ayin": "movie:493922",
+    "gain:rituel": "movie:530385",
+    "gain:replikalar": "movie:300681",
+    "gain:aylak-takimi": "movie:954231",
+    "gain:testere-3": "movie:214",
+    "gain:testere-2": "movie:215",
+    "gain:message-man": "movie:564149",
+    "gain:antebellum": "movie:627290",
+    "gain:ilgi-manyagi": "movie:788734",
+    "gain:belki-evet-belki-hayir": "movie:972230",
+    "gain:ozel-bir-hediye": "movie:865498",
+    "gain:red": "movie:39514",
+    "gain:red-2": "movie:146216",
+    "gain:temizlikci": "movie:13252",
+    "gain:john-wick-2": null,
+    "gain:her-sey-her-yerde-ayni-anda": "movie:545611",
+    "gain:banka-isi": "movie:8848",
+    "gain:geriye-kalanlar": "movie:605874",
+    "gain:dumplin": "movie:472734",
+    "gain:olumcul-carpisma": "movie:457332",
+    "gain:kup": "movie:431",
+    "gain:yabani": "tv:231503",
+    "gain:sicario-day-of-the-soldado": "movie:400535",
+    "gain:sicario": "movie:273481",
+    "gain:freedom": "tv:60424",
+    "gain:john-wick-3-parabellum": null,
+    "gain:sarisin-bomba": "movie:341013",
+    "gain:atesten-kalbe-akildan-dumana": "movie:100",
+    "gain:kayip-kiz": "movie:210577",
+    "gain:azap": "movie:539181",
+    "gain:uc-yol": "movie:34601",
+    "gain:korfez": "movie:474308",
+    "gain:orta-kafa-ask": "tv:134213",
+    "gain:mainstream": "movie:557950",
+    "gain:ip-man-3": "movie:365222",
+    "gain:karanlik-kiz": "movie:554230",
+    "gain:ustat": "movie:808023",
+    "gain:yangdan-sonra": "movie:585378",
+    "gain:ceviz-agaci": "movie:643059",
+    "gain:bizans-oyunlari": null,
+    "gain:not-seni-seviyorum": "movie:6023",
+    "gain:dusus": "movie:985939",
+    "gain:cikis-yok": "movie:1096197",
+    "gain:yesil-rehber": "movie:490132",
+    "gain:yesil-sovalye": "movie:559907",
+    "gain:seberg": "movie:510298",
+    "gain:american-sapigi": null,
+    "gain:sessiz-gece": "movie:891699",
+    "gain:son-gorev": "movie:9319",
+    "gain:radyoaktif": "movie:480857",
+    "gain:napolinin-sirri": "movie:485894",
+    "gain:intikam": "movie:1613798",
+    "gain:paramparca-asklar-kopekler": "movie:55",
+    "gain:umut-isigim": "movie:82693",
+    "gain:acik-deniz": "movie:83",
+    "gain:tetikciler": "movie:59967",
+    "gain:kacis-plani": "movie:107846",
+    "gain:koku-bir-katilin-hikayesi": "movie:1427",
+    "gain:parazit": "movie:496243",
+    "gain:insomnia": "movie:320",
+    "gain:dus-kapani": "movie:6171",
+    "gain:rezervuar-kopekleri": "movie:500",
+    "gain:ip-man-2": "movie:37472",
+    "gain:istila-altinda": "movie:429471",
+    "gain:ormandaki-cadi": "movie:614204",
+    "gain:babygirl": "movie:1097549",
+    "gain:mincemeat-operasyonu": "movie:661231",
+    "gain:kefernahum": "movie:517814",
+    "gain:adamlar": "movie:780609",
+    "gain:resmi-yarisma": "movie:668640",
+    "gain:paralel-anneler": "movie:766798",
+    "gain:soygun": "tv:254071",
+    "gain:actor": "tv:219102",
+    "gain:ses": "tv:222495",
+    "gain:muhtesem-yaratiklar": "movie:109491",
+    "gain:dehsetin-gozleri": "movie:11547",
+    "gain:mucizeyi-kadinlar-yaratir": "movie:70868",
+    "gain:kral-icin-hologram": "movie:270010",
+    "gain:alice-jack": "tv:232315",
+    "gain:prosper": "tv:242963",
+    "gain:bayern-munich-rise-of-a-legend": "tv:239782",
+    "gain:dehset-kapani": "movie:22970",
+    "gain:caught": "movie:47260",
+    "gain:the-death-life-of-john-f-donovan": "movie:291984",
+    "gain:garip-bir-ask-oykusu": "movie:10358",
+    "gain:platform-7": "tv:237232",
+    "gain:van-gogh-sonsuzlugun-kapisinda": "movie:491472",
+    "gain:judy": "movie:491283",
+    "gain:seans": "movie:641668",
+    "gain:ren-altini": "movie:912726",
+    "gain:geber": "movie:1160018",
+    "gain:kitap-kulubu": "movie:502682",
+    "gain:kucuk-bir-rica": "movie:484247",
+    "gain:once": "movie:5723",
+    "gain:otoban": "movie:195590",
+    "gain:los-angelesta-gizli-gorev": "movie:345915",
+    "gain:bedenimi-kaybettim": "movie:586940",
+    "gain:nefes": "tv:76659",
+    "gain:ip-man": "movie:14756",
+    "gain:anne": "tv:68569",
+    "gain:dunyanin-en-kotu-insani": "movie:660120",
+    "gain:tutsak": "movie:146233",
+    "gain:john-wick": "movie:245891",
+    "gain:kayip-illuzyonlar": null,
+    "gain:operacin-marea-negra": null,
+    "gain:asteris-ve-oburiks-orta-krallik": null,
+    "gain:suburbicon": "movie:395458",
+    "gain:bir-skandalin-pesinde": "movie:839369",
+    "gain:run-hide-fight": "movie:629017",
+    "gain:sir-ayet": "movie:579451",
+    "gain:riddick": "movie:87421",
+    "gain:nick-off-duty": null,
+    "gain:demir-pence": "movie:850165",
+    "gain:after-her-sey": "movie:820525",
+    "gain:karabasan": "movie:242224",
+    "gain:mad-men": "tv:1104",
+    "gain:acil-inis": "movie:626872",
+    "gain:toz-ol": "movie:270774",
+    "gain:kral-lear": "movie:513427",
+    "gain:mommy": "movie:265177",
+    "gain:konus-benimle": "movie:1008042",
+    "gain:mavi-yasemin": "movie:160588",
+    "gain:baska-yerde": "movie:28891",
+    "gain:yolcu": "movie:1368314",
+    "gain:hayatin-kendisi": "movie:250766",
+    "gain:spiral-testere-devam-ediyor": "movie:602734",
+    "gain:safaktan-once": "movie:448776",
+    "gain:rockn-roll": "movie:382589",
+    "gain:zoraki-kral": "movie:45269",
+    "gain:ibiza": "movie:463053",
+    "gain:efsunlu-3-muska": "movie:1171919",
+    "gain:efsunlu-2-ayin": null,
+    "gain:efsunlu-kabirden-gelen": "movie:616204",
+    "gain:duzen": "movie:1082195",
+    "gain:tehlikeli-hesaplasma": null,
+    "gain:turbulans": null,
+    "gain:yagmacilar": "movie:359412",
+    "gain:tuzak": "movie:1032823",
+    "gain:galveston": "movie:283601",
+    "gain:kayip-sehir-z": "movie:314095",
+    "gain:ilgi-alani": "movie:467244",
+    "gain:kelly-cetesinin-gercek-hikayesi": "movie:501395",
+    "gain:saulun-oglu": "movie:336050",
+    "gain:katilin-yuzu": "movie:70577",
+    "gain:kolektif": null,
+    "gain:rumba-terapisi": "movie:665388",
+    "gain:coco-chanel-unbuttoned": "movie:1179300",
+    "gain:elizabeth-taylor-asi-superstar": null,
+    "gain:white-lies": "tv:221619",
+    "gain:zuckerberg": null,
+    "gain:burasi-ingiltere": null,
+    "gain:ay-ve-isiklar": "tv:95211",
+    "gain:daddy-issues": "tv:241337",
+    "gain:made-of-money-with-brian-cox": "tv:240547",
+    "gain:gaipten-gelen-sesler": null,
+    "gain:gecede-panik": null,
+    "gain:marsta-7-gun-yasam-arayisi": null,
+    "gain:gizemli-kasaba": "tv:14968",
+    "gain:karanlik-cinayetler": "movie:199373",
+    "gain:derin-sular": "movie:619979",
+    "gain:provenceta-yaz": null,
+    "gain:son-gece": "movie:23830",
+    "gain:tren-bob": null,
+    "gain:bonnie-kardesler": null,
+    "gain:baby-toot-toot": null,
+    "gain:blippi-wonders": "tv:155063",
+    "gain:blippi": "tv:125760",
+    "gain:bebek-patronlar": null,
+    "gain:bobi-dikenlerin-gucu-adina": "movie:469113",
+    "gain:pat-pat-dostlar": null,
+    "gain:ciftlikciler": null,
+    "gain:homur-gumur": null,
+    "gain:booya": null,
+    "gain:briko": null,
+    "gain:dino-arilar": null,
+    "gain:eggy-pops": null,
+    "gain:kukuli": "tv:211881",
+    "gain:kucuk-agac-evi": null,
+    "gain:giligilis": "tv:156114",
+    "gain:traktor-hector": null,
+    "gain:zipir-ile-civir": null,
+    "gain:pufpuflar": null,
+    "gain:ayi-kardesler-macera-ormani": null,
+    "gain:cilgin-hayvanlarin-sarkilari": null,
+    "gain:cilgin-hayvanlar": null,
+    "gain:masa-ile-koca-ayi-cocuk-sarkilari": null,
+    "gain:masa-ile-koca-ayi-ufakliklar": null,
+    "gain:luke-and-lily": null,
+    "gain:masa-ile-koca-ayi-peynir-de": null,
+    "gain:louis-ve-luca-buyuk-peynir-yarisi": null,
+    "gain:sporcu-botlar": null,
+    "gain:masanin-masallari": null,
+    "gain:minibods": "tv:233472",
+    "gain:patili-takim": null,
+    "gain:oddbods-specials": null,
+    "gain:casus-komsu": null,
+    "gain:futbolcu-kostebek": null,
+    "gain:zubiler": null,
+    "gain:havhavciklar": null,
+    "gain:ucan-hali-ve-kayip-elmas": "movie:490594",
+    "gain:super-ayi": "movie:580461",
+    "gain:cocomelon": "tv:114718",
+    "gain:cocomelon-jjs-animal-time": "tv:247813",
+    "gain:gulduy-gulduy-cocuk": "tv:313684",
+    "gain:alacakaranlik-efsanesi-safak-vakti-1": null,
+    "gain:alacakaranlik-efsanesi-safak-vakti-2": null,
+    "gain:suspect": "tv:201408",
+    "gain:alacakaranlik-efsanesi-yeni-ay": "movie:18239",
+    "gain:alacakaranlik-efsanesi-tutulma": "movie:24021",
+    "gain:alacakaranlik": "movie:8966",
+    "gain:310-yuma-treni": null,
+    "gain:cehennem-siniri": "movie:576379",
+    "gain:spiritwalker": "movie:602295",
+    "gain:niko-kuzey-isiklarinin-otesinde": "movie:717196",
+    "gain:orman-cetesi-2": null,
+    "gain:ejder-yuvasi": null,
+    "gain:yeni-yil-dedektifleri": null,
+    "gain:cesur-balik-sihirli-dunyada": "movie:663451",
+    "gain:kimsesiz-cocuk-remi": "movie:458302",
+    "gain:periler-ulkesi": "movie:587065",
+    "gain:zaman-yolculari": "movie:451925",
+    "gain:afacan-felix": null,
+    "gain:kayip-prenses": "movie:463116",
+    "gain:pisiriciler": "movie:638220",
+    "gain:asi-prenses": "movie:676705",
+    "gain:minik-ekip": null,
+    "gain:kucuk-cadi": "movie:425194",
+    "gain:macera-gunlukleri-sihirli-adaya-yolculuk": "movie:477283",
+    "gain:astronot-kopekler-tropikal-macera": null,
+    "gain:buyulu-kahramanlar": null,
+    "gain:findikkiran-ve-sihirli-flut": "movie:589759",
+    "gain:pinokyo-sihirli-yolculuk": "movie:597840",
+    "gain:100-kurt": "movie:520946",
+    "gain:minik-tritanlar": null,
+    "gain:benim-ucan-dev-maceram": "movie:1070830",
+    "gain:damali-ninja-2": "movie:778819",
+    "gain:dort-cocuk-ve-kum-elfi": "movie:555457",
+    "gain:kaptan-porsuk-kayip-hazinenin-pesinde": "movie:619954",
+    "gain:neseli-ciftlikte-yeni-yil": null,
+    "gain:sihirbazlar-akademisi": "movie:708352",
+    "gain:ormanin-super-kahramani": "movie:1190449",
+    "gain:jack-ve-mekanik-kalp": "movie:204436",
+    "gain:mavi-kaplan-ve-firtina-takimi": null,
+    "gain:uzay-parki": "movie:609382",
+    "gain:super-dostlar": null,
+    "gain:masanin-korkunc-hikyeleri": null,
+    "gain:masa-ile-koca-ayi-12-ayin-mucizesi": null,
+    "gain:super-maymun-shimmy": "movie:1085046",
+    "gain:sevimli-afacanlar": null,
+    "gain:the-king": "movie:504949",
+    "gain:deutschland-83": null,
+    "gain:katili-yakalamak": "movie:605886",
+    "gain:dusler-diyari": "movie:84175",
+    "gain:elveda-aptallar": "movie:651881",
+    "gain:tutsaklar": null,
+    "gain:kucuk-serce": null,
+    "gain:deutschland-86": null,
+    "gain:sef-gibi": null,
+    "gain:bildigin-gibi-degil": "movie:1091642",
+    "gain:cesur-ve-guzel": "tv:6647",
+    "gain:cukur": "tv:74823",
+    "gain:primitive-war": "movie:1257009",
+    "gain:dicte": "tv:51828",
+    "gain:the-responder": "tv:155346",
+    "gain:deutschland-89": null,
+    "gain:derin-uykuda": null,
+    "gain:konsey": "movie:974576",
+    "gain:bekle-beni-sevgilim": "movie:1117308",
+    "gain:wreck": "tv:169582",
+    "gain:married-to-the-game": "tv:247511",
+    "gain:jackie": "movie:376866",
+    "gain:gumus": "tv:70926",
+    "gain:borc": "movie:518835",
+    "gain:istikamet-dugun": "movie:489929",
+    "gain:aydinlik-hayallerimiz": "movie:927547",
+    "gain:lee": "movie:832964",
+    "gain:sirinler": "tv:5687",
+    "gain:trumpin-hikyesi": null,
+    "gain:maria": "movie:1038263",
+    "gain:kutsal-incirin-tohumu": "movie:1278263",
+    "gain:guller-ve-gunahlar": "tv:300388",
+    "gain:wentworth": "tv:44856",
+    "gain:sullivans-crossing": "tv:211564",
+    "gain:bir-salyangozun-anilari": "movie:1064486",
+    "gain:boyle-kucuk-seyler": "movie:1102493",
+    "gain:kara-sevda": "tv:65555",
+    "gain:daddio": "movie:843416",
+    "tabii:ege-ile-gaga": "tv:236309",
+    "tabii:pair-excellence": null,
+    "tabii:musluman-gibi-yasamak": null,
+    "tabii:perihan-abla": "tv:48184",
+    "tabii:ulak": "movie:52147",
+    "tabii:uzayin-bilinmeyenleri": "tv:229632",
+    "tabii:turk-okculugunun-seruveni": "tv:123361",
+    "tabii:sifir-atik": "tv:305752",
+    "tabii:zaman-makinasi": "movie:2134",
+    "tabii:leyla-ile-mecnun": "tv:40417",
+    "tabii:sefin-ozel-konugu": null,
+    "tabii:masumlar-apartmani": "tv:109905",
+    "tabii:cumhuriyet": "tv:95405",
+    "tabii:ailenin-yeni-uyesi-turkiye": "tv:127044",
+    "tabii:kare": "movie:401246",
+    "tabii:gizemli-tarih": "tv:204835",
+    "tabii:teskilat": "tv:119806",
+    "tabii:formulsuz-hayat": null,
+    "tabii:yuzler": "movie:753",
+    "tabii:bi-ciftlik": null,
+    "tabii:yade-yade": null,
+    "tabii:kaptan-pengu-ve-arkadaslari": "tv:286503",
+    "tabii:en-son-babalar-duyar": "tv:49516",
+    "tabii:muhayyelat": null,
+    "tabii:mavi-dunya": null,
+    "tabii:barbaroslar-akdenizin-kilici": "tv:132752",
+    "tabii:cicek-taksi": "tv:48325",
+    "tabii:dunyada-cocuk-olmak": null,
+    "tabii:alparslan-buyuk-selcuklu": "tv:138171",
+    "tabii:tarihin-efsaneleri": "tv:219769",
+    "tabii:sinem-capraz-ile-lezzet-atlasi": null,
+    "tabii:bizimkiler": "tv:49546",
+    "tabii:dort-x-4lu": null,
+    "tabii:kaynanalar": "tv:133533",
+    "tabii:turkiyenin-dev-yapilari": "tv:249038",
+    "tabii:turkiyenin-mutfagi": null,
+    "tabii:yusufname": null,
+    "tabii:the-town-doctor": null,
+    "tabii:aybek": null,
+    "tabii:el-feneri": "movie:1094695",
+    "tabii:ibi": "tv:126742",
+    "tabii:dunya-tarihinin-donum-noktalari": "tv:271420",
+    "tabii:elifin-dusleri": null,
+    "tabii:gonul-dagi": "tv:111685",
+    "tabii:dogadaki-insan": "tv:94688",
+    "tabii:bilimin-ev-hali": null,
+    "tabii:rikkinin-turkiye-rotasi": null,
+    "tabii:kocum-benim": "tv:48622",
+    "tabii:piril": "tv:286341",
+    "tabii:my-champion": null,
+    "tabii:iz-pesinde": "movie:17529",
+    "tabii:gulsen-abi": "tv:54041",
+    "tabii:bir-dunya-yasam": null,
+    "tabii:ask-i-memnu": "tv:17635",
+    "tabii:yaprak-dokumu": "tv:39014",
+    "tabii:evliya-celebi": null,
+    "tabii:sarayin-lezzetleri": null,
+    "tabii:su-savaslari": "tv:131898",
+    "tabii:halka": "movie:2671",
+    "tabii:dirilis-ertugrul": "tv:66017",
+    "tabii:ailenin-yeni-uyesi": "tv:127042",
+    "tabii:yedi-guzel-adam": "tv:62947",
+    "tabii:kucuk-hezarfen": null,
+    "tabii:filinta": null,
+    "tabii:olsaydim": null,
+    "tabii:rafadan-tayfa": "tv:286335",
+    "tabii:buyuk-surgun-kafkasya": "tv:65116",
+    "tabii:kostebekgiller": "tv:308258",
+    "tabii:biz-ikimiz": "tv:130741",
+    "tabii:kuzucuk": null,
+    "tabii:leylek-kardes": null,
+    "tabii:ciciki": null,
+    "tabii:maysa-ve-bulut": null,
+    "tabii:sevda-kusun-kanadinda": "tv:66494",
+    "tabii:kalk-gidelim": "tv:77691",
+    "tabii:surpriz-kutusu": null,
+    "tabii:64-kare-ulkesi": "tv:236183",
+    "tabii:mehmetcik-battle-of-glory": null,
+    "tabii:aslan": "movie:401213",
+    "tabii:hangimiz-sevmedik": "tv:68605",
+    "tabii:seksenler": "tv:50666",
+    "tabii:yedi-numara": "tv:48273",
+    "tabii:elif-ve-arkadaslari": null,
+    "tabii:little-archer-and-the-legend": null,
+    "tabii:akilli-tavsan-momo": null,
+    "tabii:secrets-of-an-angel": null,
+    "tabii:sihirli-matematik": null,
+    "tabii:annemden-uzakta-rikki-roath": null,
+    "tabii:bulmaca-kulesi": "tv:236307",
+    "tabii:kehribar-ile-boncuk": null,
+    "tabii:balkan-ninnisi": "tv:204553",
+    "tabii:reckless-love": null,
+    "tabii:elimi-birakma": "tv:80229",
+    "tabii:tek-yurek": "tv:85565",
+    "tabii:yamak-ahmet": "tv:49378",
+    "tabii:seddulbahir-32-saat": "tv:65626",
+    "tabii:payitaht-abdulhamid": "tv:70788",
+    "tabii:yesil-deniz": "tv:85969",
+    "tabii:lise-devriyesi": "tv:92601",
+    "tabii:yunus-emre": "tv:194699",
+    "tabii:beni-boyle-sev": "tv:49488",
+    "tabii:boyle-bitmesin": "tv:51548",
+    "tabii:suyun-izinde": null,
+    "tabii:10larca-bilgi": null,
+    "tabii:ahenk": null,
+    "tabii:aile-olmak": null,
+    "tabii:6-manti": "tv:198016",
+    "tabii:9-hariciye-kogusu": "tv:205084",
+    "tabii:acimak": "tv:197635",
+    "tabii:adini-sen-koy": "tv:83964",
+    "tabii:analar-babalar-ve-cocuklar": null,
+    "tabii:anneler": "movie:796428",
+    "tabii:baska-hayatlar": null,
+    "tabii:bir-dovuscunun-dunya-maceralari": null,
+    "tabii:bir-turk-filmcinin-dunya-yolculugu": null,
+    "tabii:buna-deger": null,
+    "tabii:buyuk-dusler-buyuk-isler": "tv:271422",
+    "tabii:buyuk-mucadele": null,
+    "tabii:dogunun-kayip-siluetleri": "tv:219773",
+    "tabii:dunya-muzik-gelenekleri": "tv:127053",
+    "tabii:dunyayi-kirletenler": null,
+    "tabii:ekmek-parasi": "movie:1140985",
+    "tabii:endulus-imparatorlugu": null,
+    "tabii:eskiden-beri": null,
+    "tabii:gecmisin-golgesinde": "movie:73",
+    "tabii:gelecege-kalanlar": "tv:283040",
+    "tabii:gelenegi-yasatmak": null,
+    "tabii:askin-kanunu": "tv:223526",
+    "tabii:askin-yolculugu-haci-bayram-i-veli": "tv:157438",
+    "tabii:atesten-gunler": "tv:50543",
+    "tabii:avrupa-avrupa": "movie:8996",
+    "tabii:baska-olur-agalarin-dugunu": "tv:51143",
+    "tabii:basrolde-ask": "tv:51472",
+    "tabii:belene": "tv:51211",
+    "tabii:bugunun-saraylisi": "tv:221865",
+    "tabii:cahide": "tv:205083",
+    "tabii:calikusu": "tv:65556",
+    "tabii:cicegi-buyutmek": null,
+    "tabii:denizin-kani": "tv:218071",
+    "tabii:dikkat-bebek-var": "movie:76494",
+    "tabii:doktorlar": "tv:48619",
+    "tabii:dunya-hali": "tv:130024",
+    "tabii:egenin-hamsisi": "tv:80902",
+    "tabii:elde-var-hayat": "tv:49570",
+    "tabii:esir-sehrin-insanlari": "tv:321800",
+    "tabii:canim-kardesim": "movie:80841",
+    "tabii:kardesim-ozi": null,
+    "tabii:cille": "tv:117298",
+    "tabii:dijital-tayfa": "tv:261858",
+    "tabii:ekip-siberay": null,
+    "tabii:erdem": "tv:223611",
+    "tabii:keloglan": "movie:447092",
+    "tabii:kimin-tarlasi": null,
+    "tabii:kuklali-kosk": "movie:655753",
+    "tabii:3-ses": null,
+    "tabii:akustik": null,
+    "tabii:anilarla-ataturk": null,
+    "tabii:aramizda-muzik-var": null,
+    "tabii:duetler": null,
+    "tabii:bir-resim-bir-hikaye": null,
+    "tabii:dusuncenin-seyir-defteri": null,
+    "tabii:bir-zamanlar": "movie:5723",
+    "tabii:bizim-koyun-kizlari": null,
+    "tabii:bizim-resmimiz": null,
+    "tabii:cizgizar": "movie:1475595",
+    "tabii:cumbusun-pesinde": null,
+    "tabii:genc-sahne": null,
+    "tabii:fazlasi-zarar": null,
+    "tabii:harbi-getto": null,
+    "tabii:hastane-istanbul": null,
+    "tabii:hastane-somali": null,
+    "tabii:ramazan-guncesi": null,
+    "tabii:ramazan-tayfa": null,
+    "tabii:hayatlar": null,
+    "tabii:sagun": "tv:304520",
+    "tabii:icimizden-ucumuz": "tv:127051",
+    "tabii:z-takimi": "movie:1626283",
+    "tabii:inanclar-ve-yasamlar": null,
+    "tabii:insanlar-ve-inanclar": null,
+    "tabii:suc-dosyasi": "tv:130238",
+    "tabii:srebrenitsa-anneleri-kayiplarini-ariyor": null,
+    "tabii:son-toplayicilar": null,
+    "tabii:son-kabileler": null,
+    "tabii:iyi-esnaf": null,
+    "tabii:izler-ve-cizgiler": null,
+    "tabii:kamerali-adam": "movie:26317",
+    "tabii:sen-de-tanik-ol": "tv:271421",
+    "tabii:sehirden-uzakta": "tv:242982",
+    "tabii:savunma-sanatlari": null,
+    "tabii:savasin-efsaneleri": "tv:197764",
+    "tabii:kotulugun-endustrisi": null,
+    "tabii:medeniyet-kasifleri": null,
+    "tabii:multeci": "movie:439022",
+    "tabii:sanayi-savaslari": null,
+    "tabii:sasirtan-gercekler": null,
+    "tabii:gencler": "tv:50817",
+    "tabii:hanimin-ciftligi": "tv:34958",
+    "tabii:hayat-turkusu": "tv:133005",
+    "tabii:hisseli-harikalar-kumpanyasi": "tv:203840",
+    "tabii:karanlikta-kosanlar": "tv:50494",
+    "tabii:kartallar-yuksek-ucar": "tv:50327",
+    "tabii:kavanozdaki-adam": "tv:51407",
+    "tabii:kibris-zafere-dogru": null,
+    "tabii:kucuk-aga": "tv:221867",
+    "tabii:kurtdereli-mehmet-pehlivan": null,
+    "tabii:kuslarla-yolculuk": "tv:103333",
+    "tabii:kuyruklu-yildiz-altinda-bir-izdivac": "movie:933658",
+    "tabii:lukus-hayat": "movie:1008282",
+    "tabii:kazananlar-ligi": null,
+    "tabii:laterna": null,
+    "tabii:heredot-cevdet-saati": null,
+    "tabii:nefesten-sese": null,
+    "tabii:mavera": "movie:1262359",
+    "tabii:mazi-kalbimde-yaradir": "tv:51471",
+    "tabii:milat": "tv:63031",
+    "tabii:mimar-sinan": "tv:203970",
+    "tabii:osmanli-tokadi": "tv:51473",
+    "tabii:the-golden-apple": null,
+    "tabii:mor-menekseler": "movie:20065",
+    "tabii:omer-seyfettin-hikayeleri": "tv:203973",
+    "tabii:parmak-damgasi": "tv:48434",
+    "tabii:ramazan-guzeldir": "tv:49375",
+    "tabii:sakarya-firat": "tv:49599",
+    "tabii:tovbeler-olsun": "tv:111703",
+    "tabii:tutunamayanlar": "movie:5177",
+    "tabii:uyanis-buyuk-selcuklu": "tv:110655",
+    "tabii:yerden-yuksek": "tv:49320",
+    "tabii:anadolu-arkeolojisi": null,
+    "tabii:kara-tahta": "tv:196437",
+    "tabii:koruyucular": "movie:354556",
+    "tabii:bir-kare-bir-anlam": null,
+    "tabii:batiya-dogru-akan-nehir": "tv:317388",
+    "tabii:doru": "movie:791116",
+    "tabii:bir-oyundan-fazlasi": null,
+    "tabii:cografyadan-kulture-bag": null,
+    "tabii:kokler": "tv:66606",
+    "tabii:tarihin-ruhu": "tv:273730",
+    "tabii:turkiye-ekspresi": null,
+    "tabii:yeryuzleri": "tv:321461",
+    "tabii:pazarlik": null,
+    "tabii:mutlu-oyuncak-dukkani": "movie:1121715",
+    "tabii:ramazan-davulcusu-ve-kopegi": null,
+    "tabii:ser-a": "tv:304418",
+    "tabii:destansi-kareler": null,
+    "tabii:edebi-sofralar": null,
+    "tabii:edebiyat-soylesileri": null,
+    "tabii:endulus-muzigi": null,
+    "tabii:esik": "movie:405354",
+    "tabii:eskici": null,
+    "tabii:kuruntu-ailesi": "tv:196949",
+    "tabii:kuzenlerim": "tv:49558",
+    "tabii:felsefe-soylesileri": null,
+    "tabii:film-gibi-hayatlar": null,
+    "tabii:film-onu-arkasi": null,
+    "tabii:fotograflar": "movie:1195530",
+    "tabii:geleneksel-evler": null,
+    "tabii:geri-donusen-sanat": null,
+    "tabii:geziyorum": null,
+    "tabii:yalniz-efe": null,
+    "tabii:hos-sada": null,
+    "tabii:ihmal-edilebilir-nasihatler": "tv:90909",
+    "tabii:il-il-turkiye": null,
+    "tabii:insanlik-hali": "movie:5960",
+    "tabii:izler-suretler": null,
+    "tabii:kelimeler-ve-seyler": null,
+    "tabii:kisa-bir-ara": null,
+    "tabii:klaket": null,
+    "tabii:koleksiyoner": null,
+    "tabii:konsere-davet": null,
+    "tabii:mazhar-alanson-ile": null,
+    "tabii:meddah-1972": null,
+    "tabii:mesneviden-hikayeler": null,
+    "tabii:mim": null,
+    "tabii:miyakodan-payitahta": null,
+    "tabii:murat-boncukla-atolye": null,
+    "tabii:muzelerin-yildizlari": null,
+    "tabii:ne-yaziyor": null,
+    "tabii:opera-dunyasi": null,
+    "tabii:osmanlinin-kayip-sarkilari": null,
+    "tabii:ozun-yolculugu": null,
+    "tabii:para": "movie:42112",
+    "tabii:pasajlar": "movie:898673",
+    "tabii:pera-konserleri": null,
+    "tabii:randevu": "movie:34093",
+    "tabii:sade-saz": "tv:222417",
+    "tabii:sazlarin-hikayesi-gozeler": null,
+    "tabii:senfonik-dokunuslar": null,
+    "tabii:sessizce": null,
+    "tabii:sinema-dunyasi": null,
+    "tabii:tarih-soylesileri": null,
+    "tabii:tiyatro-dunyasi": null,
+    "tabii:tovbekarlar": null,
+    "tabii:trt-filarmoni-orkestrasi": null,
+    "tabii:turk-caz-standartlari-enstitusu": null,
+    "tabii:turkiye-atlasi": null,
+    "tabii:turkuhane": null,
+    "tabii:yerli-sinema": null,
+    "tabii:yilmaz-erdogan-ile-ogrence": null,
+    "tabii:yonetmen-sinemasi": null,
+    "tabii:zamane": "tv:59904",
+    "tabii:zirvedeki-turkuler": null,
+    "tabii:adalett": "tv:226946",
+    "tabii:made-of-money-with-brian-cox": "tv:240547",
+    "tabii:akif": "tv:226053",
+    "tabii:al-sancak": "tv:218477",
+    "tabii:askimiz-yeter": "tv:225989",
+    "tabii:hierro": "tv:89586",
+    "tabii:hur": "tv:226090",
+    "tabii:koyu-beyaz": "tv:226076",
+    "tabii:mevlana-celaleddin-i-rumi": null,
+    "tabii:modern-dogu-masallari": "tv:226056",
+    "tabii:organizasyon-bizim-isimiz": "tv:225972",
+    "tabii:son-gun": "tv:226038",
+    "tabii:tozkoparan-iskender-golge": "tv:226030",
+    "tabii:dodohando": null,
+    "tabii:hayat-sanat": null,
+    "tabii:sipsevdi": "movie:9038",
+    "tabii:yeniden-dogmak": "tv:48474",
+    "tabii:ters-kose": "tv:223501",
+    "tabii:suyla-gelen-kultur": null,
+    "tabii:tatilimi-planla": null,
+    "tabii:yeni-hayata-baslangic": null,
+    "tabii:yeditepe-istanbul": "tv:48342",
+    "tabii:zengin-kiz-fakir-oglan": "tv:101645",
+    "tabii:yiyecegin-seruveni": "tv:227361",
+    "tabii:yol-ayrimi": "tv:205060",
+    "tabii:sesten-muzige": "tv:284645",
+    "tabii:uslu-duramayanlar": null,
+    "tabii:freedom-or-death": null,
+    "tabii:ugurlugiller": "tv:205039",
+    "tabii:yuzyilin-komplolari": null,
+    "tabii:turkmen-dugunu": "tv:214693",
+    "tabii:gonul-dostlari": null,
+    "tabii:vizite": null,
+    "tabii:fatih-harbiye": "tv:69547",
+    "tabii:ferhunde-hanim-ve-kizlari": "tv:131981",
+    "tabii:yok-olmadan-kesfet": "tv:111893",
+    "tabii:yazlikcilar": "tv:88492",
+    "tabii:turklerin-silahlari": "tv:222518",
+    "tabii:taksimden-tunele": "tv:242660",
+    "tabii:istanbul-muzik-ve-tarih": null,
+    "tabii:usta-eller-masali": null,
+    "tabii:dayton": "tv:225991",
+    "tabii:umut-taksi": null,
+    "tabii:hay-sultan": "tv:226032",
+    "tabii:kucuk-dahi-ibn-i-sina": "tv:225964",
+    "tabii:serhat": "tv:225994",
+    "tabii:universdeli": "tv:226039",
+    "tabii:yangin-gunleri-independenta": "tv:225971",
+    "tabii:yardimci-oyuncu": "tv:226034",
+    "tabii:sebeke": "movie:10774",
+    "tabii:metamorfoz-kirilma": null,
+    "tabii:sanzelize-dugun-salonu": "tv:225967",
+    "tabii:yesil-deniz-milenyum": "tv:225968",
+    "tabii:cocomelon": "tv:114718",
+    "tabii:mahsusa": "tv:226084",
+    "tabii:eyvah-ramazan-bey": "tv:226035",
+    "tabii:turkish-underwater-force-salamanders": null,
+    "tabii:1973-biltmore-oteli-cinayeti": "tv:226028",
+    "tabii:derin-mor": "tv:226087",
+    "tabii:kapi": "movie:51365",
+    "tabii:kizil-elma-bir-fetih-oykusu": null,
+    "tabii:kurtulus": "movie:930600",
+    "tabii:tozkoparan-iskender": "tv:120131",
+    "tabii:son-destan": "tv:84151",
+    "tabii:arabesk-rap": "tv:280974",
+    "tabii:cilgin-orman": null,
+    "tabii:arpo": null,
+    "tabii:blippi": "tv:125760",
+    "tabii:blippi-merak-ediyor": null,
+    "tabii:geckos-garage": "tv:137644",
+    "tabii:go-buster": "tv:194768",
+    "tabii:barbaros-hayreddin-sultanin-fermani": "tv:216396",
+    "tabii:fulful-hac-yolunda": null,
+    "tabii:temelden-ogreniyorum": null,
+    "tabii:cumbur-cemaat-kamptayiz": null,
+    "tabii:sevimi-sabahlar": null,
+    "tabii:dikkat-balonu": null,
+    "tabii:hay-hak": null,
+    "tabii:harika-isler-takimi": null,
+    "tabii:aslan-parcasi-cesur": null,
+    "tabii:hakli-karinca": null,
+    "tabii:super-golculer": "tv:74866",
+    "tabii:eski-hikaye": "tv:111982",
+    "tabii:the-sharksons": null,
+    "tabii:uzayli-zekiye": "tv:209467",
+    "tabii:52-hafta": "tv:126427",
+    "tabii:anadolunun-mirasi": null,
+    "tabii:anna": "movie:484641",
+    "tabii:diyar-i-pakistan": null,
+    "tabii:morphle": "tv:112454",
+    "tabii:nasreddin-hoca-zaman-yolcusu": "movie:1061406",
+    "tabii:vuslat": "tv:85544",
+    "tabii:kuzucuk-diyaloglu": null,
+    "tabii:yabanci-hayati-kesfet": null,
+    "tabii:miras-cografyalar": null,
+    "tabii:gercek-cinayet-hikayeleri": null,
+    "tabii:eymen-ile-cimen": null,
+    "tabii:nane-ile-limon": "tv:286228",
+    "tabii:kendi-dusen-aglamaz": "tv:228980",
+    "tabii:benim-guzel-ailem": "tv:228454",
+    "tabii:anadoluda-yasam": null,
+    "tabii:yeni-hayat": "movie:8358",
+    "tabii:hayatimin-nesesi": "tv:229314",
+    "tabii:sen-turkulerini-soyle": "tv:233403",
+    "tabii:mahrem": "tv:129209",
+    "tabii:kumpas": "movie:34309",
+    "tabii:bir-hilal-ugruna": null,
+    "tabii:zehirli-salkim": "tv:129242",
+    "tabii:grand-designs-house-of-the-year": "tv:65376",
+    "tabii:yayla-yollarinda": null,
+    "tabii:nukte": null,
+    "tabii:savunma-sanayiinin-yalniz-dehalari": null,
+    "tabii:7-kitadan-iyilik-habercileri": null,
+    "tabii:galip-mulayim": null,
+    "tabii:gezgin-celebi": null,
+    "tabii:kucuk-hafiz-emin": null,
+    "tabii:heybeli-tiyatro": null,
+    "tabii:merakli-hafiye": null,
+    "tabii:mimikolar": null,
+    "tabii:bozkir-arslani-celaleddin": "tv:118918",
+    "tabii:kuzgun-dipsiz-karanlik": "tv:236079",
+    "tabii:bakalim-ise-yarayacak-mi": null,
+    "tabii:yukarikarakisik": "tv:217711",
+    "tabii:100-yillik-spor-basarisi": null,
+    "tabii:acemi-muezzin": "tv:50644",
+    "tabii:alija": "tv:76807",
+    "tabii:1-gun-kala": null,
+    "tabii:alman-kuzusu": "tv:242769",
+    "tabii:almanyada-yarim-asir": null,
+    "tabii:kukla-tiyatrosu": "tv:236310",
+    "tabii:anadoluda-kis-yasami": null,
+    "tabii:bahsi-soyle-ahvalini": null,
+    "tabii:baska-bir-oyku": null,
+    "tabii:sef-rokanin-lezzet-dunyasi": "tv:314445",
+    "tabii:turkce-benim-evim": null,
+    "tabii:bizim-edebiyatimiz": null,
+    "tabii:3te-3-bir-zamanlar": null,
+    "tabii:ev-yapimi": "tv:101708",
+    "tabii:cirak": "tv:278272",
+    "tabii:cocugum-icin": null,
+    "tabii:azize": "tv:49513",
+    "tabii:bir-yastikta": "tv:202788",
+    "tabii:bir-yusuf-masali": "tv:220299",
+    "tabii:dengi-dengine": "tv:90026",
+    "tabii:kinali-kuzular": "tv:48330",
+    "tabii:dagistan-renkleri": null,
+    "tabii:kurban": "movie:24657",
+    "tabii:yuzyillik-muhur-gayrimuslim-kahramanlar": null,
+    "tabii:gizemli-dogu-tacikistan": null,
+    "tabii:yuzyillik-muhur-genc-kahramanlar": null,
+    "tabii:3te-3-tarih": null,
+    "tabii:yuzyillik-muhur-kadin-kahramanlar": null,
+    "tabii:acik-ates": null,
+    "tabii:tutunamayanlar-cevrimici": null,
+    "tabii:meshur-kariler": null,
+    "tabii:memleket-kreuzberg": "tv:216017",
+    "tabii:100-arabesk": null,
+    "tabii:son-cikis": "tv:111172",
+    "tabii:112-acil-cagri": "tv:155933",
+    "tabii:adada-500-yil": null,
+    "tabii:yalaza": "tv:84858",
+    "tabii:oyunbozan": "movie:13680",
+    "tabii:oyunun-renkleri": null,
+    "tabii:haci-arif-bey": "tv:203976",
+    "tabii:portre": "movie:1600954",
+    "tabii:mavi-kelebekler": "tv:48296",
+    "tabii:tut-elimden": null,
+    "tabii:vahyin-izinde": null,
+    "tabii:yekpare": null,
+    "tabii:altin-petek": null,
+    "tabii:incir-agaci": "tv:95843",
+    "tabii:yildizlarin-yolu": null,
+    "tabii:anneler-studyo": null,
+    "tabii:asikar": null,
+    "tabii:bence-muzik": null,
+    "tabii:zaman-matinesi": null,
+    "tabii:carsi-pazar-istanbul": null,
+    "tabii:berceste": null,
+    "tabii:aykut-kuskaya-ile-gece-sarkilari": null,
+    "tabii:yurek-sazi": null,
+    "tabii:yemek-guzeldir": null,
+    "tabii:ah-ana-hanim-ana": "tv:272119",
+    "tabii:ahmet-ozhan-ile-gonul-yolu": null,
+    "tabii:yedi-iklim": null,
+    "tabii:bogazici-sesleri": null,
+    "tabii:kudus-fatihi-selahaddin-eyyubi": "tv:232132",
+    "tabii:alis-ile-zeynep": "tv:197682",
+    "tabii:yalniz-okurlar-icin": null,
+    "tabii:yadigar": "tv:50435",
+    "tabii:maskelerin-ardinda": "movie:318954",
+    "tabii:yagmur-beklerken": "tv:317851",
+    "tabii:calar-saat": null,
+    "tabii:mesela-muzaffer": "tv:53029",
+    "tabii:zeyrek-ile-ceyrek": "tv:201912",
+    "tabii:zeytin-dali": "tv:207714",
+    "tabii:vapurda-cay-simit-sohbet": null,
+    "tabii:mecaz": null,
+    "tabii:cocuklara_yadigar": null,
+    "tabii:kurt-kanunu": "tv:205058",
+    "tabii:kod-adi-kirlangic": "tv:238522",
+    "tabii:mecmua": null,
+    "tabii:uzun-ince-bir-yol": "movie:934814",
+    "tabii:kucuk-hanimefendi": "tv:213483",
+    "tabii:ulke-sinemasi": null,
+    "tabii:mimarlik-soylesileri": null,
+    "tabii:ugur-isilak-ile-miras": null,
+    "tabii:minik-cevherler": null,
+    "tabii:turkiyede-sanayi": null,
+    "tabii:mehmetcigin-turkusu": null,
+    "tabii:mitolojinin-gucu": null,
+    "tabii:muasir": null,
+    "tabii:ayasli-ile-kiracilari": null,
+    "tabii:bahar-dallari": "tv:49539",
+    "tabii:turku-dolu-hayatlar": null,
+    "tabii:berlin-cekirdekcisi": "tv:202839",
+    "tabii:gecmis-zaman-olur-ki": "tv:203991",
+    "tabii:duvardaki-kan": null,
+    "tabii:gecmis-bahar-mimozalari": "tv:49592",
+    "tabii:turgay-basyayla-ile-lezzetli-tavsiye": null,
+    "tabii:tiyatro-zamani": null,
+    "tabii:cumbus-var": null,
+    "tabii:calakalem": null,
+    "tabii:dijital-cagda-ebeveynlik": null,
+    "tabii:bu-topragin-sesi": null,
+    "tabii:dijital-sanat": null,
+    "tabii:dolapdere-big-gang-ile-yerli-yabancilar": null,
+    "tabii:sur-kultur-yolu-festivali": null,
+    "tabii:eskiler-aliyorum": null,
+    "tabii:eve-donen-miras": null,
+    "tabii:muhammed-yildirir-ile-virtuozite": null,
+    "tabii:evvel-zaman-icinde": null,
+    "tabii:fasil-vakti": null,
+    "tabii:geleneksel-kiyafetler": null,
+    "tabii:aysarinin-zilleri": null,
+    "tabii:genc-yetenekler": null,
+    "tabii:bir-gonul-perdesi": null,
+    "tabii:musikisinas": null,
+    "tabii:gonul-bahcesi": null,
+    "tabii:gonullu-veteriner": null,
+    "tabii:mustafa-kara-ile-tasavvuf-kulturu-soylesileri": null,
+    "tabii:kuran-i-kerimi-guzel-okuma-yarismasi": "tv:316565",
+    "tabii:serdar-tuncer-ile-sahur-bereketi": null,
+    "tabii:mustesna": null,
+    "tabii:guvenli-tik": null,
+    "tabii:hasilikelam": null,
+    "tabii:hayat-ve-hakikat": null,
+    "tabii:muzik-atolyesi": null,
+    "tabii:hastane-istanbul-korona": null,
+    "tabii:seneye-bu-zamanlar": null,
+    "tabii:muzik-yolcusu": null,
+    "tabii:sehrengiz": null,
+    "tabii:sefin-saglikli-masasi": null,
+    "tabii:nakkasin-fircasi": null,
+    "tabii:sanati-izlemek": null,
+    "tabii:iletisim-arkeolojisi": null,
+    "tabii:sanatcinin-sehri": null,
+    "tabii:istanbulun-muzigi": null,
+    "tabii:turkan-hanimin-konagi": "tv:208637",
+    "tabii:istisnai-renkler": null,
+    "tabii:omur-dedigin": null,
+    "tabii:iyilik-hikayeleri": null,
+    "tabii:kadinin-senfonisi": null,
+    "tabii:tam-zamani": null,
+    "tabii:kalplerdeki-nagmeler": null,
+    "tabii:taksimetre-istanbul": null,
+    "tabii:kesif": "movie:376134",
+    "tabii:koca-sinan": null,
+    "tabii:sumer-ezgu-ile-anadoludan-geldik": null,
+    "tabii:koza": "movie:10328",
+    "tabii:kuran-i-kerim-hatm-i-serif": null,
+    "tabii:siirin-cagrisi": null,
+    "tabii:kultur-ajandasi": null,
+    "tabii:rastgele": "movie:1488353",
+    "tabii:sesler-alemi": null,
+    "tabii:sanat-soylesileri": null,
+    "tabii:kuresel-tehdit-kovid-19": "tv:104242",
+    "tabii:rumeli-hisari-konserleri": null,
+    "tabii:sahur-bereketi": null,
+    "tabii:selcuklu-mirasi": null,
+    "tabii:satranc-dunyasi": null,
+    "tabii:the-salisbury-poisonings": "tv:104647",
+    "tabii:exterior-night": "movie:334859",
+    "tabii:dublin-murders": "tv:93481",
+    "tabii:pirdino": null,
+    "tabii:klise": null,
+    "tabii:aynada-gizli-cihan": null,
+    "tabii:lingo-turkiye": "tv:254001",
+    "tabii:biraz-kul-biraz-duman": "movie:597521",
+    "tabii:yeter-soz-savunmanin": null,
+    "tabii:satir-arasi-filmler": null,
+    "tabii:hafir": null,
+    "tabii:yuzyilin-birikimi": null,
+    "tabii:tarihin-olumsuz-savascilari": "tv:240839",
+    "tabii:resme-yolculuk": null,
+    "tabii:bir-sevdadir": "tv:244340",
+    "tabii:karalama-defteri": null,
+    "tabii:tale-of-ashes": null,
+    "tabii:kara-agac-destani": "tv:246614",
+    "tabii:geri-don-cufi": null,
+    "tabii:ege-ile-gaga-doga-dedektifleri": null,
+    "tabii:mehmed-fetihler-sultani": "tv:246621",
+    "tabii:berat-kandili-2024": null,
+    "tabii:berat-kandili-ozel": null,
+    "tabii:turkiyenin-kelimeleri": null,
+    "tabii:turkiyenin-ilkleri": null,
+    "tabii:aziz-mahmud-hudayi-askin-yolculugu": "tv:248842",
+    "tabii:cumbur-cemaat-kamptayiz-ramazan-ozel": null,
+    "tabii:sevimli-sabahar-ramazan-ozel": null,
+    "tabii:hay-hak-ramazan-ozel": null,
+    "tabii:mahya": null,
+    "tabii:manidar-ramazan-ozel": null,
+    "tabii:hollanda-ve-belcikada-turk-camileri": null,
+    "tabii:kiz-kulesi-masallari": null,
+    "tabii:cocukcuf": null,
+    "tabii:trafik-tayfa": "tv:263343",
+    "tabii:tanisma-hikayesi": null,
+    "tabii:babamin-golgesi-1915": null,
+    "tabii:bir-hilal-ugruna-canakkale": null,
+    "tabii:anadolu-camileri": null,
+    "tabii:yazma": null,
+    "tabii:heybeli-tiyatro-ramazan-ozel": null,
+    "tabii:dedektif-reptir": null,
+    "tabii:sira-sende": "movie:575817",
+    "tabii:eskiz": null,
+    "tabii:nasil-acaba": null,
+    "tabii:iskandinavya-turk-camileri": null,
+    "tabii:muzigi-dusunmek": null,
+    "tabii:variloto": null,
+    "tabii:merakli-hafiye-ramazan-ozel": null,
+    "tabii:lingo-turkiye-bayram-ozel": null,
+    "tabii:pak-ile-pirpir": null,
+    "tabii:cromosoma-21": "tv:210411",
+    "tabii:sanat-terimleri": null,
+    "tabii:30-yilin-ardindan": null,
+    "tabii:las-bravas": null,
+    "tabii:desperate-measures": "movie:9458",
+    "tabii:invisible-heroes": "tv:88688",
+    "tabii:123-number-squad": null,
+    "tabii:genc-sahne-arkasi": null,
+    "tabii:misal": null,
+    "tabii:anlati": null,
+    "tabii:dunyayi-darp-edenler": null,
+    "tabii:yenilmez-savascilar": null,
+    "tabii:fethin-izinde": null,
+    "tabii:tabii-dunyasi": null,
+    "tabii:what-went-wrong": "tv:220099",
+    "tabii:sef-olacak-cocuk": null,
+    "tabii:edebiyat-dunyasi": null,
+    "tabii:curious-minds-dinosaurs": "tv:77907",
+    "tabii:curious-minds-global-food-supply": "tv:77884",
+    "tabii:curious-minds-pluto": "tv:77842",
+    "tabii:curious-minds-the-science-of-sleep": "tv:77793",
+    "tabii:kayip-izler-atlasi": null,
+    "tabii:turkistanda-islam-mirasi": null,
+    "tabii:curious-minds-psychology": "tv:77805",
+    "tabii:healthy-days": null,
+    "tabii:kocum-babam": null,
+    "tabii:climate-impact-asia": null,
+    "tabii:bright-now": "tv:98269",
+    "tabii:siir-turkun-iklimi": null,
+    "tabii:osmanli-saraylari": null,
+    "tabii:koklerin-izinde": null,
+    "tabii:curious-minds-health": "tv:77762",
+    "tabii:curious-minds-happiness": "tv:77895",
+    "tabii:curious-minds-brain-health": "tv:77870",
+    "tabii:sea-hunters": "tv:207255",
+    "tabii:bir-hadis-bir-insan": null,
+    "tabii:past-present-future": "movie:596955",
+    "tabii:dost-yuzler": null,
+    "tabii:avrupada-iftar-bereketi": null,
+    "tabii:anadoluda-kuran-i-kerim-tilaveti": null,
+    "tabii:kalbin-icindekiler": null,
+    "tabii:growing-up": "tv:287151",
+    "tabii:lightbulb-moment": null,
+    "tabii:satranc-buyuk-hayatin-kucuk-kopyasi": null,
+    "tabii:huner": null,
+    "tabii:o-gun-ne-oldu": null,
+    "tabii:becoming-martian": "tv:222381",
+    "tabii:ayin-getirdikleri": null,
+    "tabii:yasayan-edebiyat": null,
+    "tabii:espas": null,
+    "tabii:oddbods": null,
+    "tabii:calgilarin-dilinden": null,
+    "tabii:engineering-the-future": "tv:115339",
+    "tabii:curious-minds-titanic": "tv:77829",
+    "tabii:rob-the-robot": "tv:57910",
+    "tabii:teknoloji-ve-sanat": null,
+    "tabii:yasam-baska-yerde": null,
+    "tabii:inside-the-mind-of-a-con-artist": "tv:205080",
+    "tabii:turk-dunyasinin-renkleri": null,
+    "tabii:suret": null,
+    "tabii:secret-life-of-sharks": null,
+    "tabii:insectibles": "tv:82070",
+    "tabii:kiiyii": "tv:218998",
+    "tabii:little-angel": "tv:219004",
+    "tabii:we-dont-play-dolly": null,
+    "tabii:alien-takeover": "tv:319060",
+    "tabii:auction-hunters": "tv:34575",
+    "tabii:curious-minds-understanding-memory": "tv:77814",
+    "tabii:changing-ocean-asia": "tv:238617",
+    "tabii:sahibini-arayan-fotograflar": null,
+    "tabii:dunyada-kadin-olmak": null,
+    "tabii:hos-geldin-ramazan": null,
+    "tabii:seeds-of-change": "movie:1181822",
+    "tabii:oddly-satisfying-science": null,
+    "tabii:inci-avcisi": null,
+    "tabii:muzikli-hatiralar": null,
+    "tabii:six-dreams": "tv:81582",
+    "tabii:bebegimle-yeni-hayat": null,
+    "tabii:kronovizor": "tv:290832",
+    "tabii:classic-cars": "tv:78018",
+    "tabii:marnali": "tv:273940",
+    "tabii:cok-guzel-hareketler-cocuk": "tv:280963",
+    "tabii:gelecegi-kodlayanlar": null,
+    "tabii:gol-atan-cepheye": null,
+    "tabii:su-alti-ustalari": null,
+    "tabii:zorlu-isler-reshad-strik": null,
+    "tabii:turkiyenin-enerjisi": null,
+    "tabii:aile-olmak-ii": "tv:276055",
+    "tabii:tozkoparan-iskender-sir": "tv:277038",
+    "tabii:kuru-pasta-gazoz": null,
+    "tabii:dogal-tehdit-afetler": null,
+    "tabii:karanlik-miras": null,
+    "tabii:maceraya-engel-yok": null,
+    "tabii:gelecegin-iletisimcileri": null,
+    "tabii:restorasyon-101": null,
+    "tabii:breakthrough": "movie:514439",
+    "tabii:hasan-kacan-ile-cizgi-atolyesi": null,
+    "tabii:antik-miras": null,
+    "tabii:sinematograf": null,
+    "tabii:gelenegin-kalp-atislari": null,
+    "tabii:kim-korkar-cagdas-sanattan": null,
+    "tabii:medeniyetin-isaret-taslari": null,
+    "tabii:kayip-lezzetler": null,
+    "tabii:bakis-boslugu": null,
+    "tabii:medeniyet-ve-mimari": null,
+    "tabii:ahiska-surgunu": null,
+    "tabii:simdi-onlar-dusunsun": "tv:219079",
+    "tabii:ruya-gibi-istanbul": "tv:281030",
+    "tabii:rafet-el-roman-ile-her-sey-yolunda": null,
+    "tabii:saglik-rotasi": null,
+    "tabii:mikrofon-senin-anadolu": null,
+    "tabii:rumeli-lezzetleri": null,
+    "tabii:gencler-ne-diyor": null,
+    "tabii:kalbimdeki-turkiye": null,
+    "tabii:ece-erken-ile-kahve-molasi": null,
+    "tabii:daha-dogrusu": null,
+    "tabii:anadolu-ikrami": null,
+    "tabii:efendimizin-24-saati": null,
+    "tabii:gassal": "tv:280030",
+    "tabii:keloglan-masallari": "tv:278571",
+    "tabii:tabii-ki-spor": null,
+    "tabii:heksejakt": "tv:96917",
+    "tabii:la-mafia-uccide-solo-destate": "tv:68796",
+    "tabii:ailem": "tv:301970",
+    "tabii:bir-zamanlar-istanbul": "tv:281746",
+    "tabii:eat-me-or-try-not-to": "tv:207063",
+    "tabii:uc-istanbul": "tv:222517",
+    "tabii:vatikandaki-izlerimiz": "tv:296054",
+    "tabii:apagon": null,
+    "tabii:sasifelek-cikmazi": "tv:49524",
+    "tabii:cihangir-cumhuriyeti": "tv:284460",
+    "tabii:ithal-gelin-araniyor": "tv:289475",
+    "tabii:the-murdochs-empire-of-influence": "tv:158586",
+    "tabii:yalniz-minare": null,
+    "tabii:temelli-misafir": "tv:306960",
+    "tabii:hard-sun": "tv:72749",
+    "tabii:lamica-geniale": "tv:78154",
+    "tabii:yanki-gorunmez-el": "tv:285397",
+    "tabii:kara-ile-kece": null,
+    "tabii:the-head": "tv:102434",
+    "tabii:vefa-sultan": "tv:285594",
+    "tabii:sef-lina": null,
+    "tabii:tarifsiz-lezzetler": null,
+    "tabii:fabrika-ayari": null,
+    "tabii:5-mekan-5-makam": null,
+    "tabii:canigonulden": null,
+    "tabii:almanyada-ramazan": null,
+    "tabii:golge-oyunu": "movie:12547",
+    "tabii:yeni-hayatim-hakkinda": null,
+    "tabii:turkistanda-sozun-ozu": null,
+    "tabii:bir-sofra-bin-bereket": null,
+    "tabii:bir-tariften-fazlasi": null,
+    "tabii:surgunler": "tv:286969",
+    "tabii:fernando": "tv:107543",
+    "tabii:hollandada-ramazan": null,
+    "tabii:fransada-ramazan": null,
+    "tabii:true-colours": "tv:130591",
+    "tabii:tarih-seyleri": "tv:287665",
+    "tabii:kukla-studyosu": null,
+    "tabii:toda-la-sangre": "tv:207269",
+    "tabii:galip-mulayim-ramazan-ozel": null,
+    "tabii:zekice-isler": null,
+    "tabii:kara-ile-kece-ramazan-ozel": null,
+    "tabii:seytan-adasinda-esir-turk-polis-cemil": "tv:288820",
+    "tabii:dunyanin-obur-yuzu": "tv:302368",
+    "tabii:parola-vatan-sifir-teror": null,
+    "tabii:demir-kafes": null,
+    "tabii:yuzde-iki": "tv:290433",
+    "tabii:felsefenin-seruveni": null,
+    "tabii:aslanin-deney-odasi": null,
+    "tabii:kiz-babasi": "tv:290761",
+    "tabii:fotografcinin-kitabi": null,
+    "tabii:goz-hizasi": null,
+    "tabii:ipekce-sohbetler": null,
+    "tabii:aylabera": null,
+    "tabii:kim-korkar-geleneksel-sanattan": null,
+    "tabii:dugum": "tv:247219",
+    "tabii:nazar-ile-manzara": null,
+    "tabii:iv-murat": "tv:308687",
+    "tabii:i-see-gaza": null,
+    "tabii:yukleniyor-bir-oyun-belgeseli": null,
+    "tabii:benim-adim-mucize": null,
+    "tabii:bize-kalan": null,
+    "tabii:ayri-telden": null,
+    "tabii:bir-adam-yaratmak": "movie:1618926",
+    "tabii:ayasofya-imparatorlarin-mirasi": "movie:1201120",
+    "tabii:saruhan": "movie:602879",
+    "tabii:guvercin-hirsizlari": "movie:548263",
+    "tabii:gezegenin-kara-kutusu-antarktika": null,
+    "tabii:kudusun-isiklari": "movie:1208168",
+    "tabii:vivement-dimanche": "tv:46188",
+    "tabii:karda-yasam": null,
+    "tabii:batlir": "movie:470125",
+    "tabii:suda-balik": "movie:479288",
+    "tabii:bir-gun-bir-cocuk": "movie:418515",
+    "tabii:cihadiye-1332": "movie:1423732",
+    "tabii:daha-guzel-bir-hayat": null,
+    "tabii:dogunun-isigi": null,
+    "tabii:di-yi-ci-de-li-bie": null,
+    "tabii:adi-yunus": "movie:602905",
+    "tabii:biz-bir-dolasalim": "movie:599594",
+    "tabii:bunyamin": "movie:602902",
+    "tabii:celo": "movie:315728",
+    "tabii:davetsiz": "movie:14254",
+    "tabii:ekisporter": "movie:602874",
+    "tabii:emanet": "tv:100868",
+    "tabii:fethin-mucizesi": "movie:1102656",
+    "tabii:fuat-sezgin": null,
+    "tabii:gonul-dagi-kurban": "movie:854208",
+    "tabii:gonul-dagi-kurban-2": "movie:998378",
+    "tabii:hanimaganin-gelinleri": "movie:730748",
+    "tabii:kuslar-bizim-gibi": "movie:451273",
+    "tabii:sartli-tahliye": "movie:602828",
+    "tabii:sessiz-yalanlar": "movie:677249",
+    "tabii:son-kuslar": "movie:271886",
+    "tabii:dil-kultur-konusmalari": null,
+    "tabii:piril-18-mart-canakkale-zaferi-ozel": null,
+    "tabii:piril-ramazan-ozel": null,
+    "tabii:son-taarruz": null,
+    "tabii:siradan-birkac-gun": null,
+    "tabii:kapikulenin-anahtari-naim-suleymanoglu": null,
+    "tabii:sehrin-tedarikcileri": null,
+    "tabii:savasin-dahileri": "movie:1620660",
+    "tabii:kusursuz-denge": null,
+    "tabii:olanlar": null,
+    "tabii:radyoevi-istanbulun-sesi": null,
+    "tabii:safkan": "movie:397722",
+    "tabii:sakli-krallik": "movie:587563",
+    "tabii:umut-apartmani": "movie:548148",
+    "tabii:uzakta-kal-sevgilim": "movie:272715",
+    "tabii:veda-busesi": "movie:496138",
+    "tabii:zavalli-necdet": "movie:1097312",
+    "tabii:bulmaca-kulesi-dev-kusun-gizemi": "movie:644920",
+    "tabii:kurt": "tv:100033",
+    "tabii:pirdino-surpriz-yumurta": "movie:688864",
+    "tabii:son-takla": "movie:854106",
+    "tabii:yasar-kemal": null,
+    "tabii:aslan-hurkus-kayip-elmas": "movie:994463",
+    "tabii:borc": "movie:518835",
+    "tabii:kesisme-iyi-ki-varsin-eren": "movie:782482",
+    "tabii:rafadan-tayfa-istiklal-marsi-ozel": null,
+    "tabii:osmanli-subayi": "movie:433356",
+    "tabii:pinhan": "movie:1141093",
+    "tabii:makas": "movie:41793",
+    "tabii:kanli-ask": "movie:32275",
+    "tabii:hayat-cizgisi-suriye": "movie:602908",
+    "tabii:kirintilar": "movie:602913",
+    "tabii:nane-ile-limon-kayip-zaman-yolcusu": "movie:808318",
+    "tabii:the-bfg": "movie:267935",
+    "tabii:modernite-fenomeni": null,
+    "tabii:trilece": "movie:573007",
+    "tabii:refakatci": null,
+    "tabii:meleklerin-koruyucusu": null,
+    "tabii:kapan": "movie:419430",
+    "tabii:doru-macera-ormani": "movie:1026998",
+    "tabii:200-meters": null,
+    "tabii:can-dostlar": "movie:24363",
+    "tabii:firildak-ailesi": null,
+    "tabii:bizim-koyun-sarkisi": "movie:528364",
+    "tabii:brawl-in-cell-block-99": "movie:398175",
+    "tabii:ayka": null,
+    "tabii:pokot": "movie:432799",
+    "tabii:zoe": "movie:458005",
+    "tabii:things-to-come": "movie:3596",
+    "tabii:dugun-dernek-2-sunnet": "movie:371153",
+    "tabii:bana-masal-anlatma": "movie:332534",
+    "tabii:annemin-yarasi": "movie:386591",
+    "tabii:copculer-krali": "movie:80961",
+    "tabii:gulen-gozler": "movie:65010",
+    "tabii:hababam-sinifi": "movie:83651",
+    "tabii:hababam-sinifi-dokuz-doguruyor": "movie:83655",
+    "tabii:hababam-sinifi-gule-gule": "movie:83656",
+    "tabii:hababam-sinifi-uyaniyor": "movie:31408",
+    "tabii:hababam-sinifi-sinifta-kaldi": "movie:31534",
+    "tabii:hababam-sinifi-tatilde": "movie:31402",
+    "tabii:iskilip-ramazan-keskegi": "movie:1141185",
+    "tabii:kibar-feyzo": "movie:27211",
+    "tabii:lion": "movie:334543",
+    "tabii:the-light-between-oceans": "movie:283552",
+    "tabii:mavi-boncuk": "movie:69319",
+    "tabii:scary-stories-to-tell-in-the-dark": "movie:417384",
+    "tabii:manbiki-kazoku": null,
+    "tabii:saban-oglu-saban": "movie:31547",
+    "tabii:genius": "tv:70128",
+    "tabii:cok-filim-hareketler-bunlar": "movie:46733",
+    "tabii:dugun-dernek": "movie:246524",
+    "tabii:bizim-aile": "movie:27983",
+    "tabii:sev-kardesim": "tv:53693",
+    "tabii:after-yang": "movie:585378",
+    "tabii:bayi-toplantisi": "movie:674349",
+    "tabii:kral-sakir-oyun-zamani": "movie:578210",
+    "tabii:deliha": "movie:309853",
+    "tabii:tatlim-tatlim": "movie:447447",
+    "tabii:beurokeo": null,
+    "tabii:rafadan-tayfa-2-gobeklitepe": null,
+    "tabii:tabula-rosa": "movie:426658",
+    "tabii:aile-serefi": "movie:65887",
+    "tabii:oh-olsun": "movie:110029",
+    "tabii:bir-dus-gordum": "movie:752630",
+    "tabii:butun-saadetler-mumkundur": "movie:468270",
+    "tabii:ceviz-agaci": "movie:643059",
+    "tabii:ten-in-half": null,
+    "tabii:dilsiz": "movie:649951",
+    "tabii:mavzer": "movie:731819",
+    "tabii:a-gentle-creature": "movie:383503",
+    "tabii:good-time": "movie:429200",
+    "tabii:imkansiz-olasilik": "movie:602910",
+    "tabii:kolonya-cumhuriyeti": "movie:453596",
+    "tabii:kral-sakir-korsanlar-diyari": "movie:639251",
+    "tabii:our-friend": "movie:583903",
+    "tabii:sultan": "movie:376812",
+    "tabii:koyden-indim-sehire": "movie:74302",
+    "tabii:sut-kardesler": "movie:31405",
+    "tabii:the-rider": "movie:453278",
+    "tabii:destroyer": "movie:471507",
+    "tabii:tosun-pasa": "movie:38794",
+    "tabii:the-translators": null,
+    "tabii:manchester-by-the-sea": "movie:334541",
+    "tabii:akillara-seza": "movie:708784",
+    "tabii:burasi-cennet-olmali": "movie:539531",
+    "tabii:flasbellek": "movie:745530",
+    "tabii:yalanci-yarim": "tv:49855",
+    "tabii:golgeler-icinde": "movie:552219",
+    "tabii:iki-safak-arasinda": "movie:677053",
+    "tabii:kardesim-icin-dera": "movie:528488",
+    "tabii:karinca": "movie:777330",
+    "tabii:kovan": "movie:776541",
+    "tabii:muallim": "movie:980833",
+    "tabii:omar-ve-biz": "movie:643710",
+    "tabii:uzun-zaman-once": "movie:631499",
+    "tabii:nereye-gidiyorsun-aida": "movie:728118",
+    "tabii:tatli-dillim": "movie:110028",
+    "tabii:puslu-yolculuk": null,
+    "tabii:ihtiyar-kurtlar": "movie:953386",
+    "tabii:yol-arkadasim-2": "movie:549650",
+    "tabii:yol-arkadasim": "movie:778106",
+    "tabii:anons": "movie:538102",
+    "tabii:gamonya-hayaller-ulkesi": "movie:663194",
+    "tabii:kaptan-pengu-ve-arkadaslari-mandalinanin-gunlugu": "movie:760212",
+    "tabii:eyvah-eyvah": null,
+    "tabii:eyvah-eyvah-3": null,
+    "tabii:eyvah-eyvah-2": null,
+    "tabii:1989-belene": null,
+    "tabii:neseli-gunler": "movie:15121",
+    "tabii:kelebegin-ruyasi": "movie:171160",
+    "tabii:tay": "movie:1029125",
+    "tabii:elli-kelimelik-mektuplar": "movie:981418",
+    "tabii:kara-bela": "movie:361181",
+    "tabii:olanlar-oldu": "movie:433138",
+    "tabii:silsile": "movie:314462",
+    "tabii:sen-kimsin": "movie:109856",
+    "tabii:niyazi-gul-dortnala": "movie:340426",
+    "tabii:bir-baska-oyku-afgan-komuru": null,
+    "tabii:67deg-49-32-kuzey": null,
+    "tabii:afgan-kadini": null,
+    "tabii:dag-gibi": null,
+    "tabii:anne-gidince": null,
+    "tabii:bir-kis-oykusu": null,
+    "tabii:biz-dunyaya-sigmadik": null,
+    "tabii:denizler-yanarken": null,
+    "tabii:dunyayi-iyilik-kurtaracak": null,
+    "tabii:esme": null,
+    "tabii:bulutlara-giden-yol": null,
+    "tabii:deliha-2": "movie:496748",
+    "tabii:geride-kalan-mermanat": "movie:934401",
+    "tabii:guney-afrikanin-vahsi-dogasi": null,
+    "tabii:surgunden-kalplere-hanedan": null,
+    "tabii:yola-cikan-oykuler": null,
+    "tabii:kodokushi": "movie:645568",
+    "tabii:tam-o-yastayim": null,
+    "tabii:yumurtalik-dalyanlari": null,
+    "tabii:zavar-keklik-ve-cocuk": null,
+    "tabii:uzaklardan-farkli-izler": null,
+    "tabii:emine": "movie:400508",
+    "tabii:15-07-safak-vakti": "movie:847573",
+    "tabii:gorumce": "movie:429235",
+    "tabii:agaclarda-gecen-yasam": null,
+    "tabii:derindeki-gozler": null,
+    "tabii:oldur-beni-sevgilim": "movie:1232943",
+    "tabii:salak-milyoner": "movie:110033",
+    "tabii:hedefim-sensin": "movie:566067",
+    "tabii:yer-altinda-yasamlar-gelengi": null,
+    "tabii:yasamak": "movie:3782",
+    "tabii:kocan-kadar-konus": "movie:332788",
+    "tabii:kucuk-esnaf": "movie:391649",
+    "tabii:dort-koseli-ucgen": "movie:538310",
+    "tabii:bagcik": "movie:518579",
+    "tabii:hit-the-road": "tv:74493",
+    "tabii:the-kitchen-brigade": null,
+    "tabii:stan-and-ollie": null,
+    "tabii:guzelligin-portresi": "movie:654795",
+    "tabii:itiraf": "movie:258216",
+    "tabii:yirmisekiz": "movie:1153239",
+    "tabii:their-finest": "movie:340101",
+    "tabii:operation-mincemeat": "movie:661231",
+    "tabii:last-cab-to-darwin": "movie:337958",
+    "tabii:aykut-eniste": "movie:606413",
+    "tabii:bucur": "movie:576745",
+    "tabii:sick-of-myself": null,
+    "tabii:elif-ve-arkadaslari-buyuk-taarruz": null,
+    "tabii:aslan-buyuk-taarruz": null,
+    "tabii:tozkoparan-iskender-zafer": "movie:1310809",
+    "tabii:free-state-of-jones": "movie:316152",
+    "tabii:cinnet": "movie:694",
+    "tabii:the-quiet-girl": null,
+    "tabii:trtde-100-yil-ortak-yayini": null,
+    "tabii:yuzyilin-bestekarlari": null,
+    "tabii:yuzyilin-ezgileri-turkuler": null,
+    "tabii:yuzyilin-ezgileri-sarkilar": null,
+    "tabii:ulusta-cumhuriyet": null,
+    "tabii:amigo": "movie:266390",
+    "tabii:canim-kardesim-23-nisan-ulusal-egemenlik-ve-cocuk-bayrami": null,
+    "tabii:kaptan-pengu-ve-arkadaslari-23-nisan-ulusal-egemenlik-ve-cocuk-bayrami": null,
+    "tabii:surpriz-kutusu-23-nisan-ulusal-egemenlik-ve-cocuk-bayrami": null,
+    "tabii:bir-ressamin-sirlari": null,
+    "tabii:birkac-kucuk-yurek-icin": null,
+    "tabii:bulut-cocuk": null,
+    "tabii:aslan-23-nisan-ulusal-egemenlik-ve-cocuk-bayrami": null,
+    "tabii:buradayim": null,
+    "tabii:canakkalenin-cocuklari": null,
+    "tabii:insan-ve-kule": null,
+    "tabii:kardan-murekkep": null,
+    "tabii:18-mart-canakkale-zor-gun": null,
+    "tabii:makedonyadaki-anadolu": null,
+    "tabii:mavi-vatan": null,
+    "tabii:o-gun": null,
+    "tabii:sanat-sozlugu": null,
+    "tabii:turkovac": null,
+    "tabii:analiz-kusbaz": null,
+    "tabii:sanatcinin-dunyasi": null,
+    "tabii:yeni-baslayanlar-icin-evren": null,
+    "tabii:neset": "movie:1032598",
+    "tabii:zamani-geldi": null,
+    "tabii:karalama-defteri-1992": null,
+    "tabii:besinci-mevsim": null,
+    "tabii:yalan-dolan": "movie:584439",
+    "tabii:1de-nostalji": null,
+    "tabii:canakkale-turkusu": null,
+    "tabii:celal-guzelses-anma-konseri": null,
+    "tabii:sesler": "movie:244458",
+    "tabii:ince-osman-agidi": null,
+    "tabii:neset-ertasi-anma-gecesi": null,
+    "tabii:omrumun-nagmeleri-sadun-aksut": null,
+    "tabii:inci-cayirli": null,
+    "tabii:kazanci-bedih-ve-gazelhanlari-anma-gecesi": null,
+    "tabii:once-vatan": "movie:492590",
+    "tabii:4n1k": "movie:459914",
+    "tabii:tozkoparan-iskender-1071": "movie:875700",
+    "tabii:cinayet-susu": "movie:629500",
+    "tabii:gocebe": "movie:72710",
+    "tabii:kabile-misafiri": null,
+    "tabii:miracin-konagi-mescid-i-aksa": null,
+    "tabii:cem-karaca": null,
+    "tabii:sule": null,
+    "tabii:erbakan-bir-ihtimal-daha-var": null,
+    "tabii:eo": "movie:785398",
+    "tabii:sag-salim": "movie:140485",
+    "tabii:ata-tohumu": null,
+    "tabii:mediterranean-fever": null,
+    "tabii:bana-bir-soygun-yaz-2": "movie:625626",
+    "tabii:yasamin-kiyisinda-nabiz": null,
+    "tabii:the-message": "movie:26842",
+    "tabii:lion-of-the-desert": "movie:26843",
+    "tabii:the-hitmans-bodyguard": "movie:390043",
+    "tabii:ash-is-purest-white": null,
+    "tabii:durak": "movie:599696",
+    "tabii:ask-uykusu": "movie:502127",
+    "tabii:dikey-rota": null,
+    "tabii:bugun-23-nisan": null,
+    "tabii:kiymetli-bir-bina-oykusu": null,
+    "tabii:all-the-money-in-the-world": "movie:446791",
+    "tabii:malcolmx-justice": null,
+    "tabii:der-grosse-fake-die-wirecard-story": null,
+    "tabii:mahzuni": null,
+    "tabii:23-nisan-gala-ozel": null,
+    "tabii:trt-60-yil-gala-programi": null,
+    "tabii:darbelerin-pusulasi-27-mayis": null,
+    "tabii:geldikleri-gibi": null,
+    "tabii:papillon": "movie:433498",
+    "tabii:spread-your-wings": null,
+    "tabii:out-of-death": "movie:774714",
+    "tabii:yildizin-parladigi-an": null,
+    "tabii:1921-mogol-devrimi": null,
+    "tabii:bir-milletin-ruhu-ahmed-cevad": null,
+    "tabii:ahlatta-ay-ve-yildiz": null,
+    "tabii:abay-kunanbay": null,
+    "tabii:mr-holmes": "movie:280996",
+    "tabii:omer-seyfettin": null,
+    "tabii:yesil-kubbenin-cinileri": null,
+    "tabii:imam-serahsi": null,
+    "tabii:uzayda-ilk-turk": null,
+    "tabii:enver-pasa": null,
+    "tabii:jiu-jitsu": "movie:590706",
+    "tabii:earth-to-echo": "movie:238603",
+    "tabii:ogretmen": "tv:99616",
+    "tabii:inheritance": "movie:602147",
+    "tabii:the-post": "movie:446354",
+    "tabii:gagarin": null,
+    "tabii:the-hunt-for-dark-matter": "movie:465025",
+    "tabii:what-animals-see": "movie:761934",
+    "tabii:bizim-sesler-bayram-ozel": null,
+    "tabii:most-violent-year": null,
+    "tabii:hot-seat": "movie:888195",
+    "tabii:a-million-days": "movie:972423",
+    "tabii:hugo": "movie:44826",
+    "tabii:never-home-alone": null,
+    "tabii:en-uzun-gece": "movie:804435",
+    "tabii:birds-on-the-great-plane-tree": null,
+    "tabii:isgal-girisiminden-dirilise-15-temmuzun-anatomisi": null,
+    "tabii:ben-ve-babam-vatan": "movie:1318765",
+    "tabii:sinyal": "tv:241473",
+    "tabii:cyprus-1974-landing-for-peace": "movie:1375905",
+    "tabii:kibris-mutlu-baris-harekati": null,
+    "tabii:africas-deadly-lake": null,
+    "tabii:plaza-catedral": "movie:833427",
+    "tabii:bir-umut": "movie:1010407",
+    "tabii:konusma": "movie:592",
+    "tabii:gorunmeyen-cocuk": null,
+    "tabii:hara": "movie:1461822",
+    "tabii:3000-nights": null,
+    "tabii:walls-can-talk": null,
+    "tabii:duvar": "tv:247384",
+    "tabii:kok": "movie:244267",
+    "tabii:2023-a-space-odyssey": null,
+    "tabii:kaptan-pengu-ve-arkadaslari-3-buz-mandasi-efsanesi": "movie:1084146",
+    "tabii:sesler-ve-yuzler": null,
+    "tabii:mi-obra-maestra": "movie:535692",
+    "tabii:pota": "movie:855837",
+    "tabii:sozun-buyusu": null,
+    "tabii:butlers-in-love": "movie:910768",
+    "tabii:paralimpik-oyunlari-kusursuz-bir-gosteri-buyuleyici-bir-sahne": null,
+    "tabii:espiritu-sagrado": null,
+    "tabii:klondike": "tv:57389",
+    "tabii:dunya-surgunu": "movie:1352863",
+    "tabii:karagoz-yar-bana-bir-eglence": null,
+    "tabii:yuksek-irtifa-ya-da-seylerin-tuhafligi": "movie:1131297",
+    "tabii:istiklal-yolunda-buyuk-taarruz": null,
+    "tabii:1071-malazgirt-bizansin-kiyameti": null,
+    "tabii:dumlupinardan-zafere": null,
+    "tabii:golgeler-ve-suretler": "movie:128015",
+    "tabii:corsage": "movie:888321",
+    "tabii:messi": "movie:283317",
+    "tabii:bright-now-muck-city-deep-dive": null,
+    "tabii:holy-redemption": null,
+    "tabii:al-risalah": null,
+    "tabii:gozetleme-kulesi": "movie:128244",
+    "tabii:koridor": "movie:1193990",
+    "tabii:ruya": "tv:84626",
+    "tabii:guller": "movie:1267905",
+    "tabii:kaptan-pengu-ve-arkadaslari-2": "movie:963610",
+    "tabii:lamour-du-monde": "movie:1002190",
+    "tabii:lullaby": "movie:702621",
+    "tabii:elif-ve-arkadaslari-kapadokya": "movie:1130020",
+    "tabii:asik": "movie:523393",
+    "tabii:yagmur": "movie:651162",
+    "tabii:kralice-lear": "movie:622225",
+    "tabii:turk-isi-gemiler": null,
+    "tabii:rafadan-tayfa-dehliz-macerasi": "movie:559495",
+    "tabii:balik": "tv:320617",
+    "tabii:the-whole-truth": "movie:331583",
+    "tabii:ormanin-sirri-karakulak": null,
+    "tabii:the-infiltrator": "movie:325789",
+    "tabii:deliormanli": "movie:411514",
+    "tabii:bulanti": "movie:361897",
+    "tabii:firincinin-karisi": "movie:634583",
+    "tabii:ask-sana-benzer": "movie:320060",
+    "tabii:hayat": "movie:395992",
+    "tabii:col-kutuphaneleri": null,
+    "tabii:kardesim-benim-2": "movie:477300",
+    "tabii:sonsuz-ask": "movie:10052",
+    "tabii:biz-size-doneriz": "movie:450456",
+    "tabii:maidenin-altin-gunu": "movie:477314",
+    "tabii:in-the-name-of-justice": "movie:1247204",
+    "tabii:glf-gz": null,
+    "tabii:how-does-aipac-money-influence-us-policies": null,
+    "tabii:digital-occupation": null,
+    "tabii:gazas-shadow-british-muslims-and-uk-election": null,
+    "tabii:focal-point-israels-assault-on-unrwa": null,
+    "tabii:z-ldyn-lqsm": null,
+    "tabii:from-gaza-to-us-campuses-the-legacy-of-rachel-corrie": null,
+    "tabii:zionism-manufacturing-a-state": null,
+    "tabii:why-messiah-prophecy-haunts-netanyahu": null,
+    "tabii:no-escape-voices-from-rafah": null,
+    "tabii:an-institutional-reality-is-sexual-abuse-systemic-in-israel": null,
+    "tabii:lhgn-ljdyd": null,
+    "tabii:focal-point-war-on-humanity": null,
+    "tabii:witness": "movie:9281",
+    "tabii:a-historical-timeline-of-israels-brutality-towards-palestinians": null,
+    "tabii:yemen-the-third-frontier": null,
+    "tabii:stolen-lands-what-is-the-smotrich-doctrine": null,
+    "tabii:the-killing-of-a-sacred-deer": "movie:399057",
+    "tabii:boluk": "movie:477273",
+    "tabii:can-feda": "movie:517388",
+    "tabii:lnjy-lwhyd": null,
+    "tabii:lshf-qyd-lbd": null,
+    "tabii:w-d-brytny-lmshw-wm": null,
+    "tabii:sn-lnfwdh-llwby-lsry-yly-fy-lwlyt-lmthd": null,
+    "tabii:sry-yl-lbn-lmdll": null,
+    "tabii:hrwb-sry-yl-mn-1938-l-twfn-l-qs": null,
+    "tabii:the-american-dilemma-elections-amid-gaza-war": null,
+    "tabii:ise-yarar-bir-sey": "movie:468274",
+    "tabii:unutma-beni-istanbul": "movie:214015",
+    "tabii:gorevimiz-tatil": "movie:507295",
+    "tabii:ikimizin-yerine": "tv:8745",
+    "tabii:unutursam-fisilda": "movie:300490",
+    "tabii:kotu-cocuk": "movie:437486",
+    "tabii:yeralti": "tv:309328",
+    "tabii:mutlu-aile-defteri": "movie:173031",
+    "tabii:devir": "movie:409899",
+    "tabii:kor": "movie:9341",
+    "tabii:sansimi-seveyim": "movie:474120",
+    "tabii:stonehenge-the-hidden-truth": "tv:314837",
+    "tabii:kardesim-benim": "movie:381938",
+    "tabii:kiskanmak": "tv:300030",
+    "tabii:ufkun-otesinde": "movie:1420107",
+    "tabii:yemekteydik-ve-karar-verdim": "movie:393420",
+    "tabii:deniz-seviyesi": "movie:321486",
+    "tabii:guzel-adam-sureyya": "movie:499869",
+    "tabii:oflu-hoca-trakyada": "movie:520028",
+    "tabii:oflu-hocanin-sifresi": "movie:346098",
+    "tabii:ay-lav-yu-tuu": "movie:474717",
+    "tabii:nuhun-gemisi-cudide-2": "movie:1008027",
+    "tabii:sumelanin-sifresi-3-cunyor-temel": "movie:468955",
+    "tabii:arctic": "movie:453755",
+    "tabii:birlikte-yeniden": null,
+    "tabii:yikilmayan-hayallerim": null,
+    "tabii:oflu-hocanin-sifresi-2": "movie:394612",
+    "tabii:senin-hikayen": "movie:263278",
+    "tabii:hunting-ava-bravo": "movie:927341",
+    "tabii:caught-in-his-web": "movie:940612",
+    "tabii:a-dogs-purpose": "movie:381289",
+    "tabii:kirik-midyeler": "movie:350670",
+    "tabii:sag-salim-2-sil-bastan": "movie:271910",
+    "tabii:tebessum": "movie:1038522",
+    "tabii:yok-artik": "movie:381803",
+    "tabii:sumelanin-sifresi-temel": "movie:87328",
+    "tabii:land-of-faith": null,
+    "tabii:bir-donum-noktasi-18-mart-1915": null,
+    "tabii:schindler-the-real-story": null,
+    "tabii:maca-yetissin-usta": null,
+    "tabii:seyr-i-mukaddes": null,
+    "tabii:buyuk-baligin-pesinde": null,
+    "tabii:portreler-kayahan": null,
+    "tabii:cinar-agaci": "movie:67077",
+    "tabii:bir-donum-noktasi-23-nisan": null,
+    "tabii:uc-yol": "movie:34601",
+    "tabii:sica": "movie:1061641",
+    "tabii:archive": "movie:606234",
+    "tabii:hors-normes": "movie:579245",
+    "tabii:yomeddine": null,
+    "tabii:the-farewell": "movie:565310",
+    "tabii:tysons-run": "movie:860852",
+    "tabii:living": "movie:760099",
+    "tabii:screwdriver": "movie:761251",
+    "tabii:le-nouveau-jouet": "movie:865498",
+    "tabii:narcosis": "movie:1005017",
+    "tabii:love-sarah": "movie:664035",
+    "tabii:about-elly": null,
+    "tabii:the-war-with-grandpa": "movie:425001",
+    "tabii:bir-dilek-tut": "movie:943107",
+    "tabii:gisaengchung": null,
+    "tabii:tay-2-ebabil-takimi": "movie:1229442",
+    "tabii:ahududu": "tv:49534"
+  },
+  "_unverified": [
+    {
+      "platform": "puhutv",
+      "slug": "bahar-bayrami-galasi-2026",
+      "title": "bahar bayrami galasi 2026"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "cinde-buz-ve-kar-festivali",
+      "title": "cinde buz ve kar festivali"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "haydi-cine-gel-koy-muhtari-ol",
+      "title": "haydi cine gel koy muhtari ol"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "gq-men-of-the-year-2025-odul-toreni",
+      "title": "gq men of the year 2025 odul toreni"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "dcso-cumhuriyet-bayrami-konseri",
+      "title": "dcso cumhuriyet bayrami konseri"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "pekin-hizmet-hatti",
+      "title": "pekin hizmet hatti"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "megali-idea",
+      "title": "megali idea"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "savarona-zor-gunler",
+      "title": "savarona zor gunler"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "miras-koruyucusu",
+      "title": "miras koruyucusu"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "nehirle-buyuyenler",
+      "title": "nehirle buyuyenler"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "colun-tatli-kokusu",
+      "title": "colun tatli kokusu"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "ipek-yolunun-batik-hazineleri",
+      "title": "ipek yolunun batik hazineleri"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "mavi-ile-yesilin-bulusmasi",
+      "title": "mavi ile yesilin bulusmasi"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "yangtzenin-gulumseyen-melekleri",
+      "title": "yangtzenin gulumseyen melekleri"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "kadim-ezgilerin-yankisi-cin-calgilarinin-sanati",
+      "title": "kadim ezgilerin yankisi cin calgilarinin sanati"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "cindeki-dunya-miraslari-pingyao",
+      "title": "cindeki dunya miraslari pingyao"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "kulturlerin-kesisme-noktasi-ipek-yolunun-mirasi",
+      "title": "kulturlerin kesisme noktasi ipek yolunun mirasi"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "yue-operasi-yeniden-yaratilan-miras",
+      "title": "yue operasi yeniden yaratilan miras"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "miao-nakisi-dikislerle-anlatilan-tarih",
+      "title": "miao nakisi dikislerle anlatilan tarih"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "2025-cin-medya-grubu-bahar-bayrami-galasi",
+      "title": "2025 cin medya grubu bahar bayrami galasi"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "pazar-hikayeleri",
+      "title": "pazar hikayeleri"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "6063-numarali-qinling-treni",
+      "title": "6063 numarali qinling treni"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "esenlik-yolu",
+      "title": "esenlik yolu"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "gq-men-of-the-year-2024-odul-toreni",
+      "title": "gq men of the year 2024 odul toreni"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "cgtn-documentary-canli-yayin",
+      "title": "cgtn documentary canli yayin"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "https://puhutv.com/atanin-sevdigi-yemekler",
+      "title": "https://puhutv.com/atanin sevdigi yemekler"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "geri-sayim-basladi-cinde-iklim-degisikligi",
+      "title": "geri sayim basladi cinde iklim degisikligi"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "yaban-hayati-cenneti-cin",
+      "title": "yaban hayati cenneti cin"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "yolumuz-acik-cin-laos-demiryolu-hayatlari-nasil-degistirdi",
+      "title": "yolumuz acik cin laos demiryolu hayatlari nasil degistirdi"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "ipek-yolunun-cagrisi",
+      "title": "ipek yolunun cagrisi"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "cesitlilikler-ulkesi",
+      "title": "cesitlilikler ulkesi"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "hong-kong-saglam-bir-bagin-izinde",
+      "title": "hong kong saglam bir bagin izinde"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "gorevimiz-dunya-zirvesi",
+      "title": "gorevimiz dunya zirvesi"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "colde-bir-mucevher-dunhuang",
+      "title": "colde bir mucevher dunhuang"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "insanin-karbon-ayak-izi",
+      "title": "insanin karbon ayak izi"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "yolcu-kalmasin-guneydogu-asyanin-ilk-yuksek-hizli-treni",
+      "title": "yolcu kalmasin guneydogu asyanin ilk yuksek hizli treni"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "baris-icin-savasanlar-anlatiyor",
+      "title": "baris icin savasanlar anlatiyor"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "tibet-yollarinda",
+      "title": "tibet yollarinda"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "2024-cin-medya-grubu-bahar-bayrami-galasi",
+      "title": "2024 cin medya grubu bahar bayrami galasi"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "bir-daha-yasanmasin-diye",
+      "title": "bir daha yasanmasin diye"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "97-yillik-mucadele-tarihi-mit",
+      "title": "97 yillik mucadele tarihi mit"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "halkin-sanati-sergi-paneli",
+      "title": "halkin sanati sergi paneli"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "leziz-istanbul",
+      "title": "leziz istanbul"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "29-ekim-cumhuriyet-bayrami",
+      "title": "29 ekim cumhuriyet bayrami"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "bir-avuc-guzel-insan",
+      "title": "bir avuc guzel insan"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "galataport-istanbul-dunyaya-denizden-acilan-kapi",
+      "title": "galataport istanbul dunyaya denizden acilan kapi"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "gecmis-olsun-turkiye",
+      "title": "gecmis olsun turkiye"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "zafere-goturen-milli-sir",
+      "title": "zafere goturen milli sir"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "dcso-23-nisan-galataport-istanbul-ozel-konseri",
+      "title": "dcso 23 nisan galataport istanbul ozel konseri"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "sari-posetli-kiz",
+      "title": "sari posetli kiz"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "denizlerin-koruyuculari",
+      "title": "denizlerin koruyuculari"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "belkis-ozener-saygi-konseri",
+      "title": "belkis ozener saygi konseri"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "mavi-gelecek",
+      "title": "mavi gelecek"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "dcso-cumhuriyet-bayrami-galataport-istanbul-ozel-konseri",
+      "title": "dcso cumhuriyet bayrami galataport istanbul ozel konseri"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "start-your-impossible",
+      "title": "start your impossible"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "var-ettiniz-var-olun",
+      "title": "var ettiniz var olun"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "istanbul-kafasi-galataport",
+      "title": "istanbul kafasi galataport"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "kapadokya-mevsimi",
+      "title": "kapadokya mevsimi"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "darulaceze-asirlik-sefkat-yuvasi",
+      "title": "darulaceze asirlik sefkat yuvasi"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "ara-guler-islik-calan-adam",
+      "title": "ara guler islik calan adam"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "bandirma-vapuru-kurtulusa-yolculuk",
+      "title": "bandirma vapuru kurtulusa yolculuk"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "mozartin-sihirli-dunyasi",
+      "title": "mozartin sihirli dunyasi"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "caykovski-aydinliktan-karanliga-konseri",
+      "title": "caykovski aydinliktan karanliga konseri"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "yeni-yila-merhaba-konseri",
+      "title": "yeni yila merhaba konseri"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "dogus-cocuk-senfoni-orkestrasi",
+      "title": "dogus cocuk senfoni orkestrasi"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "anadolu-atesi-aspendos-gosterisi",
+      "title": "anadolu atesi aspendos gosterisi"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "leyla",
+      "title": "leyla"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "cennetin-sirlari",
+      "title": "cennetin sirlari"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "askin-bedeli",
+      "title": "askin bedeli"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "benim-hala-umudum-var",
+      "title": "benim hala umudum var"
+    },
+    {
+      "platform": "puhutv",
+      "slug": "behzat-c",
+      "title": "behzat c"
+    },
+    {
+      "platform": "gain",
+      "slug": "gida-israfi",
+      "title": "gida israfi"
+    },
+    {
+      "platform": "gain",
+      "slug": "i-am-istanbullu",
+      "title": "i am istanbullu"
+    },
+    {
+      "platform": "gain",
+      "slug": "yas-evi",
+      "title": "yas evi"
+    },
+    {
+      "platform": "gain",
+      "slug": "ozgurluk-kac-m2",
+      "title": "ozgurluk kac m2"
+    },
+    {
+      "platform": "gain",
+      "slug": "sahne-arkasi",
+      "title": "sahne arkasi"
+    },
+    {
+      "platform": "gain",
+      "slug": "mucize-kadinlar",
+      "title": "mucize kadinlar"
+    },
+    {
+      "platform": "gain",
+      "slug": "mor-ve-otesi",
+      "title": "mor ve otesi"
+    },
+    {
+      "platform": "gain",
+      "slug": "gain-sahne",
+      "title": "gain sahne"
+    },
+    {
+      "platform": "gain",
+      "slug": "teoman-mirgun-cabas-soylesisi",
+      "title": "teoman mirgun cabas soylesisi"
+    },
+    {
+      "platform": "gain",
+      "slug": "ara-akim-medya",
+      "title": "ara akim medya"
+    },
+    {
+      "platform": "gain",
+      "slug": "pazar-klasigi",
+      "title": "pazar klasigi"
+    },
+    {
+      "platform": "gain",
+      "slug": "arjen",
+      "title": "arjen"
+    },
+    {
+      "platform": "gain",
+      "slug": "salur-kazan-zoraki-kahraman",
+      "title": "salur kazan zoraki kahraman"
+    },
+    {
+      "platform": "gain",
+      "slug": "teoman-ozel-konser",
+      "title": "teoman ozel konser"
+    },
+    {
+      "platform": "gain",
+      "slug": "dayi-sov-ekstra",
+      "title": "dayi sov ekstra"
+    },
+    {
+      "platform": "gain",
+      "slug": "dogu-demirkol",
+      "title": "dogu demirkol"
+    },
+    {
+      "platform": "gain",
+      "slug": "haybeden-gercek-ustu-ask",
+      "title": "haybeden gercek ustu ask"
+    },
+    {
+      "platform": "gain",
+      "slug": "ata-demirer-tek-kisilik-dev-kadro-1",
+      "title": "ata demirer tek kisilik dev kadro 1"
+    },
+    {
+      "platform": "gain",
+      "slug": "firildak-ailesi",
+      "title": "firildak ailesi"
+    },
+    {
+      "platform": "gain",
+      "slug": "mirgun-cabas-ile-orda-rahat-misin",
+      "title": "mirgun cabas ile orda rahat misin"
+    },
+    {
+      "platform": "gain",
+      "slug": "550-mil",
+      "title": "550 mil"
+    },
+    {
+      "platform": "gain",
+      "slug": "sir-ayet-3-olu-dogan",
+      "title": "sir ayet 3 olu dogan"
+    },
+    {
+      "platform": "gain",
+      "slug": "mucbir-yilbasi",
+      "title": "mucbir yilbasi"
+    },
+    {
+      "platform": "gain",
+      "slug": "iki-kapi-arasinda",
+      "title": "iki kapi arasinda"
+    },
+    {
+      "platform": "gain",
+      "slug": "kayip-zamanlar",
+      "title": "kayip zamanlar"
+    },
+    {
+      "platform": "gain",
+      "slug": "korkunun-sesi",
+      "title": "korkunun sesi"
+    },
+    {
+      "platform": "gain",
+      "slug": "savunmada-yerli-devrim-turkiyenin-hikayesi",
+      "title": "savunmada yerli devrim turkiyenin hikayesi"
+    },
+    {
+      "platform": "gain",
+      "slug": "super-kahramanlar-sihirli-dunya",
+      "title": "super kahramanlar sihirli dunya"
+    },
+    {
+      "platform": "gain",
+      "slug": "buyulu-prenses",
+      "title": "buyulu prenses"
+    },
+    {
+      "platform": "gain",
+      "slug": "kucuk-kahraman-super-kahramanlarin-en-kucugu",
+      "title": "kucuk kahraman super kahramanlarin en kucugu"
+    },
+    {
+      "platform": "gain",
+      "slug": "acemi-ksifler-gorevimiz-kocaayak",
+      "title": "acemi ksifler gorevimiz kocaayak"
+    },
+    {
+      "platform": "gain",
+      "slug": "fareler-de-cennete-gider",
+      "title": "fareler de cennete gider"
+    },
+    {
+      "platform": "gain",
+      "slug": "roborexin-maceralari",
+      "title": "roborexin maceralari"
+    },
+    {
+      "platform": "gain",
+      "slug": "shaun-the-sheep-the-movie",
+      "title": "shaun the sheep the movie"
+    },
+    {
+      "platform": "gain",
+      "slug": "aclik-oyunlari-2-atesi-yakalamak",
+      "title": "aclik oyunlari 2 atesi yakalamak"
+    },
+    {
+      "platform": "gain",
+      "slug": "kickboxer-iii",
+      "title": "kickboxer iii"
+    },
+    {
+      "platform": "gain",
+      "slug": "kickboxer-ii",
+      "title": "kickboxer ii"
+    },
+    {
+      "platform": "gain",
+      "slug": "herrhausen-the-banker-and-the-bomb",
+      "title": "herrhausen the banker and the bomb"
+    },
+    {
+      "platform": "gain",
+      "slug": "axel-2-uzay-cocuklarinin-seruvenleri",
+      "title": "axel 2 uzay cocuklarinin seruvenleri"
+    },
+    {
+      "platform": "gain",
+      "slug": "kurt-cocugun-gercek-hikyesi",
+      "title": "kurt cocugun gercek hikyesi"
+    },
+    {
+      "platform": "gain",
+      "slug": "asktan-kacinilmaz",
+      "title": "asktan kacinilmaz"
+    },
+    {
+      "platform": "gain",
+      "slug": "sevgili-dostum-sebastian",
+      "title": "sevgili dostum sebastian"
+    },
+    {
+      "platform": "gain",
+      "slug": "cesur-dostum",
+      "title": "cesur dostum"
+    },
+    {
+      "platform": "gain",
+      "slug": "kirpi-ve-saksagan-sevimli-uzay-kahramanlari",
+      "title": "kirpi ve saksagan sevimli uzay kahramanlari"
+    },
+    {
+      "platform": "gain",
+      "slug": "cesur-cocuk-elveda-canavar",
+      "title": "cesur cocuk elveda canavar"
+    },
+    {
+      "platform": "gain",
+      "slug": "kitap-kurdu",
+      "title": "kitap kurdu"
+    },
+    {
+      "platform": "gain",
+      "slug": "oddbods",
+      "title": "oddbods"
+    },
+    {
+      "platform": "gain",
+      "slug": "guzel-bir-takim",
+      "title": "guzel bir takim"
+    },
+    {
+      "platform": "gain",
+      "slug": "buyukbaba-bakici",
+      "title": "buyukbaba bakici"
+    },
+    {
+      "platform": "gain",
+      "slug": "yarim-kalan-hayat",
+      "title": "yarim kalan hayat"
+    },
+    {
+      "platform": "gain",
+      "slug": "dunya-kupasi-katar-2022-buyuk-turnuvanin-gizemi",
+      "title": "dunya kupasi katar 2022 buyuk turnuvanin gizemi"
+    },
+    {
+      "platform": "gain",
+      "slug": "john-wick-2",
+      "title": "john wick 2"
+    },
+    {
+      "platform": "gain",
+      "slug": "john-wick-3-parabellum",
+      "title": "john wick 3 parabellum"
+    },
+    {
+      "platform": "gain",
+      "slug": "bizans-oyunlari",
+      "title": "bizans oyunlari"
+    },
+    {
+      "platform": "gain",
+      "slug": "american-sapigi",
+      "title": "american sapigi"
+    },
+    {
+      "platform": "gain",
+      "slug": "kayip-illuzyonlar",
+      "title": "kayip illuzyonlar"
+    },
+    {
+      "platform": "gain",
+      "slug": "operacin-marea-negra",
+      "title": "operacin marea negra"
+    },
+    {
+      "platform": "gain",
+      "slug": "asteris-ve-oburiks-orta-krallik",
+      "title": "asteris ve oburiks orta krallik"
+    },
+    {
+      "platform": "gain",
+      "slug": "nick-off-duty",
+      "title": "nick off duty"
+    },
+    {
+      "platform": "gain",
+      "slug": "efsunlu-2-ayin",
+      "title": "efsunlu 2 ayin"
+    },
+    {
+      "platform": "gain",
+      "slug": "tehlikeli-hesaplasma",
+      "title": "tehlikeli hesaplasma"
+    },
+    {
+      "platform": "gain",
+      "slug": "turbulans",
+      "title": "turbulans"
+    },
+    {
+      "platform": "gain",
+      "slug": "kolektif",
+      "title": "kolektif"
+    },
+    {
+      "platform": "gain",
+      "slug": "elizabeth-taylor-asi-superstar",
+      "title": "elizabeth taylor asi superstar"
+    },
+    {
+      "platform": "gain",
+      "slug": "zuckerberg",
+      "title": "zuckerberg"
+    },
+    {
+      "platform": "gain",
+      "slug": "burasi-ingiltere",
+      "title": "burasi ingiltere"
+    },
+    {
+      "platform": "gain",
+      "slug": "gaipten-gelen-sesler",
+      "title": "gaipten gelen sesler"
+    },
+    {
+      "platform": "gain",
+      "slug": "gecede-panik",
+      "title": "gecede panik"
+    },
+    {
+      "platform": "gain",
+      "slug": "marsta-7-gun-yasam-arayisi",
+      "title": "marsta 7 gun yasam arayisi"
+    },
+    {
+      "platform": "gain",
+      "slug": "provenceta-yaz",
+      "title": "provenceta yaz"
+    },
+    {
+      "platform": "gain",
+      "slug": "tren-bob",
+      "title": "tren bob"
+    },
+    {
+      "platform": "gain",
+      "slug": "bonnie-kardesler",
+      "title": "bonnie kardesler"
+    },
+    {
+      "platform": "gain",
+      "slug": "baby-toot-toot",
+      "title": "baby toot toot"
+    },
+    {
+      "platform": "gain",
+      "slug": "bebek-patronlar",
+      "title": "bebek patronlar"
+    },
+    {
+      "platform": "gain",
+      "slug": "pat-pat-dostlar",
+      "title": "pat pat dostlar"
+    },
+    {
+      "platform": "gain",
+      "slug": "ciftlikciler",
+      "title": "ciftlikciler"
+    },
+    {
+      "platform": "gain",
+      "slug": "homur-gumur",
+      "title": "homur gumur"
+    },
+    {
+      "platform": "gain",
+      "slug": "booya",
+      "title": "booya"
+    },
+    {
+      "platform": "gain",
+      "slug": "briko",
+      "title": "briko"
+    },
+    {
+      "platform": "gain",
+      "slug": "dino-arilar",
+      "title": "dino arilar"
+    },
+    {
+      "platform": "gain",
+      "slug": "eggy-pops",
+      "title": "eggy pops"
+    },
+    {
+      "platform": "gain",
+      "slug": "kucuk-agac-evi",
+      "title": "kucuk agac evi"
+    },
+    {
+      "platform": "gain",
+      "slug": "traktor-hector",
+      "title": "traktor hector"
+    },
+    {
+      "platform": "gain",
+      "slug": "zipir-ile-civir",
+      "title": "zipir ile civir"
+    },
+    {
+      "platform": "gain",
+      "slug": "pufpuflar",
+      "title": "pufpuflar"
+    },
+    {
+      "platform": "gain",
+      "slug": "ayi-kardesler-macera-ormani",
+      "title": "ayi kardesler macera ormani"
+    },
+    {
+      "platform": "gain",
+      "slug": "cilgin-hayvanlarin-sarkilari",
+      "title": "cilgin hayvanlarin sarkilari"
+    },
+    {
+      "platform": "gain",
+      "slug": "cilgin-hayvanlar",
+      "title": "cilgin hayvanlar"
+    },
+    {
+      "platform": "gain",
+      "slug": "masa-ile-koca-ayi-cocuk-sarkilari",
+      "title": "masa ile koca ayi cocuk sarkilari"
+    },
+    {
+      "platform": "gain",
+      "slug": "masa-ile-koca-ayi-ufakliklar",
+      "title": "masa ile koca ayi ufakliklar"
+    },
+    {
+      "platform": "gain",
+      "slug": "luke-and-lily",
+      "title": "luke and lily"
+    },
+    {
+      "platform": "gain",
+      "slug": "masa-ile-koca-ayi-peynir-de",
+      "title": "masa ile koca ayi peynir de"
+    },
+    {
+      "platform": "gain",
+      "slug": "louis-ve-luca-buyuk-peynir-yarisi",
+      "title": "louis ve luca buyuk peynir yarisi"
+    },
+    {
+      "platform": "gain",
+      "slug": "sporcu-botlar",
+      "title": "sporcu botlar"
+    },
+    {
+      "platform": "gain",
+      "slug": "masanin-masallari",
+      "title": "masanin masallari"
+    },
+    {
+      "platform": "gain",
+      "slug": "patili-takim",
+      "title": "patili takim"
+    },
+    {
+      "platform": "gain",
+      "slug": "oddbods-specials",
+      "title": "oddbods specials"
+    },
+    {
+      "platform": "gain",
+      "slug": "casus-komsu",
+      "title": "casus komsu"
+    },
+    {
+      "platform": "gain",
+      "slug": "futbolcu-kostebek",
+      "title": "futbolcu kostebek"
+    },
+    {
+      "platform": "gain",
+      "slug": "zubiler",
+      "title": "zubiler"
+    },
+    {
+      "platform": "gain",
+      "slug": "havhavciklar",
+      "title": "havhavciklar"
+    },
+    {
+      "platform": "gain",
+      "slug": "alacakaranlik-efsanesi-safak-vakti-1",
+      "title": "alacakaranlik efsanesi safak vakti 1"
+    },
+    {
+      "platform": "gain",
+      "slug": "alacakaranlik-efsanesi-safak-vakti-2",
+      "title": "alacakaranlik efsanesi safak vakti 2"
+    },
+    {
+      "platform": "gain",
+      "slug": "310-yuma-treni",
+      "title": "310 yuma treni"
+    },
+    {
+      "platform": "gain",
+      "slug": "orman-cetesi-2",
+      "title": "orman cetesi 2"
+    },
+    {
+      "platform": "gain",
+      "slug": "ejder-yuvasi",
+      "title": "ejder yuvasi"
+    },
+    {
+      "platform": "gain",
+      "slug": "yeni-yil-dedektifleri",
+      "title": "yeni yil dedektifleri"
+    },
+    {
+      "platform": "gain",
+      "slug": "afacan-felix",
+      "title": "afacan felix"
+    },
+    {
+      "platform": "gain",
+      "slug": "minik-ekip",
+      "title": "minik ekip"
+    },
+    {
+      "platform": "gain",
+      "slug": "astronot-kopekler-tropikal-macera",
+      "title": "astronot kopekler tropikal macera"
+    },
+    {
+      "platform": "gain",
+      "slug": "buyulu-kahramanlar",
+      "title": "buyulu kahramanlar"
+    },
+    {
+      "platform": "gain",
+      "slug": "minik-tritanlar",
+      "title": "minik tritanlar"
+    },
+    {
+      "platform": "gain",
+      "slug": "neseli-ciftlikte-yeni-yil",
+      "title": "neseli ciftlikte yeni yil"
+    },
+    {
+      "platform": "gain",
+      "slug": "mavi-kaplan-ve-firtina-takimi",
+      "title": "mavi kaplan ve firtina takimi"
+    },
+    {
+      "platform": "gain",
+      "slug": "super-dostlar",
+      "title": "super dostlar"
+    },
+    {
+      "platform": "gain",
+      "slug": "masanin-korkunc-hikyeleri",
+      "title": "masanin korkunc hikyeleri"
+    },
+    {
+      "platform": "gain",
+      "slug": "masa-ile-koca-ayi-12-ayin-mucizesi",
+      "title": "masa ile koca ayi 12 ayin mucizesi"
+    },
+    {
+      "platform": "gain",
+      "slug": "sevimli-afacanlar",
+      "title": "sevimli afacanlar"
+    },
+    {
+      "platform": "gain",
+      "slug": "deutschland-83",
+      "title": "deutschland 83"
+    },
+    {
+      "platform": "gain",
+      "slug": "tutsaklar",
+      "title": "tutsaklar"
+    },
+    {
+      "platform": "gain",
+      "slug": "kucuk-serce",
+      "title": "kucuk serce"
+    },
+    {
+      "platform": "gain",
+      "slug": "deutschland-86",
+      "title": "deutschland 86"
+    },
+    {
+      "platform": "gain",
+      "slug": "sef-gibi",
+      "title": "sef gibi"
+    },
+    {
+      "platform": "gain",
+      "slug": "deutschland-89",
+      "title": "deutschland 89"
+    },
+    {
+      "platform": "gain",
+      "slug": "derin-uykuda",
+      "title": "derin uykuda"
+    },
+    {
+      "platform": "gain",
+      "slug": "trumpin-hikyesi",
+      "title": "trumpin hikyesi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "pair-excellence",
+      "title": "pair excellence"
+    },
+    {
+      "platform": "tabii",
+      "slug": "musluman-gibi-yasamak",
+      "title": "musluman gibi yasamak"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sefin-ozel-konugu",
+      "title": "sefin ozel konugu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "formulsuz-hayat",
+      "title": "formulsuz hayat"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bi-ciftlik",
+      "title": "bi ciftlik"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yade-yade",
+      "title": "yade yade"
+    },
+    {
+      "platform": "tabii",
+      "slug": "muhayyelat",
+      "title": "muhayyelat"
+    },
+    {
+      "platform": "tabii",
+      "slug": "mavi-dunya",
+      "title": "mavi dunya"
+    },
+    {
+      "platform": "tabii",
+      "slug": "dunyada-cocuk-olmak",
+      "title": "dunyada cocuk olmak"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sinem-capraz-ile-lezzet-atlasi",
+      "title": "sinem capraz ile lezzet atlasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "dort-x-4lu",
+      "title": "dort x 4lu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "turkiyenin-mutfagi",
+      "title": "turkiyenin mutfagi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yusufname",
+      "title": "yusufname"
+    },
+    {
+      "platform": "tabii",
+      "slug": "the-town-doctor",
+      "title": "the town doctor"
+    },
+    {
+      "platform": "tabii",
+      "slug": "aybek",
+      "title": "aybek"
+    },
+    {
+      "platform": "tabii",
+      "slug": "elifin-dusleri",
+      "title": "elifin dusleri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bilimin-ev-hali",
+      "title": "bilimin ev hali"
+    },
+    {
+      "platform": "tabii",
+      "slug": "rikkinin-turkiye-rotasi",
+      "title": "rikkinin turkiye rotasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "my-champion",
+      "title": "my champion"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bir-dunya-yasam",
+      "title": "bir dunya yasam"
+    },
+    {
+      "platform": "tabii",
+      "slug": "evliya-celebi",
+      "title": "evliya celebi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sarayin-lezzetleri",
+      "title": "sarayin lezzetleri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kucuk-hezarfen",
+      "title": "kucuk hezarfen"
+    },
+    {
+      "platform": "tabii",
+      "slug": "filinta",
+      "title": "filinta"
+    },
+    {
+      "platform": "tabii",
+      "slug": "olsaydim",
+      "title": "olsaydim"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kuzucuk",
+      "title": "kuzucuk"
+    },
+    {
+      "platform": "tabii",
+      "slug": "leylek-kardes",
+      "title": "leylek kardes"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ciciki",
+      "title": "ciciki"
+    },
+    {
+      "platform": "tabii",
+      "slug": "maysa-ve-bulut",
+      "title": "maysa ve bulut"
+    },
+    {
+      "platform": "tabii",
+      "slug": "surpriz-kutusu",
+      "title": "surpriz kutusu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "mehmetcik-battle-of-glory",
+      "title": "mehmetcik battle of glory"
+    },
+    {
+      "platform": "tabii",
+      "slug": "elif-ve-arkadaslari",
+      "title": "elif ve arkadaslari"
+    },
+    {
+      "platform": "tabii",
+      "slug": "little-archer-and-the-legend",
+      "title": "little archer and the legend"
+    },
+    {
+      "platform": "tabii",
+      "slug": "akilli-tavsan-momo",
+      "title": "akilli tavsan momo"
+    },
+    {
+      "platform": "tabii",
+      "slug": "secrets-of-an-angel",
+      "title": "secrets of an angel"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sihirli-matematik",
+      "title": "sihirli matematik"
+    },
+    {
+      "platform": "tabii",
+      "slug": "annemden-uzakta-rikki-roath",
+      "title": "annemden uzakta rikki roath"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kehribar-ile-boncuk",
+      "title": "kehribar ile boncuk"
+    },
+    {
+      "platform": "tabii",
+      "slug": "reckless-love",
+      "title": "reckless love"
+    },
+    {
+      "platform": "tabii",
+      "slug": "suyun-izinde",
+      "title": "suyun izinde"
+    },
+    {
+      "platform": "tabii",
+      "slug": "10larca-bilgi",
+      "title": "10larca bilgi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ahenk",
+      "title": "ahenk"
+    },
+    {
+      "platform": "tabii",
+      "slug": "aile-olmak",
+      "title": "aile olmak"
+    },
+    {
+      "platform": "tabii",
+      "slug": "analar-babalar-ve-cocuklar",
+      "title": "analar babalar ve cocuklar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "baska-hayatlar",
+      "title": "baska hayatlar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bir-dovuscunun-dunya-maceralari",
+      "title": "bir dovuscunun dunya maceralari"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bir-turk-filmcinin-dunya-yolculugu",
+      "title": "bir turk filmcinin dunya yolculugu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "buna-deger",
+      "title": "buna deger"
+    },
+    {
+      "platform": "tabii",
+      "slug": "buyuk-mucadele",
+      "title": "buyuk mucadele"
+    },
+    {
+      "platform": "tabii",
+      "slug": "dunyayi-kirletenler",
+      "title": "dunyayi kirletenler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "endulus-imparatorlugu",
+      "title": "endulus imparatorlugu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "eskiden-beri",
+      "title": "eskiden beri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "gelenegi-yasatmak",
+      "title": "gelenegi yasatmak"
+    },
+    {
+      "platform": "tabii",
+      "slug": "cicegi-buyutmek",
+      "title": "cicegi buyutmek"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kardesim-ozi",
+      "title": "kardesim ozi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ekip-siberay",
+      "title": "ekip siberay"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kimin-tarlasi",
+      "title": "kimin tarlasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "3-ses",
+      "title": "3 ses"
+    },
+    {
+      "platform": "tabii",
+      "slug": "akustik",
+      "title": "akustik"
+    },
+    {
+      "platform": "tabii",
+      "slug": "anilarla-ataturk",
+      "title": "anilarla ataturk"
+    },
+    {
+      "platform": "tabii",
+      "slug": "aramizda-muzik-var",
+      "title": "aramizda muzik var"
+    },
+    {
+      "platform": "tabii",
+      "slug": "duetler",
+      "title": "duetler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bir-resim-bir-hikaye",
+      "title": "bir resim bir hikaye"
+    },
+    {
+      "platform": "tabii",
+      "slug": "dusuncenin-seyir-defteri",
+      "title": "dusuncenin seyir defteri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bizim-koyun-kizlari",
+      "title": "bizim koyun kizlari"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bizim-resmimiz",
+      "title": "bizim resmimiz"
+    },
+    {
+      "platform": "tabii",
+      "slug": "cumbusun-pesinde",
+      "title": "cumbusun pesinde"
+    },
+    {
+      "platform": "tabii",
+      "slug": "genc-sahne",
+      "title": "genc sahne"
+    },
+    {
+      "platform": "tabii",
+      "slug": "fazlasi-zarar",
+      "title": "fazlasi zarar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "harbi-getto",
+      "title": "harbi getto"
+    },
+    {
+      "platform": "tabii",
+      "slug": "hastane-istanbul",
+      "title": "hastane istanbul"
+    },
+    {
+      "platform": "tabii",
+      "slug": "hastane-somali",
+      "title": "hastane somali"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ramazan-guncesi",
+      "title": "ramazan guncesi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ramazan-tayfa",
+      "title": "ramazan tayfa"
+    },
+    {
+      "platform": "tabii",
+      "slug": "hayatlar",
+      "title": "hayatlar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "inanclar-ve-yasamlar",
+      "title": "inanclar ve yasamlar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "insanlar-ve-inanclar",
+      "title": "insanlar ve inanclar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "srebrenitsa-anneleri-kayiplarini-ariyor",
+      "title": "srebrenitsa anneleri kayiplarini ariyor"
+    },
+    {
+      "platform": "tabii",
+      "slug": "son-toplayicilar",
+      "title": "son toplayicilar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "son-kabileler",
+      "title": "son kabileler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "iyi-esnaf",
+      "title": "iyi esnaf"
+    },
+    {
+      "platform": "tabii",
+      "slug": "izler-ve-cizgiler",
+      "title": "izler ve cizgiler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "savunma-sanatlari",
+      "title": "savunma sanatlari"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kotulugun-endustrisi",
+      "title": "kotulugun endustrisi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "medeniyet-kasifleri",
+      "title": "medeniyet kasifleri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sanayi-savaslari",
+      "title": "sanayi savaslari"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sasirtan-gercekler",
+      "title": "sasirtan gercekler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kibris-zafere-dogru",
+      "title": "kibris zafere dogru"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kurtdereli-mehmet-pehlivan",
+      "title": "kurtdereli mehmet pehlivan"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kazananlar-ligi",
+      "title": "kazananlar ligi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "laterna",
+      "title": "laterna"
+    },
+    {
+      "platform": "tabii",
+      "slug": "heredot-cevdet-saati",
+      "title": "heredot cevdet saati"
+    },
+    {
+      "platform": "tabii",
+      "slug": "nefesten-sese",
+      "title": "nefesten sese"
+    },
+    {
+      "platform": "tabii",
+      "slug": "the-golden-apple",
+      "title": "the golden apple"
+    },
+    {
+      "platform": "tabii",
+      "slug": "anadolu-arkeolojisi",
+      "title": "anadolu arkeolojisi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bir-kare-bir-anlam",
+      "title": "bir kare bir anlam"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bir-oyundan-fazlasi",
+      "title": "bir oyundan fazlasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "cografyadan-kulture-bag",
+      "title": "cografyadan kulture bag"
+    },
+    {
+      "platform": "tabii",
+      "slug": "turkiye-ekspresi",
+      "title": "turkiye ekspresi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "pazarlik",
+      "title": "pazarlik"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ramazan-davulcusu-ve-kopegi",
+      "title": "ramazan davulcusu ve kopegi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "destansi-kareler",
+      "title": "destansi kareler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "edebi-sofralar",
+      "title": "edebi sofralar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "edebiyat-soylesileri",
+      "title": "edebiyat soylesileri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "endulus-muzigi",
+      "title": "endulus muzigi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "eskici",
+      "title": "eskici"
+    },
+    {
+      "platform": "tabii",
+      "slug": "felsefe-soylesileri",
+      "title": "felsefe soylesileri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "film-gibi-hayatlar",
+      "title": "film gibi hayatlar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "film-onu-arkasi",
+      "title": "film onu arkasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "geleneksel-evler",
+      "title": "geleneksel evler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "geri-donusen-sanat",
+      "title": "geri donusen sanat"
+    },
+    {
+      "platform": "tabii",
+      "slug": "geziyorum",
+      "title": "geziyorum"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yalniz-efe",
+      "title": "yalniz efe"
+    },
+    {
+      "platform": "tabii",
+      "slug": "hos-sada",
+      "title": "hos sada"
+    },
+    {
+      "platform": "tabii",
+      "slug": "il-il-turkiye",
+      "title": "il il turkiye"
+    },
+    {
+      "platform": "tabii",
+      "slug": "izler-suretler",
+      "title": "izler suretler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kelimeler-ve-seyler",
+      "title": "kelimeler ve seyler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kisa-bir-ara",
+      "title": "kisa bir ara"
+    },
+    {
+      "platform": "tabii",
+      "slug": "klaket",
+      "title": "klaket"
+    },
+    {
+      "platform": "tabii",
+      "slug": "koleksiyoner",
+      "title": "koleksiyoner"
+    },
+    {
+      "platform": "tabii",
+      "slug": "konsere-davet",
+      "title": "konsere davet"
+    },
+    {
+      "platform": "tabii",
+      "slug": "mazhar-alanson-ile",
+      "title": "mazhar alanson ile"
+    },
+    {
+      "platform": "tabii",
+      "slug": "meddah-1972",
+      "title": "meddah 1972"
+    },
+    {
+      "platform": "tabii",
+      "slug": "mesneviden-hikayeler",
+      "title": "mesneviden hikayeler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "mim",
+      "title": "mim"
+    },
+    {
+      "platform": "tabii",
+      "slug": "miyakodan-payitahta",
+      "title": "miyakodan payitahta"
+    },
+    {
+      "platform": "tabii",
+      "slug": "murat-boncukla-atolye",
+      "title": "murat boncukla atolye"
+    },
+    {
+      "platform": "tabii",
+      "slug": "muzelerin-yildizlari",
+      "title": "muzelerin yildizlari"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ne-yaziyor",
+      "title": "ne yaziyor"
+    },
+    {
+      "platform": "tabii",
+      "slug": "opera-dunyasi",
+      "title": "opera dunyasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "osmanlinin-kayip-sarkilari",
+      "title": "osmanlinin kayip sarkilari"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ozun-yolculugu",
+      "title": "ozun yolculugu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "pera-konserleri",
+      "title": "pera konserleri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sazlarin-hikayesi-gozeler",
+      "title": "sazlarin hikayesi gozeler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "senfonik-dokunuslar",
+      "title": "senfonik dokunuslar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sessizce",
+      "title": "sessizce"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sinema-dunyasi",
+      "title": "sinema dunyasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "tarih-soylesileri",
+      "title": "tarih soylesileri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "tiyatro-dunyasi",
+      "title": "tiyatro dunyasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "tovbekarlar",
+      "title": "tovbekarlar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "trt-filarmoni-orkestrasi",
+      "title": "trt filarmoni orkestrasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "turk-caz-standartlari-enstitusu",
+      "title": "turk caz standartlari enstitusu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "turkiye-atlasi",
+      "title": "turkiye atlasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "turkuhane",
+      "title": "turkuhane"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yerli-sinema",
+      "title": "yerli sinema"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yilmaz-erdogan-ile-ogrence",
+      "title": "yilmaz erdogan ile ogrence"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yonetmen-sinemasi",
+      "title": "yonetmen sinemasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "zirvedeki-turkuler",
+      "title": "zirvedeki turkuler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "mevlana-celaleddin-i-rumi",
+      "title": "mevlana celaleddin i rumi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "dodohando",
+      "title": "dodohando"
+    },
+    {
+      "platform": "tabii",
+      "slug": "hayat-sanat",
+      "title": "hayat sanat"
+    },
+    {
+      "platform": "tabii",
+      "slug": "suyla-gelen-kultur",
+      "title": "suyla gelen kultur"
+    },
+    {
+      "platform": "tabii",
+      "slug": "tatilimi-planla",
+      "title": "tatilimi planla"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yeni-hayata-baslangic",
+      "title": "yeni hayata baslangic"
+    },
+    {
+      "platform": "tabii",
+      "slug": "uslu-duramayanlar",
+      "title": "uslu duramayanlar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "freedom-or-death",
+      "title": "freedom or death"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yuzyilin-komplolari",
+      "title": "yuzyilin komplolari"
+    },
+    {
+      "platform": "tabii",
+      "slug": "gonul-dostlari",
+      "title": "gonul dostlari"
+    },
+    {
+      "platform": "tabii",
+      "slug": "vizite",
+      "title": "vizite"
+    },
+    {
+      "platform": "tabii",
+      "slug": "istanbul-muzik-ve-tarih",
+      "title": "istanbul muzik ve tarih"
+    },
+    {
+      "platform": "tabii",
+      "slug": "usta-eller-masali",
+      "title": "usta eller masali"
+    },
+    {
+      "platform": "tabii",
+      "slug": "umut-taksi",
+      "title": "umut taksi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "metamorfoz-kirilma",
+      "title": "metamorfoz kirilma"
+    },
+    {
+      "platform": "tabii",
+      "slug": "turkish-underwater-force-salamanders",
+      "title": "turkish underwater force salamanders"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kizil-elma-bir-fetih-oykusu",
+      "title": "kizil elma bir fetih oykusu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "cilgin-orman",
+      "title": "cilgin orman"
+    },
+    {
+      "platform": "tabii",
+      "slug": "arpo",
+      "title": "arpo"
+    },
+    {
+      "platform": "tabii",
+      "slug": "blippi-merak-ediyor",
+      "title": "blippi merak ediyor"
+    },
+    {
+      "platform": "tabii",
+      "slug": "fulful-hac-yolunda",
+      "title": "fulful hac yolunda"
+    },
+    {
+      "platform": "tabii",
+      "slug": "temelden-ogreniyorum",
+      "title": "temelden ogreniyorum"
+    },
+    {
+      "platform": "tabii",
+      "slug": "cumbur-cemaat-kamptayiz",
+      "title": "cumbur cemaat kamptayiz"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sevimi-sabahlar",
+      "title": "sevimi sabahlar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "dikkat-balonu",
+      "title": "dikkat balonu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "hay-hak",
+      "title": "hay hak"
+    },
+    {
+      "platform": "tabii",
+      "slug": "harika-isler-takimi",
+      "title": "harika isler takimi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "aslan-parcasi-cesur",
+      "title": "aslan parcasi cesur"
+    },
+    {
+      "platform": "tabii",
+      "slug": "hakli-karinca",
+      "title": "hakli karinca"
+    },
+    {
+      "platform": "tabii",
+      "slug": "the-sharksons",
+      "title": "the sharksons"
+    },
+    {
+      "platform": "tabii",
+      "slug": "anadolunun-mirasi",
+      "title": "anadolunun mirasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "diyar-i-pakistan",
+      "title": "diyar i pakistan"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kuzucuk-diyaloglu",
+      "title": "kuzucuk diyaloglu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yabanci-hayati-kesfet",
+      "title": "yabanci hayati kesfet"
+    },
+    {
+      "platform": "tabii",
+      "slug": "miras-cografyalar",
+      "title": "miras cografyalar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "gercek-cinayet-hikayeleri",
+      "title": "gercek cinayet hikayeleri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "eymen-ile-cimen",
+      "title": "eymen ile cimen"
+    },
+    {
+      "platform": "tabii",
+      "slug": "anadoluda-yasam",
+      "title": "anadoluda yasam"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bir-hilal-ugruna",
+      "title": "bir hilal ugruna"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yayla-yollarinda",
+      "title": "yayla yollarinda"
+    },
+    {
+      "platform": "tabii",
+      "slug": "nukte",
+      "title": "nukte"
+    },
+    {
+      "platform": "tabii",
+      "slug": "savunma-sanayiinin-yalniz-dehalari",
+      "title": "savunma sanayiinin yalniz dehalari"
+    },
+    {
+      "platform": "tabii",
+      "slug": "7-kitadan-iyilik-habercileri",
+      "title": "7 kitadan iyilik habercileri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "galip-mulayim",
+      "title": "galip mulayim"
+    },
+    {
+      "platform": "tabii",
+      "slug": "gezgin-celebi",
+      "title": "gezgin celebi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kucuk-hafiz-emin",
+      "title": "kucuk hafiz emin"
+    },
+    {
+      "platform": "tabii",
+      "slug": "heybeli-tiyatro",
+      "title": "heybeli tiyatro"
+    },
+    {
+      "platform": "tabii",
+      "slug": "merakli-hafiye",
+      "title": "merakli hafiye"
+    },
+    {
+      "platform": "tabii",
+      "slug": "mimikolar",
+      "title": "mimikolar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bakalim-ise-yarayacak-mi",
+      "title": "bakalim ise yarayacak mi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "100-yillik-spor-basarisi",
+      "title": "100 yillik spor basarisi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "1-gun-kala",
+      "title": "1 gun kala"
+    },
+    {
+      "platform": "tabii",
+      "slug": "almanyada-yarim-asir",
+      "title": "almanyada yarim asir"
+    },
+    {
+      "platform": "tabii",
+      "slug": "anadoluda-kis-yasami",
+      "title": "anadoluda kis yasami"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bahsi-soyle-ahvalini",
+      "title": "bahsi soyle ahvalini"
+    },
+    {
+      "platform": "tabii",
+      "slug": "baska-bir-oyku",
+      "title": "baska bir oyku"
+    },
+    {
+      "platform": "tabii",
+      "slug": "turkce-benim-evim",
+      "title": "turkce benim evim"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bizim-edebiyatimiz",
+      "title": "bizim edebiyatimiz"
+    },
+    {
+      "platform": "tabii",
+      "slug": "3te-3-bir-zamanlar",
+      "title": "3te 3 bir zamanlar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "cocugum-icin",
+      "title": "cocugum icin"
+    },
+    {
+      "platform": "tabii",
+      "slug": "dagistan-renkleri",
+      "title": "dagistan renkleri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yuzyillik-muhur-gayrimuslim-kahramanlar",
+      "title": "yuzyillik muhur gayrimuslim kahramanlar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "gizemli-dogu-tacikistan",
+      "title": "gizemli dogu tacikistan"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yuzyillik-muhur-genc-kahramanlar",
+      "title": "yuzyillik muhur genc kahramanlar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "3te-3-tarih",
+      "title": "3te 3 tarih"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yuzyillik-muhur-kadin-kahramanlar",
+      "title": "yuzyillik muhur kadin kahramanlar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "acik-ates",
+      "title": "acik ates"
+    },
+    {
+      "platform": "tabii",
+      "slug": "tutunamayanlar-cevrimici",
+      "title": "tutunamayanlar cevrimici"
+    },
+    {
+      "platform": "tabii",
+      "slug": "meshur-kariler",
+      "title": "meshur kariler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "100-arabesk",
+      "title": "100 arabesk"
+    },
+    {
+      "platform": "tabii",
+      "slug": "adada-500-yil",
+      "title": "adada 500 yil"
+    },
+    {
+      "platform": "tabii",
+      "slug": "oyunun-renkleri",
+      "title": "oyunun renkleri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "tut-elimden",
+      "title": "tut elimden"
+    },
+    {
+      "platform": "tabii",
+      "slug": "vahyin-izinde",
+      "title": "vahyin izinde"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yekpare",
+      "title": "yekpare"
+    },
+    {
+      "platform": "tabii",
+      "slug": "altin-petek",
+      "title": "altin petek"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yildizlarin-yolu",
+      "title": "yildizlarin yolu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "anneler-studyo",
+      "title": "anneler studyo"
+    },
+    {
+      "platform": "tabii",
+      "slug": "asikar",
+      "title": "asikar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bence-muzik",
+      "title": "bence muzik"
+    },
+    {
+      "platform": "tabii",
+      "slug": "zaman-matinesi",
+      "title": "zaman matinesi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "carsi-pazar-istanbul",
+      "title": "carsi pazar istanbul"
+    },
+    {
+      "platform": "tabii",
+      "slug": "berceste",
+      "title": "berceste"
+    },
+    {
+      "platform": "tabii",
+      "slug": "aykut-kuskaya-ile-gece-sarkilari",
+      "title": "aykut kuskaya ile gece sarkilari"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yurek-sazi",
+      "title": "yurek sazi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yemek-guzeldir",
+      "title": "yemek guzeldir"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ahmet-ozhan-ile-gonul-yolu",
+      "title": "ahmet ozhan ile gonul yolu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yedi-iklim",
+      "title": "yedi iklim"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bogazici-sesleri",
+      "title": "bogazici sesleri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yalniz-okurlar-icin",
+      "title": "yalniz okurlar icin"
+    },
+    {
+      "platform": "tabii",
+      "slug": "calar-saat",
+      "title": "calar saat"
+    },
+    {
+      "platform": "tabii",
+      "slug": "vapurda-cay-simit-sohbet",
+      "title": "vapurda cay simit sohbet"
+    },
+    {
+      "platform": "tabii",
+      "slug": "mecaz",
+      "title": "mecaz"
+    },
+    {
+      "platform": "tabii",
+      "slug": "cocuklara_yadigar",
+      "title": "cocuklara_yadigar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "mecmua",
+      "title": "mecmua"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ulke-sinemasi",
+      "title": "ulke sinemasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "mimarlik-soylesileri",
+      "title": "mimarlik soylesileri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ugur-isilak-ile-miras",
+      "title": "ugur isilak ile miras"
+    },
+    {
+      "platform": "tabii",
+      "slug": "minik-cevherler",
+      "title": "minik cevherler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "turkiyede-sanayi",
+      "title": "turkiyede sanayi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "mehmetcigin-turkusu",
+      "title": "mehmetcigin turkusu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "mitolojinin-gucu",
+      "title": "mitolojinin gucu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "muasir",
+      "title": "muasir"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ayasli-ile-kiracilari",
+      "title": "ayasli ile kiracilari"
+    },
+    {
+      "platform": "tabii",
+      "slug": "turku-dolu-hayatlar",
+      "title": "turku dolu hayatlar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "duvardaki-kan",
+      "title": "duvardaki kan"
+    },
+    {
+      "platform": "tabii",
+      "slug": "turgay-basyayla-ile-lezzetli-tavsiye",
+      "title": "turgay basyayla ile lezzetli tavsiye"
+    },
+    {
+      "platform": "tabii",
+      "slug": "tiyatro-zamani",
+      "title": "tiyatro zamani"
+    },
+    {
+      "platform": "tabii",
+      "slug": "cumbus-var",
+      "title": "cumbus var"
+    },
+    {
+      "platform": "tabii",
+      "slug": "calakalem",
+      "title": "calakalem"
+    },
+    {
+      "platform": "tabii",
+      "slug": "dijital-cagda-ebeveynlik",
+      "title": "dijital cagda ebeveynlik"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bu-topragin-sesi",
+      "title": "bu topragin sesi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "dijital-sanat",
+      "title": "dijital sanat"
+    },
+    {
+      "platform": "tabii",
+      "slug": "dolapdere-big-gang-ile-yerli-yabancilar",
+      "title": "dolapdere big gang ile yerli yabancilar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sur-kultur-yolu-festivali",
+      "title": "sur kultur yolu festivali"
+    },
+    {
+      "platform": "tabii",
+      "slug": "eskiler-aliyorum",
+      "title": "eskiler aliyorum"
+    },
+    {
+      "platform": "tabii",
+      "slug": "eve-donen-miras",
+      "title": "eve donen miras"
+    },
+    {
+      "platform": "tabii",
+      "slug": "muhammed-yildirir-ile-virtuozite",
+      "title": "muhammed yildirir ile virtuozite"
+    },
+    {
+      "platform": "tabii",
+      "slug": "evvel-zaman-icinde",
+      "title": "evvel zaman icinde"
+    },
+    {
+      "platform": "tabii",
+      "slug": "fasil-vakti",
+      "title": "fasil vakti"
+    },
+    {
+      "platform": "tabii",
+      "slug": "geleneksel-kiyafetler",
+      "title": "geleneksel kiyafetler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "aysarinin-zilleri",
+      "title": "aysarinin zilleri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "genc-yetenekler",
+      "title": "genc yetenekler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bir-gonul-perdesi",
+      "title": "bir gonul perdesi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "musikisinas",
+      "title": "musikisinas"
+    },
+    {
+      "platform": "tabii",
+      "slug": "gonul-bahcesi",
+      "title": "gonul bahcesi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "gonullu-veteriner",
+      "title": "gonullu veteriner"
+    },
+    {
+      "platform": "tabii",
+      "slug": "mustafa-kara-ile-tasavvuf-kulturu-soylesileri",
+      "title": "mustafa kara ile tasavvuf kulturu soylesileri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "serdar-tuncer-ile-sahur-bereketi",
+      "title": "serdar tuncer ile sahur bereketi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "mustesna",
+      "title": "mustesna"
+    },
+    {
+      "platform": "tabii",
+      "slug": "guvenli-tik",
+      "title": "guvenli tik"
+    },
+    {
+      "platform": "tabii",
+      "slug": "hasilikelam",
+      "title": "hasilikelam"
+    },
+    {
+      "platform": "tabii",
+      "slug": "hayat-ve-hakikat",
+      "title": "hayat ve hakikat"
+    },
+    {
+      "platform": "tabii",
+      "slug": "muzik-atolyesi",
+      "title": "muzik atolyesi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "hastane-istanbul-korona",
+      "title": "hastane istanbul korona"
+    },
+    {
+      "platform": "tabii",
+      "slug": "seneye-bu-zamanlar",
+      "title": "seneye bu zamanlar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "muzik-yolcusu",
+      "title": "muzik yolcusu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sehrengiz",
+      "title": "sehrengiz"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sefin-saglikli-masasi",
+      "title": "sefin saglikli masasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "nakkasin-fircasi",
+      "title": "nakkasin fircasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sanati-izlemek",
+      "title": "sanati izlemek"
+    },
+    {
+      "platform": "tabii",
+      "slug": "iletisim-arkeolojisi",
+      "title": "iletisim arkeolojisi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sanatcinin-sehri",
+      "title": "sanatcinin sehri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "istanbulun-muzigi",
+      "title": "istanbulun muzigi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "istisnai-renkler",
+      "title": "istisnai renkler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "omur-dedigin",
+      "title": "omur dedigin"
+    },
+    {
+      "platform": "tabii",
+      "slug": "iyilik-hikayeleri",
+      "title": "iyilik hikayeleri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kadinin-senfonisi",
+      "title": "kadinin senfonisi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "tam-zamani",
+      "title": "tam zamani"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kalplerdeki-nagmeler",
+      "title": "kalplerdeki nagmeler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "taksimetre-istanbul",
+      "title": "taksimetre istanbul"
+    },
+    {
+      "platform": "tabii",
+      "slug": "koca-sinan",
+      "title": "koca sinan"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sumer-ezgu-ile-anadoludan-geldik",
+      "title": "sumer ezgu ile anadoludan geldik"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kuran-i-kerim-hatm-i-serif",
+      "title": "kuran i kerim hatm i serif"
+    },
+    {
+      "platform": "tabii",
+      "slug": "siirin-cagrisi",
+      "title": "siirin cagrisi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kultur-ajandasi",
+      "title": "kultur ajandasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sesler-alemi",
+      "title": "sesler alemi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sanat-soylesileri",
+      "title": "sanat soylesileri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "rumeli-hisari-konserleri",
+      "title": "rumeli hisari konserleri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sahur-bereketi",
+      "title": "sahur bereketi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "selcuklu-mirasi",
+      "title": "selcuklu mirasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "satranc-dunyasi",
+      "title": "satranc dunyasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "pirdino",
+      "title": "pirdino"
+    },
+    {
+      "platform": "tabii",
+      "slug": "klise",
+      "title": "klise"
+    },
+    {
+      "platform": "tabii",
+      "slug": "aynada-gizli-cihan",
+      "title": "aynada gizli cihan"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yeter-soz-savunmanin",
+      "title": "yeter soz savunmanin"
+    },
+    {
+      "platform": "tabii",
+      "slug": "satir-arasi-filmler",
+      "title": "satir arasi filmler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "hafir",
+      "title": "hafir"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yuzyilin-birikimi",
+      "title": "yuzyilin birikimi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "resme-yolculuk",
+      "title": "resme yolculuk"
+    },
+    {
+      "platform": "tabii",
+      "slug": "karalama-defteri",
+      "title": "karalama defteri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "tale-of-ashes",
+      "title": "tale of ashes"
+    },
+    {
+      "platform": "tabii",
+      "slug": "geri-don-cufi",
+      "title": "geri don cufi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ege-ile-gaga-doga-dedektifleri",
+      "title": "ege ile gaga doga dedektifleri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "berat-kandili-2024",
+      "title": "berat kandili 2024"
+    },
+    {
+      "platform": "tabii",
+      "slug": "berat-kandili-ozel",
+      "title": "berat kandili ozel"
+    },
+    {
+      "platform": "tabii",
+      "slug": "turkiyenin-kelimeleri",
+      "title": "turkiyenin kelimeleri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "turkiyenin-ilkleri",
+      "title": "turkiyenin ilkleri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "cumbur-cemaat-kamptayiz-ramazan-ozel",
+      "title": "cumbur cemaat kamptayiz ramazan ozel"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sevimli-sabahar-ramazan-ozel",
+      "title": "sevimli sabahar ramazan ozel"
+    },
+    {
+      "platform": "tabii",
+      "slug": "hay-hak-ramazan-ozel",
+      "title": "hay hak ramazan ozel"
+    },
+    {
+      "platform": "tabii",
+      "slug": "mahya",
+      "title": "mahya"
+    },
+    {
+      "platform": "tabii",
+      "slug": "manidar-ramazan-ozel",
+      "title": "manidar ramazan ozel"
+    },
+    {
+      "platform": "tabii",
+      "slug": "hollanda-ve-belcikada-turk-camileri",
+      "title": "hollanda ve belcikada turk camileri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kiz-kulesi-masallari",
+      "title": "kiz kulesi masallari"
+    },
+    {
+      "platform": "tabii",
+      "slug": "cocukcuf",
+      "title": "cocukcuf"
+    },
+    {
+      "platform": "tabii",
+      "slug": "tanisma-hikayesi",
+      "title": "tanisma hikayesi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "babamin-golgesi-1915",
+      "title": "babamin golgesi 1915"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bir-hilal-ugruna-canakkale",
+      "title": "bir hilal ugruna canakkale"
+    },
+    {
+      "platform": "tabii",
+      "slug": "anadolu-camileri",
+      "title": "anadolu camileri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yazma",
+      "title": "yazma"
+    },
+    {
+      "platform": "tabii",
+      "slug": "heybeli-tiyatro-ramazan-ozel",
+      "title": "heybeli tiyatro ramazan ozel"
+    },
+    {
+      "platform": "tabii",
+      "slug": "dedektif-reptir",
+      "title": "dedektif reptir"
+    },
+    {
+      "platform": "tabii",
+      "slug": "eskiz",
+      "title": "eskiz"
+    },
+    {
+      "platform": "tabii",
+      "slug": "nasil-acaba",
+      "title": "nasil acaba"
+    },
+    {
+      "platform": "tabii",
+      "slug": "iskandinavya-turk-camileri",
+      "title": "iskandinavya turk camileri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "muzigi-dusunmek",
+      "title": "muzigi dusunmek"
+    },
+    {
+      "platform": "tabii",
+      "slug": "variloto",
+      "title": "variloto"
+    },
+    {
+      "platform": "tabii",
+      "slug": "merakli-hafiye-ramazan-ozel",
+      "title": "merakli hafiye ramazan ozel"
+    },
+    {
+      "platform": "tabii",
+      "slug": "lingo-turkiye-bayram-ozel",
+      "title": "lingo turkiye bayram ozel"
+    },
+    {
+      "platform": "tabii",
+      "slug": "pak-ile-pirpir",
+      "title": "pak ile pirpir"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sanat-terimleri",
+      "title": "sanat terimleri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "30-yilin-ardindan",
+      "title": "30 yilin ardindan"
+    },
+    {
+      "platform": "tabii",
+      "slug": "las-bravas",
+      "title": "las bravas"
+    },
+    {
+      "platform": "tabii",
+      "slug": "123-number-squad",
+      "title": "123 number squad"
+    },
+    {
+      "platform": "tabii",
+      "slug": "genc-sahne",
+      "title": "genc sahne"
+    },
+    {
+      "platform": "tabii",
+      "slug": "genc-sahne-arkasi",
+      "title": "genc sahne arkasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "misal",
+      "title": "misal"
+    },
+    {
+      "platform": "tabii",
+      "slug": "anlati",
+      "title": "anlati"
+    },
+    {
+      "platform": "tabii",
+      "slug": "dunyayi-darp-edenler",
+      "title": "dunyayi darp edenler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yenilmez-savascilar",
+      "title": "yenilmez savascilar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "fethin-izinde",
+      "title": "fethin izinde"
+    },
+    {
+      "platform": "tabii",
+      "slug": "tabii-dunyasi",
+      "title": "tabii dunyasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sef-olacak-cocuk",
+      "title": "sef olacak cocuk"
+    },
+    {
+      "platform": "tabii",
+      "slug": "edebiyat-dunyasi",
+      "title": "edebiyat dunyasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kayip-izler-atlasi",
+      "title": "kayip izler atlasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "turkistanda-islam-mirasi",
+      "title": "turkistanda islam mirasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "healthy-days",
+      "title": "healthy days"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kocum-babam",
+      "title": "kocum babam"
+    },
+    {
+      "platform": "tabii",
+      "slug": "climate-impact-asia",
+      "title": "climate impact asia"
+    },
+    {
+      "platform": "tabii",
+      "slug": "siir-turkun-iklimi",
+      "title": "siir turkun iklimi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "osmanli-saraylari",
+      "title": "osmanli saraylari"
+    },
+    {
+      "platform": "tabii",
+      "slug": "koklerin-izinde",
+      "title": "koklerin izinde"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bir-hadis-bir-insan",
+      "title": "bir hadis bir insan"
+    },
+    {
+      "platform": "tabii",
+      "slug": "dost-yuzler",
+      "title": "dost yuzler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "avrupada-iftar-bereketi",
+      "title": "avrupada iftar bereketi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "anadoluda-kuran-i-kerim-tilaveti",
+      "title": "anadoluda kuran i kerim tilaveti"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kalbin-icindekiler",
+      "title": "kalbin icindekiler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "lightbulb-moment",
+      "title": "lightbulb moment"
+    },
+    {
+      "platform": "tabii",
+      "slug": "satranc-buyuk-hayatin-kucuk-kopyasi",
+      "title": "satranc buyuk hayatin kucuk kopyasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "huner",
+      "title": "huner"
+    },
+    {
+      "platform": "tabii",
+      "slug": "o-gun-ne-oldu",
+      "title": "o gun ne oldu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ayin-getirdikleri",
+      "title": "ayin getirdikleri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yasayan-edebiyat",
+      "title": "yasayan edebiyat"
+    },
+    {
+      "platform": "tabii",
+      "slug": "espas",
+      "title": "espas"
+    },
+    {
+      "platform": "tabii",
+      "slug": "oddbods",
+      "title": "oddbods"
+    },
+    {
+      "platform": "tabii",
+      "slug": "calgilarin-dilinden",
+      "title": "calgilarin dilinden"
+    },
+    {
+      "platform": "tabii",
+      "slug": "teknoloji-ve-sanat",
+      "title": "teknoloji ve sanat"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yasam-baska-yerde",
+      "title": "yasam baska yerde"
+    },
+    {
+      "platform": "tabii",
+      "slug": "turk-dunyasinin-renkleri",
+      "title": "turk dunyasinin renkleri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "suret",
+      "title": "suret"
+    },
+    {
+      "platform": "tabii",
+      "slug": "secret-life-of-sharks",
+      "title": "secret life of sharks"
+    },
+    {
+      "platform": "tabii",
+      "slug": "we-dont-play-dolly",
+      "title": "we dont play dolly"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sahibini-arayan-fotograflar",
+      "title": "sahibini arayan fotograflar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "dunyada-kadin-olmak",
+      "title": "dunyada kadin olmak"
+    },
+    {
+      "platform": "tabii",
+      "slug": "hos-geldin-ramazan",
+      "title": "hos geldin ramazan"
+    },
+    {
+      "platform": "tabii",
+      "slug": "oddly-satisfying-science",
+      "title": "oddly satisfying science"
+    },
+    {
+      "platform": "tabii",
+      "slug": "inci-avcisi",
+      "title": "inci avcisi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "muzikli-hatiralar",
+      "title": "muzikli hatiralar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bebegimle-yeni-hayat",
+      "title": "bebegimle yeni hayat"
+    },
+    {
+      "platform": "tabii",
+      "slug": "gelecegi-kodlayanlar",
+      "title": "gelecegi kodlayanlar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "gol-atan-cepheye",
+      "title": "gol atan cepheye"
+    },
+    {
+      "platform": "tabii",
+      "slug": "su-alti-ustalari",
+      "title": "su alti ustalari"
+    },
+    {
+      "platform": "tabii",
+      "slug": "zorlu-isler-reshad-strik",
+      "title": "zorlu isler reshad strik"
+    },
+    {
+      "platform": "tabii",
+      "slug": "turkiyenin-enerjisi",
+      "title": "turkiyenin enerjisi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kuru-pasta-gazoz",
+      "title": "kuru pasta gazoz"
+    },
+    {
+      "platform": "tabii",
+      "slug": "dogal-tehdit-afetler",
+      "title": "dogal tehdit afetler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "karanlik-miras",
+      "title": "karanlik miras"
+    },
+    {
+      "platform": "tabii",
+      "slug": "maceraya-engel-yok",
+      "title": "maceraya engel yok"
+    },
+    {
+      "platform": "tabii",
+      "slug": "gelecegin-iletisimcileri",
+      "title": "gelecegin iletisimcileri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "restorasyon-101",
+      "title": "restorasyon 101"
+    },
+    {
+      "platform": "tabii",
+      "slug": "hasan-kacan-ile-cizgi-atolyesi",
+      "title": "hasan kacan ile cizgi atolyesi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "antik-miras",
+      "title": "antik miras"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sinematograf",
+      "title": "sinematograf"
+    },
+    {
+      "platform": "tabii",
+      "slug": "gelenegin-kalp-atislari",
+      "title": "gelenegin kalp atislari"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kim-korkar-cagdas-sanattan",
+      "title": "kim korkar cagdas sanattan"
+    },
+    {
+      "platform": "tabii",
+      "slug": "medeniyetin-isaret-taslari",
+      "title": "medeniyetin isaret taslari"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kayip-lezzetler",
+      "title": "kayip lezzetler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bakis-boslugu",
+      "title": "bakis boslugu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "medeniyet-ve-mimari",
+      "title": "medeniyet ve mimari"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ahiska-surgunu",
+      "title": "ahiska surgunu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "rafet-el-roman-ile-her-sey-yolunda",
+      "title": "rafet el roman ile her sey yolunda"
+    },
+    {
+      "platform": "tabii",
+      "slug": "saglik-rotasi",
+      "title": "saglik rotasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "mikrofon-senin-anadolu",
+      "title": "mikrofon senin anadolu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "rumeli-lezzetleri",
+      "title": "rumeli lezzetleri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "gencler-ne-diyor",
+      "title": "gencler ne diyor"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kalbimdeki-turkiye",
+      "title": "kalbimdeki turkiye"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ece-erken-ile-kahve-molasi",
+      "title": "ece erken ile kahve molasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "daha-dogrusu",
+      "title": "daha dogrusu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "anadolu-ikrami",
+      "title": "anadolu ikrami"
+    },
+    {
+      "platform": "tabii",
+      "slug": "efendimizin-24-saati",
+      "title": "efendimizin 24 saati"
+    },
+    {
+      "platform": "tabii",
+      "slug": "tabii-ki-spor",
+      "title": "tabii ki spor"
+    },
+    {
+      "platform": "tabii",
+      "slug": "apagon",
+      "title": "apagon"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yalniz-minare",
+      "title": "yalniz minare"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kara-ile-kece",
+      "title": "kara ile kece"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sef-lina",
+      "title": "sef lina"
+    },
+    {
+      "platform": "tabii",
+      "slug": "tarifsiz-lezzetler",
+      "title": "tarifsiz lezzetler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "fabrika-ayari",
+      "title": "fabrika ayari"
+    },
+    {
+      "platform": "tabii",
+      "slug": "5-mekan-5-makam",
+      "title": "5 mekan 5 makam"
+    },
+    {
+      "platform": "tabii",
+      "slug": "canigonulden",
+      "title": "canigonulden"
+    },
+    {
+      "platform": "tabii",
+      "slug": "almanyada-ramazan",
+      "title": "almanyada ramazan"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yeni-hayatim-hakkinda",
+      "title": "yeni hayatim hakkinda"
+    },
+    {
+      "platform": "tabii",
+      "slug": "turkistanda-sozun-ozu",
+      "title": "turkistanda sozun ozu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bir-sofra-bin-bereket",
+      "title": "bir sofra bin bereket"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bir-tariften-fazlasi",
+      "title": "bir tariften fazlasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "hollandada-ramazan",
+      "title": "hollandada ramazan"
+    },
+    {
+      "platform": "tabii",
+      "slug": "fransada-ramazan",
+      "title": "fransada ramazan"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kukla-studyosu",
+      "title": "kukla studyosu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "galip-mulayim-ramazan-ozel",
+      "title": "galip mulayim ramazan ozel"
+    },
+    {
+      "platform": "tabii",
+      "slug": "zekice-isler",
+      "title": "zekice isler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kara-ile-kece-ramazan-ozel",
+      "title": "kara ile kece ramazan ozel"
+    },
+    {
+      "platform": "tabii",
+      "slug": "parola-vatan-sifir-teror",
+      "title": "parola vatan sifir teror"
+    },
+    {
+      "platform": "tabii",
+      "slug": "demir-kafes",
+      "title": "demir kafes"
+    },
+    {
+      "platform": "tabii",
+      "slug": "felsefenin-seruveni",
+      "title": "felsefenin seruveni"
+    },
+    {
+      "platform": "tabii",
+      "slug": "aslanin-deney-odasi",
+      "title": "aslanin deney odasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "fotografcinin-kitabi",
+      "title": "fotografcinin kitabi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "goz-hizasi",
+      "title": "goz hizasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ipekce-sohbetler",
+      "title": "ipekce sohbetler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "aylabera",
+      "title": "aylabera"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kim-korkar-geleneksel-sanattan",
+      "title": "kim korkar geleneksel sanattan"
+    },
+    {
+      "platform": "tabii",
+      "slug": "nazar-ile-manzara",
+      "title": "nazar ile manzara"
+    },
+    {
+      "platform": "tabii",
+      "slug": "i-see-gaza",
+      "title": "i see gaza"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yukleniyor-bir-oyun-belgeseli",
+      "title": "yukleniyor bir oyun belgeseli"
+    },
+    {
+      "platform": "tabii",
+      "slug": "benim-adim-mucize",
+      "title": "benim adim mucize"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bize-kalan",
+      "title": "bize kalan"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ayri-telden",
+      "title": "ayri telden"
+    },
+    {
+      "platform": "tabii",
+      "slug": "gezegenin-kara-kutusu-antarktika",
+      "title": "gezegenin kara kutusu antarktika"
+    },
+    {
+      "platform": "tabii",
+      "slug": "karda-yasam",
+      "title": "karda yasam"
+    },
+    {
+      "platform": "tabii",
+      "slug": "daha-guzel-bir-hayat",
+      "title": "daha guzel bir hayat"
+    },
+    {
+      "platform": "tabii",
+      "slug": "dogunun-isigi",
+      "title": "dogunun isigi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "di-yi-ci-de-li-bie",
+      "title": "di yi ci de li bie"
+    },
+    {
+      "platform": "tabii",
+      "slug": "fuat-sezgin",
+      "title": "fuat sezgin"
+    },
+    {
+      "platform": "tabii",
+      "slug": "dil-kultur-konusmalari",
+      "title": "dil kultur konusmalari"
+    },
+    {
+      "platform": "tabii",
+      "slug": "piril-18-mart-canakkale-zaferi-ozel",
+      "title": "piril 18 mart canakkale zaferi ozel"
+    },
+    {
+      "platform": "tabii",
+      "slug": "piril-ramazan-ozel",
+      "title": "piril ramazan ozel"
+    },
+    {
+      "platform": "tabii",
+      "slug": "son-taarruz",
+      "title": "son taarruz"
+    },
+    {
+      "platform": "tabii",
+      "slug": "siradan-birkac-gun",
+      "title": "siradan birkac gun"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kapikulenin-anahtari-naim-suleymanoglu",
+      "title": "kapikulenin anahtari naim suleymanoglu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sehrin-tedarikcileri",
+      "title": "sehrin tedarikcileri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kusursuz-denge",
+      "title": "kusursuz denge"
+    },
+    {
+      "platform": "tabii",
+      "slug": "olanlar",
+      "title": "olanlar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "radyoevi-istanbulun-sesi",
+      "title": "radyoevi istanbulun sesi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yasar-kemal",
+      "title": "yasar kemal"
+    },
+    {
+      "platform": "tabii",
+      "slug": "rafadan-tayfa-istiklal-marsi-ozel",
+      "title": "rafadan tayfa istiklal marsi ozel"
+    },
+    {
+      "platform": "tabii",
+      "slug": "modernite-fenomeni",
+      "title": "modernite fenomeni"
+    },
+    {
+      "platform": "tabii",
+      "slug": "refakatci",
+      "title": "refakatci"
+    },
+    {
+      "platform": "tabii",
+      "slug": "meleklerin-koruyucusu",
+      "title": "meleklerin koruyucusu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "200-meters",
+      "title": "200 meters"
+    },
+    {
+      "platform": "tabii",
+      "slug": "firildak-ailesi",
+      "title": "firildak ailesi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ayka",
+      "title": "ayka"
+    },
+    {
+      "platform": "tabii",
+      "slug": "manbiki-kazoku",
+      "title": "manbiki kazoku"
+    },
+    {
+      "platform": "tabii",
+      "slug": "beurokeo",
+      "title": "beurokeo"
+    },
+    {
+      "platform": "tabii",
+      "slug": "rafadan-tayfa-2-gobeklitepe",
+      "title": "rafadan tayfa 2 gobeklitepe"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ten-in-half",
+      "title": "ten in half"
+    },
+    {
+      "platform": "tabii",
+      "slug": "the-translators",
+      "title": "the translators"
+    },
+    {
+      "platform": "tabii",
+      "slug": "puslu-yolculuk",
+      "title": "puslu yolculuk"
+    },
+    {
+      "platform": "tabii",
+      "slug": "eyvah-eyvah",
+      "title": "eyvah eyvah"
+    },
+    {
+      "platform": "tabii",
+      "slug": "eyvah-eyvah-3",
+      "title": "eyvah eyvah 3"
+    },
+    {
+      "platform": "tabii",
+      "slug": "eyvah-eyvah-2",
+      "title": "eyvah eyvah 2"
+    },
+    {
+      "platform": "tabii",
+      "slug": "1989-belene",
+      "title": "1989 belene"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bir-baska-oyku-afgan-komuru",
+      "title": "bir baska oyku afgan komuru"
+    },
+    {
+      "platform": "tabii",
+      "slug": "67deg-49-32-kuzey",
+      "title": "67deg 49 32 kuzey"
+    },
+    {
+      "platform": "tabii",
+      "slug": "afgan-kadini",
+      "title": "afgan kadini"
+    },
+    {
+      "platform": "tabii",
+      "slug": "dag-gibi",
+      "title": "dag gibi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "anne-gidince",
+      "title": "anne gidince"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bir-kis-oykusu",
+      "title": "bir kis oykusu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "biz-dunyaya-sigmadik",
+      "title": "biz dunyaya sigmadik"
+    },
+    {
+      "platform": "tabii",
+      "slug": "denizler-yanarken",
+      "title": "denizler yanarken"
+    },
+    {
+      "platform": "tabii",
+      "slug": "dunyayi-iyilik-kurtaracak",
+      "title": "dunyayi iyilik kurtaracak"
+    },
+    {
+      "platform": "tabii",
+      "slug": "esme",
+      "title": "esme"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bulutlara-giden-yol",
+      "title": "bulutlara giden yol"
+    },
+    {
+      "platform": "tabii",
+      "slug": "guney-afrikanin-vahsi-dogasi",
+      "title": "guney afrikanin vahsi dogasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "surgunden-kalplere-hanedan",
+      "title": "surgunden kalplere hanedan"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yola-cikan-oykuler",
+      "title": "yola cikan oykuler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "tam-o-yastayim",
+      "title": "tam o yastayim"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yumurtalik-dalyanlari",
+      "title": "yumurtalik dalyanlari"
+    },
+    {
+      "platform": "tabii",
+      "slug": "zavar-keklik-ve-cocuk",
+      "title": "zavar keklik ve cocuk"
+    },
+    {
+      "platform": "tabii",
+      "slug": "uzaklardan-farkli-izler",
+      "title": "uzaklardan farkli izler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "agaclarda-gecen-yasam",
+      "title": "agaclarda gecen yasam"
+    },
+    {
+      "platform": "tabii",
+      "slug": "derindeki-gozler",
+      "title": "derindeki gozler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yer-altinda-yasamlar-gelengi",
+      "title": "yer altinda yasamlar gelengi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "the-kitchen-brigade",
+      "title": "the kitchen brigade"
+    },
+    {
+      "platform": "tabii",
+      "slug": "stan-and-ollie",
+      "title": "stan and ollie"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sick-of-myself",
+      "title": "sick of myself"
+    },
+    {
+      "platform": "tabii",
+      "slug": "elif-ve-arkadaslari-buyuk-taarruz",
+      "title": "elif ve arkadaslari buyuk taarruz"
+    },
+    {
+      "platform": "tabii",
+      "slug": "aslan-buyuk-taarruz",
+      "title": "aslan buyuk taarruz"
+    },
+    {
+      "platform": "tabii",
+      "slug": "the-quiet-girl",
+      "title": "the quiet girl"
+    },
+    {
+      "platform": "tabii",
+      "slug": "trtde-100-yil-ortak-yayini",
+      "title": "trtde 100 yil ortak yayini"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yuzyilin-bestekarlari",
+      "title": "yuzyilin bestekarlari"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yuzyilin-ezgileri-turkuler",
+      "title": "yuzyilin ezgileri turkuler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yuzyilin-ezgileri-sarkilar",
+      "title": "yuzyilin ezgileri sarkilar"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ulusta-cumhuriyet",
+      "title": "ulusta cumhuriyet"
+    },
+    {
+      "platform": "tabii",
+      "slug": "canim-kardesim-23-nisan-ulusal-egemenlik-ve-cocuk-bayrami",
+      "title": "canim kardesim 23 nisan ulusal egemenlik ve cocuk bayrami"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kaptan-pengu-ve-arkadaslari-23-nisan-ulusal-egemenlik-ve-cocuk-bayrami",
+      "title": "kaptan pengu ve arkadaslari 23 nisan ulusal egemenlik ve cocuk bayrami"
+    },
+    {
+      "platform": "tabii",
+      "slug": "surpriz-kutusu-23-nisan-ulusal-egemenlik-ve-cocuk-bayrami",
+      "title": "surpriz kutusu 23 nisan ulusal egemenlik ve cocuk bayrami"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bir-ressamin-sirlari",
+      "title": "bir ressamin sirlari"
+    },
+    {
+      "platform": "tabii",
+      "slug": "birkac-kucuk-yurek-icin",
+      "title": "birkac kucuk yurek icin"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bulut-cocuk",
+      "title": "bulut cocuk"
+    },
+    {
+      "platform": "tabii",
+      "slug": "aslan-23-nisan-ulusal-egemenlik-ve-cocuk-bayrami",
+      "title": "aslan 23 nisan ulusal egemenlik ve cocuk bayrami"
+    },
+    {
+      "platform": "tabii",
+      "slug": "buradayim",
+      "title": "buradayim"
+    },
+    {
+      "platform": "tabii",
+      "slug": "canakkalenin-cocuklari",
+      "title": "canakkalenin cocuklari"
+    },
+    {
+      "platform": "tabii",
+      "slug": "edebiyat-dunyasi",
+      "title": "edebiyat dunyasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "insan-ve-kule",
+      "title": "insan ve kule"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kardan-murekkep",
+      "title": "kardan murekkep"
+    },
+    {
+      "platform": "tabii",
+      "slug": "18-mart-canakkale-zor-gun",
+      "title": "18 mart canakkale zor gun"
+    },
+    {
+      "platform": "tabii",
+      "slug": "makedonyadaki-anadolu",
+      "title": "makedonyadaki anadolu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "mavi-vatan",
+      "title": "mavi vatan"
+    },
+    {
+      "platform": "tabii",
+      "slug": "o-gun",
+      "title": "o gun"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sanat-sozlugu",
+      "title": "sanat sozlugu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "turkovac",
+      "title": "turkovac"
+    },
+    {
+      "platform": "tabii",
+      "slug": "analiz-kusbaz",
+      "title": "analiz kusbaz"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sanatcinin-dunyasi",
+      "title": "sanatcinin dunyasi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yeni-baslayanlar-icin-evren",
+      "title": "yeni baslayanlar icin evren"
+    },
+    {
+      "platform": "tabii",
+      "slug": "zamani-geldi",
+      "title": "zamani geldi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "karalama-defteri-1992",
+      "title": "karalama defteri 1992"
+    },
+    {
+      "platform": "tabii",
+      "slug": "besinci-mevsim",
+      "title": "besinci mevsim"
+    },
+    {
+      "platform": "tabii",
+      "slug": "1de-nostalji",
+      "title": "1de nostalji"
+    },
+    {
+      "platform": "tabii",
+      "slug": "canakkale-turkusu",
+      "title": "canakkale turkusu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "celal-guzelses-anma-konseri",
+      "title": "celal guzelses anma konseri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ince-osman-agidi",
+      "title": "ince osman agidi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "neset-ertasi-anma-gecesi",
+      "title": "neset ertasi anma gecesi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "omrumun-nagmeleri-sadun-aksut",
+      "title": "omrumun nagmeleri sadun aksut"
+    },
+    {
+      "platform": "tabii",
+      "slug": "inci-cayirli",
+      "title": "inci cayirli"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kazanci-bedih-ve-gazelhanlari-anma-gecesi",
+      "title": "kazanci bedih ve gazelhanlari anma gecesi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kabile-misafiri",
+      "title": "kabile misafiri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "miracin-konagi-mescid-i-aksa",
+      "title": "miracin konagi mescid i aksa"
+    },
+    {
+      "platform": "tabii",
+      "slug": "cem-karaca",
+      "title": "cem karaca"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sule",
+      "title": "sule"
+    },
+    {
+      "platform": "tabii",
+      "slug": "erbakan-bir-ihtimal-daha-var",
+      "title": "erbakan bir ihtimal daha var"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ata-tohumu",
+      "title": "ata tohumu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "mediterranean-fever",
+      "title": "mediterranean fever"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yasamin-kiyisinda-nabiz",
+      "title": "yasamin kiyisinda nabiz"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ash-is-purest-white",
+      "title": "ash is purest white"
+    },
+    {
+      "platform": "tabii",
+      "slug": "dikey-rota",
+      "title": "dikey rota"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bugun-23-nisan",
+      "title": "bugun 23 nisan"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kiymetli-bir-bina-oykusu",
+      "title": "kiymetli bir bina oykusu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "malcolmx-justice",
+      "title": "malcolmx justice"
+    },
+    {
+      "platform": "tabii",
+      "slug": "der-grosse-fake-die-wirecard-story",
+      "title": "der grosse fake die wirecard story"
+    },
+    {
+      "platform": "tabii",
+      "slug": "mahzuni",
+      "title": "mahzuni"
+    },
+    {
+      "platform": "tabii",
+      "slug": "23-nisan-gala-ozel",
+      "title": "23 nisan gala ozel"
+    },
+    {
+      "platform": "tabii",
+      "slug": "trt-60-yil-gala-programi",
+      "title": "trt 60 yil gala programi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "darbelerin-pusulasi-27-mayis",
+      "title": "darbelerin pusulasi 27 mayis"
+    },
+    {
+      "platform": "tabii",
+      "slug": "geldikleri-gibi",
+      "title": "geldikleri gibi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "spread-your-wings",
+      "title": "spread your wings"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yildizin-parladigi-an",
+      "title": "yildizin parladigi an"
+    },
+    {
+      "platform": "tabii",
+      "slug": "1921-mogol-devrimi",
+      "title": "1921 mogol devrimi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bir-milletin-ruhu-ahmed-cevad",
+      "title": "bir milletin ruhu ahmed cevad"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ahlatta-ay-ve-yildiz",
+      "title": "ahlatta ay ve yildiz"
+    },
+    {
+      "platform": "tabii",
+      "slug": "abay-kunanbay",
+      "title": "abay kunanbay"
+    },
+    {
+      "platform": "tabii",
+      "slug": "omer-seyfettin",
+      "title": "omer seyfettin"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yesil-kubbenin-cinileri",
+      "title": "yesil kubbenin cinileri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "imam-serahsi",
+      "title": "imam serahsi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "uzayda-ilk-turk",
+      "title": "uzayda ilk turk"
+    },
+    {
+      "platform": "tabii",
+      "slug": "enver-pasa",
+      "title": "enver pasa"
+    },
+    {
+      "platform": "tabii",
+      "slug": "gagarin",
+      "title": "gagarin"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bizim-sesler-bayram-ozel",
+      "title": "bizim sesler bayram ozel"
+    },
+    {
+      "platform": "tabii",
+      "slug": "most-violent-year",
+      "title": "most violent year"
+    },
+    {
+      "platform": "tabii",
+      "slug": "never-home-alone",
+      "title": "never home alone"
+    },
+    {
+      "platform": "tabii",
+      "slug": "birds-on-the-great-plane-tree",
+      "title": "birds on the great plane tree"
+    },
+    {
+      "platform": "tabii",
+      "slug": "isgal-girisiminden-dirilise-15-temmuzun-anatomisi",
+      "title": "isgal girisiminden dirilise 15 temmuzun anatomisi"
+    },
+    {
+      "platform": "tabii",
+      "slug": "kibris-mutlu-baris-harekati",
+      "title": "kibris mutlu baris harekati"
+    },
+    {
+      "platform": "tabii",
+      "slug": "africas-deadly-lake",
+      "title": "africas deadly lake"
+    },
+    {
+      "platform": "tabii",
+      "slug": "gorunmeyen-cocuk",
+      "title": "gorunmeyen cocuk"
+    },
+    {
+      "platform": "tabii",
+      "slug": "3000-nights",
+      "title": "3000 nights"
+    },
+    {
+      "platform": "tabii",
+      "slug": "walls-can-talk",
+      "title": "walls can talk"
+    },
+    {
+      "platform": "tabii",
+      "slug": "2023-a-space-odyssey",
+      "title": "2023 a space odyssey"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sesler-ve-yuzler",
+      "title": "sesler ve yuzler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sozun-buyusu",
+      "title": "sozun buyusu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "paralimpik-oyunlari-kusursuz-bir-gosteri-buyuleyici-bir-sahne",
+      "title": "paralimpik oyunlari kusursuz bir gosteri buyuleyici bir sahne"
+    },
+    {
+      "platform": "tabii",
+      "slug": "espiritu-sagrado",
+      "title": "espiritu sagrado"
+    },
+    {
+      "platform": "tabii",
+      "slug": "karagoz-yar-bana-bir-eglence",
+      "title": "karagoz yar bana bir eglence"
+    },
+    {
+      "platform": "tabii",
+      "slug": "istiklal-yolunda-buyuk-taarruz",
+      "title": "istiklal yolunda buyuk taarruz"
+    },
+    {
+      "platform": "tabii",
+      "slug": "1071-malazgirt-bizansin-kiyameti",
+      "title": "1071 malazgirt bizansin kiyameti"
+    },
+    {
+      "platform": "tabii",
+      "slug": "dumlupinardan-zafere",
+      "title": "dumlupinardan zafere"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bright-now-muck-city-deep-dive",
+      "title": "bright now muck city deep dive"
+    },
+    {
+      "platform": "tabii",
+      "slug": "holy-redemption",
+      "title": "holy redemption"
+    },
+    {
+      "platform": "tabii",
+      "slug": "al-risalah",
+      "title": "al risalah"
+    },
+    {
+      "platform": "tabii",
+      "slug": "turk-isi-gemiler",
+      "title": "turk isi gemiler"
+    },
+    {
+      "platform": "tabii",
+      "slug": "ormanin-sirri-karakulak",
+      "title": "ormanin sirri karakulak"
+    },
+    {
+      "platform": "tabii",
+      "slug": "col-kutuphaneleri",
+      "title": "col kutuphaneleri"
+    },
+    {
+      "platform": "tabii",
+      "slug": "glf-gz",
+      "title": "glf gz"
+    },
+    {
+      "platform": "tabii",
+      "slug": "how-does-aipac-money-influence-us-policies",
+      "title": "how does aipac money influence us policies"
+    },
+    {
+      "platform": "tabii",
+      "slug": "digital-occupation",
+      "title": "digital occupation"
+    },
+    {
+      "platform": "tabii",
+      "slug": "gazas-shadow-british-muslims-and-uk-election",
+      "title": "gazas shadow british muslims and uk election"
+    },
+    {
+      "platform": "tabii",
+      "slug": "focal-point-israels-assault-on-unrwa",
+      "title": "focal point israels assault on unrwa"
+    },
+    {
+      "platform": "tabii",
+      "slug": "z-ldyn-lqsm",
+      "title": "z ldyn lqsm"
+    },
+    {
+      "platform": "tabii",
+      "slug": "from-gaza-to-us-campuses-the-legacy-of-rachel-corrie",
+      "title": "from gaza to us campuses the legacy of rachel corrie"
+    },
+    {
+      "platform": "tabii",
+      "slug": "zionism-manufacturing-a-state",
+      "title": "zionism manufacturing a state"
+    },
+    {
+      "platform": "tabii",
+      "slug": "why-messiah-prophecy-haunts-netanyahu",
+      "title": "why messiah prophecy haunts netanyahu"
+    },
+    {
+      "platform": "tabii",
+      "slug": "no-escape-voices-from-rafah",
+      "title": "no escape voices from rafah"
+    },
+    {
+      "platform": "tabii",
+      "slug": "an-institutional-reality-is-sexual-abuse-systemic-in-israel",
+      "title": "an institutional reality is sexual abuse systemic in israel"
+    },
+    {
+      "platform": "tabii",
+      "slug": "lhgn-ljdyd",
+      "title": "lhgn ljdyd"
+    },
+    {
+      "platform": "tabii",
+      "slug": "focal-point-war-on-humanity",
+      "title": "focal point war on humanity"
+    },
+    {
+      "platform": "tabii",
+      "slug": "a-historical-timeline-of-israels-brutality-towards-palestinians",
+      "title": "a historical timeline of israels brutality towards palestinians"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yemen-the-third-frontier",
+      "title": "yemen the third frontier"
+    },
+    {
+      "platform": "tabii",
+      "slug": "stolen-lands-what-is-the-smotrich-doctrine",
+      "title": "stolen lands what is the smotrich doctrine"
+    },
+    {
+      "platform": "tabii",
+      "slug": "lnjy-lwhyd",
+      "title": "lnjy lwhyd"
+    },
+    {
+      "platform": "tabii",
+      "slug": "lshf-qyd-lbd",
+      "title": "lshf qyd lbd"
+    },
+    {
+      "platform": "tabii",
+      "slug": "w-d-brytny-lmshw-wm",
+      "title": "w d brytny lmshw wm"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sn-lnfwdh-llwby-lsry-yly-fy-lwlyt-lmthd",
+      "title": "sn lnfwdh llwby lsry yly fy lwlyt lmthd"
+    },
+    {
+      "platform": "tabii",
+      "slug": "sry-yl-lbn-lmdll",
+      "title": "sry yl lbn lmdll"
+    },
+    {
+      "platform": "tabii",
+      "slug": "hrwb-sry-yl-mn-1938-l-twfn-l-qs",
+      "title": "hrwb sry yl mn 1938 l twfn l qs"
+    },
+    {
+      "platform": "tabii",
+      "slug": "the-american-dilemma-elections-amid-gaza-war",
+      "title": "the american dilemma elections amid gaza war"
+    },
+    {
+      "platform": "tabii",
+      "slug": "birlikte-yeniden",
+      "title": "birlikte yeniden"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yikilmayan-hayallerim",
+      "title": "yikilmayan hayallerim"
+    },
+    {
+      "platform": "tabii",
+      "slug": "land-of-faith",
+      "title": "land of faith"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bir-donum-noktasi-18-mart-1915",
+      "title": "bir donum noktasi 18 mart 1915"
+    },
+    {
+      "platform": "tabii",
+      "slug": "schindler-the-real-story",
+      "title": "schindler the real story"
+    },
+    {
+      "platform": "tabii",
+      "slug": "maca-yetissin-usta",
+      "title": "maca yetissin usta"
+    },
+    {
+      "platform": "tabii",
+      "slug": "seyr-i-mukaddes",
+      "title": "seyr i mukaddes"
+    },
+    {
+      "platform": "tabii",
+      "slug": "buyuk-baligin-pesinde",
+      "title": "buyuk baligin pesinde"
+    },
+    {
+      "platform": "tabii",
+      "slug": "portreler-kayahan",
+      "title": "portreler kayahan"
+    },
+    {
+      "platform": "tabii",
+      "slug": "bir-donum-noktasi-23-nisan",
+      "title": "bir donum noktasi 23 nisan"
+    },
+    {
+      "platform": "tabii",
+      "slug": "yomeddine",
+      "title": "yomeddine"
+    },
+    {
+      "platform": "tabii",
+      "slug": "about-elly",
+      "title": "about elly"
+    },
+    {
+      "platform": "tabii",
+      "slug": "gisaengchung",
+      "title": "gisaengchung"
+    }
+  ],
+  "_counts": {
+    "puhutv": 184,
+    "gain": 680,
+    "tabii": 1303
+  }
+}

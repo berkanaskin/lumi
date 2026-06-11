@@ -29,6 +29,11 @@ export default defineConfig(() => {
                         if (id.includes('node_modules/@firebase') || id.includes('node_modules/firebase')) {
                             return 'firebase';
                         }
+                        // TR platform kataloğu (~1.300 başlık) ayrı chunk:
+                        // aylık veri tazelemeleri app kodunun cache'ini bozmasın.
+                        if (id.includes('turkish-platform-catalog')) {
+                            return 'tr-catalog';
+                        }
                     },
                 },
             },
