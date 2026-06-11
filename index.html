@@ -468,22 +468,28 @@
       >
         <div class="favorites-header">
           <div class="favorites-title-row">
-            <h1 class="favorites-title">LİSTEM</h1>
+            <h1 class="favorites-title">Kitaplığın</h1>
           </div>
 
           <div class="favorites-tabs-wrapper">
-            <div class="favorites-tabs">
+            <div class="favorites-tabs lib-segment">
               <button class="fav-tab active" data-list="liked">
-                Beğendiklerim
+                <span class="material-symbols-outlined">favorite</span> Beğendiklerim
               </button>
               <button class="fav-tab" data-list="watchlist">
-                İzleyeceklerim
+                <span class="material-symbols-outlined">bookmark</span> İzleme Listem
               </button>
             </div>
           </div>
+          <div class="lib-stats" id="library-stats"></div>
         </div>
 
-        <div class="favorites-grid" id="favorites-grid"></div>
+        <button type="button" class="lib-tonight" id="library-tonight">
+          <b><span class="material-symbols-outlined">auto_awesome</span> Bu akşam ne izlesen?</b>
+          <span>Listenden sana göre bir seçim yapayım mı? →</span>
+        </button>
+
+        <div class="favorites-grid lib-grid" id="favorites-grid"></div>
 
         <div class="empty-state" id="empty-list-message" style="display: none">
           <span
@@ -545,23 +551,20 @@
             >
             LUMI PREMIUM
           </div>
+          <div class="profile-tier-free" id="profile-tier-free">ÜCRETSİZ</div>
+          <div class="profile-dna" id="profile-dna" style="display:none"></div>
         </div>
 
-        <div class="profile-stats">
-          <div class="stat-card">
-            <div class="stat-icon">
-              <span class="material-symbols-outlined">favorite</span>
-            </div>
-            <div class="stat-label">Beğenilen</div>
-            <div class="stat-value" id="stat-liked">0</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon">
-              <span class="material-symbols-outlined">bookmark</span>
-            </div>
-            <div class="stat-label">Listede Bekleyen</div>
-            <div class="stat-value" id="stat-watchlist">0</div>
-          </div>
+        <div class="profile-stats profile-stats-3">
+          <div class="stat-card stat-card-glow"><div class="stat-value" id="stat-watched">0</div><div class="stat-label">İzlenen</div></div>
+          <div class="stat-card stat-card-glow"><div class="stat-value" id="stat-liked">0</div><div class="stat-label">Beğenilen</div></div>
+          <div class="stat-card stat-card-glow"><div class="stat-value" id="stat-watchlist">0</div><div class="stat-label">Listemde</div></div>
+        </div>
+
+        <!-- Son Beğendiklerin rafı (05.5) -->
+        <div class="profile-shelf-section" id="profile-shelf-section" style="display:none">
+          <h3 class="settings-title">Son Beğendiklerin</h3>
+          <div class="profile-shelf" id="profile-shelf"></div>
         </div>
 
         <!-- Settings Section -->
@@ -597,6 +600,28 @@
                 />
                 <span class="toggle-slider"></span>
               </label>
+            </div>
+            <!-- Dil (05.5) -->
+            <div class="settings-item">
+              <div class="settings-item-left">
+                <div class="settings-icon"><span class="material-symbols-outlined">language</span></div>
+                <span class="settings-label">Dil</span>
+              </div>
+              <div style="position: relative">
+                <button id="language-selector" class="country-selector-btn" aria-label="Dil Seç" title="Dil Seç">
+                  <span class="country-code" id="language-value">Türkçe</span>
+                  <span class="material-symbols-outlined" style="font-size:16px">expand_more</span>
+                </button>
+                <div id="language-dropdown" class="country-dropdown hidden">
+                  <div class="dropdown-list">
+                    <button class="country-item" data-code="tr">Türkçe</button>
+                    <button class="country-item" data-code="en">English</button>
+                    <button class="country-item" data-code="de">Deutsch</button>
+                    <button class="country-item" data-code="fr">Français</button>
+                    <button class="country-item" data-code="es">Español</button>
+                  </div>
+                </div>
+              </div>
             </div>
             <!-- Country Selector -->
             <div class="settings-item">
@@ -636,18 +661,21 @@
                 </div>
               </div>
             </div>
-            <!-- Wi-Fi Download Toggle -->
-            <div class="settings-item settings-item-last">
+            <!-- Platformlarım (05.5) -->
+            <div class="settings-item" id="platforms-row" role="button" tabindex="0">
               <div class="settings-item-left">
-                <div class="settings-icon">
-                  <span class="material-symbols-outlined">wifi</span>
-                </div>
-                <span class="settings-label">Wi-Fi'de İndir</span>
+                <div class="settings-icon"><span class="material-symbols-outlined">subscriptions</span></div>
+                <span class="settings-label">Platformlarım</span>
               </div>
-              <label class="toggle-switch">
-                <input type="checkbox" id="profile-wifi-toggle" />
-                <span class="toggle-slider"></span>
-              </label>
+              <span class="settings-value" id="platforms-value">—</span>
+            </div>
+            <!-- Çift Modu (05.5 — Premium) -->
+            <div class="settings-item settings-item-last" id="pair-mode-row" role="button" tabindex="0">
+              <div class="settings-item-left">
+                <div class="settings-icon"><span class="material-symbols-outlined">favorite</span></div>
+                <span class="settings-label">Çift Modu</span>
+              </div>
+              <span class="settings-value">Premium ✨</span>
             </div>
           </div>
 
@@ -670,6 +698,13 @@
                 <span class="toggle-slider"></span>
               </label>
             </div>
+          </div>
+
+          <!-- Lumi Premium upsell (05.5; premium kullanıcıda gizli) -->
+          <div class="profile-upsell" id="profile-upsell" style="margin-top: var(--space-lg)">
+            <h4><span class="material-symbols-outlined" style="color:#fbbf24">auto_awesome</span> Lumi Premium</h4>
+            <p>Sınırsız AI önerisi · Benim İçin Seç · Çift Modu · Akşam Asistanı</p>
+            <button type="button" class="profile-upsell-cta" id="profile-upsell-cta">3 gün ücretsiz dene</button>
           </div>
 
           <!-- Action Buttons (Updated by JS based on auth state) -->
@@ -2166,6 +2201,9 @@
       // FAVORITES LIST
       // ============================================
       function loadFavoritesList(listType) {
+        // 05.5: Kitaplık renderer artık modülde (library-profile.js).
+        if (window.renderLibrary) { window.renderLibrary(listType); return; }
+
         const grid = document.getElementById("favorites-grid");
         const emptyMessage = document.getElementById("empty-list-message");
 
@@ -2212,6 +2250,9 @@
       // PROFILE DATA
       // ============================================
       function loadProfileData() {
+        // 05.5: yeni profil bölümleri (DNA, raf, 3lü istatistik, upsell).
+        if (window.renderProfileExtras) window.renderProfileExtras();
+
         const user = window.AuthService?.getCurrentUser?.();
         const profileName = document.getElementById("profile-name");
         const profileBadge = document.getElementById("profile-badge");

@@ -374,7 +374,7 @@ export function closeVideo() {
 /**
  * Toggle like status
  */
-export function toggleLike(id, type, title, posterPath, voteAverage, releaseDate) {
+export function toggleLike(id, type, title, posterPath, voteAverage, releaseDate, genres) {
     const likedItems = JSON.parse(localStorage.getItem('liked_items') || '[]');
     const index = likedItems.findIndex(f => f.id === parseInt(id));
 
@@ -389,6 +389,8 @@ export function toggleLike(id, type, title, posterPath, voteAverage, releaseDate
             vote_average: voteAverage,
             release_date: releaseDate,
             media_type: type,
+            // 05.5: profil "zevk DNA'sı" çipleri için tür adları (varsa)
+            genres: Array.isArray(genres) ? genres.slice(0, 3) : undefined,
             added_at: new Date().toISOString(),
         });
         showToast('Beğenilenlere eklendi ❤️');
@@ -1387,7 +1389,8 @@ export function attachDetailEventListeners(details, type, itemId) {
                 details.title || details.name,
                 details.poster_path,
                 details.vote_average,
-                details.release_date || details.first_air_date
+                details.release_date || details.first_air_date,
+                (details.genres || []).map(g => g.name)
             );
             likeBtn.classList.toggle('active', isLiked);
             const svgPath = likeBtn.querySelector('svg');

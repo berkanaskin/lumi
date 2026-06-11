@@ -12,6 +12,7 @@ import { DAILY_REC_KEY, DAILY_REC_CATEGORIES, getGenreName, NO_POSTER_URL } from
 import '../ui/paywall-sheet.js';
 // Side-effect import: injects the Agent hub FAB + registers it (Phase 05-03).
 import './premium-sheets.js';
+import './library-profile.js';
 // Side-effect import: registers the Pair Mode hub hook (Phase 05-04).
 import './pair-mode.js';
 // Side-effect import: syncs Firestore premium flag → client entitlement mirror (Phase 05-01).

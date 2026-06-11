@@ -1,0 +1,250 @@
+/* ============================================
+   LUMI — Kitaplık + Profil redesign (05.5, founder onaylı mockup)
+   ============================================ */
+
+/* ---------- Kitaplık ---------- */
+.lib-segment {
+  display: flex;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 14px;
+  padding: 4px;
+  gap: 0;
+}
+.lib-segment .fav-tab {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text-muted, rgba(244, 244, 246, 0.55));
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 9px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+}
+.lib-segment .fav-tab .material-symbols-outlined { font-size: 15px; }
+.lib-segment .fav-tab.active {
+  background: linear-gradient(120deg, rgba(139, 92, 246, 0.85), rgba(99, 102, 241, 0.85));
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
+}
+
+.lib-stats {
+  font-size: 12px;
+  color: var(--text-muted, rgba(244, 244, 246, 0.55));
+  margin-top: 10px;
+}
+
+.lib-tonight {
+  display: block;
+  width: calc(100% - 2 * var(--space-lg, 20px));
+  margin: 0 var(--space-lg, 20px) 14px;
+  text-align: left;
+  border-radius: 13px;
+  padding: 14px 13px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.34), rgba(99, 102, 241, 0.2));
+  border: 1px solid rgba(139, 92, 246, 0.42);
+  color: var(--text-primary, #f4f4f6);
+  cursor: pointer;
+  font-family: inherit;
+}
+.lib-tonight b {
+  font-size: 13.5px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.lib-tonight b .material-symbols-outlined { font-size: 15px; color: #fbbf24; }
+.lib-tonight span {
+  font-size: 11.5px;
+  color: rgba(244, 244, 246, 0.72);
+}
+.lib-tonight:active { transform: scale(0.985); }
+
+.lib-grid {
+  column-count: 2;
+  column-gap: 11px;
+  padding: 0 var(--space-lg, 20px);
+}
+.lib-card {
+  position: relative;
+  border-radius: 13px;
+  overflow: hidden;
+  margin-bottom: 11px;
+  break-inside: avoid;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+}
+.lib-card img { width: 100%; display: block; }
+.lib-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: rgba(5, 5, 5, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lib-badge .material-symbols-outlined { font-size: 14px; color: #f472b6; font-variation-settings: 'FILL' 1; }
+.lib-badge-bk .material-symbols-outlined { color: #fbbf24; }
+.lib-meta {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 22px 10px 9px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+}
+.lib-meta small {
+  display: block;
+  font-weight: 400;
+  font-size: 10.5px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ---------- Profil ---------- */
+.profile-tier-free {
+  display: inline-flex;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-muted, rgba(244, 244, 246, 0.55));
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  margin-top: 6px;
+}
+
+.profile-dna {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+.profile-dna span {
+  font-size: 12.5px;
+  padding: 7px 13px;
+  border-radius: 999px;
+  background: linear-gradient(120deg, rgba(139, 92, 246, 0.16), rgba(99, 102, 241, 0.1));
+  border: 1px solid rgba(139, 92, 246, 0.28);
+  color: #cfc4f8;
+}
+
+.profile-stats-3 {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.stat-card-glow {
+  position: relative;
+  border-radius: 16px;
+  padding: 14px 8px;
+  text-align: center;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025));
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  overflow: hidden;
+}
+.stat-card-glow::after {
+  content: '';
+  position: absolute;
+  inset: auto -30% -65% -30%;
+  height: 90px;
+  background: radial-gradient(closest-side, rgba(139, 92, 246, 0.22), transparent);
+  pointer-events: none;
+}
+.stat-card-glow .stat-value { font-size: 21px; font-weight: 700; }
+.stat-card-glow .stat-label { font-size: 11px; color: var(--text-muted, rgba(244, 244, 246, 0.55)); }
+
+.profile-shelf-section { padding: 0 var(--space-lg, 20px); margin-top: 18px; }
+.profile-shelf {
+  display: flex;
+  gap: 9px;
+  overflow-x: auto;
+  padding: 2px 0 6px;
+  scrollbar-width: none;
+}
+.profile-shelf::-webkit-scrollbar { display: none; }
+.profile-shelf img {
+  width: 86px;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 10px;
+  flex: 0 0 auto;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+}
+
+.settings-value {
+  margin-left: auto;
+  font-size: 12.5px;
+  color: var(--text-muted, rgba(244, 244, 246, 0.55));
+  white-space: nowrap;
+}
+#platforms-row, #pair-mode-row { cursor: pointer; }
+
+.profile-upsell {
+  border-radius: 20px;
+  padding: 18px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.32), rgba(99, 102, 241, 0.18) 55%, rgba(59, 130, 246, 0.14));
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+.profile-upsell::before {
+  content: '';
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: rgba(139, 92, 246, 0.35);
+  filter: blur(50px);
+  top: -60px;
+  right: -40px;
+  pointer-events: none;
+}
+.profile-upsell h4 {
+  font-size: 16.5px;
+  margin: 0 0 5px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  position: relative;
+}
+.profile-upsell h4 .material-symbols-outlined { font-size: 18px; }
+.profile-upsell p {
+  font-size: 12.5px;
+  color: rgba(244, 244, 246, 0.72);
+  line-height: 1.55;
+  margin: 0 0 13px;
+  position: relative;
+}
+.profile-upsell-cta {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 12px;
+  border-radius: 13px;
+  border: none;
+  background: linear-gradient(120deg, #8b5cf6, #6366f1);
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  position: relative;
+}
+.profile-upsell-cta:active { transform: scale(0.98); }
