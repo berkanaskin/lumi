@@ -46,6 +46,11 @@ w500→w342 (inline kart), image.tmdb.org preconnect.
 - Doğrulanan: CDN firebase yok, subset font canlı, tüm Blok 1 fix'leri
   bundle'da (media_type, video overlay, broadcast kuralı).
 
-## SONUÇ (tur bitince prod'dan doldurulacak)
-- Performance score: _
-- FCP: _ · LCP: _ · Speed Index: _
+## SONUÇ (2026-06-11, tur sonu, prod, LH mobil simülasyon)
+- FCP: **11.6 → 6.6 s (−%43)** · Speed Index: **11.6 → 6.6 s**
+- LCP: 15.7 → 15.0 s — LCP elementi onboarding poster duvarı (yalnız İLK
+  kurulum; LH sıfır kullanıcı olarak giriyor). Geri dönen kullanıcı yolu
+  çok daha hızlı. Backlog: onboarding duvarına fetchpriority + küçük görsel.
+- Bundle: main 146→57KB gz · firebase 155KB (paralel, cache-stabil) ·
+  tr-catalog 16KB (ayrı chunk) · onboarding 14KB (lazy)
+- Detay ilk render: 5 API round-trip → 1 (append_to_response) + anında skeleton.
