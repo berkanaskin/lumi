@@ -694,11 +694,15 @@ export function displayDiscoverResultsView(movies, source) {
                 </div>
             </div>
         `;
+        // media_type sonuçtan gelir (AI araması film+dizi karışık döndürür).
+        // TMDB'de movie/tv ID uzayları ayrıdır: tipi sabitlemek, dizi kartına
+        // tıklayınca aynı ID'li alakasız bir film açıyordu.
+        const mediaType = movie.media_type === 'tv' ? 'tv' : 'movie';
         card.onclick = () => {
             if (window.openDetailModal) {
-                window.openDetailModal(movie.id, 'movie');
+                window.openDetailModal(movie.id, mediaType);
             } else if (window.openDetail) {
-                window.openDetail(movie.id, 'movie');
+                window.openDetail(movie.id, mediaType);
             }
         };
         resultsGrid.appendChild(card);
