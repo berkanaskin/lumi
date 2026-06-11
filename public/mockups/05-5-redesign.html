@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Lumi 05.5 — Profil + Kitaplık Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&icon_names=arrow_forward_ios,auto_awesome,bookmark,dark_mode,edit,explore,favorite,home,language,notifications,person,public,search,subscriptions,tune&display=block" rel="stylesheet">
+<style>
+:root{
+  --bg:#050505;--surface:rgba(255,255,255,.045);--surface2:rgba(255,255,255,.08);
+  --border:rgba(255,255,255,.09);--text:#f4f4f6;--muted:rgba(244,244,246,.55);
+  --accent:#8b5cf6;--accent2:#6366f1;--gold:#fbbf24;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0b0b10;font-family:'Spline Sans',sans-serif;color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;gap:28px;padding:28px 14px}
+.note{max-width:760px;text-align:center;color:var(--muted);font-size:14px;line-height:1.6}
+.note b{color:var(--text)}
+.frames{display:flex;flex-wrap:wrap;gap:34px;justify-content:center;align-items:flex-start}
+.phone{width:375px;height:812px;background:var(--bg);border-radius:42px;border:1px solid rgba(255,255,255,.12);overflow:hidden;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.phone .label{position:absolute;top:-30px;left:0;right:0;text-align:center;font-size:13px;color:var(--muted);letter-spacing:.4px}
+.frame-wrap{position:relative;margin-top:30px}
+.scroll{height:100%;overflow-y:auto;padding-bottom:96px;scrollbar-width:none}
+.scroll::-webkit-scrollbar{display:none}
+.glow{position:absolute;border-radius:50%;filter:blur(70px);pointer-events:none;z-index:0}
+.glow.violet{width:280px;height:280px;background:rgba(139,92,246,.16);top:-60px;right:-80px}
+.glow.blue{width:240px;height:240px;background:rgba(99,102,241,.13);top:340px;left:-90px}
+.ms{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:20px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr}
+.content{position:relative;z-index:1;padding:54px 18px 0}
+
+/* ---------- PROFİL ---------- */
+.p-head{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:22px}
+.avatar-ring{width:96px;height:96px;border-radius:50%;padding:3px;background:conic-gradient(from 200deg,var(--accent),#3b82f6,transparent 70%);box-shadow:0 0 34px rgba(139,92,246,.45)}
+.avatar{width:100%;height:100%;border-radius:50%;background:#17171f url('https://image.tmdb.org/t/p/w185/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg') center/cover;border:3px solid var(--bg)}
+.p-name{font-size:21px;font-weight:600;display:flex;align-items:center;gap:8px}
+.p-name .edit{font-size:15px;color:var(--muted)}
+.tier-pill{font-size:11.5px;font-weight:600;letter-spacing:.4px;padding:4px 12px;border-radius:999px;background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+.dna{display:flex;gap:8px;justify-content:center;margin:0 0 20px;flex-wrap:wrap}
+.dna span{font-size:12.5px;padding:7px 13px;border-radius:999px;background:linear-gradient(120deg,rgba(139,92,246,.16),rgba(99,102,241,.10));border:1px solid rgba(139,92,246,.28);color:#cfc4f8}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
+.stat{position:relative;border-radius:16px;padding:14px 8px;text-align:center;background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.025));border:1px solid var(--border);overflow:hidden}
+.stat::after{content:'';position:absolute;inset:auto -30% -65% -30%;height:90px;background:radial-gradient(closest-side,rgba(139,92,246,.22),transparent)}
+.stat b{display:block;font-size:21px;font-weight:700}
+.stat span{font-size:11px;color:var(--muted)}
+.sec-title{font-size:14.5px;font-weight:600;margin:0 0 11px;display:flex;justify-content:space-between;align-items:baseline}
+.sec-title small{font-size:11.5px;color:var(--accent);font-weight:500}
+.shelf{display:flex;gap:9px;overflow-x:auto;margin:0 -18px 24px;padding:2px 18px 6px;scrollbar-width:none}
+.shelf::-webkit-scrollbar{display:none}
+.shelf img{width:86px;aspect-ratio:2/3;object-fit:cover;border-radius:10px;flex:0 0 auto;box-shadow:0 8px 22px rgba(0,0,0,.45)}
+.settings{border-radius:18px;background:var(--surface);border:1px solid var(--border);overflow:hidden;margin-bottom:24px}
+.srow{display:flex;align-items:center;gap:13px;padding:14px 15px;border-bottom:1px solid rgba(255,255,255,.05);font-size:14px}
+.srow:last-child{border-bottom:none}
+.srow .ms{color:var(--accent);font-size:19px}
+.srow .val{margin-left:auto;font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:7px}
+.srow .val .ms{font-size:13px;color:var(--muted)}
+.upsell{border-radius:20px;padding:18px;background:linear-gradient(135deg,rgba(139,92,246,.32),rgba(99,102,241,.18) 55%,rgba(59,130,246,.14));border:1px solid rgba(139,92,246,.4);position:relative;overflow:hidden}
+.upsell::before{content:'';position:absolute;width:160px;height:160px;border-radius:50%;background:rgba(139,92,246,.35);filter:blur(50px);top:-60px;right:-40px}
+.upsell h4{font-size:16.5px;margin-bottom:5px;display:flex;align-items:center;gap:7px}
+.upsell p{font-size:12.5px;color:rgba(244,244,246,.72);line-height:1.55;margin-bottom:13px}
+.upsell .cta{display:block;text-align:center;padding:12px;border-radius:13px;background:linear-gradient(120deg,var(--accent),var(--accent2));font-size:14px;font-weight:600;color:#fff;text-decoration:none}
+
+/* ---------- KİTAPLIK ---------- */
+.lib-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.lib-head h1{font-size:24px;font-weight:700}
+.lib-head .actions{display:flex;gap:14px;color:var(--muted)}
+.segment{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:4px;margin-bottom:10px}
+.segment button{flex:1;border:none;background:transparent;color:var(--muted);font-family:inherit;font-size:13.5px;font-weight:600;padding:9px;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:6px}
+.segment button.active{background:linear-gradient(120deg,rgba(139,92,246,.85),rgba(99,102,241,.85));color:#fff;box-shadow:0 4px 14px rgba(139,92,246,.35)}
+.segment .ms{font-size:15px}
+.lib-stats{font-size:12px;color:var(--muted);margin-bottom:14px}
+.grid{column-count:2;column-gap:11px}
+.card{position:relative;border-radius:13px;overflow:hidden;margin-bottom:11px;break-inside:avoid;box-shadow:0 10px 26px rgba(0,0,0,.4)}
+.card img{width:100%;display:block}
+.card .badge{position:absolute;top:8px;right:8px;width:27px;height:27px;border-radius:50%;background:rgba(5,5,5,.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center}
+.card .badge .ms{font-size:14px;color:#f472b6;font-variation-settings:'FILL' 1}
+.card .badge.bk .ms{color:var(--gold)}
+.card .meta{position:absolute;left:0;right:0;bottom:0;padding:22px 10px 9px;background:linear-gradient(transparent,rgba(0,0,0,.85));font-size:12px;font-weight:600}
+.card .meta small{display:block;font-weight:400;font-size:10.5px;color:rgba(255,255,255,.6)}
+.tonight{break-inside:avoid;border-radius:13px;margin-bottom:11px;padding:15px 13px;background:linear-gradient(135deg,rgba(139,92,246,.34),rgba(99,102,241,.20));border:1px solid rgba(139,92,246,.42)}
+.tonight b{font-size:13.5px;display:flex;gap:6px;align-items:center;margin-bottom:4px}
+.tonight p{font-size:11.5px;color:rgba(244,244,246,.72);line-height:1.5;margin-bottom:9px}
+.tonight a{font-size:12px;font-weight:600;color:#cfc4f8;text-decoration:none}
+
+/* ---------- TAB BAR ---------- */
+.tabbar{position:absolute;bottom:0;left:0;right:0;height:78px;background:rgba(10,10,14,.85);backdrop-filter:blur(14px);border-top:1px solid var(--border);display:flex;justify-content:space-around;align-items:flex-start;padding-top:11px;z-index:5}
+.tab{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--muted)}
+.tab.active{color:var(--accent)}
+.tab .ms{font-size:22px}
+</style>
+</head>
+<body>
+<p class="note"><b>Lumi 05.5 — Profil + Kitaplık yeniden tasarım önerisi.</b><br>
+Mevcut sinematik kimlik (koyu zemin + ambient glow) korunup iki "dümdüz" ekran derinleştirildi.
+Beğenmediğin her noktayı söyle — bu dosya üzerinde döneriz, onaysız koda dökülmez.</p>
+
+<div class="frames">
+
+<!-- ============ PROFİL ============ -->
+<div class="frame-wrap"><div class="phone"><div class="label">PROFİL — öneri</div>
+<div class="glow violet"></div><div class="glow blue"></div>
+<div class="scroll"><div class="content">
+  <div class="p-head">
+    <div class="avatar-ring"><div class="avatar"></div></div>
+    <div class="p-name">Berkan <span class="ms edit">edit</span></div>
+    <span class="tier-pill">ÜCRETSİZ</span>
+  </div>
+  <div class="dna"><span>🛸 Bilim Kurgu</span><span>🎭 Dram</span><span>🔪 Gerilim</span></div>
+  <div class="stats">
+    <div class="stat"><b>42</b><span>İzlenen</span></div>
+    <div class="stat"><b>24</b><span>Beğenilen</span></div>
+    <div class="stat"><b>13</b><span>Listemde</span></div>
+  </div>
+  <div class="sec-title">Son Beğendiklerin <small>Tümü →</small></div>
+  <div class="shelf">
+    <img src="https://image.tmdb.org/t/p/w342/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg" alt="">
+    <img src="https://image.tmdb.org/t/p/w342/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg" alt="">
+    <img src="https://image.tmdb.org/t/p/w342/49WJfeN0moxb9IPfGn8AIqMGskD.jpg" alt="">
+    <img src="https://image.tmdb.org/t/p/w342/qJ2tW6WMUDux911r6m7haRef0WH.jpg" alt="">
+    <img src="https://image.tmdb.org/t/p/w342/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" alt="">
+  </div>
+  <div class="sec-title">Ayarlar</div>
+  <div class="settings">
+    <div class="srow"><span class="ms">language</span> Dil <span class="val">Türkçe <span class="ms">arrow_forward_ios</span></span></div>
+    <div class="srow"><span class="ms">public</span> Ülke <span class="val">Türkiye <span class="ms">arrow_forward_ios</span></span></div>
+    <div class="srow"><span class="ms">subscriptions</span> Platformlarım <span class="val">Netflix +3 <span class="ms">arrow_forward_ios</span></span></div>
+    <div class="srow"><span class="ms">notifications</span> Bildirimler <span class="val">Açık <span class="ms">arrow_forward_ios</span></span></div>
+    <div class="srow"><span class="ms">dark_mode</span> Tema <span class="val">Koyu <span class="ms">arrow_forward_ios</span></span></div>
+  </div>
+  <div class="upsell">
+    <h4><span class="ms" style="color:var(--gold)">auto_awesome</span> Lumi Premium</h4>
+    <p>Sınırsız AI önerisi · Benim İçin Seç · Çift Modu · Akşam Asistanı</p>
+    <a class="cta" href="#">3 gün ücretsiz dene</a>
+  </div>
+</div></div>
+<div class="tabbar">
+  <div class="tab"><span class="ms">home</span>Ana Sayfa</div>
+  <div class="tab"><span class="ms">explore</span>Keşfet</div>
+  <div class="tab"><span class="ms">favorite</span>Favoriler</div>
+  <div class="tab active"><span class="ms">person</span>Profil</div>
+</div>
+</div></div>
+
+<!-- ============ KİTAPLIK ============ -->
+<div class="frame-wrap"><div class="phone"><div class="label">FAVORİLER → "KİTAPLIĞIN" — öneri</div>
+<div class="glow violet"></div><div class="glow blue"></div>
+<div class="scroll"><div class="content">
+  <div class="lib-head">
+    <h1>Kitaplığın</h1>
+    <div class="actions"><span class="ms">search</span><span class="ms">tune</span></div>
+  </div>
+  <div class="segment">
+    <button class="active"><span class="ms">favorite</span> Beğendiklerim</button>
+    <button><span class="ms">bookmark</span> İzleme Listem</button>
+  </div>
+  <div class="lib-stats">24 film · 8 dizi</div>
+  <div class="grid">
+    <div class="card"><img src="https://image.tmdb.org/t/p/w342/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg" alt=""><div class="badge"><span class="ms">favorite</span></div><div class="meta">Inception<small>2010 · Film</small></div></div>
+    <div class="card"><img src="https://image.tmdb.org/t/p/w342/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg" alt=""><div class="badge"><span class="ms">favorite</span></div><div class="meta">Interstellar<small>2014 · Film</small></div></div>
+    <div class="tonight">
+      <b><span class="ms" style="font-size:15px;color:var(--gold)">auto_awesome</span> Bu akşam ne izlesen?</b>
+      <p>Listenden sana göre bir seçim yapayım mı?</p>
+      <a href="#">Benim için seç →</a>
+    </div>
+    <div class="card"><img src="https://image.tmdb.org/t/p/w342/49WJfeN0moxb9IPfGn8AIqMGskD.jpg" alt=""><div class="badge bk"><span class="ms">bookmark</span></div><div class="meta">The Dark Knight<small>2008 · Film</small></div></div>
+    <div class="card"><img src="https://image.tmdb.org/t/p/w342/qJ2tW6WMUDux911r6m7haRef0WH.jpg" alt=""><div class="badge"><span class="ms">favorite</span></div><div class="meta">The Godfather<small>1972 · Film</small></div></div>
+    <div class="card"><img src="https://image.tmdb.org/t/p/w342/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" alt=""><div class="badge"><span class="ms">favorite</span></div><div class="meta">Breaking Bad<small>2008 · Dizi</small></div></div>
+  </div>
+</div></div>
+<div class="tabbar">
+  <div class="tab"><span class="ms">home</span>Ana Sayfa</div>
+  <div class="tab"><span class="ms">explore</span>Keşfet</div>
+  <div class="tab active"><span class="ms">favorite</span>Favoriler</div>
+  <div class="tab"><span class="ms">person</span>Profil</div>
+</div>
+</div></div>
+
+</div>
+</body>
+</html>
