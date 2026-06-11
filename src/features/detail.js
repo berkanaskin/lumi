@@ -299,34 +299,71 @@ export function renderVideoContent() {
 }
 
 /**
- * Play video in modal
+ * Play video in a fullscreen overlay (05.5).
+ *
+ * Eski davranış: modal içeriğinin EN ALTINDAKİ #video-player div'ini
+ * dolduruyordu — kullanıcı sayfanın dibine ışınlanıyor, bağlam kopuyordu.
+ * Yeni: body'ye sabit konumlu karartmalı overlay; kapatınca kaldığın
+ * yerdesin. Aynı kategoride birden çok video varsa altta geçiş şeridi.
  */
+let _escVideoHandler = null;
+
 export function playVideo(videoId) {
-    const videoPlayer = document.getElementById('video-player');
-    if (videoPlayer) {
-        videoPlayer.innerHTML = `
-            <div class="video-player-container">
-                <button class="close-video" onclick="closeVideo()">✕</button>
-                <iframe 
-                    src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" 
-                    frameborder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowfullscreen>
-                </iframe>
-            </div>
-        `;
-        videoPlayer.classList.add('active');
-    }
+    closeVideo(); // varsa eskisini temizle
+
+    const vids = (state.currentVideos?.[state.currentVideoCategory || 'trailer']) || [];
+    const stripHTML = vids.length > 1
+        ? `<div class="video-overlay__strip">${vids.slice(0, 8).map(v => {
+            const vid = v.id?.videoId || v.id;
+            const thumb = v.snippet?.thumbnails?.medium?.url || `https://img.youtube.com/vi/${vid}/mqdefault.jpg`;
+            const safeTitle = String(v.snippet?.title || '').replace(/"/g, '&quot;');
+            return `<button class="video-overlay__thumb ${vid === videoId ? 'active' : ''}"
+                        title="${safeTitle}" onclick="playVideo('${vid}')">
+                        <img src="${thumb}" alt="" loading="lazy">
+                    </button>`;
+        }).join('')}</div>`
+        : '';
+
+    const overlay = document.createElement('div');
+    overlay.id = 'lumi-video-overlay';
+    overlay.className = 'video-overlay';
+    overlay.innerHTML = `
+        <button class="video-overlay__close" aria-label="Kapat" onclick="closeVideo()">✕</button>
+        <div class="video-overlay__frame">
+            <iframe
+                src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+            </iframe>
+        </div>
+        ${stripHTML}
+    `;
+    // Backdrop'a tıklayınca kapan (frame/şerit içi tıklamalar hariç)
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeVideo();
+    });
+    document.body.appendChild(overlay);
+
+    _escVideoHandler = (e) => { if (e.key === 'Escape') closeVideo(); };
+    document.addEventListener('keydown', _escVideoHandler);
 }
 
 /**
- * Close video player
+ * Close video overlay
  */
 export function closeVideo() {
-    const videoPlayer = document.getElementById('video-player');
-    if (videoPlayer) {
-        videoPlayer.innerHTML = '';
-        videoPlayer.classList.remove('active');
+    const overlay = document.getElementById('lumi-video-overlay');
+    if (overlay) overlay.remove();
+    if (_escVideoHandler) {
+        document.removeEventListener('keydown', _escVideoHandler);
+        _escVideoHandler = null;
+    }
+    // Legacy alan (eski sürümden kalan DOM'larda) — varsa temizle
+    const legacy = document.getElementById('video-player');
+    if (legacy) {
+        legacy.innerHTML = '';
+        legacy.classList.remove('active');
     }
 }
 
@@ -625,8 +662,6 @@ export function renderDetail(details, providers, type, itemId, streamingData) {
             </div>
         </div>
 
-        <!-- Video Player (hidden) -->
-        <div id="video-player"></div>
     `;
 
     // Attach event listeners

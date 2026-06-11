@@ -1187,3 +1187,49 @@
 }
 @keyframes dsk-sweep { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
 @media (prefers-reduced-motion: reduce) { .dsk-shimmer::after { animation: none; } }
+
+
+/* ============================================
+   Video Overlay — yerinde fragman izleme (05.5)
+   ============================================ */
+.video-overlay {
+  position: fixed; inset: 0; z-index: 10000;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 14px; padding: 16px;
+  animation: vo-fade 0.18s ease-out;
+}
+@keyframes vo-fade { from { opacity: 0; } to { opacity: 1; } }
+.video-overlay__frame {
+  width: min(100%, 920px);
+  aspect-ratio: 16 / 9;
+  border-radius: 14px; overflow: hidden;
+  background: #000;
+  box-shadow: 0 18px 60px rgba(0,0,0,0.6);
+}
+.video-overlay__frame iframe { width: 100%; height: 100%; display: block; }
+.video-overlay__close {
+  position: absolute; top: max(14px, env(safe-area-inset-top)); right: 16px;
+  width: 40px; height: 40px; border-radius: 50%;
+  border: none; cursor: pointer;
+  background: rgba(255,255,255,0.12); color: #fff;
+  font-size: 17px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+}
+.video-overlay__close:active { transform: scale(0.92); }
+.video-overlay__strip {
+  display: flex; gap: 8px; max-width: min(100%, 920px);
+  overflow-x: auto; padding: 2px 2px 6px;
+  -webkit-overflow-scrolling: touch;
+}
+.video-overlay__thumb {
+  flex: 0 0 auto; width: 96px; aspect-ratio: 16 / 9;
+  border-radius: 8px; overflow: hidden; padding: 0;
+  border: 2px solid transparent; cursor: pointer;
+  background: #111; opacity: 0.65; transition: opacity 0.15s, border-color 0.15s;
+}
+.video-overlay__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.video-overlay__thumb.active, .video-overlay__thumb:hover { opacity: 1; border-color: var(--accent, #8b5cf6); }
+@media (prefers-reduced-motion: reduce) { .video-overlay { animation: none; } }
