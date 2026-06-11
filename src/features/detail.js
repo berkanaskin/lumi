@@ -19,6 +19,11 @@ import { isActivelyAiring, getNetworkLogoPath, getNetworkCatalogEntry, formatNex
 
 let currentVideoCategory = 'trailer';
 
+// Yarış guard'ı: hızlı aç-kapa-aç akışında eski isteğin geç gelen yanıtı
+// yeni modalın içeriğini ezmesin. Her openDetail çağrısı sayacı artırır;
+// await sonrası sayaç değiştiyse o istek bayatlamıştır, render edilmez.
+let _detailRequestSeq = 0;
+
 // ============================================
 // MODAL OPEN/CLOSE
 // ============================================
@@ -45,6 +50,7 @@ export async function openDetail(id, type, title, year, originalTitle) {
     // Store current item for re-render
     state.currentItemId = id;
     state.currentItemType = type;
+    const requestSeq = ++_detailRequestSeq;
 
     // Show modal with an instant skeleton — başlık/yıl parametre olarak zaten
     // elimizde; spinner yerine sayfanın iskeleti anında görünür.
@@ -83,6 +89,7 @@ export async function openDetail(id, type, title, year, originalTitle) {
         // Phase 1: TEK istek — detay + krediler + videolar + sağlayıcılar +
         // imdb id (append_to_response). Eskiden 5 ayrı proxy round-trip'iydi.
         const bundle = await API.getDetailsBundle(id, type, state.currentLanguage, region);
+        if (requestSeq !== _detailRequestSeq) return; // bayat istek — başka detay açıldı
         const details = bundle?.details;
         const providers = bundle?.providers ?? null;
         const credits = bundle?.credits ?? { cast: [], crew: [] };
@@ -140,6 +147,7 @@ export async function openDetail(id, type, title, year, originalTitle) {
         }
 
         const [youtubeVideos, turkishReleaseDate] = await Promise.all([youtubePromise, releaseDatePromise]);
+        if (requestSeq !== _detailRequestSeq) return; // bayat istek — faz 2 ezmesin
 
         // Update state with enriched data
         state.currentAllRatings = allRatings;
@@ -157,6 +165,7 @@ export async function openDetail(id, type, title, year, originalTitle) {
         renderDetail(details, providers, type, id, streamingData);
     } catch (error) {
         console.error('openDetail error:', error);
+        if (requestSeq !== _detailRequestSeq) return; // bayat isteğin hatası gösterilmez
         elements.modalBody.innerHTML = `<div class="error-state">
             <p>Bir hata oluştu: ${error.message}</p>
             <button onclick="closeModal()">Kapat</button>
@@ -175,6 +184,7 @@ export function openDetailModal(id, type) {
  * Close detail modal
  */
 export function closeModal() {
+    _detailRequestSeq++; // açık isteklerin geç yanıtları kapalı modala yazmasın
     elements.modal.classList.remove('active');
     // Reset ALL scroll lock mechanisms defensively
     document.body.style.overflow = '';
@@ -842,7 +852,7 @@ function buildBroadcastHTML(details, type) {
     const networks = Array.isArray(details.networks) ? details.networks : [];
     if (networks.length === 0) return '';
 
-    const t = (key, fallback) => window.i18n?.t(key) !== key ? window.i18n.t(key) : fallback;
+    const t = (key, fallback) => (window.i18n && window.i18n.t(key) !== key) ? window.i18n.t(key) : fallback;
     const sectionLabel = t('airingOn', 'Yayın Kanalı');
 
     let userCountry;
@@ -900,7 +910,7 @@ function buildBroadcastHTML(details, type) {
  * Build the "Where to Watch" streaming section with grouped providers.
  */
 function buildStreamingHTML(streamingData, title) {
-    const t = (key, fallback) => window.i18n?.t(key) !== key ? window.i18n.t(key) : fallback;
+    const t = (key, fallback) => (window.i18n && window.i18n.t(key) !== key) ? window.i18n.t(key) : fallback;
     const sectionLabel = t('streaming.whereToWatch', 'Nerede İzlenir');
 
     if (!streamingData) {
@@ -1041,7 +1051,7 @@ function buildStreamingHTML(streamingData, title) {
 function buildCinemaBadgeHTML(type, details) {
     if (type !== 'movie') return '';
 
-    const t = (key, fallback) => window.i18n?.t(key) !== key ? window.i18n.t(key) : fallback;
+    const t = (key, fallback) => (window.i18n && window.i18n.t(key) !== key) ? window.i18n.t(key) : fallback;
     const locale = state.currentLanguage === 'tr' ? 'tr-TR' : 'en-US';
     const now = new Date();
 
@@ -1182,7 +1192,7 @@ function buildVideosHTML() {
 
     if (trailerCount + btsCount + interviewCount === 0) return '';
 
-    const t = (key, fallback) => window.i18n?.t(key) !== key ? window.i18n.t(key) : fallback;
+    const t = (key, fallback) => (window.i18n && window.i18n.t(key) !== key) ? window.i18n.t(key) : fallback;
     const trailersLabel = t('videos.trailers', 'Fragmanlar');
     const btsLabel = t('videos.behindTheScenes', 'Kamera Arkası');
     const interviewsLabel = t('videos.interviews', 'Röportajlar');
