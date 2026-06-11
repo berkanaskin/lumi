@@ -9,6 +9,25 @@ import { API_URLS } from '../config.js';
  * TMDB Service - Movie and TV data
  * Routes through Vercel Edge Function for security
  */
+// Kredi işleme — getCredits ve getDetailsBundle aynı şekli üretir.
+export function processCredits(data) {
+    const cast = data.cast?.slice(0, 10) || [];
+    const keyJobs = ['Director', 'Director of Photography', 'Editor', 'Writer', 'Screenplay', 'Original Music Composer'];
+    const crew = (data.crew || [])
+        .filter(person => keyJobs.includes(person.job))
+        .filter((person, index, self) =>
+            index === self.findIndex(p => p.id === person.id && p.job === person.job)
+        );
+    return { cast, crew };
+}
+
+// YouTube videolarını filtrele + key'e göre tekilleştir (getVideos ile aynı kural).
+export function dedupeYouTubeVideos(videos) {
+    return (videos || [])
+        .filter(video => video.site === 'YouTube')
+        .filter((video, index, self) => index === self.findIndex(v => v.key === video.key));
+}
+
 export const TMDBService = {
     /**
      * Generic TMDB API request (via Edge Function)
@@ -292,16 +311,27 @@ export const TMDBService = {
      */
     async getCredits(id, type) {
         const data = await this.fetch(`/${type}/${id}/credits`);
+        return processCredits(data);
+    },
 
-        const cast = data.cast?.slice(0, 10) || [];
-        const keyJobs = ['Director', 'Director of Photography', 'Editor', 'Writer', 'Screenplay', 'Original Music Composer'];
-        const crew = (data.crew || [])
-            .filter(person => keyJobs.includes(person.job))
-            .filter((person, index, self) =>
-                index === self.findIndex(p => p.id === person.id && p.job === person.job)
-            );
-
-        return { cast, crew };
+    /**
+     * Detay modalının ilk render'ı için TEK istek:
+     * detay + krediler + videolar + izleme sağlayıcıları + harici ID'ler.
+     * append_to_response, 5 ayrı proxy round-trip'ini bire indirir.
+     */
+    async getDetailsBundle(id, type, language = 'tr-TR', region = 'TR') {
+        const vidLangs = `${(language || 'en').split('-')[0]},en,null`;
+        const data = await this.fetch(
+            `/${type}/${id}?language=${language}&append_to_response=${encodeURIComponent('credits,videos,watch/providers,external_ids')}&include_video_language=${vidLangs}`
+        );
+        if (!data || !data.id) return null;
+        return {
+            details: data,
+            credits: processCredits(data.credits || {}),
+            videos: dedupeYouTubeVideos(data.videos?.results || []),
+            providers: data['watch/providers']?.results?.[region] || null,
+            imdbId: data.external_ids?.imdb_id || null,
+        };
     },
 
     /**
@@ -762,6 +792,7 @@ export const API = {
     getPopular: (...args) => TMDBService.getPopular(...args),
     getClassics: (...args) => TMDBService.getClassics(...args),
     getDetails: (...args) => TMDBService.getDetails(...args),
+    getDetailsBundle: (...args) => TMDBService.getDetailsBundle(...args),
     getWatchProviders: (...args) => TMDBService.getWatchProviders(...args),
     getReleaseDates: (...args) => TMDBService.getReleaseDates(...args),
     getCredits: (...args) => TMDBService.getCredits(...args),

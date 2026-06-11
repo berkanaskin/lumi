@@ -1159,3 +1159,31 @@
 [data-theme="light"] .detail-airing-info__logo {
   background: rgba(0, 0, 0, 0.04);
 }
+
+
+/* ============================================
+   Detail Skeleton — modal açılır açılmaz görünen iskelet (05.5)
+   ============================================ */
+.detail-skeleton { min-height: 80vh; }
+.dsk-hero {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: var(--bg-elevated, #15151a);
+  border-radius: 0 0 24px 24px;
+}
+.dsk-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.dsk-title-text { font-size: 1.5rem; font-weight: 700; margin: 0; }
+.dsk-title-text .dsk-year { font-weight: 400; opacity: 0.55; font-size: 1.1rem; }
+.dsk-line { height: 14px; border-radius: 7px; background: var(--bg-elevated, #15151a); }
+.dsk-w40 { width: 40%; } .dsk-w60 { width: 60%; } .dsk-w80 { width: 80%; } .dsk-w90 { width: 90%; }
+.dsk-chips { display: flex; gap: 10px; margin-top: 6px; }
+.dsk-chip { width: 84px; height: 32px; border-radius: 16px; background: var(--bg-elevated, #15151a); }
+.dsk-shimmer { position: relative; overflow: hidden; }
+.dsk-shimmer::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+  animation: dsk-sweep 1.4s infinite;
+}
+@keyframes dsk-sweep { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+@media (prefers-reduced-motion: reduce) { .dsk-shimmer::after { animation: none; } }

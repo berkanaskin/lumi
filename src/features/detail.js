@@ -46,10 +46,28 @@ export async function openDetail(id, type, title, year, originalTitle) {
     state.currentItemId = id;
     state.currentItemType = type;
 
-    // Show modal with loading
+    // Show modal with an instant skeleton — başlık/yıl parametre olarak zaten
+    // elimizde; spinner yerine sayfanın iskeleti anında görünür.
     elements.modal.classList.add('active');
-    const loadingText = (window.i18n?.t('loading') !== 'loading' ? window.i18n?.t('loading') : null) || 'Yükleniyor...';
-    elements.modalBody.innerHTML = `<div class="loading-state visible"><div class="spinner"></div><p>${loadingText}</p></div>`;
+    const skTitle = String(title || '').replace(/[<>&"]/g, '');
+    const skYear = String(year || '').replace(/[<>&"]/g, '');
+    elements.modalBody.innerHTML = `
+        <div class="detail-skeleton" aria-busy="true">
+            <div class="dsk-hero dsk-shimmer"></div>
+            <div class="dsk-body">
+                ${skTitle
+                    ? `<h1 class="dsk-title-text">${skTitle}${skYear ? ` <span class="dsk-year">(${skYear})</span>` : ''}</h1>`
+                    : '<div class="dsk-line dsk-w60 dsk-shimmer"></div>'}
+                <div class="dsk-line dsk-w40 dsk-shimmer"></div>
+                <div class="dsk-line dsk-w90 dsk-shimmer"></div>
+                <div class="dsk-line dsk-w80 dsk-shimmer"></div>
+                <div class="dsk-chips">
+                    <div class="dsk-chip dsk-shimmer"></div>
+                    <div class="dsk-chip dsk-shimmer"></div>
+                    <div class="dsk-chip dsk-shimmer"></div>
+                </div>
+            </div>
+        </div>`;
     document.body.style.overflow = 'hidden';
     document.body.classList.add('modal-open');
 
@@ -62,13 +80,13 @@ export async function openDetail(id, type, title, year, originalTitle) {
     const region = state.currentRegion || 'TR';
 
     try {
-        // Phase 1: Fetch core TMDB data in parallel (fast — renders modal immediately)
-        const [details, providers, credits, tmdbVideos] = await Promise.all([
-            API.getDetails(id, type, state.currentLanguage),
-            API.getWatchProviders(id, type, region),
-            API.getCredits(id, type),
-            API.getTMDBVideos(id, type),
-        ]);
+        // Phase 1: TEK istek — detay + krediler + videolar + sağlayıcılar +
+        // imdb id (append_to_response). Eskiden 5 ayrı proxy round-trip'iydi.
+        const bundle = await API.getDetailsBundle(id, type, state.currentLanguage, region);
+        const details = bundle?.details;
+        const providers = bundle?.providers ?? null;
+        const credits = bundle?.credits ?? { cast: [], crew: [] };
+        const tmdbVideos = bundle?.videos ?? [];
 
         if (!details) {
             elements.modalBody.innerHTML = '<p style="padding: 40px; text-align: center;">Detaylar yüklenemedi.</p>';
@@ -103,11 +121,10 @@ export async function openDetail(id, type, title, year, originalTitle) {
         renderDetail(details, providers, type, id, null);
 
         // Phase 2: Enrich with slow APIs in background (streaming, ratings, YouTube)
-        const imdbIdPromise = API.getIMDBId(id, type);
+        // imdbId bundle'dan geliyor (external_ids) — ayrı çağrı yok.
+        const imdbId = bundle?.imdbId ?? null;
         const youtubePromise = API.getMovieVideos(resolvedTitle, resolvedYear, resolvedOriginal).catch(() => ({ trailer: [], behindTheScenes: [], reviews: [], interview: [] }));
         const releaseDatePromise = type === 'movie' ? API.getReleaseDates(id, 'TR').catch(() => null) : Promise.resolve(null);
-
-        const imdbId = await imdbIdPromise;
 
         // Fetch streaming + ratings in parallel
         // getStreamingWithCache handles null imdbId by falling back to TMDB watch providers

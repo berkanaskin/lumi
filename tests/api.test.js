@@ -17,6 +17,49 @@ describe('API Services', () => {
     });
 
     describe('TMDBService', () => {
+        describe('getDetailsBundle', () => {
+            it('collapses details+credits+videos+providers+external_ids into one request', async () => {
+                const payload = {
+                    id: 27205,
+                    title: 'Inception',
+                    credits: { cast: Array.from({ length: 14 }, (_, i) => ({ id: i, name: 'A' + i })), crew: [{ id: 99, job: 'Director', name: 'Nolan' }, { id: 99, job: 'Director', name: 'Nolan' }] },
+                    videos: { results: [
+                        { site: 'YouTube', key: 'k1', type: 'Trailer' },
+                        { site: 'YouTube', key: 'k1', type: 'Trailer' },
+                        { site: 'Vimeo', key: 'v1', type: 'Trailer' },
+                    ] },
+                    'watch/providers': { results: { TR: { flatrate: [{ provider_name: 'Netflix' }] }, US: {} } },
+                    external_ids: { imdb_id: 'tt1375666' },
+                };
+                mockFetch.mockResolvedValueOnce({ ok: true, json: async () => payload });
+
+                const bundle = await TMDBService.getDetailsBundle(27205, 'movie', 'tr-TR', 'TR');
+
+                expect(mockFetch).toHaveBeenCalledTimes(1);
+                const calledUrl = mockFetch.mock.calls[0][0];
+                expect(calledUrl).toContain('append_to_response=');
+                expect(decodeURIComponent(calledUrl)).toContain('credits,videos,watch/providers,external_ids');
+                expect(bundle.details.id).toBe(27205);
+                expect(bundle.credits.cast).toHaveLength(10);      // slice 10
+                expect(bundle.credits.crew).toHaveLength(1);        // dedupe
+                expect(bundle.videos).toHaveLength(1);              // YouTube + key dedupe
+                expect(bundle.providers.flatrate[0].provider_name).toBe('Netflix');
+                expect(bundle.imdbId).toBe('tt1375666');
+            });
+
+            it('returns null when TMDB yields no id (error body)', async () => {
+                mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({ success: false, status_code: 34 }) });
+                const bundle = await TMDBService.getDetailsBundle(1, 'movie');
+                expect(bundle).toBeNull();
+            });
+
+            it('returns null on fetch failure (proxy 5xx)', async () => {
+                mockFetch.mockResolvedValueOnce({ ok: false, status: 500 });
+                const bundle = await TMDBService.getDetailsBundle(1, 'movie');
+                expect(bundle).toBeNull();
+            });
+        });
+
         describe('normalizeTitle', () => {
             it('should normalize titles for comparison', () => {
                 expect(TMDBService.normalizeTitle('The Matrix')).toBe('the matrix');
