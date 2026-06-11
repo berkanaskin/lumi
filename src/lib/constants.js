@@ -11,6 +11,10 @@
 
 export const DAILY_REC_KEY = 'lumi_daily_recommendation';
 
+// 04-04-r1 dev/QA override flag'i. Burada yaşıyor ki profile.js, 1.650
+// satırlık onboarding.js'i statik import etmeden erişebilsin (lazy chunk).
+export const ALWAYS_SHOW_FLAG = 'lumi_always_show_onboarding';
+
 export const DAILY_REC_CATEGORIES = [
     { list: 'popular', label: 'Popüler' },
     { list: 'top_rated', label: 'En İyiler' },

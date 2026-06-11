@@ -60,7 +60,10 @@ const SCHEMA_VERSION = 1;
 
 // 04-04-r1 — Dev/QA override. When 'true', clear the seen+completed flags
 // so the wizard re-appears on every launch. Toggle lives in profile settings.
-export const ALWAYS_SHOW_FLAG = 'lumi_always_show_onboarding';
+// Sabit lib/constants.js'te yaşıyor: profile.js bu 1.650 satırlık modülü
+// statik import etmeden flag'e erişebilsin (onboarding lazy chunk kalmalı).
+export { ALWAYS_SHOW_FLAG } from '../lib/constants.js';
+import { ALWAYS_SHOW_FLAG } from '../lib/constants.js';
 
 // 04-04-r2 — Mid-flow state persistence. If the user closes the app between
 // slides, we restore where they left off (within 7 days).

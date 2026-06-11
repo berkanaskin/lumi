@@ -22,6 +22,15 @@ export default defineConfig(() => {
                 input: {
                     main: resolve(__dirname, 'index.html'),
                 },
+                output: {
+                    manualChunks(id) {
+                        // Firebase ayrı chunk: app koduyla paralel iner ve
+                        // app güncellemelerinde cache'i bozulmaz.
+                        if (id.includes('node_modules/@firebase') || id.includes('node_modules/firebase')) {
+                            return 'firebase';
+                        }
+                    },
+                },
             },
         },
 

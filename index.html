@@ -19,12 +19,15 @@
     <title>Lumi</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://image.tmdb.org" />
     <link
       href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <!-- Subset edilmiş ikon fontu: yalnız kullanılan glifler iner (~1MB -> ~10KB).
+         Yeni ikon eklerken adını icon_names listesine (alfabetik) eklemeyi unutma. -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&icon_names=arrow_back,auto_awesome,bookmark,cancel,check_circle,close,dark_mode,edit,emoji_events,error,error_outline,expand_more,explore,favorite,favorite_border,home,info,lock,login,logout,notifications,notifications_off,person,play_arrow,play_circle,public,science,search,search_off,settings,shuffle,star,tips_and_updates,verified,warning,wifi,workspace_premium&display=block"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="index_lumi.css?v=1.0.0" />
@@ -45,10 +48,9 @@
       })();
     </script>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <!-- Firebase artık npm bundle'ından geliyor (src/lib/firebase-bridge.js,
+         main.js'in ilk importu). CDN compat script'leri render-blocking olduğu
+         ve Firestore'u ikinci kez indirdiği için kaldırıldı. -->
   </head>
 
   <body>
@@ -1700,7 +1702,7 @@
               (item) => `
                     <div class="masonry-item" data-id="${item.id}" data-type="${item.media_type || "movie"}">
                         <img 
-                            src="https://image.tmdb.org/t/p/w500${item.poster_path}" 
+                            src="https://image.tmdb.org/t/p/w342${item.poster_path}"
                             alt="${item.title || item.name}"
                             loading="lazy"
                             onerror="this.parentElement.style.display='none'"

@@ -8,7 +8,7 @@ import { state } from '../lib/state.js';
 import { showToast } from '../ui/toast.js';
 import { migrateOnAuth } from './auth-migration.js';
 import { _onAuthResolved } from './auth-modal.js';
-import { ALWAYS_SHOW_FLAG } from './onboarding.js';
+import { ALWAYS_SHOW_FLAG } from '../lib/constants.js';
 
 // ============================================
 // DEVELOPER / QA — Always-show-onboarding (04-04-r1)

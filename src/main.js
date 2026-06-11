@@ -10,7 +10,10 @@
 // CORE IMPORTS
 // ============================================
 
-// Configuration (must be first - sets up window.CONFIG)
+// Firebase bridge (must be first - sets up window.firebase for auth.js + all modules)
+import './lib/firebase-bridge.js';
+
+// Configuration (sets up window.CONFIG)
 import { CONFIG, FIREBASE_CONFIG, API_URLS, isDevelopment } from './config.js';
 
 // API Services (modern replacement for api.js)
@@ -58,8 +61,8 @@ import {
 // `window.requireAuth` and `window._onAuthResolved` for inline callers.
 import './features/auth-modal.js';
 
-// Phase 04-04: first-launch onboarding wizard (3-step lang/country/platforms)
-import { shouldShowOnboarding, startOnboarding } from './features/onboarding.js';
+// Phase 04-04: onboarding wizard — dinamik import (bootOnboardingCheck içinde):
+// 1.650 satırlık modül yalnız ilk kurulumda gerekiyor, açılış bundle'ına girmesin.
 
 // UI Components
 import { showToast } from './ui/toast.js';
@@ -418,6 +421,7 @@ async function bootOnboardingCheck() {
                 if (window.firebase.firestore) db = window.firebase.firestore();
             } catch {}
         }
+        const { shouldShowOnboarding, startOnboarding } = await import('./features/onboarding.js');
         if (await shouldShowOnboarding({ user, db })) {
             startOnboarding({ user, db });
         }
