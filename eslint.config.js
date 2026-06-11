@@ -91,6 +91,16 @@ export default [
         },
     },
 
+    // Node ortamında koşan bakım scriptleri (CI/scrape vb.)
+    {
+        files: ['scripts/**/*.{js,mjs,cjs}'],
+        languageOptions: {
+            globals: {
+                ...globals.node,
+            },
+        },
+    },
+
     // API proxy files
     {
         files: ['api/**/*.js'],

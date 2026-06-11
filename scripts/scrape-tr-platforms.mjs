@@ -157,7 +157,8 @@ const addTo = (map, key, platform) => {
     map[key] = [...cur].sort();
 };
 
-let mapped = 0, cached = 0, suspects = [];
+let mapped = 0, cached = 0;
+const suspects = [];
 for (const item of allItems) {
     const cacheKey = `${item.platform}:${item.slug}`;
     let hit = cache._slugMap[cacheKey];

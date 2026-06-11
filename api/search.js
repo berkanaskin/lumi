@@ -300,7 +300,8 @@ export default async function handler(request) {
         // Edge runtime: request.body is a ReadableStream — must use await request.json()
         let body;
         try { body = await request.json(); } catch { body = {}; }
-        let { query, userId, limit = 10 } = body || {};
+        let { query, limit = 10 } = body || {};
+        const { userId } = body || {};
         // Phase 04-02: body.lang wins, else Accept-Language header, else 'en'.
         const resolvedLang = pickLang(body, request);
 

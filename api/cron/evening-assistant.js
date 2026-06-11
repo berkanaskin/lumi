@@ -55,7 +55,7 @@ function eveningPrompt(taste, lang) {
     const liked = taste.liked.length ? `I like: ${taste.liked.join(', ')}.` : '';
     const wl = taste.watchlist.length ? `On my watchlist: ${taste.watchlist.join(', ')}.` : '';
     return `It is evening. Suggest EXACTLY 3 titles (movies or TV series) for a relaxed night in. ${liked} ${wl} `
-        + `Avoid the obvious blockbusters; give a confident, slightly non-obvious mix. `
+        + 'Avoid the obvious blockbusters; give a confident, slightly non-obvious mix. '
         + `Return ONLY a numbered list of 3 titles, no extra text.${lang === 'tr' ? ' Respond in Turkish.' : ''}`;
 }
 

@@ -542,7 +542,7 @@ function el(tag, props = {}, children = []) {
     return node;
 }
 
-const BACK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>';
+const _BACK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>';
 
 // ---------------------------------------------------------------------------
 // 04-04-r2 — Cinema Grade visual helpers
@@ -558,10 +558,10 @@ function prefersReducedMotion() {
 // 04-04-r7: Audio toggle removed. Web Audio tick + speaker SVGs + the
 // localStorage key for the audio pref are all gone. playTick() is kept as a
 // no-op so existing call sites don't need surgery.
-function playTick() { /* removed in r7 */ }
+function _playTick() { /* removed in r7 */ }
 
 /** Split text into per-letter spans for the type-on hero animation. */
-function applyLetterTypeOn(el_) {
+function _applyLetterTypeOn(el_) {
     if (!el_ || prefersReducedMotion()) return;
     const text = el_.textContent;
     el_.textContent = '';
@@ -929,7 +929,7 @@ function renderWizard(options = {}) {
         if (n === 1) loadProvidersIfNeeded();
     }
 
-    dotEls.forEach((d) => {/* listener attached above */});
+    dotEls.forEach((_d) => {/* listener attached above */});
 
     // ----- Slide renderers -----
 

@@ -63,8 +63,8 @@ export async function openDetail(id, type, title, year, originalTitle) {
             <div class="dsk-hero dsk-shimmer"></div>
             <div class="dsk-body">
                 ${skTitle
-                    ? `<h1 class="dsk-title-text">${skTitle}${skYear ? ` <span class="dsk-year">(${skYear})</span>` : ''}</h1>`
-                    : '<div class="dsk-line dsk-w60 dsk-shimmer"></div>'}
+        ? `<h1 class="dsk-title-text">${skTitle}${skYear ? ` <span class="dsk-year">(${skYear})</span>` : ''}</h1>`
+        : '<div class="dsk-line dsk-w60 dsk-shimmer"></div>'}
                 <div class="dsk-line dsk-w40 dsk-shimmer"></div>
                 <div class="dsk-line dsk-w90 dsk-shimmer"></div>
                 <div class="dsk-line dsk-w80 dsk-shimmer"></div>
@@ -751,7 +751,7 @@ async function fetchOmdbSafe(imdbId, fetchImpl = fetch) {
 export function computeTriviaRender(details, omdbData, geminiText) {
     const ground = buildGroundTruth(details, omdbData);
     const bullets = clampBullets(geminiText);
-    let attribution = ground.source === 'omdb+tmdb' ? 'Source: OMDB + TMDB' : 'Source: TMDB';
+    const attribution = ground.source === 'omdb+tmdb' ? 'Source: OMDB + TMDB' : 'Source: TMDB';
     return { bullets, attribution, source: ground.source };
 }
 
