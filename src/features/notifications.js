@@ -113,9 +113,10 @@ function onItemClick(ev) {
         const type = p.mediaType === 'tv' ? 'tv' : (p.mediaType || 'movie');
         document.getElementById('notifications-dropdown')?.classList.remove('active');
         window.openDetail(p.tmdbId, type);
-    } else if (ev.type === 'evening_pick' && typeof window.openAgentHub === 'function') {
+    } else if (ev.type === 'evening_pick' && typeof window.openDecideSheet === 'function') {
+        // 05.5 eritme: hub öldü, akşam seçimi Decide sheet'ine derin-bağlanır.
         document.getElementById('notifications-dropdown')?.classList.remove('active');
-        window.openAgentHub();
+        window.openDecideSheet();
     }
 }
 
