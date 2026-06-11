@@ -37,6 +37,15 @@ w500→w342 (inline kart), image.tmdb.org preconnect.
 - Not: local preview'da /api yok → feed yüklenemiyor; prod LCP farklı çıkabilir.
   Nihai ölçüm deploy sonrası prod'dan alınacak.
 
+## PROD ARA ÖLÇÜM (2026-06-11, Blok 1 deploy sonrası)
+- FCP: 11.6 → **7.1 s** (−%39) · Speed Index: 11.6 → **7.1 s**
+- LCP: 16.0 s — ama LCP elementi **onboarding poster duvarı** (LH sıfır
+  kullanıcı olarak girince wizard açılıyor). Geri dönen kullanıcı bu yolu
+  görmez. Backlog: onboarding duvar görsellerine fetchpriority=high +
+  daha az/küçük görsel; lazy onboarding chunk'ının ilk-kurulum LCP maliyeti.
+- Doğrulanan: CDN firebase yok, subset font canlı, tüm Blok 1 fix'leri
+  bundle'da (media_type, video overlay, broadcast kuralı).
+
 ## SONUÇ (tur bitince prod'dan doldurulacak)
 - Performance score: _
 - FCP: _ · LCP: _ · Speed Index: _
