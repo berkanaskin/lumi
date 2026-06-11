@@ -11,6 +11,7 @@ import { getStreamingWithCache } from '../services/streaming-cache.js';
 import { getPlatformUrl, getLogoOverride } from '../lib/platforms.js';
 import { filterProvidersToCurated } from '../lib/providers-resolver.js';
 import { buildGroundTruth, buildGroundedPrompt, clampBullets } from '../lib/trivia-grounding.js';
+import { fetchWikiNotes } from '../lib/wiki-trivia.js';
 import { isActivelyAiring, getNetworkLogoPath, getNetworkCatalogEntry, formatNextEpisode, pickBroadcastNetwork } from '../lib/broadcast.js';
 
 // ============================================
@@ -750,16 +751,17 @@ async function fetchOmdbSafe(imdbId, fetchImpl = fetch) {
 export function computeTriviaRender(details, omdbData, geminiText) {
     const ground = buildGroundTruth(details, omdbData);
     const bullets = clampBullets(geminiText);
-    const attribution = ground.source === 'omdb+tmdb' ? 'Source: OMDB + TMDB' : 'Source: TMDB';
+    let attribution = ground.source === 'omdb+tmdb' ? 'Source: OMDB + TMDB' : 'Source: TMDB';
     return { bullets, attribution, source: ground.source };
 }
 
 /**
  * Build the Gemini prompt for a given TMDB+OMDB pair. Exposed for testing.
  */
-export function buildTriviaPromptFor(details, omdbData, type) {
+export function buildTriviaPromptFor(details, omdbData, type, wikiNotes) {
     const ground = buildGroundTruth(details, omdbData);
-    return { prompt: buildGroundedPrompt(ground, type), source: ground.source };
+    const source = wikiNotes ? ground.source + '+wikipedia' : ground.source;
+    return { prompt: buildGroundedPrompt(ground, type, wikiNotes), source };
 }
 
 /**
@@ -774,12 +776,16 @@ async function loadTrivia(details, type) {
     const imdbId = details?.external_ids?.imdb_id || details?.imdb_id || null;
 
     try {
-        // 1. OMDB (best-effort) in parallel with — well, nothing else right now,
-        //    but Promise.all preserves the option for a future parallel call.
-        const [omdbData] = await Promise.all([fetchOmdbSafe(imdbId)]);
+        // 1. OMDB + Wikipedia (her ikisi best-effort) paralel.
+        //    05.5-12: Wikipedia yapım/çekim bölümleri ham madde olarak prompta
+        //    girer; model üretmez, SEÇER. Wiki düşerse eski OMDB+TMDB yolu.
+        const [omdbData, wikiNotes] = await Promise.all([
+            fetchOmdbSafe(imdbId),
+            fetchWikiNotes(details, type).catch(() => null),
+        ]);
 
         // 2. Build grounded prompt.
-        const { prompt, source } = buildTriviaPromptFor(details, omdbData, type);
+        const { prompt, source } = buildTriviaPromptFor(details, omdbData, type, wikiNotes?.text);
 
         // 3. Call Gemini with the strict prompt.
         const res = await fetch('/api/gemini', {

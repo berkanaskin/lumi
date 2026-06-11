@@ -165,7 +165,7 @@ export function buildGroundTruth(tmdbDetails, omdbData) {
  * @param {'movie'|'tv'|'series'|string} type
  * @returns {string}
  */
-export function buildGroundedPrompt(ground, type) {
+export function buildGroundedPrompt(ground, type, wikiNotes) {
     const safe = ground && typeof ground === 'object' ? ground : { source: 'tmdb-only', facts: {} };
     const facts = safe.facts || {};
     const title = facts.title || '(unknown title)';
@@ -173,15 +173,22 @@ export function buildGroundedPrompt(ground, type) {
 
     const groundJson = JSON.stringify(facts, null, 2);
 
+    // 05.5-12: Wikipedia ham maddesi varsa model ondan SEÇER (üretmez).
+    const hasWiki = typeof wikiNotes === 'string' && wikiNotes.trim().length > 0;
+
     // The four mandatory instruction strings are LITERAL and tested.
     return [
         'You are a movie trivia formatter for the Lumi app.',
         '',
         `TITLE: ${title}`,
         `TYPE: ${mediaType}`,
-        `GROUND_TRUTH_SOURCE: ${safe.source}`,
+        `GROUND_TRUTH_SOURCE: ${safe.source}${hasWiki ? '+wikipedia' : ''}`,
         '',
         'Use ONLY these facts. If unsure, say \'no notable trivia available\'. Never invent awards, dates, names, or events.',
+        ...(hasWiki ? [
+            'You may ALSO use facts explicitly stated in SOURCE_MATERIAL below — but never anything beyond these two sources.',
+            'PRIORITIZE the most striking, surprising, conversation-worthy facts (behind-the-scenes stories, casting near-misses, production troubles, records). Skip obvious facts like plot, genre or cast lists.',
+        ] : []),
         '',
         'Output format: ≤3 short bullets, each ≤140 characters, each verifiable from GROUND_TRUTH below.',
         '- Begin each bullet with "• ".',
@@ -190,6 +197,7 @@ export function buildGroundedPrompt(ground, type) {
         '',
         'GROUND_TRUTH:',
         groundJson,
+        ...(hasWiki ? ['', 'SOURCE_MATERIAL (Wikipedia):', wikiNotes.trim()] : []),
     ].join('\n');
 }
 
