@@ -92,6 +92,34 @@ export function getNetworkCatalogEntry(network) {
 }
 
 /**
+ * "Yayın Kanalı" bölümü için kanal seç (05.5 bölge kuralı).
+ *
+ * Yalnız kullanıcıya anlamlı bir kanal döner:
+ *   1. origin_country kullanıcının ülkesiyle eşleşen kanal, yoksa
+ *   2. küratörlü katalogda (TR overlay) bulunan kanal, yoksa
+ *   3. null → bölüm hiç render edilmez.
+ *
+ * Eski davranış networks[0]'a düşüyordu: TR'deki kullanıcı "From"da
+ * Epix/MGM+ (ABD kanalı) görüyor, platform sanıyordu.
+ *
+ * @param {Array<object>} networks - TMDB networks dizisi
+ * @param {string|undefined} userCountry - ISO ülke kodu (örn. 'TR')
+ * @returns {object|null}
+ */
+export function pickBroadcastNetwork(networks, userCountry) {
+    const list = Array.isArray(networks) ? networks.filter(Boolean) : [];
+    if (list.length === 0) return null;
+
+    const cc = userCountry ? String(userCountry).toUpperCase() : '';
+    if (cc) {
+        const local = list.find(n => String(n.origin_country || '').toUpperCase() === cc);
+        if (local) return local;
+    }
+
+    return list.find(n => resolveCatalogEntry(n)) || null;
+}
+
+/**
  * Format next-episode info for display.
  *
  * @param {object} nextEp - TMDB next_episode_to_air ({air_date, season_number, episode_number, name})

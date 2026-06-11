@@ -12,6 +12,7 @@ import {
     isActivelyAiring,
     getNetworkLogoPath,
     formatNextEpisode,
+    pickBroadcastNetwork,
 } from '../src/lib/broadcast.js';
 
 import returningFixture from './fixtures/tmdb-tv-returning-series.json';
@@ -133,4 +134,30 @@ describe('broadcast', () => {
             expect(out.absolute).toBe('');
         });
     });
+
+    describe('pickBroadcastNetwork — bölge kuralı (05.5 Epix fix)', () => {
+        const MGM_PLUS = { id: 6219, name: 'MGM+', origin_country: 'US', logo_path: '/mgm.png' };
+        const SHOW_TV = { id: 1280, name: 'Show TV', origin_country: 'TR', logo_path: '/show.png' };
+
+        it('TR kullanıcısına yabancı kanal GÖSTERMEZ (From/Epix vakası)', () => {
+            expect(pickBroadcastNetwork([MGM_PLUS], 'TR')).toBeNull();
+        });
+
+        it('kullanıcının ülkesiyle eşleşen kanalı seçer', () => {
+            expect(pickBroadcastNetwork([MGM_PLUS], 'US')).toBe(MGM_PLUS);
+            expect(pickBroadcastNetwork([MGM_PLUS, SHOW_TV], 'TR')).toBe(SHOW_TV);
+        });
+
+        it('ülke eşleşmese de küratörlü katalogdaki kanalı kabul eder', () => {
+            expect(pickBroadcastNetwork([SHOW_TV], undefined)).toBe(SHOW_TV);
+            expect(pickBroadcastNetwork([{ id: 99999, name: 'show tv' }], 'DE')).toBeTruthy();
+        });
+
+        it('boş/anlamsız girişte null döner', () => {
+            expect(pickBroadcastNetwork([], 'TR')).toBeNull();
+            expect(pickBroadcastNetwork(null, 'TR')).toBeNull();
+            expect(pickBroadcastNetwork([MGM_PLUS], undefined)).toBeNull();
+        });
+    });
+
 });

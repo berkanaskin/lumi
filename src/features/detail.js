@@ -11,7 +11,7 @@ import { getStreamingWithCache } from '../services/streaming-cache.js';
 import { getPlatformUrl, getLogoOverride } from '../lib/platforms.js';
 import { filterProvidersToCurated } from '../lib/providers-resolver.js';
 import { buildGroundTruth, buildGroundedPrompt, clampBullets } from '../lib/trivia-grounding.js';
-import { isActivelyAiring, getNetworkLogoPath, getNetworkCatalogEntry, formatNextEpisode } from '../lib/broadcast.js';
+import { isActivelyAiring, getNetworkLogoPath, getNetworkCatalogEntry, formatNextEpisode, pickBroadcastNetwork } from '../lib/broadcast.js';
 
 // ============================================
 // MODAL STATE
@@ -849,7 +849,11 @@ function buildBroadcastHTML(details, type) {
     try {
         userCountry = JSON.parse(localStorage.getItem('lumi_locale') || '{}').country;
     } catch (_) { userCountry = undefined; }
-    const primary = (userCountry && networks.find(n => n.origin_country === userCountry)) || networks[0];
+    // 05.5 bölge kuralı: kanal ya kullanıcının ülkesinden ya küratörlü
+    // katalogdan olmalı; yoksa bölüm hiç görünmez. networks[0] fallback'i
+    // TR kullanıcısına From'da Epix/MGM+ basıyordu.
+    const primary = pickBroadcastNetwork(networks, userCountry);
+    if (!primary) return '';
 
     const logo = getNetworkLogoPath(primary);
     const tmdbFallback = primary?.logo_path ? `https://image.tmdb.org/t/p/w92${primary.logo_path}` : '';
@@ -1168,37 +1172,6 @@ function buildCastHTML(credits) {
     }
 
     return html;
-}
-
-function _buildProvidersHTML(providers) {
-    const regionData = providers;
-    if (!regionData) return '';
-
-    // Merge all providers, deduplicate by provider_id
-    const allProviders = [
-        ...(regionData.flatrate || []),
-        ...(regionData.rent || []),
-        ...(regionData.buy || []),
-    ];
-    const seen = new Set();
-    const unique = allProviders.filter(p => {
-        if (seen.has(p.provider_id)) return false;
-        seen.add(p.provider_id);
-        return true;
-    });
-
-    if (unique.length === 0) return '';
-
-    const logos = unique.slice(0, 10).map(p => `
-        <img src="https://image.tmdb.org/t/p/w92${p.logo_path}" alt="${p.provider_name}" title="${p.provider_name}" class="detail-provider-logo-compact">
-    `).join('');
-
-    return `
-        <div class="detail-section detail-providers-compact">
-            <h3 class="detail-section-heading"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>Nereden İzlenir?</h3>
-            <div class="detail-providers-row-compact">${logos}</div>
-        </div>
-    `;
 }
 
 function buildVideosHTML() {
