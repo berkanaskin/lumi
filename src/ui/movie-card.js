@@ -6,7 +6,7 @@
  * info overlay on hover, and premium Letterboxd-inspired aesthetic.
  */
 
-import { getImageUrl } from '../lib/constants.js';
+import { getImageUrl, NO_POSTER_URL } from '../lib/constants.js';
 import { escapeHtml } from '../lib/helpers.js';
 
 /**
@@ -29,7 +29,7 @@ export function createMovieCard(item, mediaType = 'movie', options = {}) {
     const rating = item.vote_average?.toFixed(1) || 'N/A';
     const posterUrl = item.poster_path
         ? getImageUrl(item.poster_path, 'poster', 'medium')
-        : 'https://via.placeholder.com/342x513?text=No+Poster';
+        : NO_POSTER_URL;
 
     const card = document.createElement('div');
     card.className = 'movie-card';
@@ -93,7 +93,7 @@ export function createMovieCardHTML(item, mediaType = 'movie') {
     const rating = item.vote_average?.toFixed(1) || 'N/A';
     const posterUrl = item.poster_path
         ? getImageUrl(item.poster_path, 'poster', 'medium')
-        : 'https://via.placeholder.com/342x513?text=No+Poster';
+        : NO_POSTER_URL;
     const originalTitle = item.original_title || item.original_name || '';
 
     // Sanitize for inline onclick

@@ -146,6 +146,11 @@ export const DEFAULT_FILTERS = {
 
 export const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p';
 
+// Poster/avatar yoksa harici placeholder servisi yerine yerel data-URI:
+// via.placeholder.com yavaş/engellenebilir ve her eksik görselde ağ isteği demek.
+export const NO_POSTER_URL = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 342 513'%3E%3Crect width='342' height='513' fill='%2315151a'/%3E%3Ccircle cx='171' cy='240' r='36' fill='%23232330'/%3E%3Crect x='121' y='300' width='100' height='10' rx='5' fill='%23232330'/%3E%3C/svg%3E";
+export const NO_AVATAR_URL = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' fill='%2315151a'/%3E%3Ccircle cx='60' cy='46' r='22' fill='%23232330'/%3E%3Cellipse cx='60' cy='102' rx='38' ry='26' fill='%23232330'/%3E%3C/svg%3E";
+
 export const IMAGE_SIZES = {
     poster: {
         small: 'w185',

@@ -23,6 +23,20 @@
 - assets/main JS: 471.24 KB (gzip 146.30)
 - Bundle'a girmeyen classic script'ler: i18n.js (40KB), services/auth.js (defer)
 
-## SONUÇ (tur bitince doldurulacak)
+## ARA ÖLÇÜM — Açılış round 1+2 sonrası (local `vite preview`, LH mobil sim)
+
+Yapılanlar: CDN compat Firebase kaldırıldı (npm bridge), Material Symbols 37-glif
+subset, CSS @import font kopyaları söküldü (index_lumi.css + tokens.css TAM fontu
+ikinci kez çekiyordu — asıl 1MB suçlusu buydu), firebase ayrı chunk, onboarding
+lazy chunk (main 146→54KB gz), via.placeholder.com → yerel data-URI SVG,
+w500→w342 (inline kart), image.tmdb.org preconnect.
+
+- FCP: 11.6 → **6.2 s** · LCP: 15.7 → **8.0 s** · TTI: 16.0 → **8.0 s** (sim)
+- Kalan bloklayanlar: font CSS'leri (~0.9s) + ana CSS (~0.9s) + inline script
+  exec (~1.4s, 4x CPU sim) — kabul edilebilir; inline script çıkarımı backlog'da.
+- Not: local preview'da /api yok → feed yüklenemiyor; prod LCP farklı çıkabilir.
+  Nihai ölçüm deploy sonrası prod'dan alınacak.
+
+## SONUÇ (tur bitince prod'dan doldurulacak)
 - Performance score: _
 - FCP: _ · LCP: _ · Speed Index: _

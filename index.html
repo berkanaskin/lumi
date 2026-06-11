@@ -24,6 +24,10 @@
       href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
     <!-- Subset edilmiş ikon fontu: yalnız kullanılan glifler iner (~1MB -> ~10KB).
          Yeni ikon eklerken adını icon_names listesine (alfabetik) eklemeyi unutma. -->
     <link
@@ -519,7 +523,7 @@
             <div class="profile-avatar-glow"></div>
             <div class="profile-avatar" id="profile-avatar">
               <img
-                src="https://via.placeholder.com/120"
+                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' fill='%2315151a'/%3E%3Ccircle cx='60' cy='46' r='22' fill='%23232330'/%3E%3Cellipse cx='60' cy='102' rx='38' ry='26' fill='%23232330'/%3E%3C/svg%3E"
                 alt="Avatar"
                 id="profile-avatar-img"
               />
@@ -2084,7 +2088,7 @@
                                   .map(
                                     (c) => `
                                     <div class="cast-item">
-                                        <div class="cast-avatar" style="background-image: url('${c.profile_path ? "https://image.tmdb.org/t/p/w185" + c.profile_path : "https://via.placeholder.com/72?text=" + c.name.charAt(0)}');"></div>
+                                        <div class="cast-avatar" style="background-image: url('${c.profile_path ? "https://image.tmdb.org/t/p/w185" + c.profile_path : "data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 72 72%27%3E%3Crect width=%2772%27 height=%2772%27 fill=%27%2315151a%27/%3E%3Ccircle cx=%2736%27 cy=%2728%27 r=%2713%27 fill=%27%23232330%27/%3E%3Cellipse cx=%2736%27 cy=%2762%27 rx=%2723%27 ry=%2716%27 fill=%27%23232330%27/%3E%3C/svg%3E"}');"></div>
                                         <div class="cast-name">${c.name}</div>
                                     </div>
                                 `,

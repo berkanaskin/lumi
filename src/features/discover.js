@@ -7,7 +7,7 @@ import { CONFIG } from '../config.js';
 import { TMDBService, SearchService, EmbeddingService } from '../services/api.js';
 import { showToast } from '../ui/toast.js';
 import { showLoading, hideLoading } from '../ui/loading.js';
-import { DAILY_REC_KEY, DAILY_REC_CATEGORIES, getGenreName } from '../lib/constants.js';
+import { DAILY_REC_KEY, DAILY_REC_CATEGORIES, getGenreName, NO_POSTER_URL } from '../lib/constants.js';
 // Side-effect import: registers the 'lumi:paywall' listener + pulls paywall styles (Phase 05-02).
 import '../ui/paywall-sheet.js';
 // Side-effect import: injects the Agent hub FAB + registers it (Phase 05-03).
@@ -676,7 +676,7 @@ export function displayDiscoverResultsView(movies, source) {
     movies.forEach(movie => {
         const posterUrl = movie.poster_path
             ? `https://image.tmdb.org/t/p/w342${movie.poster_path}`
-            : 'https://via.placeholder.com/342x513?text=No+Poster';
+            : NO_POSTER_URL;
 
         const card = document.createElement('div');
         card.className = 'discover-result-card';
