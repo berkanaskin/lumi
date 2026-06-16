@@ -33,7 +33,7 @@
   "homepage": "https://berkanaskin.github.io/lumi",
   "devDependencies": {
     "@eslint/js": "^9.39.2",
-    "@vitest/ui": "^4.0.17",
+    "@vitest/ui": "^4.0.18",
     "eslint": "^9.39.2",
     "globals": "^17.0.0",
     "jsdom": "^27.4.0",
